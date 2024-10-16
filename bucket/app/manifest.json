@@ -1,8 +1,8 @@
 {
-  "name": "My Blog",
+  "name": "Discover Sharm",
   "id": "/",
-  "short_name": "My Blog",
-  "description": "My blog description goes here...",
+  "short_name": "Discover Sharm",
+  "description": "Discover Sharm , your Personal Guide",
   "version": "1.0",
   "dir": "auto",
   "lang": "en-US",
@@ -10,9 +10,9 @@
   "start_url": "/?utm_source=homescreen",
   "scope": "/",
   "display": "standalone",
-  "prefer_related_applications": false,
-  "background_color": "#fff",
-  "theme_color": "#fff",
+  "prefer_related_applications": true,
+  "background_color": "#212121",
+  "theme_color": "#212121",
   "icons": [
     {
       "src": "icons/favicon.ico",
@@ -116,10 +116,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Shortcut 1",
-      "short_name": "Shortcut 1",
-      "description": "Shortcut 1 description goes here...",
-      "url": "/search/label/shortcut-1?utm_source=homescreen",
+      "name": "Activities",
+      "short_name": "Activities",
+      "description": "Discover Sharm with our Activities",
+      "url": "/trips",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
@@ -128,10 +128,10 @@
       ]
     },
     {
-      "name": "Shortcut 2",
-      "short_name": "Shortcut 2",
-      "description": "Shortcut 2 description goes here...",
-      "url": "/search/label/shortcut-2?utm_source=homescreen",
+      "name": "Hotels",
+      "short_name": "Hotels",
+      "description": "the Top Recommended Hotels from Discover Sharm",
+      "url": "/hotels",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
@@ -140,6 +140,7 @@
       ]
     }
   ],
+  "related_applications": [],
   "serviceworker": {
     "src": "serviceworker.js"
   }
