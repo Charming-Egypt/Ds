@@ -33,7 +33,7 @@ export default {
   pwa: {
     logs: true,
     // OneSignal is not available if you are not using cloudflare workers
-    oneSignalEnabled: false,
+    oneSignalEnabled: true,
     oneSignalConfig: {
       appId: 'ba878a37-3f42-41fe-97f8-b4f18e7b27a1',
       allowLocalhostAsSecureOrigin: true,
