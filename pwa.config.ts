@@ -35,10 +35,10 @@ export default {
     // OneSignal is not available if you are not using cloudflare workers
     oneSignalEnabled: false,
     oneSignalConfig: {
-      appId: '********-****-****-****-************',
+      appId: 'ba878a37-3f42-41fe-97f8-b4f18e7b27a1',
       allowLocalhostAsSecureOrigin: true,
     },
   },
   // Please replace with your blog url if you are using CDN (JsDelivr)
-  origin: 'https://hello-example.blogspot.com',
+  origin: 'https://www.discover-sharm.com/',
 } satisfies Config;
