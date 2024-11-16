@@ -126,6 +126,18 @@
       "form_factor": "narrow"
     },
     {
+      "src": "screenshots/screen-narrow-9.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshots/screen-narrow-10.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    },
+    {
       "src": "screenshots/screen-wide-1.png",
       "type": "image/png",
       "sizes": "720x540",
