@@ -6,7 +6,7 @@
   "version": "1.0",
   "dir": "auto",
   "lang": "en-US",
-  "orientation": "any",
+  "orientation": "portrait",
   "start_url": "/?utm_source=homescreen",
   "scope": "/",
   "display": "standalone",
