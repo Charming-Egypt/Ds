@@ -11,7 +11,7 @@ export default {
   backgroundColor: '#212121',
   themeColor: '#212121',
   display: 'standalone',
-  orientation: 'any',
+  orientation: 'portrait',
   scope: '/',
   startUrl: '/?utm_source=homescreen',
   appleStatusBarStyle: 'black-translucent',
