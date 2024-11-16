@@ -7,8 +7,8 @@
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",
-  "start_url": "https://hello-example.blogspot.com/?utm_source=homescreen",
-  "scope": "https://hello-example.blogspot.com/",
+  "start_url": "https://www.discover-sharm.com/?utm_source=homescreen",
+  "scope": "https://www.discover-sharm.com/",
   "display": "standalone",
   "prefer_related_applications": true,
   "background_color": "#212121",
@@ -119,7 +119,7 @@
       "name": "Activities",
       "short_name": "Activities",
       "description": "Discover Sharm with our Activities",
-      "url": "https://hello-example.blogspot.com/trips",
+      "url": "https://www.discover-sharm.com/trips",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
@@ -131,7 +131,7 @@
       "name": "Hotels",
       "short_name": "Hotels",
       "description": "the Top Recommended Hotels from Discover Sharm",
-      "url": "https://hello-example.blogspot.com/hotels",
+      "url": "https://www.discover-sharm.com/hotels",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
