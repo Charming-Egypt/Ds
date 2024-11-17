@@ -1,4 +1,4 @@
-
+<script>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getDatabase, ref, get, set, push, onChildAdded, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -289,7 +289,7 @@ messagesDiv.addEventListener('touchend', (event) => {
   
   
   
-  
+        </script>
   
   
   
