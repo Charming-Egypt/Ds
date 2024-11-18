@@ -32,7 +32,7 @@ function getIdFromUrl() {
 
 // Function to check if the ID exists in the Firebase database
 function checkIdInDatabase(id) {
-    const dbRef = firebase.database().ref('restaurants/' + id);
+    const dbRef = firebase.database().ref('Restaurants/' + id);
     return dbRef.once('value').then(snapshot => {
         if (snapshot.exists()) {
             return snapshot.val(); // returns the data if it exists
@@ -47,12 +47,12 @@ function useData(data) {
     if (data) {
         const name_en = data.name_en;
         const photo = data.photo;
-        const menu_link = data.menu_link;
+        
         
         // You can now use these variables as needed
         console.log(`Name: ${name_en}`);
         console.log(`Photo: ${photo}`);
-        console.log(`Menu Link: ${menu_link}`);
+        
     } else {
         console.log('ID does not exist in the database');
     }
