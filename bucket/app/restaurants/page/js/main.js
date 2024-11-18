@@ -134,7 +134,7 @@
     <script src="/app/restaurants/page/js/main.js">
   </script>
 
-  <script type="module">
+  
   // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
@@ -212,4 +212,4 @@ async function main() {
 
 // Run the main function
 main();
-</script>
+
