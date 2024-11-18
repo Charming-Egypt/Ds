@@ -167,6 +167,9 @@ function useData(data) {
         const name_en = data.name_en;
         const photo = data.photo;
 
+      // Dynamically set the name in h1 with a specific id
+        const h1Element = document.getElementById('restaurant-name');
+        h1Element.textContent = name_en;
 
       // Dynamically set the image source
         const imgLogo = document.querySelector('.img-logo');
