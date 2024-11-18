@@ -155,40 +155,5 @@ function checkIdInDatabase(id) {
     });
 }
 
-// Function to use the data if ID exists
-function useData(data) {
-    if (data) {
-        const name_en = data.name_en;
-        const photo = data.photo;
 
-      // Dynamically set the name in h1 with a specific id
-        const h1Element = document.getElementById('restaurant-name');
-        h1Element.textContent = name_en;
-
-      // Dynamically set the image source
-        const imgLogo = document.querySelector('.img-logo');
-        imgLogo.src = photo;
-        
-        // You can now use these variables as needed
-        console.log(`Name: ${name_en}`);
-        console.log(`Photo: ${photo}`);
-        
-    } else {
-        console.log('ID does not exist in the database');
-    }
-}
-
-// Main function to tie everything together
-async function main() {
-    const id = getIdFromUrl();
-    if (id) {
-        const data = await checkIdInDatabase(id);
-        useData(data);
-    } else {
-        console.log('No ID found in the URL');
-    }
-}
-
-// Run the main function
-main();
 
