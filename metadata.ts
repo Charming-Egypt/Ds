@@ -1,5 +1,5 @@
 /**
- * This is auto generated metadata file, generated at: Mon Nov 18 2024 11:37:16 GMT+0000 (Coordinated Universal Time)
+ * This is auto generated metadata file, generated at: Mon Nov 18 2024 11:38:20 GMT+0000 (Coordinated Universal Time)
  * Prevent making any changes here
  */
 
@@ -27,5 +27,5 @@ export interface Metadata {
 }
 
 export const metadata = JSON.parse(
-  '{"github":{"repository":"Charming-Egypt/blogger-pwa","branch":"main"},"pwa":{"oneSignalEnabled":true,"oneSignalSDK":"https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js","oneSignalConfig":{"appId":"ba878a37-3f42-41fe-97f8-b4f18e7b27a1","allowLocalhostAsSecureOrigin":true},"logs":true,"serviceWorker":{"source":"/app/serviceworker.js","scope":"/"}},"build":{"hash":"HRjhNs2l-1Gf41gtv6cB7"}}',
+  '{"github":{"repository":"Charming-Egypt/blogger-pwa","branch":"main"},"pwa":{"oneSignalEnabled":true,"oneSignalSDK":"https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js","oneSignalConfig":{"appId":"ba878a37-3f42-41fe-97f8-b4f18e7b27a1","allowLocalhostAsSecureOrigin":true},"logs":true,"serviceWorker":{"source":"/app/serviceworker.js","scope":"/"}},"build":{"hash":"kd71DEAko91sm1FCXR9Gq"}}',
 ) as Metadata;
