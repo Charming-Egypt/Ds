@@ -29,3 +29,18 @@ function checkIdInDatabase(id) {
         }
     });
 }
+
+
+// Main function to tie everything together
+async function main() {
+    const id = getIdFromUrl();
+    if (id) {
+        const data = await checkIdInDatabase(id);
+        useData(data);
+    } else {
+        console.log('No ID found in the URL');
+    }
+}
+
+// Run the main function
+main();
