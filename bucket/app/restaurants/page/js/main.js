@@ -118,21 +118,20 @@
 })(jQuery);
 
 
-  <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/app/restaurants/page/lib/wow/wow.min.js"></script>
-    <script src="/app/restaurants/page/lib/easing/easing.min.js"></script>
-    <script src="/app/restaurants/page/lib/waypoints/waypoints.min.js"></script>
-    <script src="/app/restaurants/page/lib/counterup/counterup.min.js"></script>
-    <script src="/app/restaurants/page/lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="/app/restaurants/page/lib/tempusdominus/js/moment.min.js"></script>
-    <script src="/app/restaurants/page/lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="/app/restaurants/page/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+  const firebaseConfig = {
+            apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+            authDomain: "egypt-travels.firebaseapp.com",
+            databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+            projectId: "egypt-travels",
+            storageBucket: "egypt-travels.appspot.com",
+            messagingSenderId: "477485386557",
+            appId: "1:477485386557:web:755f9649043288db819354",
+            measurementId: "G-RKD5F46NM8"
+        };
 
-    <!-- Template Javascript -->
-    <script src="/app/restaurants/page/js/main.js">
-  </script>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const auth = getAuth(app);
 
   
 
