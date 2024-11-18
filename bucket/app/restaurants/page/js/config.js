@@ -12,35 +12,4 @@ const firebaseConfig = {
 
 
 
-// Function to get the ID from the URL
-function getIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
-}
 
-// Function to check if the ID exists in the Firebase database
-function checkIdInDatabase(id) {
-    const dbRef = ref(db); // Reference to your Firebase database
-    return get(child(dbRef, 'Restaurants/' + id)).then((snapshot) => {
-        if (snapshot.exists()) {
-            return snapshot.val(); // Returns the data if it exists
-        } else {
-            return null; // ID does not exist
-        }
-    });
-}
-
-
-// Main function to tie everything together
-async function main() {
-    const id = getIdFromUrl();
-    if (id) {
-        const data = await checkIdInDatabase(id);
-        useData(data);
-    } else {
-        console.log('No ID found in the URL');
-    }
-}
-
-// Run the main function
-main();
