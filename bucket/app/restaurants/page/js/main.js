@@ -166,7 +166,11 @@ function useData(data) {
     if (data) {
         const name_en = data.name_en;
         const photo = data.photo;
-        
+
+
+      // Dynamically set the image source
+        const imgLogo = document.querySelector('.img-logo');
+        imgLogo.src = photo;
         
         // You can now use these variables as needed
         console.log(`Name: ${name_en}`);
