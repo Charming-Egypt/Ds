@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  
+  <style>
+    /* Full-Screen Popup Styling */
+.comment-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: ;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Close Button */
+.close-popup-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+
+    
+ 
+    
+    
+ .mainR h1{color: #fff;
+   margin: 0rem !important; 
+    }
+ .mainR h2{color: #fff;}
+ .mainR h3{color: #fff;}
+ .mainR h4{color: #fff;}
+ .mainR h5{color: #fff;}
+ .mainR h6{color: #fff; }
+ .mainR small{color: #fff;}
+ .mainR span{color: #fff;}
+ .text-body{font-size:0.3em;}
+  
+.img-rot{
+    animation: rotate 20s infinite linear;
+    }
+    
+    .img-logo {
+        width: 150px;
+      height: 150px;
+        }
+    
+    .pb-3{padding-bottom:0rem;
+    padding-left:0rem;
+    }
+   
+
+.nav-item {
+
+    flex: 1; /* Each child takes an equal amount of space */
+
+    margin: 0px; /* Optional: Add some margin between columns */
+
+}
+ 
+    
+    
+    
+    
+    
+      .mainC{
+    background: linear-gradient(rgba(15, 23, 43, .9), rgba(15, 23, 43, .9)), url(/app/restaurants/page/img/bg-hero.jpg);
+    }
+    
+  /* Rotation Animation */
+
+@keyframes rotate {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+    
+    .py-5 {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    
+}
+    
+    
+    .onPg .mainB {
+    /* display: block; */
+    max-width: -webkit-fill-available;
+    /* margin-inline: auto; */
+}
+    
+   .my-5 {
+    margin-top: 0rem !important;
+    margin-bottom: 0rem !important;
+}
+    
+    
+    
+    /* Styles for PC (large screens) */
+@media (min-width: 1024px) {
+    /*logo*/
+    .img-logo {
+        width: 150px;
+      height: 150px;
+        }
+  .img-rot{
+    width: 80%;
+    }
+    
+  
+  
+  
+/* Center the Leave Comment button */
+#leaveCommentBtn {
+    display: block;
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+
+.display-3 h1{
+    margin: 0rem !important;
+    
+    }
+  
+  .text-lg-start{
+  
+  text-align:center;
+  }
+    
+  </style>
+  
+  
+
+<head>
+    <meta charset="utf-8">
+    <title>Restaurant - Discover Sharm</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+<script src="/app/restaurants/page/js/config.js">
+
+  </script>
+    <!-- Favicon -->
+    
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/app/restaurants/page/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="/app/restaurants/page/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="/app/restaurants/page/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/app/restaurants/page/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/app/restaurants/page/css/style.css" rel="stylesheet">
+</head>
+
+<bodyo>
+    <div class="container-xxl  p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show  position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div></div>
+        <!-- Spinner End -->
+
+
+        <!-- Navbar & Hero Start -->
+        
+                <div class="container-xxl ">
+                    <div class="row align-items-center g-5">
+                        <div class="col-lg-6 text-center text-lg-center">
+     <img class="img-logo" src="" alt="">
+        <h1  class="display-3 text-white animated slideInLeft">Enjoy Your<br>Delicious Meal</h1>
+                                            
+                          
+                            
+                            
+
+ <a href="tel:+1234567890" class="button"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M17.3545 22.2323C15.3344 21.7262 11.1989 20.2993 7.44976 16.5502C3.70065 12.8011 2.2738 8.66559 1.76767 6.6455C1.47681 5.48459 2.00058 4.36434 2.88869 3.72997L5.21694 2.06693C6.57922 1.09388 8.47432 1.42407 9.42724 2.80051L10.893 4.91776C11.5152 5.8165 11.3006 7.0483 10.4111 7.68365L9.24234 8.51849C9.41923 9.1951 9.96939 10.5846 11.6924 12.3076C13.4154 14.0306 14.8049 14.5807 15.4815 14.7576L16.3163 13.5888C16.9517 12.6994 18.1835 12.4847 19.0822 13.1069L21.1995 14.5727C22.5759 15.5257 22.9061 17.4207 21.933 18.783L20.27 21.1113C19.6356 21.9994 18.5154 22.5232 17.3545 22.2323ZM8.86397 15.136C12.2734 18.5454 16.0358 19.8401 17.8405 20.2923C18.1043 20.3583 18.4232 20.2558 18.6425 19.9488L20.3056 17.6205C20.6299 17.1665 20.5199 16.5348 20.061 16.2171L17.9438 14.7513L17.0479 16.0056C16.6818 16.5182 16.0047 16.9202 15.2163 16.7501C14.2323 16.5378 12.4133 15.8569 10.2782 13.7218C8.1431 11.5867 7.46219 9.7677 7.24987 8.7837C7.07977 7.9953 7.48181 7.31821 7.99439 6.95208L9.24864 6.05618L7.78285 3.93893C7.46521 3.48011 6.83351 3.37005 6.37942 3.6944L4.05117 5.35744C3.74413 5.57675 3.64162 5.89565 3.70771 6.15943C4.15989 7.96418 5.45459 11.7266 8.86397 15.136Z" fill="#ffffff"></path> </g></svg>Nabq</a>
+
+                        </div>
+                        <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                            <img class="img-rot" src="/app/restaurants/page/img/hero.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            
+        
+  
+  
+        <!-- Navbar & Hero End -->
+
+
+        <!-- Service Start -->
+        
+                        
+        <!-- Service End -->
+
+
+        <!-- About Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <div class="col-6 text-start">
+                                <img id="aim1" class="img-fluid aim1 rounded w-100 wow zoomIn" data-wow-delay="0.1s" src="">
+                            </div>
+                            <div class="col-6 text-start">
+                                <img id="aim2" class="img-fluid aim2 rounded w-75 wow zoomIn" data-wow-delay="0.3s" src="" style="margin-top: 25%;">
+                            </div>
+                            <div class="col-6 text-end">
+                                <img id="aim3"class="img-fluid aim3 rounded w-75 wow zoomIn" data-wow-delay="0.5s" src="">
+                            </div>
+                            <div class="col-6 text-end">
+                                <img id="" class="img-fluid aim4 rounded w-100 wow zoomIn" data-wow-delay="0.7s" src="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h5 class="section-title ff-secondary text-start text-primary fw-normal">About Us</h5>
+                        <h1 class="mb-4">Welcome to <i class="fa fa-utensils text-primary me-2"></i><h1 class="mb-4" id="restaurant-name"> </h1></h1>
+<p id="restaurant-description" class="mb-4"></p>
+<p id="restaurant-location" class="mb-4"></p>
+                        <div class="row g-4 mb-4">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center border-start border-5 border-primary px-3">
+                                    <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up">15</h1>
+                                    <div class="ps-4">
+                                        <p class="mb-0">Years of</p>
+                                        <h6 class="text-uppercase mb-0">Experience</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center border-start border-5 border-primary px-3">
+                                    <h1 class="flex-shrink-0 display-5 text-primary mb-0" data-toggle="counter-up">50</h1>
+                                    <div class="ps-4">
+                                        <p class="mb-0">Popular</p>
+                                        <h6 class="text-uppercase mb-0">Master Chefs</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About End -->
+
+
+        <!-- Menu Start -->
+        
+                  
+              <!-- Menu Start -->
+<div class="container-xxl py-5">
+  <div class="container">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+      <h5 class="section-title ff-secondary text-center text-primary fw-normal">Food Menu</h5>
+      <h1 class="mb-5">Most Popular Items</h1>
+    </div>
+    <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+      <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5" style="width:100%; display: flex; justify-content: space-between; flex-wrap: nowrap;">
+        <li class="nav-item">
+          <a class="align-items-center pb-3 active" data-bs-toggle="pill" href="#tab-1">
+            <i class="fa fa-coffee fa-2x text-primary"></i>
+            <h6 class="mb-0">Breakfast</h6>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="align-items-center pb-3" data-bs-toggle="pill" href="#tab-2">
+            <i class="fa fa-coffee fa-2x text-primary"></i>
+            <h6 class="mb-0">Lunch</h6>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="align-items-center pb-3" data-bs-toggle="pill" href="#tab-3">
+            <i class="fa fa-coffee fa-2x text-primary"></i>
+            <h6 class="mb-0">Dinner</h6>
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+  <!-- Breakfast -->
+  <div id="tab-1" class="tab-pane fade show p-0 active">
+    <p>Loading Breakfast...</p>
+  </div>
+
+  <!-- Lunch -->
+  <div id="tab-2" class="tab-pane fade show p-0">
+    <p>Loading Lunch...</p>
+  </div>
+
+  <!-- Dinner -->
+  <div id="tab-3" class="tab-pane fade show p-0">
+    <p>Loading Dinner...</p>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+
+
+                  
+             
+  
+  
+                                  
+                  
+                  
+        <!-- Menu End -->
+
+
+        <!-- Reservation Start -->
+                  
+        <!-- Reservation Start -->
+
+
+        <!-- Team Start -->
+      
+        <!-- Team End -->
+
+
+        <!-- Testimonial Start -->
+        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="container">
+                <div class="text-center">
+                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Testimonial</h5>
+                    <h1 class="mb-5">Our Clients Say!!!</h1>
+                </div>
+                <div class="owl-carousel testimonial-carousel">
+                    <div class="testimonial-item bg-transparent border rounded p-4">
+                        <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
+                        <p id="the-comment"></p>
+                        <div class="d-flex align-items-center">
+                            <img id="customer-photo" class="img-fluid flex-shrink-0 rounded-circle" src="" style="width: 50px; height: 50px;">
+                            <div class="ps-3">
+                                <h5 id="Customer-Name" class="mb-1"></h5>
+                                <small id="nationality"></small>
+                            </div>
+                        </div>
+                    </div></div>
+            </div>
+          
+          
+          
+        </div>
+  
+  
+  
+  
+ 
+        <!-- Testimonial End -->
+    
+  <!-- Leave Comment Button -->
+<div class="text-center wow fadeInUp">
+    <a id="leaveCommentButton" class="btn btn-primary">Leave a Comment</a>
+</div>
+
+<!-- Full Screen Comment Form Popup -->
+<div id="commentPopup" class="comment-popup">
+    <div class="popup-content">
+        <button id="closePopup" class="close-popup-btn">&times;</button>
+        <h2>Leave Your Comment</h2>
+        <textarea id="commentText" class="form-control" placeholder="Write your comment here..."></textarea>
+        <a id="submitComment" class="btn btn-primary">Send</a>
+    </div>
+</div>
+  
+    
+        
+  
+  
+  
+  
+  
+  
+      
+
+
+        
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/app/restaurants/page/lib/wow/wow.min.js"></script>
+    <script src="/app/restaurants/page/lib/easing/easing.min.js"></script>
+    <script src="/app/restaurants/page/lib/waypoints/waypoints.min.js"></script>
+    <script src="/app/restaurants/page/lib/counterup/counterup.min.js"></script>
+    <script src="/app/restaurants/page/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="/app/restaurants/page/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="/app/restaurants/page/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="/app/restaurants/page/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="/app/restaurants/page/js/main.js">
+  </script>
+
+
+
+<script type="module">
+  
+   // Function to get the ID from the URL
+function getIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+  
+  const restaurantId = urlParams.get("id")
+  
+}
+  
+  
+  
+  
+ 
+  // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+ import { getDatabase, ref, update, get, child ,set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  
+  
+  
+  
+  const app = initializeApp(firebaseConfig);
+
+        const db = getDatabase();
+
+        const auth = getAuth(app);
+  
+  
+  
+   
+
+
+  
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  // Function to use the data if ID exists
+function useData(data) {
+    if (data) {
+        const name_en = data.name_en;
+        const photo = data.photo;
+        const about = data.about;
+        const phone = data.phone;
+        const location = data.location;
+        const img1 = data.img1;
+        const img2 = data.img2;
+        const img3 = data.img3;
+        const img4 = data.img4;
+        const imgback = data.imgback;
+      
+      
+      
+
+      const dynamicContent = {
+    'restaurant-name': name_en,
+    'restaurant-location': location,
+    'restaurant-description': about
+};
+      
+
+Object.keys(dynamicContent).forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = dynamicContent[id];
+});
+
+const images = [
+    { selector: '.img-logo', src: photo },
+    { selector: '.aim1', src: img1 },
+    { selector: '.aim2', src: img2 },
+    { selector: '.aim3', src: img3 },
+    { selector: '.aim4', src: img4 }
+];
+
+images.forEach(({ selector, src }) => {
+    const img = document.querySelector(selector);
+    if (img) img.src = src;
+});
+      
+     
+      
+      
+      
+      
+      
+      
+           function makeCall() {
+            window.location.href = phone;
+        }
+      
+        
+        // You can now use these variables as needed
+  console.log(`Name: ${name_en}`);
+  console.log(`Photo: ${photo}`);
+  console.log(`Description: ${about}`);
+  console.log(`img1: ${img1}`);
+  console.log(`img2: ${img2}`);
+  console.log(`img3: ${img3}`);
+  console.log(`img4: ${img4}`);
+  console.log(`location: ${location}`); 
+  console.log(`phone: ${phone}`); 
+  console.log(`imgback: ${imgback}`);  
+
+    } else {
+  console.log('ID does not exist in the database');
+    }
+}
+
+
+
+  
+  
+
+// Function to check if the ID exists in the Firebase database
+function checkIdInDatabase(id) {
+    const dbRef = ref(db); // Reference to your Firebase database
+    return get(child(dbRef, 'Restaurants/' + id)).then((snapshot) => {
+        if (snapshot.exists()) {
+            return snapshot.val(); // Returns the data if it exists
+        } else {
+            return null; // ID does not exist
+        }
+    });
+}
+
+
+// Main function to tie everything together
+async function main() {
+    const id = getIdFromUrl();
+    if (id) {
+        const data = await checkIdInDatabase(id);
+        useData(data);
+    } else {
+        console.log('No ID found in the URL');
+    }
+}
+
+// Run the main function
+main();
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+  
+ 
+
+
+
+// Fetch and render menu items for a single category
+async function fetchMenuItemsForCategory(category, containerId) {
+  const restaurantId = getRestaurantId(); // Retrieve restaurant ID from the URL
+
+  if (!restaurantId) {
+    console.error("No restaurant ID found in URL.");
+    document.getElementById(containerId).innerHTML = `<p>Error: No restaurant ID found in URL.</p>`;
+    return;
+  }
+
+  const db = getDatabase();
+  const path = `Restaurants/${restaurantId}/menu/${category}`;
+  console.log(`Fetching data for ${category} from path: ${path}`);
+  
+  try {
+    const snapshot = await get(ref(db, path));
+    if (snapshot.exists()) {
+      console.log(`${category} data loaded successfully.`);
+      const menuData = snapshot.val();
+      renderMenuItemsForCategory(menuData, containerId);
+    } else {
+      console.log(`No ${category} data found.`);
+      document.getElementById(containerId).innerHTML = `<p>No ${category} items available.</p>`;
+    }
+  } catch (error) {
+    console.error(`Error fetching ${category} data:`, error);
+    document.getElementById(containerId).innerHTML = `<p>Error loading ${category} data.</p>`;
+  }
+}
+
+// Render items for a specific category
+function renderMenuItemsForCategory(menuData, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear previous content
+
+  for (const key in menuData) {
+    if (menuData.hasOwnProperty(key)) {
+      const item = menuData[key];
+      const html = `
+        <div class="d-flex align-items-center mb-3">
+          <img src="${item.photo || '/def
