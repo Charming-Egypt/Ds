@@ -7,7 +7,7 @@
   "dir": "auto",
   "lang": "en-US",
   "orientation": "portrait",
-  "start_url": "/?utm_source=homescreen",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "prefer_related_applications": true,

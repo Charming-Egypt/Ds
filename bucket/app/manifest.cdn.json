@@ -7,7 +7,7 @@
   "dir": "auto",
   "lang": "en-US",
   "orientation": "portrait",
-  "start_url": "https://www.discover-sharm.com/?utm_source=homescreen",
+  "start_url": "https://www.discover-sharm.com/",
   "scope": "https://www.discover-sharm.com/",
   "display": "standalone",
   "prefer_related_applications": true,
