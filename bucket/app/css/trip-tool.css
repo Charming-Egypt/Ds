@@ -1,1 +1,215 @@
+  .trip-calculator {
+    font-family: sans-serif;
+            color: #fff;
+            box-sizing: border-box; 
+            margin: 20px auto;
+            background: #222;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            
+            /* overflow-x: hidden; */
+        }
+
+        .trip-calculator h2 { text-align: center; font-size: 2em; margin-bottom: 20px; }
+        .trip-calculator label { font-size: 1.2em; margin-top: 15px; display: block; }
+
+
+         .trip-calculator select,
+        .trip-calculator input:not([type="text"]).trip-calculator-input,
+         #date 
+         {
+             width: 100%;
+             padding: 10px;
+             margin-top: 5px;
+             border-radius: 8px;
+             border: none;
+             background: #333;
+             color: #ffc207;
+             font-size: 1em;
+             box-sizing: border-box;
+         }
+
+
+        .button-container input[type="text"] {
+             text-align: center;
+             width: 50px;
+             padding: 5px;
+             margin-top: 5px;
+             border-radius: 8px;
+             border: none;
+             background: #333;
+             color: #ffc207;
+             font-size: 1em;
+             box-sizing: border-box;
+        }
+
+         #date { background: #333; color: #ffc207; font-size: 1em; border-radius: 8px; border: none; padding: 10px; width: 100%; text-align: center; box-sizing: border-box; }
+         /* === End Corrected Input and Select Styles === */
+
+
+        .flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
+        .flatpickr-day { color: #ffc207 !important; background-color: #333 !important; border-radius: 8px !important; }
+        .flatpickr-day.selected { background-color: #ffc207 !important; color: #111 !important; }
+        .flatpickr-day:hover { background-color: #444 !important; color: #ffc207 !important; }
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay { color: #666 !important; }
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month { color: #ffc207 !important; }
+        .flatpickr-months .flatpickr-month { color: #ffc107 !important; background-color: #222 !important; border-radius: 8px !important; }
+        .flatpickr-months .flatpickr-prev-month svg,
+        .flatpickr-months .flatpickr-next-month svg { fill: #ffc107 !important; }
+        .flatpickr-weekday { color: #ffc207 !important; }
+        .flatpickr-day.today.flatpickr-disabled {
+             background-color: #333 !important;
+             color: #ffffff !important;
+             border: 1px solid #E64A19 !important;
+        }
+        .flatpickr-day.today.selected {
+             background-color: #388E3C !important;
+             color: #ffffff !important;
+        }
+
+
+        .number-container {
+             display: grid;
+             grid-template-columns: repeat(2, 1fr);
+             gap: 15px;
+             margin: 20px 0;
+             width: 100%;
+             box-sizing: border-box;
+        }
+
+        .number-box {
+             background: #333;
+             padding: 10px;
+             border-radius: 10px;
+             text-align: center;
+             box-sizing: border-box;
+             min-width: 0;
+        }
+
+
+        .button-container {
+             display: flex;
+             justify-content: center;
+             gap: 5px;
+             margin-top: 10px;
+             min-width: 0;
+        }
+
+        .trip-calculator .bb {
+             background: #ffc207;
+             color: #111;
+             border: none;
+             font-size: 1.2em;
+             border-radius: 50%;
+             display: inline-flex;
+             justify-content: center;
+             align-items: center;
+             box-sizing: border-box; 
+             width: 35px; 
+             height: 35px; 
+             padding: 0; 
+        }
+
+
+        .trip-calculator .bb:hover { background: #ffb800; }
+        .summary-btn { display: block; margin: 20px auto 0; padding: 10px 20px; font-size: 1.1em; border-radius: 20px; background: #ffc107; color: #111; border: none; cursor: pointer; }
+        .total { text-align: center; font-size: 1.5em; margin-top: 20px; color: #4ade80; font-weight: bold; }
+        
+        .popup {
+             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+             background: #222; color: #ffc207; padding: 25px; border-radius: 10px;
+             box-shadow: 0 0 30px rgba(0, 0, 0, 0.7); display: none; z-index: 1000;
+             width: 80%; max-width: 500px; box-sizing: border-box;
+
+        }
+        .popup h3 { margin-top: 0; }
+        .popup button { background: #ffc207; border: none; color: #111; padding: 10px 15px; margin-top: 15px; border-radius: 8px; cursor: pointer; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; z-index: 999; }
+        .prev-day-disabled { pointer-events: none; opacity: 0.4; background-color: #333 !important; cursor: not-allowed; }
+        .book-now-btn { display: inline-block; margin-left: 10px; background: #4ade80; color: #111; font-size: 1em; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+        .book-now-btn:hover { background: #22c55e; }
+        input[readonly] { background-color: #444; cursor: default; }
+        
+
+#customAlertOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); 
+    z-index: 1000; 
+    display: none;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+#customAlertBox {
+    position: fixed;
+    margin: 0px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1e1e1e;
+    color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1001; 
+    display: none; 
+    max-width: 80%;
+    width: 80%;
+    text-align: center;
+    font-family: 'Inter', sans-serif; 
+    transition: all 0.3s ease;
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+
+#customAlertOverlay[style*="display: block"] {
+    opacity: 1;
+}
+
+#customAlertBox[style*="display: block"] {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 15px;
+}
+
+#customAlertCloseBtn {
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #ffc107; 
+    transition: color 0.2s ease;
+}
+
+#customAlertCloseBtn:hover {
+    color: #ffffff;
+}
+
+.alert-body {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+#customAlertMessage {
+    margin: 0;
+    word-wrap: break-word;
+}
+
 
