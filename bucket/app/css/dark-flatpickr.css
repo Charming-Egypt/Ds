@@ -1,7 +1,9 @@
-         /* === End Corrected Input and Select Styles === */
+#date { background: #525f7f; color: #fff; font-size: 1em; border-radius: 8px; border: none; padding: 10px; width: 100%; text-align: center; box-sizing: border-box; }
+
+/* === End Corrected Input and Select Styles === */
 
 
-        .flatpickr-calendar { background-color: #333 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
+        .flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
         .flatpickr-day { color: #ffc207 !important; background-color: #333 !important; border-radius: 8px !important; }
         .flatpickr-day.selected { background-color: #ffc207 !important; color: #111 !important; }
         .flatpickr-day:hover { background-color: #444 !important; color: #ffc207 !important; }
