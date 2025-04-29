@@ -159,11 +159,6 @@ function prevStep() {
 
 // Populate form from cookies
 function populateForm() {
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
 
   // Get values from cookies
   const username = getCookie("username") || "";
