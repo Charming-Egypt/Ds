@@ -13,13 +13,18 @@ const database = firebase.database();
 
 // Initialize phone input
 const phoneInput = document.querySelector("#phone");
-const iti = window.intlTelInput(phoneInput, {
-  utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-  preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
-  separateDialCode: true,
-  initialCountry: "eg",
-  customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
-});
+let iti;
+try {
+  iti = window.intlTelInput(phoneInput, {
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
+    separateDialCode: true,
+    initialCountry: "eg",
+    customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
+  });
+} catch (error) {
+  console.error("intlTelInput initialization failed:", error);
+}
 
 // DOM Elements
 const steps = [
@@ -59,7 +64,7 @@ const refNumber = generateReference();
 // Sanitize user input
 function sanitizeInput(input) {
   if (!input) return '';
-  return input.toString().replace(/</g, "<").replace(/>/g, ">");
+  return input.toString().replace(/[<>]/g, "").trim();
 }
 
 // Fetch trip types from Firebase with retry logic
@@ -82,13 +87,15 @@ async function fetchTripTypes() {
     tripsData = await fetchTripTypesWithRetry();
     const tripTypeSelect = document.getElementById('tripType');
     tripTypeSelect.innerHTML = '<option value="" disabled selected>Select trip type</option>';
-    if (tripsData) {
+    if (tripsData && typeof tripsData === 'object') {
       Object.keys(tripsData).forEach(key => {
         const option = document.createElement('option');
         option.value = key;
         option.textContent = `${key} - ${tripsData[key]} EGP`;
         tripTypeSelect.appendChild(option);
       });
+    } else {
+      console.warn("No trip types found in Firebase.");
     }
   } catch (error) {
     console.error("Error fetching trip types:", error);
@@ -103,8 +110,8 @@ function calculateTotalPrice() {
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   if (!selectedTripType || !tripsData[selectedTripType]) return 0;
   const adultPrice = parseInt(tripsData[selectedTripType]);
-  return (adults * adultPrice) + 
-         (children12Plus * adultPrice) + 
+  return (adults * adultPrice) +
+         (children12Plus * adultPrice) +
          (childrenUnder12 * Math.round(adultPrice * 0.7));
 }
 
@@ -157,51 +164,24 @@ function prevStep() {
 
 // Populate form from cookies
 function populateForm() {
-  try {
-// Helper function to get cookies
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-
-    
-    // Get values from cookies
-    const username = getCookie("username") || "";
-    const email = getCookie("email") || "";
-    const phone = getCookie("phone") || "";
-    const uid = getCookie("uid") || "";
-
-    // Set form values if elements exist
-    const usernameEl = document.getElementById("username");
-    const emailEl = document.getElementById("customerEmail");
-    const phoneEl = document.getElementById("phone");
-    const uidEl = document.getElementById("uid");
-    
-    if (usernameEl && username) usernameEl.value = username;
-    if (emailEl && email) emailEl.value = email;
-    if (uidEl && uid) uidEl.value = uid;
-    
-    // Special handling for phone input
-    if (phoneEl && phone) {
-      phoneEl.value = phone;
-      // Handle intl-tel-input initialization
-      if (window.intlTelInputGlobals) {
-        const iti = window.intlTelInputGlobals.getInstance(phoneEl);
-        if (iti) {
-          iti.setNumber(phone);
-        } else {
-          // If not initialized yet, try again after a delay
-          setTimeout(() => {
-            const iti = window.intlTelInputGlobals.getInstance(phoneEl);
-            if (iti) iti.setNumber(phone);
-          }, 300);
-        }
-      }
-    }
-  } catch (error) {
-    console.error("Error populating form:", error);
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  // Get values from cookies
+  const username = getCookie("username") || "";
+  const email = getCookie("email") || "";
+  const phone = getCookie("phone") || "";
+  const uid = getCookie("uid") || "";
+  // Set form values
+  if (username) document.getElementById("username").value = username;
+  if (email) document.getElementById("customerEmail").value = email;
+  if (uid) document.getElementById("uid").value = uid;
+  // Special handling for phone input
+  if (phone && iti) {
+    document.getElementById("phone").value = phone;
+    iti.setNumber(phone);
   }
 }
 
@@ -325,8 +305,8 @@ function hideSpinner() {
 
 // Update max infants based on adults count
 function updateInfantsMax() {
-  const adults = parseInt(document.getElementById('adults').value);
-  const infants = parseInt(document.getElementById('infants').value);
+  const adults = parseInt(document.getElementById('adults').value) || 0;
+  const infants = parseInt(document.getElementById('infants').value) || 0;
   const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
   if (infants > maxInfants) {
     document.getElementById('infants').value = maxInfants;
@@ -412,7 +392,7 @@ function initNumberControls() {
   });
 
   // Update trip type change
-  document.getElementById('tripType').addEventListener('change', function() {
+  document.getElementById('tripType').addEventListener('change', function () {
     selectedTripType = this.value;
     if (currentStep === 3) updateSummary();
   });
@@ -427,6 +407,7 @@ async function submitForm() {
     const children12Plus = parseInt(document.getElementById('children12Plus').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
+
     const formData = {
       refNumber,
       username: sanitizeInput(document.getElementById("username").value),
@@ -459,10 +440,12 @@ async function submitForm() {
         currency: formData.currency
       }),
     });
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Payment processing failed');
     }
+
     const data = await response.json();
     const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/thank-you.html&failureRedirect=false&redirectMethod=get`;
 
@@ -477,6 +460,7 @@ async function submitForm() {
     sessionStorage.setItem("username", formData.username);
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
+
     showToast('Booking submitted! Redirecting to payment...');
     setTimeout(() => {
       window.location.href = kashierUrl;
@@ -497,32 +481,30 @@ flatpickr(dateInput, {
   theme: "dark",
   disableMobile: true,
   disable: [
-    function(date) {
+    function (date) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       return date <= today;
     }
   ],
-  onChange: function(selectedDates, dateStr, instance) {
+  onChange: function (selectedDates, dateStr, instance) {
     console.log("Date selected:", dateStr);
+    calculateTotalPrice();
   },
-  onDayCreate: function(dObj, dStr, fp, dayElem) {
+  onDayCreate: function (dObj, dStr, fp, dayElem) {
     const date = dayElem.dateObj;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
       if (flatpickr.compareDates(date, today) < 0) {
         dayElem.classList.add("prev-day-disabled");
       }
     }
-
     if (flatpickr.compareDates(date, today) === 0) {
       dayElem.classList.add("today");
     }
   },
-  onReady: function(selectedDates, dateStr, instance) {
-    console.log("Flatpickr calendar ready.");
+  onReady: function (selectedDates, dateStr, instance) {
     if (instance.calendarContainer) {
       instance.calendarContainer.setAttribute('translate', 'no');
       const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
@@ -534,29 +516,21 @@ flatpickr(dateInput, {
 });
 
 // Initialize the application
-window.onload = function() {
-  // Initialize phone input first
-  iti.promise.then(() => {
-    // Then populate form (including phone number)
-    populateForm();
-    
-    // Initialize other components
-    initNumberControls();
-    
-    // Set default values
-    document.getElementById('adults').value = 1;
-    document.getElementById('children12Plus').value = 0;
-    document.getElementById('childrenUnder12').value = 0;
-    document.getElementById('infants').value = 0;
-    
-    // Fetch trip types
-    fetchTripTypes();
-    
-    // Update progress bar
-    updateProgressBar();
-  }).catch(error => {
-    console.error("Phone input initialization failed:", error);
-    // Fallback initialization
-    populateForm();
-    initNumberControls();
-    document.getElementById('adu
+window.onload = function () {
+  populateForm();
+  initNumberControls();
+  document.getElementById('adults').value = 1;
+  document.getElementById('children12Plus').value = 0;
+  document.getElementById('childrenUnder12').value = 0;
+  document.getElementById('infants').value = 0;
+  fetchTripTypes();
+  if (iti) {
+    iti.promise.then(() => {
+      const phoneValue = document.getElementById("phone").value;
+      if (phoneValue) {
+        iti.setNumber(phoneValue);
+      }
+    });
+  }
+  updateProgressBar();
+};
