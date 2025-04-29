@@ -118,14 +118,14 @@ function calculateTotalPrice() {
 }
 
 
+            function populateForm(){
+
         // Populate from cookies
         document.getElementById("username").value = getCookie("username") || "";
         document.getElementById("customerEmail").value = getCookie("email") || "";
         document.getElementById("phone").value = getCookie("phone") || "";
         document.getElementById("uid").value = getCookie("uid") || "";
-
-
-
+            }
 // Update summary with debounce
 let debounceTimer;
 function updateSummary() {
@@ -530,6 +530,7 @@ window.onload = function() {
       iti.setNumber(phoneValue);
     }
   });
+  populateForm();
   // Update progress bar
   updateProgressBar();
 };
