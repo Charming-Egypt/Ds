@@ -299,7 +299,7 @@ function initNumberControls() {
     e.preventDefault();
     const input = document.getElementById('adults');
     const currentValue = parseInt(input.value);
-    if (currentValue > 2) {
+    if (currentValue > 1) {
       input.value = currentValue - 1;
       updateInfantsMax();
     }
@@ -439,7 +439,7 @@ async function submitForm() {
 }
 
     // Initialize date picker
-    const dateInput = document.getElementById('date');
+    const dateInput = document.getElementById('tripdDate');
     flatpickr(dateInput, {
       locale: "en",
       dateFormat: "Y-m-d",
