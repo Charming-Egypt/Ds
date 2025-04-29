@@ -45,13 +45,6 @@ let selectedTripType = "";
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_2_ADULTS = 2;
 
-// Helper function to get cookies
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 // Generate random reference
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -165,6 +158,15 @@ function prevStep() {
 // Populate form from cookies
 function populateForm() {
   try {
+// Helper function to get cookies
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+
+    
     // Get values from cookies
     const username = getCookie("username") || "";
     const email = getCookie("email") || "";
