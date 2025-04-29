@@ -59,18 +59,7 @@
 }
 
 
-        .mb-5 input[type="text"] {
-             text-align: center;
-             width: 50px;
-             padding: 5px;
-             margin-top: 5px;
-             border-radius: 8px;
-             border: none;
-             background: #525f7f;
-             color: #ffc207;
-             font-size: 1em;
-             box-sizing: border-box;
-        }
+      
 
          #tripDate { background: #525f7f; color: #ffc207; font-size: 1em; border-radius: 8px; border: none; padding: 10px; width: 100%; text-align: center; box-sizing: border-box; }
          /* === End Corrected Input and Select Styles === */
