@@ -439,7 +439,7 @@ async function submitForm() {
 }
 
     // Initialize date picker
-    const dateInput = document.getElementById('tripdDate');
+    const dateInput = document.getElementById('tripDate');
     flatpickr(dateInput, {
       locale: "en",
       dateFormat: "Y-m-d",
