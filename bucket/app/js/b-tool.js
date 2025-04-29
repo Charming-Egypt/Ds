@@ -13,13 +13,18 @@ const database = firebase.database();
 
 // Initialize phone input
 const phoneInput = document.querySelector("#phone");
-const iti = window.intlTelInput(phoneInput, {
-  utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-  preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
-  separateDialCode: true,
-  initialCountry: "eg",
-  customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
-});
+let iti;
+try {
+  iti = window.intlTelInput(phoneInput, {
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
+    separateDialCode: true,
+    initialCountry: "eg",
+    customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
+  });
+} catch (error) {
+  console.error("intlTelInput initialization failed:", error);
+}
 
 // DOM Elements
 const steps = [
@@ -59,7 +64,7 @@ const refNumber = generateReference();
 // Sanitize user input
 function sanitizeInput(input) {
   if (!input) return '';
-  return input.toString().replace(/</g, "<").replace(/>/g, ">");
+  return input.toString().replace(/[<>]/g, "").trim();
 }
 
 // Fetch trip types from Firebase with retry logic
@@ -75,8 +80,6 @@ async function fetchTripTypesWithRetry(retries = 3) {
     throw error;
   }
 }
-
-
 
 // Fetch trip types
 async function fetchTripTypes() {
@@ -105,8 +108,8 @@ function calculateTotalPrice() {
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   if (!selectedTripType || !tripsData[selectedTripType]) return 0;
   const adultPrice = parseInt(tripsData[selectedTripType]);
-  return (adults * adultPrice) + 
-         (children12Plus * adultPrice) + 
+  return (adults * adultPrice) +
+         (children12Plus * adultPrice) +
          (childrenUnder12 * Math.round(adultPrice * 0.7));
 }
 
@@ -159,35 +162,26 @@ function prevStep() {
 
 // Populate form from cookies
 function populateForm() {
-
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
   // Get values from cookies
   const username = getCookie("username") || "";
   const email = getCookie("email") || "";
   const phone = getCookie("phone") || "";
   const uid = getCookie("uid") || "";
-
   // Set form values
   if (username) document.getElementById("username").value = username;
   if (email) document.getElementById("customerEmail").value = email;
   if (uid) document.getElementById("uid").value = uid;
-  
   // Special handling for phone input
-  if (phone) {
+  if (phone && iti) {
     document.getElementById("phone").value = phone;
-    // Wait for intl-tel-input to be ready
-    if (window.intlTelInputGlobals && window.intlTelInputGlobals.getInstance(document.getElementById("phone"))) {
-      const iti = window.intlTelInputGlobals.getInstance(document.getElementById("phone"));
-      iti.setNumber(phone);
-    } else {
-      // If intl-tel-input isn't ready yet, try again shortly
-      setTimeout(() => {
-        const iti = window.intlTelInputGlobals.getInstance(document.getElementById("phone"));
-        if (iti) iti.setNumber(phone);
-      }, 500);
-    }
+    iti.setNumber(phone);
   }
 }
-
 
 // Form validation
 function validateCurrentStep() {
@@ -461,6 +455,7 @@ async function submitForm() {
     sessionStorage.setItem("username", formData.username);
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
+
     showToast('Booking submitted! Redirecting to payment...');
     setTimeout(() => {
       window.location.href = kashierUrl;
@@ -475,58 +470,44 @@ async function submitForm() {
 // Initialize date picker
 const dateInput = document.getElementById('tripDate');
 flatpickr(dateInput, {
-  locale: "en", // Keep this
-                dateFormat: "Y-m-d",
-                inline: false,
-                theme: "dark",
-                disableMobile: true,
-                disable: [
-                    function(date) {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date <= today;
-                    }],
-                onChange: function(selectedDates, dateStr, instance) {
-                    console.log("Date selected:", dateStr);
-                    calculateTotal();
-                },
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const date = dayElem.dateObj;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-                        // Disable past dates relative to today
-                        if (flatpickr.compareDates(date, today) < 0) {
-                            dayElem.classList.add("prev-day-disabled");
-                        }
-                    }
-
-
-                    if (flatpickr.compareDates(date, today) === 0) {
-                        dayElem.classList.add("today");
-                    }
-                },
-
-                onReady: function(selectedDates, dateStr, instance) {
-                    console.log("Flatpickr calendar ready. Applying translate='no' attribute(s).");
-                    if (instance.calendarContainer) {
-                        instance.calendarContainer.setAttribute('translate', 'no');
-                        console.log("Added translate='no' to Flatpickr calendar container.");
-
-                        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-                        if (weekdaysElement) {
-                            weekdaysElement.setAttribute('translate', 'no');
-                            console.log("Added translate='no' to .flatpickr-weekdays element.");
-                        } else {
-                            console.warn(".flatpickr-weekdays element not found inside container.");
-                        }
-                    } else {
-                        console.error("Flatpickr calendarContainer not found onReady.");
-                    }
-                }
-            });
-            console.log("Flatpickr initialized with English locale, disable function for today and past, and translate='no' applied onReady.");
+  dateFormat: "Y-m-d",
+  inline: false,
+  theme: "dark",
+  disableMobile: true,
+  disable: [
+    function(date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return date <= today;
+    }
+  ],
+  onChange: function(selectedDates, dateStr, instance) {
+    console.log("Date selected:", dateStr);
+    calculateTotal();
+  },
+  onDayCreate: function(dObj, dStr, fp, dayElem) {
+    const date = dayElem.dateObj;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
+      // Disable past dates relative to today
+      if (flatpickr.compareDates(date, today) < 0) {
+        dayElem.classList.add("prev-day-disabled");
+      }
+    }
+    if (flatpickr.compareDates(date, today) === 0) {
+      dayElem.classList.add("today");
+    }
+  },
+  onReady: function(selectedDates, dateStr, instance) {
+    if (instance.calendarContainer) {
+      instance.calendarContainer.setAttribute('translate', 'no');
+      const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
+      if (weekdaysElement) {
+        weekdaysElement.setAttribute('translate', 'no');
+      }
+    }
+  }
 });
 
 // Initialize the application
@@ -541,12 +522,14 @@ window.onload = function() {
   // Fetch trip types
   fetchTripTypes();
   // Initialize phone input
-  iti.promise.then(() => {
-    const phoneValue = document.getElementById("phone").value;
-    if (phoneValue) {
-      iti.setNumber(phoneValue);
-    }
-  });
+  if (iti) {
+    iti.promise.then(() => {
+      const phoneValue = document.getElementById("phone").value;
+      if (phoneValue) {
+        iti.setNumber(phoneValue);
+      }
+    });
+  }
   // Update progress bar
   updateProgressBar();
 };
