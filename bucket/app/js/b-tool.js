@@ -76,13 +76,6 @@ async function fetchTripTypesWithRetry(retries = 3) {
   }
 }
 
-    // Helper functions
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-
 
 
 // Fetch trip types
@@ -117,15 +110,6 @@ function calculateTotalPrice() {
          (childrenUnder12 * Math.round(adultPrice * 0.7));
 }
 
-
-            function populateForm(){
-
-        // Populate from cookies
-        document.getElementById("username").value = getCookie("username") || "";
-        document.getElementById("customerEmail").value = getCookie("email") || "";
-        document.getElementById("phone").value = getCookie("phone") || "";
-        document.getElementById("uid").value = getCookie("uid") || "";
-            }
 // Update summary with debounce
 let debounceTimer;
 function updateSummary() {
@@ -172,6 +156,43 @@ function prevStep() {
   stepIndicators[currentStep].setAttribute("data-active", "true");
   updateProgressBar();
 }
+
+// Populate form from cookies
+function populateForm() {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  // Get values from cookies
+  const username = getCookie("username") || "";
+  const email = getCookie("email") || "";
+  const phone = getCookie("phone") || "";
+  const uid = getCookie("uid") || "";
+
+  // Set form values
+  if (username) document.getElementById("username").value = username;
+  if (email) document.getElementById("customerEmail").value = email;
+  if (uid) document.getElementById("uid").value = uid;
+  
+  // Special handling for phone input
+  if (phone) {
+    document.getElementById("phone").value = phone;
+    // Wait for intl-tel-input to be ready
+    if (window.intlTelInputGlobals && window.intlTelInputGlobals.getInstance(document.getElementById("phone"))) {
+      const iti = window.intlTelInputGlobals.getInstance(document.getElementById("phone"));
+      iti.setNumber(phone);
+    } else {
+      // If intl-tel-input isn't ready yet, try again shortly
+      setTimeout(() => {
+        const iti = window.intlTelInputGlobals.getInstance(document.getElementById("phone"));
+        if (iti) iti.setNumber(phone);
+      }, 500);
+    }
+  }
+}
+
 
 // Form validation
 function validateCurrentStep() {
@@ -515,6 +536,7 @@ flatpickr(dateInput, {
 
 // Initialize the application
 window.onload = function() {
+  populateForm();
   initNumberControls();
   // Set default values
   document.getElementById('adults').value = 1;
@@ -530,7 +552,6 @@ window.onload = function() {
       iti.setNumber(phoneValue);
     }
   });
-  populateForm();
   // Update progress bar
   updateProgressBar();
 };
