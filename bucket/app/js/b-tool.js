@@ -125,9 +125,9 @@ function updateSummary() {
       const adultPrice = parseInt(tripsData[selectedTripType]);
       const childPriceUnder12 = Math.round(adultPrice * 0.7);
       document.getElementById("summaryTour").textContent = `${tripName} - ${selectedTripType}`;
-      document.getElementById("summaryAdults").textContent = `${adults} × ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
-      document.getElementById("summaryChildren12Plus").textContent = `${children12Plus} × ${adultPrice} EGP = ${(children12Plus * adultPrice).toFixed(2)} EGP`;
-      document.getElementById("summaryChildrenUnder12").textContent = `${childrenUnder12} × ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
+      document.getElementById("summaryAdults").textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
+      document.getElementById("summaryChildren12Plus").textContent = `${children12Plus} X ${adultPrice} EGP = ${(children12Plus * adultPrice).toFixed(2)} EGP`;
+      document.getElementById("summaryChildrenUnder12").textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       document.getElementById("summaryInfants").textContent = `${infants} (Free)`;
       document.getElementById("totalPriceDisplay").textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
     }
@@ -382,7 +382,7 @@ async function submitForm() {
       username: sanitizeInput(document.getElementById("username").value),
       email: sanitizeInput(document.getElementById("customerEmail").value),
       phone: iti.getNumber(),
-      tripDate: document.getElementById("date").value,
+      tripDate: document.getElementById("tripDate").value,
       tripType: selectedTripType,
       tripPrice: tripsData[selectedTripType],
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
@@ -438,62 +438,60 @@ async function submitForm() {
   }
 }
 
-    // Initialize date picker
-    const dateInput = document.getElementById('tripDate');
-    flatpickr(dateInput, {
-      locale: "en",
-      dateFormat: "Y-m-d",
-      inline: false,
-      theme: "dark",
-      disableMobile: true,
-      minDate: "today",
-      disable: [
-        function(date) {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          return date <= today;
-        }
-      ],
-      onChange: function(selectedDates, dateStr, instance) {
-        console.log("Date selected:", dateStr);
-        calculateTotalPrice();
-      },
-      onDayCreate: function(dObj, dStr, fp, dayElem) {
-        const date = dayElem.dateObj;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-          // Disable past dates relative to today
-          if (flatpickr.compareDates(date, today) < 0) {
-            dayElem.classList.add("prev-day-disabled");
-          }
-        }
-        if (flatpickr.compareDates(date, today) === 0) {
-          dayElem.classList.add("today");
-        }
-      },
-      onReady: function(selectedDates, dateStr, instance) {
-        console.log("Flatpickr calendar ready. Applying translate='no' attribute(s).");
-        if (instance.calendarContainer) {
-          instance.calendarContainer.setAttribute('translate', 'no');
-          const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-          if (weekdaysElement) {
-            weekdaysElement.setAttribute('translate', 'no');
-          } else {
-            console.warn(".flatpickr-weekdays element not found inside container.");
-          }
-        } else {
-          console.error("Flatpickr calendarContainer not found onReady.");
-        }
+// Initialize date picker
+const dateInput = document.getElementById('tripDate');
+flatpickr(dateInput, {
+  locale: "en",
+  dateFormat: "Y-m-d",
+  inline: false,
+  theme: "dark",
+  disableMobile: false,
+  minDate: "today",
+  disable: [
+    function(date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return date <= today;
+    }
+  ],
+  onChange: function(selectedDates, dateStr, instance) {
+    console.log("Date selected:", dateStr);
+    calculateTotalPrice();
+  },
+  onDayCreate: function(dObj, dStr, fp, dayElem) {
+    const date = dayElem.dateObj;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
+      // Disable past dates relative to today
+      if (flatpickr.compareDates(date, today) < 0) {
+        dayElem.classList.add("prev-day-disabled");
       }
-    });
-
+    }
+    if (flatpickr.compareDates(date, today) === 0) {
+      dayElem.classList.add("today");
+    }
+  },
+  onReady: function(selectedDates, dateStr, instance) {
+    if (instance.calendarContainer) {
+      instance.calendarContainer.setAttribute('translate', 'no');
+      const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
+      if (weekdaysElement) {
+        weekdaysElement.setAttribute('translate', 'no');
+      } else {
+        console.warn(".fp-weekdays element not found inside container.");
+      }
+    } else {
+      console.error("Fp calendarContainer not found onReady.");
+    }
+  }
+});
 
 // Initialize the application
 window.onload = function() {
   initNumberControls();
   // Set default values
-  document.getElementById('adults').value = 2;
+  document.getElementById('adults').value = 1;
   document.getElementById('children12Plus').value = 0;
   document.getElementById('childrenUnder12').value = 0;
   document.getElementById('infants').value = 0;
