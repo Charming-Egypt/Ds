@@ -445,7 +445,7 @@ flatpickr(dateInput, {
   dateFormat: "Y-m-d",
   inline: false,
   theme: "dark",
-  disableMobile: false,
+  disableMobile: true,
   minDate: "today",
   disable: [
     function(date) {
