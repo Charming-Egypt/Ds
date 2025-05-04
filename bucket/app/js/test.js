@@ -106,12 +106,10 @@ async function fetchTripTypes() {
 // Calculate total price
 function calculateTotalPrice() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
-  const children12Plus = parseInt(document.getElementById('children12Plus').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   if (!selectedTripType || !tripsData[selectedTripType]) return 0;
   const adultPrice = parseInt(tripsData[selectedTripType]);
   return (adults * adultPrice) +
-         (children12Plus * adultPrice) +
          (childrenUnder12 * Math.round(adultPrice * 0.7));
 }
 
@@ -121,7 +119,6 @@ function updateSummary() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     const adults = parseInt(document.getElementById('adults').value) || 0;
-    const children12Plus = parseInt(document.getElementById('children12Plus').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
     document.getElementById("summaryDate").textContent = document.getElementById("tripDate").value || "Not specified";
@@ -133,7 +130,6 @@ function updateSummary() {
       const childPriceUnder12 = Math.round(adultPrice * 0.7);
       document.getElementById("summaryTour").textContent = `${tripName} - ${selectedTripType}`;
       document.getElementById("summaryAdults").textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
-      document.getElementById("summaryChildren12Plus").textContent = `${children12Plus} X ${adultPrice} EGP = ${(children12Plus * adultPrice).toFixed(2)} EGP`;
       document.getElementById("summaryChildrenUnder12").textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       document.getElementById("summaryInfants").textContent = `${infants} (Free)`;
       document.getElementById("totalPriceDisplay").textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
@@ -315,7 +311,7 @@ function updateInfantsMax() {
 
 // Initialize number input controls
 function initNumberControls() {
-  // Adults controls (max 10, min 2)
+  // Adults controls (max 10, min 1)
   document.getElementById('adultsPlus').addEventListener('click', (e) => {
     e.preventDefault();
     const input = document.getElementById('adults');
@@ -335,23 +331,7 @@ function initNumberControls() {
     }
   });
 
-  // Children 12+ controls
-  document.getElementById('children12PlusPlus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('children12Plus');
-    const currentValue = parseInt(input.value);
-    if (currentValue < MAX_PER_TYPE) {
-      input.value = currentValue + 1;
-    }
-  });
-  document.getElementById('children12PlusMinus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('children12Plus');
-    const currentValue = parseInt(input.value);
-    if (currentValue > 0) {
-      input.value = currentValue - 1;
-    }
-  });
+  
 
   // Children under 12 controls
   document.getElementById('childrenUnder12Plus').addEventListener('click', (e) => {
@@ -404,7 +384,6 @@ async function submitForm() {
   showSpinner();
   try {
     const adults = parseInt(document.getElementById('adults').value) || 0;
-    const children12Plus = parseInt(document.getElementById('children12Plus').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
 
@@ -422,7 +401,6 @@ async function submitForm() {
       status: "pending",
       tour: `${tripName} - ${selectedTripType}`,
       adults,
-      children12Plus,
       childrenUnder12,
       infants,
       currency: 'EGP',
@@ -447,7 +425,7 @@ async function submitForm() {
     }
 
     const data = await response.json();
-    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/thank-you.html&failureRedirect=false&redirectMethod=get`;
+    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get`;
 
     // Save to Firebase
     const bookingsRef = database.ref('trip-bookings');
@@ -520,7 +498,6 @@ window.onload = function () {
   populateForm();
   initNumberControls();
   document.getElementById('adults').value = 1;
-  document.getElementById('children12Plus').value = 0;
   document.getElementById('childrenUnder12').value = 0;
   document.getElementById('infants').value = 0;
   fetchTripTypes();
