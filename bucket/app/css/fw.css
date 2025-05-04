@@ -1,0 +1,22 @@
+.onPg .mainB {
+  max-width: fit-content;
+}
+  
+.mainB:has(.blogP.fullP), .bD:not(.hsSb) .mainB {
+  max-width: fit-content;
+}
+.mainC .section, .mainC .widget {
+  margin-top: 10px;
+}
+
+.mainC.secIn {
+  padding-top: 0px;
+}
+
+.psImg {
+  margin-block: 0px;
+}
+
+.pEnt {
+  margin-top: 5px;
+}
