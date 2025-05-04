@@ -553,47 +553,61 @@ function initDatePicker() {
   const dateInput = document.getElementById('tripDate');
   if (!dateInput) return;
 
-  flatpickr(dateInput, {
-    locale: "en",
-    dateFormat: "Y-m-d",
-    inline: false,
-    theme: "dark",
-    disableMobile: true,
-    disable: [
-      function (date) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return date <= today;
-      }
-    ],
-    onChange: function (selectedDates, dateStr, instance) {
-      console.log("Date selected:", dateStr);
-      calculateTotalPrice();
-    },
-    onDayCreate: function (dObj, dStr, fp, dayElem) {
-      const date = dayElem.dateObj;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-        if (flatpickr.compareDates(date, today) < 0) {
-          dayElem.classList.add("prev-day-disabled");
-        }
-      }
-      if (flatpickr.compareDates(date, today) === 0) {
-        dayElem.classList.add("today");
-      }
-    },
-    onReady: function (selectedDates, dateStr, instance) {
-      if (instance.calendarContainer) {
-        instance.calendarContainer.setAttribute('translate', 'no');
-        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-        if (weekdaysElement) {
-          weekdaysElement.setAttribute('translate', 'no');
-        }
-      }
-    }
-  });
-}
+     // Initialize Flatpickr
+            flatpickr(dateInput, {
+                locale: "en", // Keep this
+                dateFormat: "Y-m-d",
+                inline: false,
+                theme: "dark",
+                disableMobile: true,
+                disable: [
+                    function(date) {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        return date <= today;
+                    }],
+                onChange: function(selectedDates, dateStr, instance) {
+                    console.log("Date selected:", dateStr);
+                    calculateTotal();
+                },
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const date = dayElem.dateObj;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
+                        // Disable past dates relative to today
+                        if (flatpickr.compareDates(date, today) < 0) {
+                            dayElem.classList.add("prev-day-disabled");
+                        }
+                    }
+
+
+                    if (flatpickr.compareDates(date, today) === 0) {
+                        dayElem.classList.add("today");
+                    }
+                },
+
+                onReady: function(selectedDates, dateStr, instance) {
+                    console.log("Flatpickr calendar ready. Applying translate='no' attribute(s).");
+                    if (instance.calendarContainer) {
+                        instance.calendarContainer.setAttribute('translate', 'no');
+                        console.log("Added translate='no' to Flatpickr calendar container.");
+
+                        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
+                        if (weekdaysElement) {
+                            weekdaysElement.setAttribute('translate', 'no');
+                            console.log("Added translate='no' to .flatpickr-weekdays element.");
+                        } else {
+                            console.warn(".flatpickr-weekdays element not found inside container.");
+                        }
+                    } else {
+                        console.error("Flatpickr calendarContainer not found onReady.");
+                    }
+                }
+            });
+            console.log("Flatpickr initialized with English locale, disable function for today and past, and translate='no' applied onReady.");
+};
 
 // Initialize the application
 window.onload = function () {
