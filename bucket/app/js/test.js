@@ -57,7 +57,7 @@ function generateReference() {
   for (let i = 0; i < 10; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return 'REF_' + result;
+  return 'DS_' + result;
 }
 const refNumber = generateReference();
 
