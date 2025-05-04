@@ -41,10 +41,13 @@ const stepIndicators = [
 ];
 let currentStep = 0;
 
-// Trip configuration
-// Trip configuration
+// Trip configuration - Get trip name from hidden input
 const tripNameElement = document.getElementById('tripName');
 let tripName = tripNameElement ? tripNameElement.value : '';
+if (!tripName) {
+  console.error("Trip name not found. Please add a hidden input with id='tripName'");
+  showToast("Configuration error. Please contact support.", 'error');
+}
 let tripsData = {};
 let selectedTripType = "";
 const MAX_PER_TYPE = 10;
@@ -84,8 +87,18 @@ async function fetchTripTypesWithRetry(retries = 3) {
 // Fetch trip types
 async function fetchTripTypes() {
   try {
+    if (!tripName) {
+      console.error("Cannot fetch trip types - trip name is empty");
+      return;
+    }
+    
     tripsData = await fetchTripTypesWithRetry();
     const tripTypeSelect = document.getElementById('tripType');
+    if (!tripTypeSelect) {
+      console.error("Trip type select element not found");
+      return;
+    }
+    
     tripTypeSelect.innerHTML = '<option value="" disabled selected>Select trip type</option>';
     if (tripsData && typeof tripsData === 'object') {
       Object.keys(tripsData).forEach(key => {
@@ -121,18 +134,31 @@ function updateSummary() {
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
-    document.getElementById("summaryDate").textContent = document.getElementById("tripDate").value || "Not specified";
-    document.getElementById("summaryHotel").textContent = sanitizeInput(document.getElementById("hotelName").value) || "Not specified yet";
-    document.getElementById("summaryRoom").textContent = sanitizeInput(document.getElementById("roomNumber").value) || "Not specified yet";
-    document.getElementById("summaryRef").textContent = refNumber;
+    
+    const summaryDate = document.getElementById("summaryDate");
+    const summaryHotel = document.getElementById("summaryHotel");
+    const summaryRoom = document.getElementById("summaryRoom");
+    const summaryRef = document.getElementById("summaryRef");
+    const summaryTour = document.getElementById("summaryTour");
+    const summaryAdults = document.getElementById("summaryAdults");
+    const summaryChildrenUnder12 = document.getElementById("summaryChildrenUnder12");
+    const summaryInfants = document.getElementById("summaryInfants");
+    const totalPriceDisplay = document.getElementById("totalPriceDisplay");
+    
+    if (summaryDate) summaryDate.textContent = document.getElementById("tripDate").value || "Not specified";
+    if (summaryHotel) summaryHotel.textContent = sanitizeInput(document.getElementById("hotelName").value) || "Not specified yet";
+    if (summaryRoom) summaryRoom.textContent = sanitizeInput(document.getElementById("roomNumber").value) || "Not specified yet";
+    if (summaryRef) summaryRef.textContent = refNumber;
+    
     if (selectedTripType && tripsData[selectedTripType]) {
       const adultPrice = parseInt(tripsData[selectedTripType]);
       const childPriceUnder12 = Math.round(adultPrice * 0.7);
-      document.getElementById("summaryTour").textContent = `${tripName} - ${selectedTripType}`;
-      document.getElementById("summaryAdults").textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
-      document.getElementById("summaryChildrenUnder12").textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
-      document.getElementById("summaryInfants").textContent = `${infants} (Free)`;
-      document.getElementById("totalPriceDisplay").textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
+      
+      if (summaryTour) summaryTour.textContent = `${tripName} - ${selectedTripType}`;
+      if (summaryAdults) summaryAdults.textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
+      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
+      if (summaryInfants) summaryInfants.textContent = `${infants} (Free)`;
+      if (totalPriceDisplay) totalPriceDisplay.textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
     }
   }, 300);
 }
@@ -141,20 +167,28 @@ function updateSummary() {
 function nextStep() {
   if (!validateCurrentStep()) return;
   steps[currentStep].classList.add("hidden");
-  stepIndicators[currentStep].setAttribute("data-active", "false");
+  if (stepIndicators[currentStep]) {
+    stepIndicators[currentStep].setAttribute("data-active", "false");
+  }
   currentStep++;
   steps[currentStep].classList.remove("hidden");
-  stepIndicators[currentStep].setAttribute("data-active", "true");
+  if (stepIndicators[currentStep]) {
+    stepIndicators[currentStep].setAttribute("data-active", "true");
+  }
   updateProgressBar();
   if (currentStep === 3) updateSummary();
 }
 
 function prevStep() {
   steps[currentStep].classList.add("hidden");
-  stepIndicators[currentStep].setAttribute("data-active", "false");
+  if (stepIndicators[currentStep]) {
+    stepIndicators[currentStep].setAttribute("data-active", "false");
+  }
   currentStep--;
   steps[currentStep].classList.remove("hidden");
-  stepIndicators[currentStep].setAttribute("data-active", "true");
+  if (stepIndicators[currentStep]) {
+    stepIndicators[currentStep].setAttribute("data-active", "true");
+  }
   updateProgressBar();
 }
 
@@ -165,17 +199,26 @@ function populateForm() {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
   }
+  
   // Get values from cookies
   const username = getCookie("username") || "";
   const email = getCookie("email") || "";
   const phone = getCookie("phone") || "";
   const uid = getCookie("uid") || "";
+  
   // Set form values
-  if (username) document.getElementById("username").value = username;
-  if (email) document.getElementById("customerEmail").value = email;
-  if (uid) document.getElementById("uid").value = uid;
+  if (username && document.getElementById("username")) {
+    document.getElementById("username").value = username;
+  }
+  if (email && document.getElementById("customerEmail")) {
+    document.getElementById("customerEmail").value = email;
+  }
+  if (uid && document.getElementById("uid")) {
+    document.getElementById("uid").value = uid;
+  }
+  
   // Special handling for phone input
-  if (phone && iti) {
+  if (phone && iti && document.getElementById("phone")) {
     document.getElementById("phone").value = phone;
     iti.setNumber(phone);
   }
@@ -184,16 +227,19 @@ function populateForm() {
 // Form validation
 function validateCurrentStep() {
   let isValid = true;
+  
   if (currentStep === 0) {
     // Validate personal info
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("customerEmail").value.trim();
+    const username = document.getElementById("username")?.value.trim();
+    const email = document.getElementById("customerEmail")?.value.trim();
+    
     if (!username) {
       showError('username', 'Please enter your full name');
       isValid = false;
     } else {
       clearError('username');
     }
+    
     if (!email) {
       showError('customerEmail', 'Please enter your email address');
       isValid = false;
@@ -203,26 +249,31 @@ function validateCurrentStep() {
     } else {
       clearError('customerEmail');
     }
-    const phoneNumber = iti.getNumber();
-    if (!phoneNumber || !iti.isValidNumber()) {
+    
+    const phoneNumber = iti?.getNumber();
+    if (!phoneNumber || !iti?.isValidNumber()) {
       showError('phone', 'Please enter a valid phone number with country code');
       isValid = false;
     } else {
       clearError('phone');
-      document.getElementById("phone").value = phoneNumber;
+      if (document.getElementById("phone")) {
+        document.getElementById("phone").value = phoneNumber;
+      }
     }
   } else if (currentStep === 1) {
     // Validate trip details
-    const tripDate = document.getElementById("tripDate").value.trim();
-    const tripType = document.getElementById("tripType").value;
-    const hotelName = document.getElementById("hotelName").value.trim();
-    const roomNumber = document.getElementById("roomNumber").value.trim();
+    const tripDate = document.getElementById("tripDate")?.value.trim();
+    const tripType = document.getElementById("tripType")?.value;
+    const hotelName = document.getElementById("hotelName")?.value.trim();
+    const roomNumber = document.getElementById("roomNumber")?.value.trim();
+    
     if (!tripDate) {
       showError('tripDate', 'Please select a trip date');
       isValid = false;
     } else {
       clearError('tripDate');
     }
+    
     if (!tripType) {
       showError('tripType', 'Please select a trip type');
       isValid = false;
@@ -230,12 +281,14 @@ function validateCurrentStep() {
       selectedTripType = tripType;
       clearError('tripType');
     }
+    
     if (!hotelName) {
       showError('hotelName', 'Please enter your hotel name');
       isValid = false;
     } else {
       clearError('hotelName');
     }
+    
     if (!roomNumber) {
       showError('roomNumber', 'Please enter your room number');
       isValid = false;
@@ -243,6 +296,7 @@ function validateCurrentStep() {
       clearError('roomNumber');
     }
   }
+  
   return isValid;
 }
 
@@ -290,98 +344,142 @@ function showToast(message, type = 'success') {
 
 // Loading spinner
 function showSpinner() {
-  document.getElementById('spinner').classList.remove('hidden');
-  document.getElementById('submitBtn').disabled = true;
+  const spinner = document.getElementById('spinner');
+  const submitBtn = document.getElementById('submitBtn');
+  if (spinner) spinner.classList.remove('hidden');
+  if (submitBtn) submitBtn.disabled = true;
 }
 
 function hideSpinner() {
-  document.getElementById('spinner').classList.add('hidden');
-  document.getElementById('submitBtn').disabled = false;
+  const spinner = document.getElementById('spinner');
+  const submitBtn = document.getElementById('submitBtn');
+  if (spinner) spinner.classList.add('hidden');
+  if (submitBtn) submitBtn.disabled = false;
 }
 
 // Update max infants based on adults count
 function updateInfantsMax() {
-  const adults = parseInt(document.getElementById('adults').value) || 0;
-  const infants = parseInt(document.getElementById('infants').value) || 0;
+  const adultsInput = document.getElementById('adults');
+  const infantsInput = document.getElementById('infants');
+  
+  if (!adultsInput || !infantsInput) return;
+  
+  const adults = parseInt(adultsInput.value) || 0;
+  const infants = parseInt(infantsInput.value) || 0;
   const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
+  
   if (infants > maxInfants) {
-    document.getElementById('infants').value = maxInfants;
+    infantsInput.value = maxInfants;
   }
 }
 
 // Initialize number input controls
 function initNumberControls() {
   // Adults controls (max 10, min 1)
-  document.getElementById('adultsPlus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('adults');
-    const currentValue = parseInt(input.value);
-    if (currentValue < MAX_PER_TYPE) {
-      input.value = currentValue + 1;
-      updateInfantsMax();
-    }
-  });
-  document.getElementById('adultsMinus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('adults');
-    const currentValue = parseInt(input.value);
-    if (currentValue > 1) {
-      input.value = currentValue - 1;
-      updateInfantsMax();
-    }
-  });
-
+  const adultsPlus = document.getElementById('adultsPlus');
+  const adultsMinus = document.getElementById('adultsMinus');
   
+  if (adultsPlus && adultsMinus) {
+    adultsPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('adults');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+        updateInfantsMax();
+      }
+    });
+    
+    adultsMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('adults');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 1) {
+        input.value = currentValue - 1;
+        updateInfantsMax();
+      }
+    });
+  }
 
   // Children under 12 controls
-  document.getElementById('childrenUnder12Plus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('childrenUnder12');
-    const currentValue = parseInt(input.value);
-    if (currentValue < 2) {
-      input.value = currentValue + 1;
-    }
-  });
-  document.getElementById('childrenUnder12Minus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('childrenUnder12');
-    const currentValue = parseInt(input.value);
-    if (currentValue > 0) {
-      input.value = currentValue - 1;
-    }
-  });
+  const childrenPlus = document.getElementById('childrenUnder12Plus');
+  const childrenMinus = document.getElementById('childrenUnder12Minus');
+  
+  if (childrenPlus && childrenMinus) {
+    childrenPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('childrenUnder12');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+      }
+    });
+    
+    childrenMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('childrenUnder12');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 0) {
+        input.value = currentValue - 1;
+      }
+    });
+  }
 
   // Infants controls
-  document.getElementById('infantsPlus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('infants');
-    const currentValue = parseInt(input.value);
-    const adults = parseInt(document.getElementById('adults').value);
-    const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
-    if (currentValue < maxInfants && currentValue < MAX_PER_TYPE) {
-      input.value = currentValue + 1;
-    }
-  });
-  document.getElementById('infantsMinus').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('infants');
-    const currentValue = parseInt(input.value);
-    if (currentValue > 0) {
-      input.value = currentValue - 1;
-    }
-  });
+  const infantsPlus = document.getElementById('infantsPlus');
+  const infantsMinus = document.getElementById('infantsMinus');
+  
+  if (infantsPlus && infantsMinus) {
+    infantsPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('infants');
+      const adultsInput = document.getElementById('adults');
+      if (!input || !adultsInput) return;
+      
+      const currentValue = parseInt(input.value);
+      const adults = parseInt(adultsInput.value);
+      const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
+      
+      if (currentValue < maxInfants && currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+      }
+    });
+    
+    infantsMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('infants');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 0) {
+        input.value = currentValue - 1;
+      }
+    });
+  }
 
   // Update trip type change
-  document.getElementById('tripType').addEventListener('change', function () {
-    selectedTripType = this.value;
-    if (currentStep === 3) updateSummary();
-  });
+  const tripTypeSelect = document.getElementById('tripType');
+  if (tripTypeSelect) {
+    tripTypeSelect.addEventListener('change', function() {
+      selectedTripType = this.value;
+      if (currentStep === 3) updateSummary();
+    });
+  }
 }
 
 // Form submission with enhanced error handling
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
+  
   try {
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
@@ -451,63 +549,109 @@ async function submitForm() {
 }
 
 // Initialize date picker
-const dateInput = document.getElementById('tripDate');
-flatpickr(dateInput, {
-  locale: "en",
-  dateFormat: "Y-m-d",
-  inline: false,
-  theme: "dark",
-  disableMobile: true,
-  disable: [
-    function (date) {
+function initDatePicker() {
+  const dateInput = document.getElementById('tripDate');
+  if (!dateInput) return;
+
+  flatpickr(dateInput, {
+    locale: "en",
+    dateFormat: "Y-m-d",
+    inline: false,
+    theme: "dark",
+    disableMobile: true,
+    disable: [
+      function (date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date <= today;
+      }
+    ],
+    onChange: function (selectedDates, dateStr, instance) {
+      console.log("Date selected:", dateStr);
+      calculateTotalPrice();
+    },
+    onDayCreate: function (dObj, dStr, fp, dayElem) {
+      const date = dayElem.dateObj;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return date <= today;
-    }
-  ],
-  onChange: function (selectedDates, dateStr, instance) {
-    console.log("Date selected:", dateStr);
-    calculateTotalPrice();
-  },
-  onDayCreate: function (dObj, dStr, fp, dayElem) {
-    const date = dayElem.dateObj;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-      if (flatpickr.compareDates(date, today) < 0) {
-        dayElem.classList.add("prev-day-disabled");
+      if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
+        if (flatpickr.compareDates(date, today) < 0) {
+          dayElem.classList.add("prev-day-disabled");
+        }
+      }
+      if (flatpickr.compareDates(date, today) === 0) {
+        dayElem.classList.add("today");
+      }
+    },
+    onReady: function (selectedDates, dateStr, instance) {
+      if (instance.calendarContainer) {
+        instance.calendarContainer.setAttribute('translate', 'no');
+        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
+        if (weekdaysElement) {
+          weekdaysElement.setAttribute('translate', 'no');
+        }
       }
     }
-    if (flatpickr.compareDates(date, today) === 0) {
-      dayElem.classList.add("today");
-    }
-  },
-  onReady: function (selectedDates, dateStr, instance) {
-    if (instance.calendarContainer) {
-      instance.calendarContainer.setAttribute('translate', 'no');
-      const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-      if (weekdaysElement) {
-        weekdaysElement.setAttribute('translate', 'no');
-      }
-    }
-  }
-});
+  });
+}
 
 // Initialize the application
 window.onload = function () {
+  // Initialize elements with null checks
+  if (!document.getElementById('adults')) {
+    document.getElementById('adults').value = 1;
+  }
+  if (!document.getElementById('childrenUnder12')) {
+    document.getElementById('childrenUnder12').value = 0;
+  }
+  if (!document.getElementById('infants')) {
+    document.getElementById('infants').value = 0;
+  }
+
   populateForm();
   initNumberControls();
-  document.getElementById('adults').value = 1;
-  document.getElementById('childrenUnder12').value = 0;
-  document.getElementById('infants').value = 0;
+  initDatePicker();
   fetchTripTypes();
+  
   if (iti) {
     iti.promise.then(() => {
-      const phoneValue = document.getElementById("phone").value;
+      const phoneValue = document.getElementById("phone")?.value;
       if (phoneValue) {
         iti.setNumber(phoneValue);
       }
+    }).catch(error => {
+      console.error("Phone input initialization failed:", error);
     });
   }
+  
   updateProgressBar();
+  
+  // Add event listeners for navigation buttons
+  const nextButtons = document.querySelectorAll('[data-next]');
+  const prevButtons = document.querySelectorAll('[data-prev]');
+  const submitButton = document.getElementById('submitBtn');
+  
+  nextButtons.forEach(button => {
+    button.addEventListener('click', nextStep);
+  });
+  
+  prevButtons.forEach(button => {
+    button.addEventListener('click', prevStep);
+  });
+  
+  if (submitButton) {
+    submitButton.addEventListener('click', submitForm);
+  }
 };
+
+// Add event listeners for input changes to update summary
+document.addEventListener('DOMContentLoaded', function() {
+  const inputsToWatch = ['adults', 'childrenUnder12', 'infants', 'tripDate', 'hotelName', 'roomNumber'];
+  
+  inputsToWatch.forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.addEventListener('change', updateSummary);
+    }
+  });
+});
