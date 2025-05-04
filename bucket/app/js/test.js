@@ -42,6 +42,9 @@ const stepIndicators = [
 let currentStep = 0;
 
 // Trip configuration
+const path = window.location.pathname;
+const match = path.match(/\/p\/(.*?)\.html/);
+let tripName = match && match[1] ? match[1] : '';
 let tripsData = {};
 let selectedTripType = "";
 const MAX_PER_TYPE = 10;
