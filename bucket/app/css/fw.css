@@ -20,3 +20,8 @@
 .pEnt {
   margin-top: 5px;
 }
+.mainF {
+    display: none;
+}
+
+.pTtl.itm{display:none;}
