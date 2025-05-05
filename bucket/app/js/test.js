@@ -532,6 +532,15 @@ async function submitForm() {
         orderId: refNumber,
         amount: formData.total,
         currency: formData.currency
+        metadata: {
+          customerName: bookingData.username,
+          customerEmail: bookingData.email,
+          customerPhone: bookingData.phone,
+          tripDetails: bookingData.tour,
+          tripDate: bookingData.tripDate,
+          hotel: bookingData.hotelName,
+          room: bookingData.roomNumber
+          }
       }),
     });
 
@@ -541,8 +550,35 @@ async function submitForm() {
     }
 
     const data = await response.json();
-    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get`;
 
+// Create URL object for safer parameter handling
+const kashierUrl = new URL('https://payments.kashier.io/');
+
+// Set required payment parameters
+kashierUrl.searchParams.set('merchantId', 'MID-33260-3');
+kashierUrl.searchParams.set('orderId', refNumber);
+kashierUrl.searchParams.set('amount', formData.total);
+kashierUrl.searchParams.set('currency', formData.currency);
+kashierUrl.searchParams.set('hash', data.hash);
+kashierUrl.searchParams.set('mode', 'live');
+kashierUrl.searchParams.set('merchantRedirect', 'https://www.discover-sharm.com/p/payment-status.html');
+kashierUrl.searchParams.set('failureRedirect', 'false');
+kashierUrl.searchParams.set('redirectMethod', 'get');
+
+// Add customer-facing information
+kashierUrl.searchParams.set('customer', formData.username);
+kashierUrl.searchParams.set('email', formData.email);
+kashierUrl.searchParams.set('description', `Booking for ${tripPName} (${selectedTripType})`);
+
+// For your internal reference (will appear in Kashier dashboard)
+kashierUrl.searchParams.set('metadata', JSON.stringify({
+  tripType: selectedTripType,
+  tripDate: formData.tripDate,
+  pax: `${formData.adults}A ${formData.childrenUnder12}C`
+}));
+
+// Get the final URL string
+const finalPaymentUrl = kashierUrl.toString();
     // Save to Firebase
     const bookingsRef = database.ref('trip-bookings');
     await bookingsRef.child(refNumber).set({
