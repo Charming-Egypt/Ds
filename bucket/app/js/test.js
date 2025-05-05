@@ -556,12 +556,7 @@ const metadata = {
   room: formData.roomNumber,
   adults: formData.adults,
   children: formData.childrenUnder12,
-  infants: formData.infants,
-   displayNotes: {
-    Trip: "Details",
-    tripName: "${tripPName} - ${selectedTripType}",
-    bookingDetails: "Private guide included"
-   }
+  infants: formData.infants
 };
 
 const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metaData=${encodedMetaData}`;
