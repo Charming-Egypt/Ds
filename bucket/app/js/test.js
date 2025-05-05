@@ -235,8 +235,8 @@ function updateSummary() {
       const childPriceUnder12 = Math.round(basePrice * 0.7);
       
       if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
-      if (summaryAdults) summaryAdults.textContent = `${adults} Adults X ${basePrice} EGP = ${(adults * basePrice).toFixed(2)} EGP`;
-      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Children X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
+      if (summaryAdults) summaryAdults.textContent = `${adults} = ${(adults * basePrice).toFixed(2)} EGP`;
+      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       if (summaryInfants) summaryInfants.textContent = `${infants} Infants (Free)`;
       
       // Show extra service if selected
@@ -244,7 +244,7 @@ function updateSummary() {
         const servicePrice = parseInt(tourTypes[selectedService]);
         const serviceTotal = (adults + childrenUnder12) * servicePrice;
         if (summaryService) {
-          summaryService.textContent = `${selectedService}: ${adults + childrenUnder12} X ${servicePrice} EGP = ${serviceTotal.toFixed(2)} EGP`;
+          summaryService.textContent = `${selectedService}: = ${serviceTotal.toFixed(2)} EGP`;
           summaryService.classList.remove('hidden');
         }
       } else {
