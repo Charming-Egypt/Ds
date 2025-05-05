@@ -599,6 +599,9 @@ async function submitForm() {
       failureRedirect: 'false',
       redirectMethod: 'get',
       enable3DS: 'true',
+      allowedMethods: 'card,wallet',
+      walletProvider: 'all',
+      walletDeepLink: 'true',
       metaData: JSON.stringify(metaData),
       notes: 'DISCOVER SHARM - THANK YOU FOR BOOKING WITH US !',
       interactionSource: 'Ecommerce'
