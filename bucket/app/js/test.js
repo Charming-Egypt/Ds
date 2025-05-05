@@ -1,4 +1,3 @@
-
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
@@ -503,6 +502,23 @@ async function submitForm() {
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
 
+    // Prepare metadata with display notes
+    const metaData = {
+      internalData: {
+        bookingRef: refNumber,
+        userId: document.getElementById("uid")?.value || "guest",
+        agent: "website"
+      },
+      displayNotes: {
+        "Tour Package": `${tripPName} - ${selectedTripType}`,
+        "Trip Date": document.getElementById("tripDate").value,
+        "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
+        "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
+        "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
+        "Contact Phone": iti.getNumber()
+      }
+    };
+
     const formData = {
       refNumber,
       username: sanitizeInput(document.getElementById("username").value),
@@ -520,7 +536,8 @@ async function submitForm() {
       childrenUnder12,
       infants,
       currency: 'EGP',
-      total: calculateTotalPrice()
+      total: calculateTotalPrice(),
+      metaData // Include in Firebase record
     };
 
     // Generate payment hash
@@ -531,41 +548,46 @@ async function submitForm() {
         merchantId: 'MID-33260-3',
         orderId: refNumber,
         amount: formData.total,
-        currency: formData.currency
-        
+        currency: formData.currency,
+        metaData: metaData // Pass metadata to hash generation
       }),
     });
-    const metaData = {
-  // For your backend reference
-  bookingRef: refNumber,
-  tripName: tripPName,
-  tripType: selectedTripType,
-  customerEmail: document.getElementById("customerEmail").value,
-  
-  // Display notes (shown during checkout)
-  displayNotes: {
-    "Booking Reference": refNumber,
-    "Tour Package": `${tripPName} - ${selectedTripType}`,
-    "Hotel": document.getElementById("hotelName").value,
-    "Guests": `${adults} Adults, ${childrenUnder12} Children`
-  }
-};
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Payment processing failed');
     }
+
     const data = await response.json();
-    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metaData=${encodeURIComponent(JSON.stringify(metaData))}&notes=Non-refundable deposit`;
-            
-      // Save to Firebase
-    const bookingsRef = database.ref('trip-bookings');
-    await bookingsRef.child(refNumber).set({
-      ...formData,
-      paymenturl: kashierUrl
+    
+    // Construct payment URL with all parameters
+    const paymentParams = new URLSearchParams({
+      merchantId: 'MID-33260-3',
+      orderId: refNumber,
+      amount: formData.total,
+      currency: formData.currency,
+      hash: data.hash,
+      mode: 'live',
+      merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
+      failureRedirect: 'false',
+      redirectMethod: 'get',
+      enable3DS: 'true',
+      metaData: JSON.stringify(metaData),
+      notes: 'Egypt Tours Booking - Thank you!',
+      display: 'popup',
+      interactionSource: 'Ecommerce'
     });
 
-    // Store user data in sessionStorage
+    const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
+
+    // Save complete booking to Firebase
+    await database.ref('trip-bookings').child(refNumber).set({
+      ...formData,
+      paymenturl: kashierUrl,
+      metaData // Store metadata separately for easy access
+    });
+
+    // Store user data in session
     sessionStorage.setItem("username", formData.username);
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
@@ -574,6 +596,7 @@ async function submitForm() {
     setTimeout(() => {
       window.location.href = kashierUrl;
     }, 1500);
+    
   } catch (error) {
     console.error('Submission Error:', error);
     showToast(`Error: ${error.message || 'Failed to process booking. Please try again.'}`, 'error');
