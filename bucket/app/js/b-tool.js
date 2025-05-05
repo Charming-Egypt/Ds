@@ -235,8 +235,8 @@ function updateSummary() {
       const childPriceUnder12 = Math.round(basePrice * 0.7);
       
       if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
-      if (summaryAdults) summaryAdults.textContent = `${adults} Adults = ${(adults * basePrice).toFixed(2)} EGP`;
-      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Children X  = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
+      if (summaryAdults) summaryAdults.textContent = `${adults} = ${(adults * basePrice).toFixed(2)} EGP`;
+      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       if (summaryInfants) summaryInfants.textContent = `${infants} Infants (Free)`;
       
       // Show extra service if selected
