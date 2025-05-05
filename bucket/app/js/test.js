@@ -573,8 +573,7 @@ async function submitForm() {
       redirectMethod: 'get',
       enable3DS: 'true',
       metaData: JSON.stringify(metaData),
-      notes: 'Egypt Tours Booking - Thank you!',
-      display: 'popup',
+      notes: 'DISCOVER SHARM - THANK YOU FOR BOOKING WITH US !',
       interactionSource: 'Ecommerce'
     });
 
