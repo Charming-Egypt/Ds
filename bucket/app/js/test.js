@@ -535,13 +535,28 @@ async function submitForm() {
         
       }),
     });
+    const metaData = {
+  // For your backend reference
+  bookingRef: refNumber,
+  tripName: tripPName,
+  tripType: selectedTripType,
+  customerEmail: document.getElementById("customerEmail").value,
+  
+  // Display notes (shown during checkout)
+  displayNotes: {
+    "Booking Reference": refNumber,
+    "Tour Package": `${tripPName} - ${selectedTripType}`,
+    "Hotel": document.getElementById("hotelName").value,
+    "Guests": `${adults} Adults, ${childrenUnder12} Children`
+  }
+};
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Payment processing failed');
     }
     const data = await response.json();
-    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get`;
+    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metaData=${encodeURIComponent(JSON.stringify(metaData))}&notes=Non-refundable deposit`;
             
       // Save to Firebase
     const bookingsRef = database.ref('trip-bookings');
