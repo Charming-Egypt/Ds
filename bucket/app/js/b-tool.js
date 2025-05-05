@@ -115,6 +115,7 @@ async function fetchAllTripData() {
     
     if (tripPName && allTripsData[tripPName]) {
       currentTrip = allTripsData[tripPName];
+      currentTrip.basePrice = currentTrip.price || 0;
       tourTypes = currentTrip.tourtype || {};
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
@@ -137,18 +138,22 @@ function populateTripTypeDropdown(tourTypes) {
     return;
   }
   
-  tripTypeSelect.innerHTML = '<option value="" disabled selected>Select trip type</option>';
+  tripTypeSelect.innerHTML = '';
+  
+  // Add default "No extra services" option
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = 'No extra services needed';
+  defaultOption.selected = true;
+  tripTypeSelect.appendChild(defaultOption);
   
   if (tourTypes && typeof tourTypes === 'object') {
     Object.keys(tourTypes).forEach(key => {
       const option = document.createElement('option');
       option.value = key;
-      option.textContent = `${key} - ${tourTypes[key]} EGP`;
+      option.textContent = `${key} - ${tourTypes[key]} EGP (per person)`;
       tripTypeSelect.appendChild(option);
     });
-  } else {
-    console.warn("No tour types found for this trip");
-    showToast("No trip types available for this destination.", 'warning');
   }
 }
 
@@ -165,15 +170,24 @@ function displayTripInfo(tripInfo) {
   }
 }
 
-// Form Functions
+// Price Calculation Functions
 function calculateTotalPrice() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+  const selectedService = document.getElementById('tripType').value;
   
-  if (!selectedTripType || !tourTypes[selectedTripType]) return 0;
+  if (!currentTrip.basePrice) return 0;
   
-  const adultPrice = parseInt(tourTypes[selectedTripType]);
-  return (adults * adultPrice) + (childrenUnder12 * Math.round(adultPrice * 0.7));
+  const basePrice = parseInt(currentTrip.basePrice);
+  let total = (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
+  
+  // Add extra services cost if selected
+  if (selectedService && tourTypes[selectedService]) {
+    const servicePrice = parseInt(tourTypes[selectedService]);
+    total += (adults + childrenUnder12) * servicePrice;
+  }
+  
+  return total;
 }
 
 function updateInfantsMax() {
@@ -198,6 +212,7 @@ function updateSummary() {
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
+    const selectedService = document.getElementById('tripType').value;
     
     const summaryDate = document.getElementById("summaryDate");
     const summaryHotel = document.getElementById("summaryHotel");
@@ -207,6 +222,7 @@ function updateSummary() {
     const summaryAdults = document.getElementById("summaryAdults");
     const summaryChildrenUnder12 = document.getElementById("summaryChildrenUnder12");
     const summaryInfants = document.getElementById("summaryInfants");
+    const summaryService = document.getElementById("summaryService");
     const totalPriceDisplay = document.getElementById("totalPriceDisplay");
     
     if (summaryDate) summaryDate.textContent = document.getElementById("tripDate").value || "Not specified";
@@ -214,14 +230,27 @@ function updateSummary() {
     if (summaryRoom) summaryRoom.textContent = sanitizeInput(document.getElementById("roomNumber").value) || "Not specified yet";
     if (summaryRef) summaryRef.textContent = refNumber;
     
-    if (selectedTripType && tourTypes[selectedTripType]) {
-      const adultPrice = parseInt(tourTypes[selectedTripType]);
-      const childPriceUnder12 = Math.round(adultPrice * 0.7);
+    if (currentTrip.basePrice) {
+      const basePrice = parseInt(currentTrip.basePrice);
+      const childPriceUnder12 = Math.round(basePrice * 0.7);
       
-      if (summaryTour) summaryTour.textContent = `${currentTrip.name} - ${selectedTripType}`;
-      if (summaryAdults) summaryAdults.textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
-      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
-      if (summaryInfants) summaryInfants.textContent = `${infants} (Free)`;
+      if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
+      if (summaryAdults) summaryAdults.textContent = `${adults} Adults = ${(adults * basePrice).toFixed(2)} EGP`;
+      if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Children X  = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
+      if (summaryInfants) summaryInfants.textContent = `${infants} Infants (Free)`;
+      
+      // Show extra service if selected
+      if (selectedService && tourTypes[selectedService]) {
+        const servicePrice = parseInt(tourTypes[selectedService]);
+        const serviceTotal = (adults + childrenUnder12) * servicePrice;
+        if (summaryService) {
+          summaryService.textContent = `${selectedService}: ${adults + childrenUnder12}  = ${serviceTotal.toFixed(2)} EGP`;
+          summaryService.classList.remove('hidden');
+        }
+      } else {
+        if (summaryService) summaryService.classList.add('hidden');
+      }
+      
       if (totalPriceDisplay) totalPriceDisplay.textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
     }
   }, 300);
@@ -330,7 +359,6 @@ function validateCurrentStep() {
     }
   } else if (currentStep === 1) {
     const tripDate = document.getElementById("tripDate")?.value.trim();
-    const tripType = document.getElementById("tripType")?.value;
     const hotelName = document.getElementById("hotelName")?.value.trim();
     const roomNumber = document.getElementById("roomNumber")?.value.trim();
     
@@ -339,14 +367,6 @@ function validateCurrentStep() {
       isValid = false;
     } else {
       clearError('tripDate');
-    }
-    
-    if (!tripType) {
-      showError('tripType', 'Please select a trip type');
-      isValid = false;
-    } else {
-      selectedTripType = tripType;
-      clearError('tripType');
     }
     
     if (!hotelName) {
@@ -501,6 +521,7 @@ async function submitForm() {
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
+    const selectedService = document.getElementById('tripType').value;
 
     // Prepare metadata with display notes
     const metaData = {
@@ -510,7 +531,8 @@ async function submitForm() {
         agent: "website"
       },
       displayNotes: {
-        "Tour Name": `${tripPName} - ${selectedTripType}`,
+        "Tour Name": `${tripPName}`,
+        "Extra Services": selectedService || "None",
         "Trip Date": document.getElementById("tripDate").value,
         "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
         "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
@@ -525,13 +547,14 @@ async function submitForm() {
       email: sanitizeInput(document.getElementById("customerEmail").value),
       phone: iti.getNumber(),
       tripDate: document.getElementById("tripDate").value,
-      tripType: selectedTripType,
-      tripPrice: tourTypes[selectedTripType],
+      tripType: selectedService || 'None',
+      tripTypePrice: selectedService ? tourTypes[selectedService] : 0,
+      basePrice: currentTrip.basePrice,
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
       timestamp: new Date().toISOString(),
       status: "pending",
-      tour: `${tripPName} - ${selectedTripType}`,
+      tour: tripPName,
       adults,
       childrenUnder12,
       infants,
@@ -549,7 +572,7 @@ async function submitForm() {
         orderId: refNumber,
         amount: formData.total,
         currency: formData.currency,
-        metaData: metaData // Pass metadata to hash generation
+        metaData: metaData
       }),
     });
 
@@ -583,7 +606,7 @@ async function submitForm() {
     await database.ref('trip-bookings').child(refNumber).set({
       ...formData,
       paymenturl: kashierUrl,
-      metaData // Store metadata separately for easy access
+      metaData
     });
 
     // Store user data in session
@@ -659,7 +682,7 @@ window.onload = async function () {
   updateProgressBar();
   
   // Add event listeners for input changes
-  const inputsToWatch = ['adults', 'childrenUnder12', 'infants', 'tripDate', 'hotelName', 'roomNumber'];
+  const inputsToWatch = ['adults', 'childrenUnder12', 'infants', 'tripDate', 'hotelName', 'roomNumber', 'tripType'];
   inputsToWatch.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
