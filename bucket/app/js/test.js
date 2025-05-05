@@ -546,7 +546,7 @@ async function submitForm() {
     // Construct Kashier URL with metadata
 const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
     
-const metadata = {
+const metaData = {
   customer_name: formData.username,
   customer_email: formData.email,
   booking_reference: refNumber,
