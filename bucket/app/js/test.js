@@ -543,24 +543,39 @@ async function submitForm() {
 
     const data = await response.json();
 
-    // Construct Kashier URL with metadata
-const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
-    
+// 1. First define the metadata object
 const metaData = {
+  // Kashier default fields (recommended for display)
   customer_name: formData.username,
   customer_email: formData.email,
-  booking_reference: refNumber,
-  trip_details: `${tripPName} - ${selectedTripType}`,
-  trip_date: formData.tripDate,
-  hotel: formData.hotelName,
-  room: formData.roomNumber,
-  adults: formData.adults,
-  children: formData.childrenUnder12,
-  infants: formData.infants
+  customer_phone: formData.phone,
+  order_reference: refNumber,
+  description: `Booking for ${tripPName} (${selectedTripType})`,
+    trip_date: formData.tripDate,
+    hotel: formData.hotelName,
+    room: formData.roomNumber,
+    adults: formData.adults,
+    children: formData.childrenUnder12,
+    infants: formData.infants,
+    total_price: formData.total
+  }
 };
 
-const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metaData=${encodedMetaData}`;
-    
+// 2. Then encode it
+const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
+
+// 3. Construct URL (with line breaks for readability)
+const kashierUrl = `https://payments.kashier.io/?
+  merchantId=MID-33260-3&
+  orderId=${refNumber}&
+  amount=${formData.total}&
+  currency=${formData.currency}&
+  hash=${data.hash}&
+  mode=live&
+  merchantRedirect=${encodeURIComponent("https://www.discover-sharm.com/p/payment-status.html")}&
+  failureRedirect=false&
+  redirectMethod=get&
+  metaData=${encodedMetaData}`.replace(/\s+/g, ''); // Remove whitespace
 
     
         
