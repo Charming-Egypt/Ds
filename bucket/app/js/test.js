@@ -510,12 +510,12 @@ async function submitForm() {
         agent: "website"
       },
       displayNotes: {
-        "Tour Package": `${tripPName} - ${selectedTripType}`,
+        "Tour Name": `${tripPName} - ${selectedTripType}`,
         "Trip Date": document.getElementById("tripDate").value,
         "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
         "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
         "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
-        "Contact Phone": iti.getNumber()
+        "Phone Number": iti.getNumber()
       }
     };
 
@@ -537,7 +537,7 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
-      metaData // Include in Firebase record
+      metaData
     };
 
     // Generate payment hash
