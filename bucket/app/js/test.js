@@ -544,7 +544,8 @@ async function submitForm() {
     const data = await response.json();
 
     // Construct Kashier URL with metadata
-
+const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
+    
 const metadata = {
   customer_name: formData.username,
   customer_email: formData.email,
@@ -555,10 +556,16 @@ const metadata = {
   room: formData.roomNumber,
   adults: formData.adults,
   children: formData.childrenUnder12,
-  infants: formData.infants
+  infants: formData.infants,
+   displayNotes: {
+    Trip: "Details",
+    tripName: "${tripPName} - ${selectedTripType}",
+    bookingDetails: "Private guide included"
+   }
 };
 
-const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metadata=${encodeURIComponent(JSON.stringify(metadata))}`;
+const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metaData=${encodedMetaData}`;
+    
 
     
         
