@@ -531,16 +531,8 @@ async function submitForm() {
         merchantId: 'MID-33260-3',
         orderId: refNumber,
         amount: formData.total,
-        currency: formData.currency,
-        metadata: {
-          kcustomerName: bookingData.username,
-          kcustomerEmail: bookingData.email,
-          kcustomerPhone: bookingData.phone,
-          ktripDetails: bookingData.tour,
-          ktripDate: bookingData.tripDate,
-          khotel: bookingData.hotelName,
-          kroom: bookingData.roomNumber
-          }
+        currency: formData.currency
+        
       }),
     });
 
@@ -554,15 +546,16 @@ async function submitForm() {
     // Construct Kashier URL with metadata
 
 const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get&metadata=${encodeURIComponent(JSON.stringify({
-      kcustomerName: formData.username,
-      kcustomerEmail: formData.email,
-      tripDetails: `${tripPName} - ${selectedTripType}`,
-      ktripDate: formData.tripDate,
-      khotel: formData.hotelName,
-      kroom: formData.roomNumber,
-      kadults: formData.adults,
-      kchildren: formData.childrenUnder12,
-      kinfants: formData.infants
+      customerName: formData.username,
+      customerEmail: formData.email,
+      customerPhone: formData.phone,
+      tripDetails: formData.tour,
+      tripDate: formData.tripDate,
+      hotel: formData.hotelName,
+      room: formData.roomNumber,
+      adults: formData.adults,
+      children: formData.childrenUnder12,
+      infants: formData.infants
     }))}`;
 
     
