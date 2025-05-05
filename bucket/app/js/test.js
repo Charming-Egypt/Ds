@@ -528,22 +528,26 @@ async function submitForm() {
     const infants = parseInt(document.getElementById('infants').value) || 0;
 
     // Prepare metadata with display notes
-    const metaData = {
-      internalData: {
-        bookingRef: refNumber,
-        userId: document.getElementById("uid")?.value || "guest",
-        agent: "website"
-      },
-      displayNotes: {
-        "Tour Name": currentTrip.name,
-        "Trip Date": document.getElementById("tripDate").value,
-        "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
-        "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
-        "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
-        "Phone Number": iti.getNumber(),
-        "Additional Services": selectedTripType || "None"
-      }
-    };
+    // In your submitForm() function:
+const metaData = {
+  internalData: {
+    bookingRef: refNumber,
+    userId: document.getElementById("uid")?.value || "guest",
+    agent: "website"
+  },
+  displayNotes: {
+    "Tour Name": currentTrip.name,
+    "Trip Date": document.getElementById("tripDate").value,
+    "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
+    "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
+    "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
+    "Phone Number": iti.getNumber(),
+    "Additional Services": selectedTripType || "None"
+  }
+};
+
+// Stringify with proper encoding
+const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
 
     const formData = {
       refNumber,
@@ -600,9 +604,7 @@ async function submitForm() {
       redirectMethod: 'get',
       enable3DS: 'true',
       allowedMethods: 'card,wallet',
-      walletProvider: 'all',
-      walletDeepLink: 'true',
-      metaData: JSON.stringify(metaData),
+      metaData: encodedMetaData,
       notes: 'DISCOVER SHARM - THANK YOU FOR BOOKING WITH US !',
       interactionSource: 'Ecommerce'
     });
