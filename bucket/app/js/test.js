@@ -1,3 +1,4 @@
+
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
@@ -11,20 +12,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-// Initialize phone input
-const phoneInput = document.querySelector("#phone");
-let iti;
-try {
-  iti = window.intlTelInput(phoneInput, {
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-    preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
-    separateDialCode: true,
-    initialCountry: "eg",
-    customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
-  });
-} catch (error) {
-  console.error("intlTelInput initialization failed:", error);
-}
+// Global variables
+let tripData = {};
+let currentTrip = {};
+let tourTypes = {};
+let selectedTripType = "";
+let iti; // For phone input
+const refNumber = generateReference();
+const MAX_PER_TYPE = 10;
+const MAX_INFANTS_PER_2_ADULTS = 2;
+
+// Get trip name from hidden input
+const tripNameElement = document.getElementById('tripName');
+let tripPName = tripNameElement ? tripNameElement.value : '';
 
 // DOM Elements
 const steps = [
@@ -41,19 +41,7 @@ const stepIndicators = [
 ];
 let currentStep = 0;
 
-// Trip configuration - Get trip name from hidden input
-const tripNameElement = document.getElementById('tripName');
-let tripPName = tripNameElement ? tripNameElement.value : '';
-if (!tripPName) {
-  console.error("Trip name not found. Please add a hidden input with id='tripName'");
-  showToast("Configuration error. Please contact support.", 'error');
-}
-let tripsData = {};
-let selectedTripType = "";
-const MAX_PER_TYPE = 10;
-const MAX_INFANTS_PER_2_ADULTS = 2;
-
-// Generate random reference
+// Utility Functions
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let result = '';
@@ -62,71 +50,148 @@ function generateReference() {
   }
   return 'DS_' + result;
 }
-const refNumber = generateReference();
 
-// Sanitize user input
 function sanitizeInput(input) {
   if (!input) return '';
   return input.toString().replace(/[<>]/g, "").trim();
 }
 
-// Fetch trip types from Firebase with retry logic
-async function fetchTripTypesWithRetry(retries = 3) {
+function showError(elementId, message) {
+  const element = document.getElementById(elementId);
+  const errorElement = document.getElementById(`${elementId}Error`);
+  if (element && errorElement) {
+    element.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+}
+
+function clearError(elementId) {
+  const element = document.getElementById(elementId);
+  const errorElement = document.getElementById(`${elementId}Error`);
+  if (element && errorElement) {
+    element.classList.remove('border-red-500');
+    errorElement.classList.add('hidden');
+  }
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement("div");
+  toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, 4000);
+}
+
+function showSpinner() {
+  const spinner = document.getElementById('spinner');
+  const submitBtn = document.getElementById('submitBtn');
+  if (spinner) spinner.classList.remove('hidden');
+  if (submitBtn) submitBtn.disabled = true;
+}
+
+function hideSpinner() {
+  const spinner = document.getElementById('spinner');
+  const submitBtn = document.getElementById('submitBtn');
+  if (spinner) spinner.classList.add('hidden');
+  if (submitBtn) submitBtn.disabled = false;
+}
+
+// Trip Data Functions
+async function fetchAllTripData() {
   try {
-    const snapshot = await database.ref(`trips/${tripPName}/tourtype`).once('value');
-    return snapshot.val();
-  } catch (error) {
-    if (retries > 0) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return fetchTripTypesWithRetry(retries - 1);
+    showSpinner();
+    const snapshot = await database.ref('trips').once('value');
+    const allTripsData = snapshot.val();
+    
+    if (!allTripsData) {
+      console.warn("No trip data found in Firebase.");
+      showToast("No trips available at the moment. Please check back later.", 'error');
+      return {};
     }
+    
+    tripData = allTripsData;
+    
+    if (tripPName && allTripsData[tripPName]) {
+      currentTrip = allTripsData[tripPName];
+      tourTypes = currentTrip.tourtype || {};
+      populateTripTypeDropdown(tourTypes);
+      displayTripInfo(currentTrip);
+    }
+    
+    return allTripsData;
+  } catch (error) {
+    console.error("Error fetching trip data:", error);
+    showToast("Failed to load trip data. Please refresh the page.", 'error');
     throw error;
+  } finally {
+    hideSpinner();
   }
 }
 
-// Fetch trip types
-async function fetchTripTypes() {
-  try {
-    if (!tripName) {
-      console.error("Cannot fetch trip types - trip name is empty");
-      return;
-    }
-    
-    tripsData = await fetchTripTypesWithRetry();
-    const tripTypeSelect = document.getElementById('tripType');
-    if (!tripTypeSelect) {
-      console.error("Trip type select element not found");
-      return;
-    }
-    
-    tripTypeSelect.innerHTML = '<option value="" disabled selected>Select trip type</option>';
-    if (tripsData && typeof tripsData === 'object') {
-      Object.keys(tripsData).forEach(key => {
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = `${key} - ${tripsData[key]} EGP`;
-        tripTypeSelect.appendChild(option);
-      });
-    } else {
-      console.warn("No trip types found in Firebase.");
-    }
-  } catch (error) {
-    console.error("Error fetching trip types:", error);
-    showToast("Failed to load trip types. Please refresh the page.", 'error');
+function populateTripTypeDropdown(tourTypes) {
+  const tripTypeSelect = document.getElementById('tripType');
+  if (!tripTypeSelect) {
+    console.error("Trip type select element not found");
+    return;
+  }
+  
+  tripTypeSelect.innerHTML = '<option value="" disabled selected>Select trip type</option>';
+  
+  if (tourTypes && typeof tourTypes === 'object') {
+    Object.keys(tourTypes).forEach(key => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = `${key} - ${tourTypes[key]} EGP`;
+      tripTypeSelect.appendChild(option);
+    });
+  } else {
+    console.warn("No tour types found for this trip");
+    showToast("No trip types available for this destination.", 'warning');
   }
 }
 
-// Calculate total price
+function displayTripInfo(tripInfo) {
+  const tripTitle = document.getElementById('trip-title');
+  if (tripTitle && tripInfo.name) {
+    tripTitle.textContent = tripInfo.name;
+  }
+  
+  const tripImage = document.getElementById('trip-image');
+  if (tripImage && tripInfo.image) {
+    tripImage.src = tripInfo.image;
+    tripImage.alt = tripInfo.description || 'Trip image';
+  }
+}
+
+// Form Functions
 function calculateTotalPrice() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-  if (!selectedTripType || !tripsData[selectedTripType]) return 0;
-  const adultPrice = parseInt(tripsData[selectedTripType]);
-  return (adults * adultPrice) +
-         (childrenUnder12 * Math.round(adultPrice * 0.7));
+  
+  if (!selectedTripType || !tourTypes[selectedTripType]) return 0;
+  
+  const adultPrice = parseInt(tourTypes[selectedTripType]);
+  return (adults * adultPrice) + (childrenUnder12 * Math.round(adultPrice * 0.7));
 }
 
-// Update summary with debounce
+function updateInfantsMax() {
+  const adultsInput = document.getElementById('adults');
+  const infantsInput = document.getElementById('infants');
+  
+  if (!adultsInput || !infantsInput) return;
+  
+  const adults = parseInt(adultsInput.value) || 0;
+  const infants = parseInt(infantsInput.value) || 0;
+  const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
+  
+  if (infants > maxInfants) {
+    infantsInput.value = maxInfants;
+  }
+}
+
 let debounceTimer;
 function updateSummary() {
   clearTimeout(debounceTimer);
@@ -150,11 +215,11 @@ function updateSummary() {
     if (summaryRoom) summaryRoom.textContent = sanitizeInput(document.getElementById("roomNumber").value) || "Not specified yet";
     if (summaryRef) summaryRef.textContent = refNumber;
     
-    if (selectedTripType && tripsData[selectedTripType]) {
-      const adultPrice = parseInt(tripsData[selectedTripType]);
+    if (selectedTripType && tourTypes[selectedTripType]) {
+      const adultPrice = parseInt(tourTypes[selectedTripType]);
       const childPriceUnder12 = Math.round(adultPrice * 0.7);
       
-      if (summaryTour) summaryTour.textContent = `${tripName} - ${selectedTripType}`;
+      if (summaryTour) summaryTour.textContent = `${currentTrip.name} - ${selectedTripType}`;
       if (summaryAdults) summaryAdults.textContent = `${adults} X ${adultPrice} EGP = ${(adults * adultPrice).toFixed(2)} EGP`;
       if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} X ${childPriceUnder12} EGP = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       if (summaryInfants) summaryInfants.textContent = `${infants} (Free)`;
@@ -163,7 +228,35 @@ function updateSummary() {
   }, 300);
 }
 
-// Form navigation
+function populateForm() {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  
+  const username = getCookie("username") || "";
+  const email = getCookie("email") || "";
+  const phone = getCookie("phone") || "";
+  const uid = getCookie("uid") || "";
+  
+  if (username && document.getElementById("username")) {
+    document.getElementById("username").value = username;
+  }
+  if (email && document.getElementById("customerEmail")) {
+    document.getElementById("customerEmail").value = email;
+  }
+  if (uid && document.getElementById("uid")) {
+    document.getElementById("uid").value = uid;
+  }
+  
+  if (phone && iti && document.getElementById("phone")) {
+    document.getElementById("phone").value = phone;
+    iti.setNumber(phone);
+  }
+}
+
+// Navigation Functions
 function nextStep() {
   if (!validateCurrentStep()) return;
   steps[currentStep].classList.add("hidden");
@@ -192,44 +285,20 @@ function prevStep() {
   updateProgressBar();
 }
 
-// Populate form from cookies
-function populateForm() {
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  
-  // Get values from cookies
-  const username = getCookie("username") || "";
-  const email = getCookie("email") || "";
-  const phone = getCookie("phone") || "";
-  const uid = getCookie("uid") || "";
-  
-  // Set form values
-  if (username && document.getElementById("username")) {
-    document.getElementById("username").value = username;
-  }
-  if (email && document.getElementById("customerEmail")) {
-    document.getElementById("customerEmail").value = email;
-  }
-  if (uid && document.getElementById("uid")) {
-    document.getElementById("uid").value = uid;
-  }
-  
-  // Special handling for phone input
-  if (phone && iti && document.getElementById("phone")) {
-    document.getElementById("phone").value = phone;
-    iti.setNumber(phone);
+function updateProgressBar() {
+  const progress = document.getElementById("progressBar");
+  if (progress) {
+    const progressPercentage = (currentStep / (steps.length - 1)) * 100;
+    progress.style.width = `${progressPercentage}%`;
+    progress.setAttribute('aria-valuenow', progressPercentage);
+    progress.setAttribute('aria-valuetext', `Step ${currentStep + 1} of ${steps.length}`);
   }
 }
 
-// Form validation
 function validateCurrentStep() {
   let isValid = true;
   
   if (currentStep === 0) {
-    // Validate personal info
     const username = document.getElementById("username")?.value.trim();
     const email = document.getElementById("customerEmail")?.value.trim();
     
@@ -261,7 +330,6 @@ function validateCurrentStep() {
       }
     }
   } else if (currentStep === 1) {
-    // Validate trip details
     const tripDate = document.getElementById("tripDate")?.value.trim();
     const tripType = document.getElementById("tripType")?.value;
     const hotelName = document.getElementById("hotelName")?.value.trim();
@@ -300,82 +368,9 @@ function validateCurrentStep() {
   return isValid;
 }
 
-// Update progress bar with accessibility
-function updateProgressBar() {
-  const progress = document.getElementById("progressBar");
-  if (progress) {
-    const progressPercentage = (currentStep / (steps.length - 1)) * 100;
-    progress.style.width = `${progressPercentage}%`;
-    progress.setAttribute('aria-valuenow', progressPercentage);
-    progress.setAttribute('aria-valuetext', `Step ${currentStep + 1} of ${steps.length}`);
-  }
-}
-
-// Error handling
-function showError(elementId, message) {
-  const element = document.getElementById(elementId);
-  const errorElement = document.getElementById(`${elementId}Error`);
-  if (element && errorElement) {
-    element.classList.add('border-red-500');
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
-  }
-}
-
-function clearError(elementId) {
-  const element = document.getElementById(elementId);
-  const errorElement = document.getElementById(`${elementId}Error`);
-  if (element && errorElement) {
-    element.classList.remove('border-red-500');
-    errorElement.classList.add('hidden');
-  }
-}
-
-// Toast notifications
-function showToast(message, type = 'success') {
-  const toast = document.createElement("div");
-  toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
-}
-
-// Loading spinner
-function showSpinner() {
-  const spinner = document.getElementById('spinner');
-  const submitBtn = document.getElementById('submitBtn');
-  if (spinner) spinner.classList.remove('hidden');
-  if (submitBtn) submitBtn.disabled = true;
-}
-
-function hideSpinner() {
-  const spinner = document.getElementById('spinner');
-  const submitBtn = document.getElementById('submitBtn');
-  if (spinner) spinner.classList.add('hidden');
-  if (submitBtn) submitBtn.disabled = false;
-}
-
-// Update max infants based on adults count
-function updateInfantsMax() {
-  const adultsInput = document.getElementById('adults');
-  const infantsInput = document.getElementById('infants');
-  
-  if (!adultsInput || !infantsInput) return;
-  
-  const adults = parseInt(adultsInput.value) || 0;
-  const infants = parseInt(infantsInput.value) || 0;
-  const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
-  
-  if (infants > maxInfants) {
-    infantsInput.value = maxInfants;
-  }
-}
-
-// Initialize number input controls
+// Number Controls
 function initNumberControls() {
-  // Adults controls (max 10, min 1)
+  // Adults controls
   const adultsPlus = document.getElementById('adultsPlus');
   const adultsMinus = document.getElementById('adultsMinus');
   
@@ -465,7 +460,7 @@ function initNumberControls() {
     });
   }
 
-  // Update trip type change
+  // Trip type change
   const tripTypeSelect = document.getElementById('tripType');
   if (tripTypeSelect) {
     tripTypeSelect.addEventListener('change', function() {
@@ -475,7 +470,30 @@ function initNumberControls() {
   }
 }
 
-// Form submission with enhanced error handling
+// Date Picker
+function initDatePicker() {
+  const dateInput = document.getElementById('tripDate');
+  if (!dateInput) return;
+
+  flatpickr(dateInput, {
+    locale: "en",
+    dateFormat: "Y-m-d",
+    inline: false,
+    theme: "dark",
+    disableMobile: true,
+    disable: [
+      function(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date <= today;
+      }],
+    onChange: function(selectedDates, dateStr, instance) {
+      updateSummary();
+    }
+  });
+}
+
+// Form Submission
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
@@ -492,12 +510,12 @@ async function submitForm() {
       phone: iti.getNumber(),
       tripDate: document.getElementById("tripDate").value,
       tripType: selectedTripType,
-      tripPrice: tripsData[selectedTripType],
+      tripPrice: tourTypes[selectedTripType],
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
       timestamp: new Date().toISOString(),
       status: "pending",
-      tour: `${tripName} - ${selectedTripType}`,
+      tour: `${tripPName} - ${selectedTripType}`,
       adults,
       childrenUnder12,
       infants,
@@ -548,85 +566,48 @@ async function submitForm() {
   }
 }
 
-// Initialize date picker
-function initDatePicker() {
-  const dateInput = document.getElementById('tripDate');
-  if (!dateInput) return;
-
-     // Initialize Flatpickr
-            flatpickr(dateInput, {
-                locale: "en", // Keep this
-                dateFormat: "Y-m-d",
-                inline: false,
-                theme: "dark",
-                disableMobile: true,
-                disable: [
-                    function(date) {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date <= today;
-                    }],
-                onChange: function(selectedDates, dateStr, instance) {
-                    console.log("Date selected:", dateStr);
-                    calculateTotal();
-                },
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const date = dayElem.dateObj;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-                        // Disable past dates relative to today
-                        if (flatpickr.compareDates(date, today) < 0) {
-                            dayElem.classList.add("prev-day-disabled");
-                        }
-                    }
-
-
-                    if (flatpickr.compareDates(date, today) === 0) {
-                        dayElem.classList.add("today");
-                    }
-                },
-
-                onReady: function(selectedDates, dateStr, instance) {
-                    console.log("Flatpickr calendar ready. Applying translate='no' attribute(s).");
-                    if (instance.calendarContainer) {
-                        instance.calendarContainer.setAttribute('translate', 'no');
-                        console.log("Added translate='no' to Flatpickr calendar container.");
-
-                        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-                        if (weekdaysElement) {
-                            weekdaysElement.setAttribute('translate', 'no');
-                            console.log("Added translate='no' to .flatpickr-weekdays element.");
-                        } else {
-                            console.warn(".flatpickr-weekdays element not found inside container.");
-                        }
-                    } else {
-                        console.error("Flatpickr calendarContainer not found onReady.");
-                    }
-                }
-            });
-            console.log("Flatpickr initialized with English locale, disable function for today and past, and translate='no' applied onReady.");
-};
-
 // Initialize the application
-window.onload = function () {
-  // Initialize elements with null checks
-  if (!document.getElementById('adults')) {
+window.onload = async function () {
+  // Initialize phone input
+  const phoneInput = document.querySelector("#phone");
+  if (phoneInput) {
+    try {
+      iti = window.intlTelInput(phoneInput, {
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
+        separateDialCode: true,
+        initialCountry: "eg",
+        customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
+      });
+    } catch (error) {
+      console.error("intlTelInput initialization failed:", error);
+    }
+  }
+
+  // Initialize form values
+  if (document.getElementById('adults')) {
     document.getElementById('adults').value = 1;
   }
-  if (!document.getElementById('childrenUnder12')) {
+  if (document.getElementById('childrenUnder12')) {
     document.getElementById('childrenUnder12').value = 0;
   }
-  if (!document.getElementById('infants')) {
+  if (document.getElementById('infants')) {
     document.getElementById('infants').value = 0;
   }
 
+  // Initialize components
   populateForm();
   initNumberControls();
   initDatePicker();
-  fetchTripTypes();
   
+  // Fetch trip data
+  try {
+    await fetchAllTripData();
+  } catch (error) {
+    console.error("Initialization failed:", error);
+  }
+  
+  // Initialize phone input value if available
   if (iti) {
     iti.promise.then(() => {
       const phoneValue = document.getElementById("phone")?.value;
@@ -640,32 +621,12 @@ window.onload = function () {
   
   updateProgressBar();
   
-  // Add event listeners for navigation buttons
-  const nextButtons = document.querySelectorAll('[data-next]');
-  const prevButtons = document.querySelectorAll('[data-prev]');
-  const submitButton = document.getElementById('submitBtn');
-  
-  nextButtons.forEach(button => {
-    button.addEventListener('click', nextStep);
-  });
-  
-  prevButtons.forEach(button => {
-    button.addEventListener('click', prevStep);
-  });
-  
-  if (submitButton) {
-    submitButton.addEventListener('click', submitForm);
-  }
-};
-
-// Add event listeners for input changes to update summary
-document.addEventListener('DOMContentLoaded', function() {
+  // Add event listeners for input changes
   const inputsToWatch = ['adults', 'childrenUnder12', 'infants', 'tripDate', 'hotelName', 'roomNumber'];
-  
   inputsToWatch.forEach(id => {
     const element = document.getElementById(id);
     if (element) {
       element.addEventListener('change', updateSummary);
     }
   });
-});
+};
