@@ -43,8 +43,8 @@ let currentStep = 0;
 
 // Trip configuration - Get trip name from hidden input
 const tripNameElement = document.getElementById('tripName');
-let tripName = tripNameElement ? tripNameElement.value : '';
-if (!tripName) {
+let tripPName = tripNameElement ? tripNameElement.value : '';
+if (!tripPName) {
   console.error("Trip name not found. Please add a hidden input with id='tripName'");
   showToast("Configuration error. Please contact support.", 'error');
 }
@@ -73,7 +73,7 @@ function sanitizeInput(input) {
 // Fetch trip types from Firebase with retry logic
 async function fetchTripTypesWithRetry(retries = 3) {
   try {
-    const snapshot = await database.ref(`trips/${tripName}/tourtype`).once('value');
+    const snapshot = await database.ref(`trips/${tripPName}/tourtype`).once('value');
     return snapshot.val();
   } catch (error) {
     if (retries > 0) {
