@@ -540,46 +540,9 @@ async function submitForm() {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Payment processing failed');
     }
-
     const data = await response.json();
-
-// 1. FIRST define the metadata object
-const metaData = {
-  // Standard Kashier fields (recommended for display)
-  customer_name: formData.username,
-  customer_email: formData.email,
-  customer_phone: formData.phone,
-  order_reference: refNumber,
-  description: `Booking for ${tripPName} (${selectedTripType})`,
-
-  // Custom booking details
-  trip_date: formData.tripDate,
-  hotel: formData.hotelName,
-  room: formData.roomNumber,
-  adults: formData.adults,
-  children: formData.childrenUnder12,
-  infants: formData.infants
-};
-
-// 2. THEN encode it
-const encodedMetaData = encodeURIComponent(JSON.stringify(metaData));
-
-// 3. Construct the URL (with proper encoding for all parameters)
-const kashierUrl = new URL('https://payments.kashier.io/');
-kashierUrl.searchParams.append('merchantId', 'MID-33260-3');
-kashierUrl.searchParams.append('orderId', refNumber);
-kashierUrl.searchParams.append('amount', formData.total.toString());
-kashierUrl.searchParams.append('currency', formData.currency);
-kashierUrl.searchParams.append('hash', data.hash);
-kashierUrl.searchParams.append('mode', 'live');
-kashierUrl.searchParams.append('merchantRedirect', 'https://www.discover-sharm.com/p/payment-status.html');
-kashierUrl.searchParams.append('failureRedirect', 'false');
-kashierUrl.searchParams.append('redirectMethod', 'get');
-kashierUrl.searchParams.append('metaData', encodedMetaData);
-
-// Get the final URL string
-const finalPaymentUrl = kashierUrl.toString();
-        
+    const kashierUrl = `https://payments.kashier.io/?merchantId=MID-33260-3&orderId=${refNumber}&amount=${formData.total}&currency=${formData.currency}&hash=${data.hash}&mode=live&merchantRedirect=https://www.discover-sharm.com/p/payment-status.html&failureRedirect=false&redirectMethod=get`;
+            
       // Save to Firebase
     const bookingsRef = database.ref('trip-bookings');
     await bookingsRef.child(refNumber).set({
