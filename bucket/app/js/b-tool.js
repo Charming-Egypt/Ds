@@ -120,7 +120,7 @@ async function fetchAllTripData() {
       currentTrip = allTripsData[tripPName];
       currentTrip.basePrice = currentTrip.price || 0;
       tourTypes = currentTrip.tourtype || {};
-      tripOwnerId = tripInfo.owner || '';
+      tripOwnerId = currentTrip.owner || '';
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
     }
