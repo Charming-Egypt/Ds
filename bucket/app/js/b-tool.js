@@ -10,6 +10,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
+const auth = firebase.auth();
 
 // Global variables
 let tripData = {};
@@ -18,6 +19,8 @@ let tourTypes = {};
 let selectedTripType = "";
 let iti; // For phone input
 const refNumber = generateReference();
+let currentUserUid = '';
+let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_2_ADULTS = 2;
 
@@ -117,6 +120,7 @@ async function fetchAllTripData() {
       currentTrip = allTripsData[tripPName];
       currentTrip.basePrice = currentTrip.price || 0;
       tourTypes = currentTrip.tourtype || {};
+      tripOwnerId = tripInfo.owner || '';
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
     }
@@ -523,23 +527,7 @@ async function submitForm() {
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
 
-    // Prepare metadata with display notes
-    const metaData = {
-      internalData: {
-        bookingRef: refNumber,
-        userId: document.getElementById("uid")?.value || "guest",
-        agent: "website"
-      },
-      displayNotes: {
-        "Tour Name": `${tripPName}`,
-        "Extra Services": selectedService || "None",
-        "Trip Date": document.getElementById("tripDate").value,
-        "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
-        "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
-        "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
-        "Phone Number": iti.getNumber()
-      }
-    };
+    
 
     const formData = {
       refNumber,
@@ -560,6 +548,8 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
+      uid: currentUserUid,
+      owner: tripOwnerId
     
     };
 
@@ -648,6 +638,16 @@ window.onload = async function () {
   if (document.getElementById('infants')) {
     document.getElementById('infants').value = 0;
   }
+
+auth.onAuthStateChanged((user) => {
+    if (user) {
+      currentUserUid = user.uid;
+    } else {
+      currentUserUid = 'anonymous';
+    }
+  });
+
+  
 
   // Initialize components
   populateForm();
