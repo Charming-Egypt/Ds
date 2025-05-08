@@ -560,7 +560,7 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
-      metaData
+    
     };
 
     // Generate payment hash
@@ -571,8 +571,7 @@ async function submitForm() {
         merchantId: 'MID-33260-3',
         orderId: refNumber,
         amount: formData.total,
-        currency: formData.currency,
-        metaData: metaData
+        currency: 'EGP',
       }),
     });
 
@@ -588,16 +587,12 @@ async function submitForm() {
       merchantId: 'MID-33260-3',
       orderId: refNumber,
       amount: formData.total,
-      currency: formData.currency,
+      currency: 'EGP',
       hash: data.hash,
       mode: 'live',
       merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
       failureRedirect: 'false',
-      redirectMethod: 'get',
-      enable3DS: 'true',
-      metaData: JSON.stringify(metaData),
-      notes: 'DISCOVER SHARM - THANK YOU FOR BOOKING WITH US !',
-      interactionSource: 'Ecommerce'
+      redirectMethod: 'get'
     });
 
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
@@ -606,7 +601,6 @@ async function submitForm() {
     await database.ref('trip-bookings').child(refNumber).set({
       ...formData,
       paymenturl: kashierUrl,
-      metaData
     });
 
     // Store user data in session
