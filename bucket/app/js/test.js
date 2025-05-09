@@ -527,7 +527,7 @@ async function getUserRole(uid) {
   }
 }
 
-// Form Submission
+// Form Submission - FINAL WORKING VERSION
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
@@ -541,12 +541,17 @@ async function submitForm() {
     const userRole = await getUserRole(user.uid);
     currentUserUid = user.uid;
 
+    // Verify user has permission to create bookings
+    if (!['admin', 'moderator', 'user'].includes(userRole)) {
+      throw new Error('You do not have permission to create bookings');
+    }
+
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
 
-    // Create the booking data object
+    // Create complete booking data object
     const bookingData = {
       refNumber,
       username: sanitizeInput(document.getElementById("username").value),
@@ -567,9 +572,38 @@ async function submitForm() {
       currency: 'EGP',
       total: calculateTotalPrice(),
       uid: user.uid,
-      // Set owner based on user role
-      owner: userRole === 'moderator' ? user.uid : tripOwnerId
+      // Critical fix: Set owner based on user role
+      owner: userRole === 'moderator' ? user.uid : (tripOwnerId || user.uid)
     };
+
+    // Validate all required fields
+    const requiredFields = {
+      'tour': 'string',
+      'username': 'string',
+      'tripDate': 'string',
+      'total': 'number',
+      'status': 'string',
+      'timestamp': 'number',
+      'uid': 'string',
+      'owner': 'string'
+    };
+
+    for (const [field, type] of Object.entries(requiredFields)) {
+      if (bookingData[field] === undefined || bookingData[field] === null) {
+        throw new Error(`Missing required field: ${field}`);
+      }
+      if (type === 'number' && isNaN(bookingData[field])) {
+        throw new Error(`Invalid value for ${field}: must be a number`);
+      }
+      if (type === 'string' && typeof bookingData[field] !== 'string') {
+        throw new Error(`Invalid value for ${field}: must be a string`);
+      }
+    }
+
+    // Validate status value
+    if (!['pending', 'confirmed', 'cancelled'].includes(bookingData.status)) {
+      throw new Error('Invalid status value');
+    }
 
     // Generate payment hash
     const response = await fetch('https://api.discover-sharm.com/.netlify/functions/generate-hash', {
@@ -587,7 +621,7 @@ async function submitForm() {
       throw new Error('Payment processing failed');
     }
 
-    const data = await response.json();
+    const paymentData = await response.json();
     
     // Add payment URL to booking data
     bookingData.paymenturl = `https://payments.kashier.io/?${new URLSearchParams({
@@ -595,7 +629,7 @@ async function submitForm() {
       orderId: refNumber,
       amount: bookingData.total,
       currency: 'EGP',
-      hash: data.hash,
+      hash: paymentData.hash,
       mode: 'live',
       merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
       failureRedirect: 'false',
@@ -655,13 +689,11 @@ window.onload = async function () {
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUserUid = user.uid;
-      // Check if user is admin or moderator
       const role = await getUserRole(user.uid);
-      if (role === 'admin' || role === 'moderator') {
-        // Show admin controls if needed
-      }
+      console.log(`User authenticated with role: ${role}`);
     } else {
       currentUserUid = 'anonymous';
+      console.log("User not authenticated");
     }
   });
 
