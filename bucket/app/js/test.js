@@ -10,6 +10,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
+const auth = firebase.auth();
 
 // Global variables
 let tripData = {};
@@ -18,6 +19,8 @@ let tourTypes = {};
 let selectedTripType = "";
 let iti; // For phone input
 const refNumber = generateReference();
+let currentUserUid = '';
+let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_2_ADULTS = 2;
 
@@ -117,6 +120,7 @@ async function fetchAllTripData() {
       currentTrip = allTripsData[tripPName];
       currentTrip.basePrice = currentTrip.price || 0;
       tourTypes = currentTrip.tourtype || {};
+      tripOwnerId = currentTrip.owner || '';
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
     }
@@ -244,7 +248,7 @@ function updateSummary() {
         const servicePrice = parseInt(tourTypes[selectedService]);
         const serviceTotal = (adults + childrenUnder12) * servicePrice;
         if (summaryService) {
-          summaryService.textContent = `${selectedService}: = ${serviceTotal.toFixed(2)} EGP`;
+          summaryService.textContent = `${selectedService}: ${adults + childrenUnder12}  = ${serviceTotal.toFixed(2)} EGP`;
           summaryService.classList.remove('hidden');
         }
       } else {
@@ -512,34 +516,35 @@ function initDatePicker() {
   });
 }
 
+// User Role Management
+async function getUserRole(uid) {
+  try {
+    const snapshot = await database.ref('egy_user').child(uid).child('role').once('value');
+    return snapshot.val() || 'user';
+  } catch (error) {
+    console.error("Error getting user role:", error);
+    return 'user';
+  }
+}
+
 // Form Submission
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
   
   try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const userRole = await getUserRole(user.uid);
+    currentUserUid = user.uid;
+
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
-
-    // Prepare metadata with display notes
-    const metaData = {
-      internalData: {
-        bookingRef: refNumber,
-        userId: document.getElementById("uid")?.value || "guest",
-        agent: "website"
-      },
-      displayNotes: {
-        "Tour Name": `${tripPName}`,
-        "Extra Services": selectedService || "None",
-        "Trip Date": document.getElementById("tripDate").value,
-        "Hotel Name": sanitizeInput(document.getElementById("hotelName").value),
-        "Room Number": sanitizeInput(document.getElementById("roomNumber").value),
-        "Group Composition": `${adults} Adults, ${childrenUnder12} Children, ${infants} Infants`,
-        "Phone Number": iti.getNumber()
-      }
-    };
 
     const formData = {
       refNumber,
@@ -552,7 +557,7 @@ async function submitForm() {
       basePrice: currentTrip.basePrice,
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
-      timestamp: new Date().toISOString(),
+      timestamp: Date.now(),
       status: "pending",
       tour: tripPName,
       adults,
@@ -560,7 +565,8 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
-      metaData
+      uid: user.uid,
+      owner: tripOwnerId // This is set from currentTrip.owner when fetching trip data
     };
 
     // Generate payment hash
@@ -571,8 +577,7 @@ async function submitForm() {
         merchantId: 'MID-33260-3',
         orderId: refNumber,
         amount: formData.total,
-        currency: formData.currency,
-        metaData: metaData
+        currency: 'EGP',
       }),
     });
 
@@ -588,16 +593,12 @@ async function submitForm() {
       merchantId: 'MID-33260-3',
       orderId: refNumber,
       amount: formData.total,
-      currency: formData.currency,
+      currency: 'EGP',
       hash: data.hash,
       mode: 'live',
       merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
       failureRedirect: 'false',
-      redirectMethod: 'get',
-      enable3DS: 'true',
-      metaData: JSON.stringify(metaData),
-      notes: 'DISCOVER SHARM - THANK YOU FOR BOOKING WITH US !',
-      interactionSource: 'Ecommerce'
+      redirectMethod: 'get'
     });
 
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
@@ -606,7 +607,6 @@ async function submitForm() {
     await database.ref('trip-bookings').child(refNumber).set({
       ...formData,
       paymenturl: kashierUrl,
-      metaData
     });
 
     // Store user data in session
@@ -655,6 +655,15 @@ window.onload = async function () {
     document.getElementById('infants').value = 0;
   }
 
+  // Initialize auth state listener
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      currentUserUid = user.uid;
+    } else {
+      currentUserUid = 'anonymous';
+    }
+  });
+
   // Initialize components
   populateForm();
   initNumberControls();
@@ -689,4 +698,13 @@ window.onload = async function () {
       element.addEventListener('change', updateSummary);
     }
   });
+
+  // Add event listener for form submission
+  const bookingForm = document.getElementById('bookingForm');
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitForm();
+    });
+  }
 };
