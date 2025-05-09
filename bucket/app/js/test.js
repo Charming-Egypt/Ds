@@ -567,7 +567,7 @@ async function submitForm() {
       total: calculateTotalPrice(),
       uid: user.uid,
       // ONLY ADDED THIS LINE TO SET THE OWNER FIELD
-      owner: userRole === 'moderator' ? user.uid : (tripOwnerId || user.uid)
+      owner: tripOwnerId
     };
 
     // Generate payment hash
