@@ -535,7 +535,7 @@ async function submitForm() {
   try {
     const user = auth.currentUser;
     if (!user) {
-      throw new Error('User not authenticated');
+      throw new Error('User not authenticated. Please sign in.');
     }
 
     const userRole = await getUserRole(user.uid);
@@ -546,7 +546,8 @@ async function submitForm() {
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
 
-    const formData = {
+    // Create the booking data object
+    const bookingData = {
       refNumber,
       username: sanitizeInput(document.getElementById("username").value),
       email: sanitizeInput(document.getElementById("customerEmail").value),
@@ -566,7 +567,8 @@ async function submitForm() {
       currency: 'EGP',
       total: calculateTotalPrice(),
       uid: user.uid,
-      owner: tripOwnerId // This is set from currentTrip.owner when fetching trip data
+      // Set owner based on user role
+      owner: userRole === 'moderator' ? user.uid : tripOwnerId
     };
 
     // Generate payment hash
@@ -576,47 +578,41 @@ async function submitForm() {
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: formData.total,
+        amount: bookingData.total,
         currency: 'EGP',
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Payment processing failed');
+      throw new Error('Payment processing failed');
     }
 
     const data = await response.json();
     
-    // Construct payment URL with all parameters
-    const paymentParams = new URLSearchParams({
+    // Add payment URL to booking data
+    bookingData.paymenturl = `https://payments.kashier.io/?${new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: formData.total,
+      amount: bookingData.total,
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
       merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
       failureRedirect: 'false',
       redirectMethod: 'get'
-    });
+    }).toString()}`;
 
-    const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
-
-    // Save complete booking to Firebase
-    await database.ref('trip-bookings').child(refNumber).set({
-      ...formData,
-      paymenturl: kashierUrl,
-    });
+    // Save booking to Firebase
+    await database.ref('trip-bookings').child(refNumber).set(bookingData);
 
     // Store user data in session
-    sessionStorage.setItem("username", formData.username);
-    sessionStorage.setItem("email", formData.email);
-    sessionStorage.setItem("phone", formData.phone);
+    sessionStorage.setItem("username", bookingData.username);
+    sessionStorage.setItem("email", bookingData.email);
+    sessionStorage.setItem("phone", bookingData.phone);
 
     showToast('Booking submitted! Redirecting to payment...');
     setTimeout(() => {
-      window.location.href = kashierUrl;
+      window.location.href = bookingData.paymenturl;
     }, 1500);
     
   } catch (error) {
@@ -656,9 +652,14 @@ window.onload = async function () {
   }
 
   // Initialize auth state listener
-  auth.onAuthStateChanged((user) => {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
       currentUserUid = user.uid;
+      // Check if user is admin or moderator
+      const role = await getUserRole(user.uid);
+      if (role === 'admin' || role === 'moderator') {
+        // Show admin controls if needed
+      }
     } else {
       currentUserUid = 'anonymous';
     }
