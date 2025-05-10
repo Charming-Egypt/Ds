@@ -27,7 +27,7 @@ const MAX_TOTAL_INFANTS = 10;
 const FIXED_FEE = 3; // Fixed 3 EGP fee
 const TAX_RATE = 0.03; // 3% tax
 const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
-let exchangeRate = 30; // Default exchange rate (will be updated from Firebase)
+let exchangeRate = 50; // Default exchange rate (will be updated from Firebase)
 
 // Get trip name from URL parameter
 function getTripIdFromURL() {
@@ -112,7 +112,7 @@ function hideSpinner() {
 // Exchange Rate Function
 async function fetchExchangeRate() {
   try {
-    const snapshot = await database.ref('exchangeRate').once('value');
+    const snapshot = await database.ref('exchangeRates').once('value');
     const rateData = snapshot.val();
     if (rateData && rateData.rate) {
       exchangeRate = parseFloat(rateData.rate);
