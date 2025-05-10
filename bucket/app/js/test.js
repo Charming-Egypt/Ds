@@ -297,7 +297,7 @@ function updateSummary() {
         const servicePrice = parseInt(tourTypes[selectedService]);
         const serviceTotal = (adults + childrenUnder12) * servicePrice;
         if (summaryService) {
-          summaryService.textContent = `${selectedService} (per person)`;
+          summaryService.textContent = `${selectedService}`;
           summaryService.classList.remove('hidden');
         }
       } else {
