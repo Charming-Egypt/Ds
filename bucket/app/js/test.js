@@ -287,8 +287,8 @@ function updateSummary() {
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div class="font-bold text-xl">Total: ${totalWithCommission.toFixed(2)} EGP</div>
-          <div class="text-sm text-gray-500">Includes all taxes and fees</div>
+          <div class="font-bold text-xl">${totalWithCommission.toFixed(2)} EGP</div>
+          <div class="text-xsm text-gray-500">Includes all taxes and fees</div>
         `;
       }
     }
