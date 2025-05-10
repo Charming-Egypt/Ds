@@ -309,7 +309,7 @@ function updateSummary() {
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div class="font-bold text-xl notranslate">$${totalUSD} USD</div>
+          <div class="font-bold text-xl notranslate">${totalUSD} $</div>
           <div class="text-sm text-green-600 mt-1 notranslate">${total.toFixed(2)} EGP</div>
           <div class="text-xs text-gray-500">Exchange rate: 1 USD = ${exchangeRate} EGP</div>
           <div class="text-xs text-gray-500">all taxes included</div>
