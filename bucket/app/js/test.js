@@ -186,23 +186,30 @@ function displayTripInfo(tripInfo) {
 }
 
 // Price Calculation Functions
-function calculateNetTotal() {
+function calculateBaseTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-  const selectedService = document.getElementById('tripType').value;
   
   if (!currentTrip.basePrice) return 0;
   
   const basePrice = parseInt(currentTrip.basePrice);
-  let netTotal = (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
+  return (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
+}
+
+function calculateExtraServicesTotal() {
+  const adults = parseInt(document.getElementById('adults').value) || 0;
+  const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+  const selectedService = document.getElementById('tripType').value;
   
-  // Add extra services cost if selected
   if (selectedService && tourTypes[selectedService]) {
     const servicePrice = parseInt(tourTypes[selectedService]);
-    netTotal += (adults + childrenUnder12) * servicePrice;
+    return (adults + childrenUnder12) * servicePrice;
   }
-  
-  return netTotal;
+  return 0;
+}
+
+function calculateNetTotal() {
+  return calculateBaseTotal() + calculateExtraServicesTotal();
 }
 
 function calculateTotalWithTaxesAndCommission() {
@@ -213,7 +220,21 @@ function calculateTotalWithTaxesAndCommission() {
   const subtotalWithTax = netTotal + totalTax;
   const commissionRate = currentTrip.commissionRate || 0.15; // Use trip's commission rate or default to 15%
   const commission = subtotalWithTax * commissionRate;
-  return subtotalWithTax + commission;
+  return {
+    total: subtotalWithTax + commission,
+    breakdown: {
+      baseTotal: calculateBaseTotal(),
+      extraServices: calculateExtraServicesTotal(),
+      netTotal: netTotal,
+      baseTax: baseTax,
+      taxOnTax: taxOnTax,
+      fixedFee: FIXED_FEE,
+      totalTax: totalTax,
+      subtotalWithTax: subtotalWithTax,
+      commissionRate: commissionRate,
+      commission: commission
+    }
+  };
 }
 
 function updateInfantsMax() {
@@ -283,12 +304,16 @@ function updateSummary() {
         if (summaryService) summaryService.classList.add('hidden');
       }
       
-      const totalWithCommission = calculateTotalWithTaxesAndCommission();
+      const { total, breakdown } = calculateTotalWithTaxesAndCommission();
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div class="font-bold text-xl">${totalWithCommission.toFixed(2)} EGP</div>
-          <div class="text-xsm text-gray-500">Includes all taxes and fees</div>
+          <div class="text-sm">Base Price: ${breakdown.baseTotal.toFixed(2)} EGP</div>
+          ${breakdown.extraServices > 0 ? 
+            `<div class="text-sm">Extra Services: +${breakdown.extraServices.toFixed(2)} EGP</div>` : ''}
+          <div class="text-sm">Taxes and Fees: ${breakdown.totalTax.toFixed(2)} EGP</div>
+          <div class="text-sm">Commission (${(breakdown.commissionRate * 100).toFixed(0)}%): ${breakdown.commission.toFixed(2)} EGP</div>
+          <div class="font-bold text-xl mt-2">Total: ${total.toFixed(2)} EGP</div>
         `;
       }
     }
@@ -565,19 +590,7 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const adults = parseInt(document.getElementById('adults').value) || 0;
-    const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-    const infants = parseInt(document.getElementById('infants').value) || 0;
-    const selectedService = document.getElementById('tripType').value;
-
-    const netTotal = calculateNetTotal();
-    const baseTax = netTotal * TAX_RATE;
-    const taxOnTax = baseTax * TAX_ON_TAX_RATE;
-    const totalTax = baseTax + taxOnTax + FIXED_FEE;
-    const subtotalWithTax = netTotal + totalTax;
-    const commissionRate = currentTrip.commissionRate || 0.15; // Use trip's commission rate or default to 15%
-    const commission = subtotalWithTax * commissionRate;
-    const totalWithCommission = subtotalWithTax + commission;
+    const { total, breakdown } = calculateTotalWithTaxesAndCommission();
 
     const formData = {
       refNumber,
@@ -585,26 +598,20 @@ async function submitForm() {
       email: sanitizeInput(document.getElementById("customerEmail").value),
       phone: iti.getNumber(),
       tripDate: document.getElementById("tripDate").value,
-      tripType: selectedService || 'None',
-      tripTypePrice: selectedService ? tourTypes[selectedService] : 0,
+      tripType: selectedTripType || 'None',
+      tripTypePrice: selectedTripType ? tourTypes[selectedTripType] : 0,
       basePrice: currentTrip.basePrice,
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
       timestamp: Date.now(),
       status: "pending",
       tour: tripPName,
-      adults,
-      childrenUnder12,
-      infants,
+      adults: parseInt(document.getElementById('adults').value) || 0,
+      childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
+      infants: parseInt(document.getElementById('infants').value) || 0,
       currency: 'EGP',
-      total: totalWithCommission,
-      netTotal: netTotal,
-      baseTax: baseTax,
-      taxOnTax: taxOnTax,
-      fixedFee: FIXED_FEE,
-      totalTax: totalTax,
-      commissionRate: commissionRate,
-      commission: commission,
+      total: total,
+      ...breakdown, // Include all breakdown details
       uid: user.uid,
       owner: tripOwnerId
     };
