@@ -218,23 +218,9 @@ function calculateTotalWithTaxesAndCommission() {
   const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
   const totalTax = baseTax + taxOnTax + FIXED_FEE;
   const subtotalWithTax = netTotal + totalTax;
-  const commissionRate = currentTrip.commissionRate || 0.15; // Use trip's commission rate or default to 15%
+  const commissionRate = currentTrip.commissionRate || 0.15;
   const commission = subtotalWithTax * commissionRate;
-  return {
-    total: subtotalWithTax + commission,
-    breakdown: {
-      baseTotal: calculateBaseTotal(),
-      extraServices: calculateExtraServicesTotal(),
-      netTotal: netTotal,
-      baseTax: baseTax,
-      taxOnTax: taxOnTax,
-      fixedFee: FIXED_FEE,
-      totalTax: totalTax,
-      subtotalWithTax: subtotalWithTax,
-      commissionRate: commissionRate,
-      commission: commission
-    }
-  };
+  return subtotalWithTax + commission;
 }
 
 function updateInfantsMax() {
@@ -292,7 +278,6 @@ function updateSummary() {
       if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} = ${(childrenUnder12 * childPriceUnder12).toFixed(2)} EGP`;
       if (summaryInfants) summaryInfants.textContent = `${infants} Infants (Free)`;
       
-      // Show extra service if selected
       if (selectedService && tourTypes[selectedService]) {
         const servicePrice = parseInt(tourTypes[selectedService]);
         const serviceTotal = (adults + childrenUnder12) * servicePrice;
@@ -304,16 +289,11 @@ function updateSummary() {
         if (summaryService) summaryService.classList.add('hidden');
       }
       
-      const { total, breakdown } = calculateTotalWithTaxesAndCommission();
+      const total = calculateTotalWithTaxesAndCommission();
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div class="text-sm">Base Price: ${breakdown.baseTotal.toFixed(2)} EGP</div>
-          ${breakdown.extraServices > 0 ? 
-            `<div class="text-sm">Extra Services: +${breakdown.extraServices.toFixed(2)} EGP</div>` : ''}
-          <div class="text-sm">Taxes and Fees: ${breakdown.totalTax.toFixed(2)} EGP</div>
-          <div class="text-sm">Commission (${(breakdown.commissionRate * 100).toFixed(0)}%): ${breakdown.commission.toFixed(2)} EGP</div>
-          <div class="font-bold text-xl mt-2">Total: ${total.toFixed(2)} EGP</div>
+          <div class="font-bold text-xl">Total: ${total.toFixed(2)} EGP</div>
         `;
       }
     }
@@ -590,7 +570,14 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const { total, breakdown } = calculateTotalWithTaxesAndCommission();
+    const total = calculateTotalWithTaxesAndCommission();
+    const netTotal = calculateNetTotal();
+    const baseTax = netTotal * TAX_RATE;
+    const taxOnTax = baseTax * TAX_ON_TAX_RATE;
+    const totalTax = baseTax + taxOnTax + FIXED_FEE;
+    const subtotalWithTax = netTotal + totalTax;
+    const commissionRate = currentTrip.commissionRate || 0.15;
+    const commission = subtotalWithTax * commissionRate;
 
     const formData = {
       refNumber,
@@ -611,7 +598,13 @@ async function submitForm() {
       infants: parseInt(document.getElementById('infants').value) || 0,
       currency: 'EGP',
       total: total,
-      ...breakdown, // Include all breakdown details
+      netTotal: netTotal, // This is base price + extra services only
+      baseTax: baseTax,
+      taxOnTax: taxOnTax,
+      fixedFee: FIXED_FEE,
+      totalTax: totalTax,
+      commissionRate: commissionRate,
+      commission: commission,
       uid: user.uid,
       owner: tripOwnerId
     };
