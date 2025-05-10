@@ -24,6 +24,9 @@ let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_ADULT = 2;
 const MAX_TOTAL_INFANTS = 10;
+const FIXED_FEE = 3; // Fixed 3 EGP fee
+const TAX_RATE = 0.03; // 3% tax
+const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
 
 // Get trip name from URL parameter
 function getTripIdFromURL() {
@@ -182,7 +185,7 @@ function displayTripInfo(tripInfo) {
 }
 
 // Price Calculation Functions
-function calculateTotalPrice() {
+function calculateNetTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   const selectedService = document.getElementById('tripType').value;
@@ -190,15 +193,23 @@ function calculateTotalPrice() {
   if (!currentTrip.basePrice) return 0;
   
   const basePrice = parseInt(currentTrip.basePrice);
-  let total = (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
+  let netTotal = (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
   
   // Add extra services cost if selected
   if (selectedService && tourTypes[selectedService]) {
     const servicePrice = parseInt(tourTypes[selectedService]);
-    total += (adults + childrenUnder12) * servicePrice;
+    netTotal += (adults + childrenUnder12) * servicePrice;
   }
   
-  return total;
+  return netTotal;
+}
+
+function calculateTotalWithTaxes() {
+  const netTotal = calculateNetTotal();
+  const baseTax = netTotal * TAX_RATE; // 3% of net total
+  const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
+  const totalTax = baseTax + taxOnTax + FIXED_FEE;
+  return netTotal + totalTax;
 }
 
 function updateInfantsMax() {
@@ -261,14 +272,28 @@ function updateSummary() {
         const servicePrice = parseInt(tourTypes[selectedService]);
         const serviceTotal = (adults + childrenUnder12) * servicePrice;
         if (summaryService) {
-          summaryService.textContent = `${selectedService}: ${adults + childrenUnder12}  = ${serviceTotal.toFixed(2)} EGP`;
+          summaryService.textContent = `${selectedService}: ${adults + childrenUnder12} = ${serviceTotal.toFixed(2)} EGP`;
           summaryService.classList.remove('hidden');
         }
       } else {
         if (summaryService) summaryService.classList.add('hidden');
       }
       
-      if (totalPriceDisplay) totalPriceDisplay.textContent = `${calculateTotalPrice().toFixed(2)} EGP`;
+      const netTotal = calculateNetTotal();
+      const baseTax = netTotal * TAX_RATE;
+      const taxOnTax = baseTax * TAX_ON_TAX_RATE;
+      const totalTax = baseTax + taxOnTax + FIXED_FEE;
+      const totalWithTaxes = netTotal + totalTax;
+      
+      if (totalPriceDisplay) {
+        totalPriceDisplay.innerHTML = `
+          <div>Subtotal: ${netTotal.toFixed(2)} EGP</div>
+          <div>Base Tax (3%): ${baseTax.toFixed(2)} EGP</div>
+          <div>Tax on Tax (14% of 3%): ${taxOnTax.toFixed(2)} EGP</div>
+          <div>Fixed Fee: ${FIXED_FEE.toFixed(2)} EGP</div>
+          <div class="font-bold mt-2">Total: ${totalWithTaxes.toFixed(2)} EGP</div>
+        `;
+      }
     }
   }, 300);
 }
@@ -284,7 +309,7 @@ async function populateForm() {
 
     if (userData) {
       if (document.getElementById("username")) {
-        document.getElementById("username").value = userData.fullname || "";
+        document.getElementById("username").value = userData.username || "";
       }
       if (document.getElementById("customerEmail")) {
         document.getElementById("customerEmail").value = userData.email || "";
@@ -532,17 +557,6 @@ function initDatePicker() {
   });
 }
 
-// User Role Management
-async function getUserRole(uid) {
-  try {
-    const snapshot = await database.ref('egy_user').child(uid).child('role').once('value');
-    return snapshot.val() || 'user';
-  } catch (error) {
-    console.error("Error getting user role:", error);
-    return 'user';
-  }
-}
-
 // Form Submission
 async function submitForm() {
   if (!validateCurrentStep()) return;
@@ -559,15 +573,11 @@ async function submitForm() {
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
 
-    // Calculate netTotal as (baseprice x (adults+children)) + (tripTypePrice x total guests if exists)
-    const basePrice = parseInt(currentTrip.basePrice);
-    const totalGuests = adults + childrenUnder12;
-    let netTotal = basePrice * totalGuests;
-    
-    if (selectedService && tourTypes[selectedService]) {
-      const servicePrice = parseInt(tourTypes[selectedService]);
-      netTotal += servicePrice * totalGuests;
-    }
+    const netTotal = calculateNetTotal();
+    const baseTax = netTotal * TAX_RATE;
+    const taxOnTax = baseTax * TAX_ON_TAX_RATE;
+    const totalTax = baseTax + taxOnTax + FIXED_FEE;
+    const totalWithTaxes = netTotal + totalTax;
 
     const formData = {
       refNumber,
@@ -587,8 +597,12 @@ async function submitForm() {
       childrenUnder12,
       infants,
       currency: 'EGP',
-      total: calculateTotalPrice(),
+      total: totalWithTaxes,
       netTotal: netTotal,
+      baseTax: baseTax,
+      taxOnTax: taxOnTax,
+      fixedFee: FIXED_FEE,
+      totalTax: totalTax,
       uid: user.uid,
       owner: tripOwnerId
     };
