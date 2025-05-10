@@ -466,6 +466,7 @@ function initNumberControls() {
       if (currentValue < MAX_PER_TYPE) {
         input.value = currentValue + 1;
         updateInfantsMax();
+        updateSummary();
       }
     });
     
@@ -478,6 +479,7 @@ function initNumberControls() {
       if (currentValue > 1) {
         input.value = currentValue - 1;
         updateInfantsMax();
+        updateSummary();
       }
     });
   }
@@ -495,6 +497,7 @@ function initNumberControls() {
       const currentValue = parseInt(input.value);
       if (currentValue < MAX_PER_TYPE) {
         input.value = currentValue + 1;
+        updateSummary();
       }
     });
     
@@ -506,6 +509,7 @@ function initNumberControls() {
       const currentValue = parseInt(input.value);
       if (currentValue > 0) {
         input.value = currentValue - 1;
+        updateSummary();
       }
     });
   }
@@ -529,6 +533,7 @@ function initNumberControls() {
       
       if (currentValue < maxInfants) {
         input.value = currentValue + 1;
+        updateSummary();
       }
     });
     
@@ -540,6 +545,7 @@ function initNumberControls() {
       const currentValue = parseInt(input.value);
       if (currentValue > 0) {
         input.value = currentValue - 1;
+        updateSummary();
       }
     });
   }
@@ -549,7 +555,7 @@ function initNumberControls() {
   if (tripTypeSelect) {
     tripTypeSelect.addEventListener('change', function() {
       selectedTripType = this.value;
-      if (currentStep === 3) updateSummary();
+      updateSummary();
     });
   }
 }
@@ -616,7 +622,7 @@ async function submitForm() {
       infants: parseInt(document.getElementById('infants').value) || 0,
       currency: 'EGP',
       total: total,
-      netTotal: netTotal, // This is base price + extra services only
+      netTotal: netTotal,
       baseTax: baseTax,
       taxOnTax: taxOnTax,
       fixedFee: FIXED_FEE,
@@ -673,10 +679,47 @@ async function submitForm() {
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
 
-    showToast('Booking submitted! Redirecting to payment...');
-    setTimeout(() => {
-      window.location.href = kashierUrl;
-    }, 1500);
+    showToast('Booking submitted! Opening payment window...');
+    
+    // Open payment in full-screen popup
+    const width = Math.min(window.screen.width, 1200);
+    const height = Math.min(window.screen.height, 800);
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    
+    const paymentWindow = window.open(
+      kashierUrl,
+      'PaymentWindow',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,location=no,status=no,menubar=no`
+    );
+    
+    // Focus the window if it exists
+    if (paymentWindow) {
+      paymentWindow.focus();
+      
+      // Check if the window is closed every second
+      const checkWindowClosed = setInterval(() => {
+        if (paymentWindow.closed) {
+          clearInterval(checkWindowClosed);
+          // Refresh the page when payment window is closed
+          window.location.reload();
+        }
+      }, 1000);
+    } else {
+      // If popup was blocked, show error and provide alternative
+      showToast('Popup was blocked. Please allow popups or click the button below to proceed.', 'error');
+      const proceedBtn = document.createElement('button');
+      proceedBtn.textContent = 'Proceed to Payment';
+      proceedBtn.className = 'btn btn-primary mt-2';
+      proceedBtn.onclick = () => window.location.href = kashierUrl;
+      
+      const toast = document.querySelector('.toast-error');
+      if (toast) {
+        toast.appendChild(proceedBtn);
+      } else {
+        window.location.href = kashierUrl;
+      }
+    }
     
   } catch (error) {
     console.error('Submission Error:', error);
