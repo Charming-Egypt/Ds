@@ -22,7 +22,8 @@ const refNumber = generateReference();
 let currentUserUid = '';
 let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
-const MAX_INFANTS_PER_2_ADULTS = 2;
+const MAX_INFANTS_PER_ADULT = 2; // Changed to 2 infants per 1 adult
+const MAX_TOTAL_INFANTS = 10; // Maximum infants allowed
 
 // Get trip name from hidden input
 const tripNameElement = document.getElementById('tripName');
@@ -201,12 +202,18 @@ function updateInfantsMax() {
   if (!adultsInput || !infantsInput) return;
   
   const adults = parseInt(adultsInput.value) || 0;
-  const infants = parseInt(infantsInput.value) || 0;
-  const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
+  const currentInfants = parseInt(infantsInput.value) || 0;
   
-  if (infants > maxInfants) {
+  // Calculate maximum allowed infants (2 per adult, but no more than 10 total)
+  const maxInfants = Math.min(adults * MAX_INFANTS_PER_ADULT, MAX_TOTAL_INFANTS);
+  
+  // If current infants exceed the new maximum, adjust it
+  if (currentInfants > maxInfants) {
     infantsInput.value = maxInfants;
   }
+  
+  // Update the max attribute to prevent manual entry beyond limit
+  infantsInput.max = maxInfants;
 }
 
 let debounceTimer;
@@ -464,9 +471,11 @@ function initNumberControls() {
       
       const currentValue = parseInt(input.value);
       const adults = parseInt(adultsInput.value);
-      const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
       
-      if (currentValue < maxInfants && currentValue < MAX_PER_TYPE) {
+      // Calculate maximum allowed infants (2 per adult, but no more than 10 total)
+      const maxInfants = Math.min(adults * MAX_INFANTS_PER_ADULT, MAX_TOTAL_INFANTS);
+      
+      if (currentValue < maxInfants) {
         input.value = currentValue + 1;
       }
     });
@@ -527,7 +536,7 @@ async function getUserRole(uid) {
   }
 }
 
-// Form Submission - ONLY THIS FUNCTION HAS BEEN MODIFIED
+// Form Submission
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
@@ -538,13 +547,20 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    // Get user role - ONLY ADDED THIS LINE
     const userRole = await getUserRole(user.uid);
 
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
+
+    // Calculate base total (without any taxes/commissions)
+    const baseTotal = (adults * currentTrip.basePrice) + 
+                     (childrenUnder12 * Math.round(currentTrip.basePrice * 0.7));
+    
+    // Calculate extra services total if any
+    const extraServicesTotal = selectedService ? 
+      (adults + childrenUnder12) * tourTypes[selectedService] : 0;
 
     const formData = {
       refNumber,
@@ -565,8 +581,8 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
+      netTotal: baseTotal + extraServicesTotal, // Base price + extra services only
       uid: user.uid,
-      // ONLY ADDED THIS LINE TO SET THE OWNER FIELD
       owner: tripOwnerId
     };
 
