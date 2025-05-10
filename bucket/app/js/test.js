@@ -660,7 +660,7 @@ async function submitForm() {
       redirectMethod: 'get'
     });
 
-    const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
+    const kashierUrl = `https://checkout.kashier.io/?${paymentParams.toString()}`;
 
     // Save complete booking to Firebase
     await database.ref('trip-bookings').child(refNumber).set({
