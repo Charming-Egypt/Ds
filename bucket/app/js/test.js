@@ -293,8 +293,7 @@ function updateSummary() {
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div class="font-bold text-xl">${total.toFixed(2)} EGP</div>
-          <div class="text-sm text-gray-500">all tax's included</div>
+          <div class="font-bold text-xl">Total: ${total.toFixed(2)} EGP</div>
         `;
       }
     }
