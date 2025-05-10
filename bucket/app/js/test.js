@@ -22,12 +22,15 @@ const refNumber = generateReference();
 let currentUserUid = '';
 let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
-const MAX_INFANTS_PER_ADULT = 2; // Changed to 2 infants per 1 adult
-const MAX_TOTAL_INFANTS = 10; // Maximum infants allowed
+const MAX_INFANTS_PER_ADULT = 2;
+const MAX_TOTAL_INFANTS = 10;
 
-// Get trip name from hidden input
-const tripNameElement = document.getElementById('tripName');
-let tripPName = tripNameElement ? tripNameElement.value : '';
+// Get trip name from URL parameter
+function getTripIdFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('trip-id');
+}
+const tripPName = getTripIdFromURL();
 
 // DOM Elements
 const steps = [
@@ -124,6 +127,9 @@ async function fetchAllTripData() {
       tripOwnerId = currentTrip.owner || '';
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
+    } else {
+      showToast("Trip not found. Please check the URL.", 'error');
+      console.error("Trip not found:", tripPName);
     }
     
     return allTripsData;
@@ -267,31 +273,32 @@ function updateSummary() {
   }, 300);
 }
 
-function populateForm() {
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  
-  const username = getCookie("username") || "";
-  const email = getCookie("email") || "";
-  const phone = getCookie("phone") || "";
-  const uid = getCookie("uid") || "";
-  
-  if (username && document.getElementById("username")) {
-    document.getElementById("username").value = username;
-  }
-  if (email && document.getElementById("customerEmail")) {
-    document.getElementById("customerEmail").value = email;
-  }
-  if (uid && document.getElementById("uid")) {
-    document.getElementById("uid").value = uid;
-  }
-  
-  if (phone && iti && document.getElementById("phone")) {
-    document.getElementById("phone").value = phone;
-    iti.setNumber(phone);
+// Updated populateForm function to fetch from egy_user
+async function populateForm() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userSnapshot = await database.ref('egy_user').child(user.uid).once('value');
+    const userData = userSnapshot.val();
+
+    if (userData) {
+      if (document.getElementById("username")) {
+        document.getElementById("username").value = userData.fullname || "";
+      }
+      if (document.getElementById("customerEmail")) {
+        document.getElementById("customerEmail").value = userData.email || "";
+      }
+      if (document.getElementById("uid")) {
+        document.getElementById("uid").value = user.uid || "";
+      }
+      if (userData.phone && iti && document.getElementById("phone")) {
+        document.getElementById("phone").value = userData.phone;
+        iti.setNumber(userData.phone);
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
   }
 }
 
@@ -547,20 +554,20 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const userRole = await getUserRole(user.uid);
-
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
     const selectedService = document.getElementById('tripType').value;
 
-    // Calculate base total (without any taxes/commissions)
-    const baseTotal = (adults * currentTrip.basePrice) + 
-                     (childrenUnder12 * Math.round(currentTrip.basePrice * 0.7));
+    // Calculate netTotal as (baseprice x (adults+children)) + (tripTypePrice x total guests if exists)
+    const basePrice = parseInt(currentTrip.basePrice);
+    const totalGuests = adults + childrenUnder12;
+    let netTotal = basePrice * totalGuests;
     
-    // Calculate extra services total if any
-    const extraServicesTotal = selectedService ? 
-      (adults + childrenUnder12) * tourTypes[selectedService] : 0;
+    if (selectedService && tourTypes[selectedService]) {
+      const servicePrice = parseInt(tourTypes[selectedService]);
+      netTotal += servicePrice * totalGuests;
+    }
 
     const formData = {
       refNumber,
@@ -581,7 +588,7 @@ async function submitForm() {
       infants,
       currency: 'EGP',
       total: calculateTotalPrice(),
-      netTotal: baseTotal + extraServicesTotal, // Base price + extra services only
+      netTotal: netTotal,
       uid: user.uid,
       owner: tripOwnerId
     };
@@ -645,6 +652,12 @@ async function submitForm() {
 
 // Initialize the application
 window.onload = async function () {
+  // Check if trip ID is provided
+  if (!tripPName) {
+    showToast("No trip specified. Please access this page through a valid trip link.", 'error');
+    return;
+  }
+
   // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
@@ -681,7 +694,7 @@ window.onload = async function () {
   });
 
   // Initialize components
-  populateForm();
+  await populateForm();
   initNumberControls();
   initDatePicker();
   
