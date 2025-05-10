@@ -126,6 +126,7 @@ async function fetchAllTripData() {
     if (tripPName && allTripsData[tripPName]) {
       currentTrip = allTripsData[tripPName];
       currentTrip.basePrice = currentTrip.price || 0;
+      currentTrip.commissionRate = currentTrip.commission || 0.15; // Default to 15% if not specified
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
       populateTripTypeDropdown(tourTypes);
@@ -204,12 +205,15 @@ function calculateNetTotal() {
   return netTotal;
 }
 
-function calculateTotalWithTaxes() {
+function calculateTotalWithTaxesAndCommission() {
   const netTotal = calculateNetTotal();
   const baseTax = netTotal * TAX_RATE; // 3% of net total
   const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
   const totalTax = baseTax + taxOnTax + FIXED_FEE;
-  return netTotal + totalTax;
+  const subtotalWithTax = netTotal + totalTax;
+  const commissionRate = currentTrip.commissionRate || 0.15; // Use trip's commission rate or default to 15%
+  const commission = subtotalWithTax * commissionRate;
+  return subtotalWithTax + commission;
 }
 
 function updateInfantsMax() {
@@ -279,19 +283,12 @@ function updateSummary() {
         if (summaryService) summaryService.classList.add('hidden');
       }
       
-      const netTotal = calculateNetTotal();
-      const baseTax = netTotal * TAX_RATE;
-      const taxOnTax = baseTax * TAX_ON_TAX_RATE;
-      const totalTax = baseTax + taxOnTax + FIXED_FEE;
-      const totalWithTaxes = netTotal + totalTax;
+      const totalWithCommission = calculateTotalWithTaxesAndCommission();
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
-          <div>Subtotal: ${netTotal.toFixed(2)} EGP</div>
-          <div>Base Tax (3%): ${baseTax.toFixed(2)} EGP</div>
-          <div>Tax on Tax (14% of 3%): ${taxOnTax.toFixed(2)} EGP</div>
-          <div>Fixed Fee: ${FIXED_FEE.toFixed(2)} EGP</div>
-          <div class="font-bold mt-2">Total: ${totalWithTaxes.toFixed(2)} EGP</div>
+          <div class="font-bold text-xl">Total: ${totalWithCommission.toFixed(2)} EGP</div>
+          <div class="text-sm text-gray-500">Includes all taxes and fees</div>
         `;
       }
     }
@@ -577,7 +574,10 @@ async function submitForm() {
     const baseTax = netTotal * TAX_RATE;
     const taxOnTax = baseTax * TAX_ON_TAX_RATE;
     const totalTax = baseTax + taxOnTax + FIXED_FEE;
-    const totalWithTaxes = netTotal + totalTax;
+    const subtotalWithTax = netTotal + totalTax;
+    const commissionRate = currentTrip.commissionRate || 0.15; // Use trip's commission rate or default to 15%
+    const commission = subtotalWithTax * commissionRate;
+    const totalWithCommission = subtotalWithTax + commission;
 
     const formData = {
       refNumber,
@@ -597,12 +597,14 @@ async function submitForm() {
       childrenUnder12,
       infants,
       currency: 'EGP',
-      total: totalWithTaxes,
+      total: totalWithCommission,
       netTotal: netTotal,
       baseTax: baseTax,
       taxOnTax: taxOnTax,
       fixedFee: FIXED_FEE,
       totalTax: totalTax,
+      commissionRate: commissionRate,
+      commission: commission,
       uid: user.uid,
       owner: tripOwnerId
     };
