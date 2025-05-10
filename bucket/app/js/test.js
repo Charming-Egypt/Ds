@@ -27,6 +27,7 @@ const MAX_TOTAL_INFANTS = 10;
 const FIXED_FEE = 3; // Fixed 3 EGP fee
 const TAX_RATE = 0.03; // 3% tax
 const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
+let exchangeRate = 30; // Default exchange rate (will be updated from Firebase)
 
 // Get trip name from URL parameter
 function getTripIdFromURL() {
@@ -106,6 +107,20 @@ function hideSpinner() {
   const submitBtn = document.getElementById('submitBtn');
   if (spinner) spinner.classList.add('hidden');
   if (submitBtn) submitBtn.disabled = false;
+}
+
+// Exchange Rate Function
+async function fetchExchangeRate() {
+  try {
+    const snapshot = await database.ref('exchangeRate').once('value');
+    const rateData = snapshot.val();
+    if (rateData && rateData.rate) {
+      exchangeRate = parseFloat(rateData.rate);
+    }
+  } catch (error) {
+    console.error("Error fetching exchange rate:", error);
+    // Use default value if fetch fails
+  }
 }
 
 // Trip Data Functions
@@ -290,18 +305,20 @@ function updateSummary() {
       }
       
       const total = calculateTotalWithTaxesAndCommission();
+      const totalUSD = (total / exchangeRate).toFixed(2);
       
       if (totalPriceDisplay) {
         totalPriceDisplay.innerHTML = `
           <div class="font-bold text-xl notranslate">${total.toFixed(2)} EGP</div>
           <div class="text-xs text-gray-500">all taxes included</div>
+          <div class="text-sm text-green-600 mt-1 notranslate">≈ $${totalUSD} USD</div>
+          <div class="text-xs text-gray-500">Exchange rate: 1 USD = ${exchangeRate} EGP</div>
         `;
       }
     }
   }, 300);
 }
 
-// Updated populateForm function to fetch from egy_user
 async function populateForm() {
   const user = auth.currentUser;
   if (!user) return;
@@ -607,7 +624,8 @@ async function submitForm() {
       commissionRate: commissionRate,
       commission: commission,
       uid: user.uid,
-      owner: tripOwnerId
+      owner: tripOwnerId,
+      exchangeRate: exchangeRate
     };
 
     // Generate payment hash
@@ -711,7 +729,10 @@ window.onload = async function () {
   });
 
   // Initialize components
-  await populateForm();
+  await Promise.all([
+    populateForm(),
+    fetchExchangeRate()
+  ]);
   initNumberControls();
   initDatePicker();
   
