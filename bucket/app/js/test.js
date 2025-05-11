@@ -1040,20 +1040,72 @@
         }
       });
 
-                  // Initialize Flatpickr with tomorrow as the minimum date
+                  // Initialize Flatpickr with custom brand styling
 flatpickr("#tripDate", {
     locale: "en",
     minDate: new Date().fp_incr(1), // Tomorrow's date
     dateFormat: "Y-m-d",
     inline: false,
-    theme: "dark",
     disableMobile: true,
-    onReady: function(selectedDates, dateStr, instance) {
+    
+    // Custom theme styling
+    theme: "brand", // Using custom theme name
+    onReady: function() {
+        // Apply custom styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .flatpickr-calendar.brand {
+                background: #333;
+                border-color: #ffc107;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            }
+            .flatpickr-calendar.brand .flatpickr-months,
+            .flatpickr-calendar.brand .flatpickr-weekdays {
+                background: #333;
+                color: white;
+                border-color: #ffc107;
+            }
+            .flatpickr-calendar.brand .flatpickr-current-month input.cur-year,
+            .flatpickr-calendar.brand .flatpickr-current-month .numInputWrapper span.arrowUp:after,
+            .flatpickr-calendar.brand .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+                color: white;
+            }
+            .flatpickr-calendar.brand .flatpickr-day {
+                color: white;
+            }
+            .flatpickr-calendar.brand .flatpickr-day:hover {
+                background: #555;
+                border-color: #555;
+            }
+            .flatpickr-calendar.brand .flatpickr-day.selected, 
+            .flatpickr-calendar.brand .flatpickr-day.selected:hover {
+                background: #ffc107;
+                border-color: #ffc107;
+                color: #333;
+                font-weight: bold;
+            }
+            .flatpickr-calendar.brand .flatpickr-day.today {
+                border-color: #ffc107;
+            }
+            .flatpickr-calendar.brand .flatpickr-day.today:hover {
+                background: #ffc107;
+                color: #333;
+            }
+            .flatpickr-calendar.brand .flatpickr-weekday {
+                color: #ffc107;
+            }
+            .flatpickr-calendar.brand .flatpickr-prev-month:hover svg,
+            .flatpickr-calendar.brand .flatpickr-next-month:hover svg {
+                fill: #ffc107;
+            }
+        `;
+        document.head.appendChild(style);
+        
         // Add translate='no' to prevent auto-translation
         const elementsToTranslate = [
-            instance.calendarContainer,
-            instance.calendarContainer.querySelector('.flatpickr-weekdays'),
-            instance.calendarContainer.querySelector('.flatpickr-current-month')
+            this.calendarContainer,
+            this.calendarContainer.querySelector('.flatpickr-weekdays'),
+            this.calendarContainer.querySelector('.flatpickr-current-month')
         ];
         
         elementsToTranslate.forEach(el => {
