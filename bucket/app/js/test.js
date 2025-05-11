@@ -1042,7 +1042,6 @@
 
 
 
-// Initialize Flatpickr with your exact styling requirements
 flatpickr("#tripDate", {
     locale: "en",
     minDate: new Date().fp_incr(1), // Tomorrow's date
