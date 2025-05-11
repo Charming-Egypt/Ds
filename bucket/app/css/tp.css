@@ -25,7 +25,7 @@
              color: #ffffff !important;
         }
 
-
+.prev-day-disabled { pointer-events: none; opacity: 0.4; background-color: #333 !important; cursor: not-allowed; }
 
 .trt input{color:#333;}
     /* Custom Styles */
