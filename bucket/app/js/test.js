@@ -1042,7 +1042,11 @@
 
 
 
-// Initialize Flatpickr with exact styling you want
+
+
+
+
+// Initialize Flatpickr with comprehensive inline styling
 flatpickr("#tripDate", {
     locale: "en",
     minDate: new Date().fp_incr(1), // Tomorrow's date
@@ -1051,94 +1055,135 @@ flatpickr("#tripDate", {
     disableMobile: true,
     
     onReady: function(selectedDates, dateStr, instance) {
-        // Add custom class for our styling
-        instance.calendarContainer.classList.add("brand-flatpickr");
+        // Main calendar container
+        const calendar = instance.calendarContainer;
+        calendar.style.backgroundColor = "#222";
+        calendar.style.color = "#ffc207";
+        calendar.style.borderRadius = "10px";
+        calendar.style.border = "1px solid #333";
+        calendar.style.boxShadow = "0 0 20px rgba(0, 0, 0, 0.5)";
         
-        // Apply translate='no'
-        document.querySelectorAll('.flatpickr-calendar, .flatpickr-weekdays, .flatpickr-current-month')
-               .forEach(el => el.setAttribute('translate', 'no'));
+        // Month navigation header
+        const monthNav = calendar.querySelector('.flatpickr-months');
+        if (monthNav) {
+            monthNav.style.backgroundColor = "#222";
+            monthNav.style.borderBottom = "1px solid #333";
+            monthNav.style.borderRadius = "8px";
+        }
+        
+        // Month/year text
+        const currentMonth = calendar.querySelector('.flatpickr-current-month');
+        if (currentMonth) {
+            currentMonth.style.color = "#ffc107";
+        }
+        
+        // Navigation arrows
+        const arrows = calendar.querySelectorAll('.flatpickr-prev-month, .flatpickr-next-month');
+        arrows.forEach(arrow => {
+            arrow.style.color = "#ffc107";
+            arrow.querySelector('svg').style.fill = "#ffc107";
+        });
+        
+        // Weekdays header
+        const weekdays = calendar.querySelector('.flatpickr-weekdays');
+        if (weekdays) {
+            weekdays.style.backgroundColor = "#222";
+        }
+        
+        const weekdayItems = calendar.querySelectorAll('.flatpickr-weekday');
+        weekdayItems.forEach(weekday => {
+            weekday.style.color = "#ffc207";
+        });
+        
+        // All calendar days
+        const allDays = calendar.querySelectorAll('.flatpickr-day');
+        allDays.forEach(day => {
+            // Base style for all days
+            day.style.color = "#ffc207";
+            day.style.backgroundColor = "#333";
+            day.style.borderRadius = "8px";
+            
+            // Days from other months
+            if (day.classList.contains('prevMonthDay') || day.classList.contains('nextMonthDay')) {
+                day.style.color = "#666";
+                day.style.backgroundColor = "transparent";
+            }
+            
+            // Today's date
+            if (day.classList.contains('today')) {
+                day.style.border = "1px solid #ffc107";
+                
+                if (day.classList.contains('flatpickr-disabled')) {
+                    day.style.backgroundColor = "#333";
+                    day.style.color = "#ffffff";
+                    day.style.border = "1px solid #E64A19";
+                }
+                
+                if (day.classList.contains('selected')) {
+                    day.style.backgroundColor = "#388E3C";
+                    day.style.color = "#ffffff";
+                }
+            }
+            
+            // Selected day
+            if (day.classList.contains('selected')) {
+                day.style.backgroundColor = "#ffc207";
+                day.style.color = "#111";
+                day.style.fontWeight = "bold";
+            }
+            
+            // Disabled/past days
+            if (day.classList.contains('disabled') || day.classList.contains('flatpickr-disabled')) {
+                day.style.pointerEvents = "none";
+                day.style.opacity = "0.4";
+                day.style.backgroundColor = "#333";
+                day.style.cursor = "not-allowed";
+                day.style.color = "#666";
+            }
+            
+            // Hover effect for enabled days
+            if (!day.classList.contains('disabled') && !day.classList.contains('flatpickr-disabled')) {
+                day.onmouseenter = () => {
+                    day.style.backgroundColor = "#444";
+                    day.style.color = "#ffc207";
+                };
+                day.onmouseleave = () => {
+                    if (!day.classList.contains('selected')) {
+                        day.style.backgroundColor = "#333";
+                        day.style.color = "#ffc207";
+                    }
+                };
+            }
+        });
+        
+        // Add translate='no' to prevent auto-translation
+        const elementsToTranslate = [
+            calendar,
+            weekdays,
+            currentMonth,
+            ...allDays
+        ];
+        
+        elementsToTranslate.forEach(el => {
+            if (el) el.setAttribute('translate', 'no');
+        });
     },
-    onChange: updateSummary
+    onChange: function(selectedDates, dateStr, instance) {
+        updateSummary();
+    }
 });
 
-// Add our guaranteed CSS
-const style = document.createElement('style');
-style.textContent = `
-/* Main calendar container */
-.brand-flatpickr {
-    background: #333 !important;
-    border: 1px solid #ffc107 !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
-}
-
-/* Header */
-.brand-flatpickr .flatpickr-months {
-    background: #333 !important;
-    border-bottom: 1px solid #ffc107 !important;
-}
-.brand-flatpickr .flatpickr-current-month,
-.brand-flatpickr .flatpickr-current-month input.cur-year {
-    color: white !important;
-}
-
-/* Weekdays */
-.brand-flatpickr .flatpickr-weekdays {
-    background: #333 !important;
-}
-.brand-flatpickr .flatpickr-weekday {
-    color: #ffc107 !important;
-}
-
-/* DAYS - EXACTLY AS YOU WANT THEM */
-/* Available days in current month (white) */
-.brand-flatpickr .flatpickr-day:not(.disabled):not(.prevMonthDay):not(.nextMonthDay) {
-    color: white !important;
-}
-
-/* Hover state for available days */
-.brand-flatpickr .flatpickr-day:not(.disabled):hover {
-    background: #555 !important;
-    border-color: #555 !important;
-}
-
-/* Selected day */
-.brand-flatpickr .flatpickr-day.selected {
-    background: #ffc107 !important;
-    border-color: #ffc107 !important;
-    color: #333 !important;
-    font-weight: bold !important;
-}
-
-/* Today */
-.brand-flatpickr .flatpickr-day.today {
-    border-color: #ffc107 !important;
-}
-.brand-flatpickr .flatpickr-day.today:hover {
-    background: #ffc107 !important;
-    color: #333 !important;
-}
-
-/* DISABLED/PAST DAYS - CUSTOM STYLE */
-.brand-flatpickr .flatpickr-day.disabled,
-.brand-flatpickr .flatpickr-day.prevMonthDay,
-.brand-flatpickr .flatpickr-day.nextMonthDay {
-    color: #666 !important;
-    background: transparent !important;
-}
-
-/* Navigation arrows */
-.brand-flatpickr .flatpickr-prev-month:hover svg,
-.brand-flatpickr .flatpickr-next-month:hover svg {
-    fill: #ffc107 !important;
-}
-`;
-document.head.appendChild(style);
 
 
 
 
 
 
+
+
+
+
+      
 
       
 
