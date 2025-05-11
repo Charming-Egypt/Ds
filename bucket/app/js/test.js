@@ -1064,7 +1064,7 @@ flatpickr("#tripDate", {
 const style = document.createElement('style');
 style.textContent = `
 /* Main Calendar Container */
-
+      /* Flatpickr Brand Overrides - These will definitely work */
 .flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
         .flatpickr-day { color: #ffc207 !important; background-color: #333 !important; border-radius: 8px !important; }
         .flatpickr-day.selected { background-color: #ffc207 !important; color: #111 !important; }
@@ -1087,7 +1087,6 @@ style.textContent = `
              color: #ffffff !important;
         }
     .prev-day-disabled { pointer-events: none; opacity: 0.4; color: #ffffff  !important; cursor: not-allowed; }
-
 `;
 document.head.appendChild(style);
         
