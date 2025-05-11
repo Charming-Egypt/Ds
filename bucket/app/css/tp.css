@@ -24,3 +24,40 @@
              background-color: #388E3C !important;
              color: #ffffff !important;
         }
+
+
+
+.trt input{color:#333;}
+    /* Custom Styles */
+    .iti__selected-flag {
+      color: #333;
+      background-color: #ffc107 !important;
+      border-radius: 6px 0 0 6px !important;
+    }
+    .iti__country-list {
+      border-radius: 10px !important;
+      background-color: #333 !important;
+      color: #ffc107 !important;
+      border: 1px solid #555 !important;
+    }
+    .iti__country {
+      color: #fff !important;
+    }
+    .iti__country:hover {
+      background-color: #444 !important;
+    }
+    .iti__divider {
+      border-bottom-color: #444 !important;
+    }
+    input[readonly] {
+      background-color: #444 !important;
+      color: #aaa !important;
+      cursor: not-allowed !important;
+    }
+    .loading-spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
