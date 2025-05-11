@@ -662,7 +662,7 @@
       // Update the max attribute to prevent manual entry beyond limit
       infantsInput.max = maxInfants;
     }
-
+8
     function updateSummary() {
       const adults = parseInt(document.getElementById('adults').value) || 0;
       const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
@@ -1041,7 +1041,7 @@
       });
 
                   // Initialize Flatpickr
-            flatpickr(dateInput, {
+            flatpickr("#tripDate", {
                 locale: "en", // Keep this
                 dateFormat: "Y-m-d",
                 inline: false,
