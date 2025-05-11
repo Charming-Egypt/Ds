@@ -1087,7 +1087,14 @@ style.textContent = `
              color: #ffffff !important;
         }
     .prev-day-disabled { pointer-events: none; opacity: 0.4; color: #ffffff  !important; cursor: not-allowed; }
-
+/* Input Field */
+.flatpickr-input {
+    background-color: #fff !important;
+    color: #ffc207 !important;
+    border: 1px solid #444 !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+}
 `;
 document.head.appendChild(style);
         
