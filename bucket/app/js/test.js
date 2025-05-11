@@ -1040,13 +1040,9 @@
         }
       });
 
-      // Initialize date picker
-      flatpickr("#tripDate", {
-        minDate: "today",
-        dateFormat: "Y-m-d",
-        disableMobile: true,
-        onChange: updateSummary
-      });
+      // Date Picker
+function initDatePicker() {
+}
 
       // Trip type change handler
       document.getElementById('tripType').addEventListener('change', function() {
