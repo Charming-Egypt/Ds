@@ -1,5 +1,4 @@
-
-    // Initialize Swiper
+// Initialize Swiper
     let swiper;
     let currentVideoSlide = null;
     
