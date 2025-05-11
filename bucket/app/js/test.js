@@ -1042,9 +1042,27 @@
 
 
 
+// Initialize Flatpickr with your exact styling requirements
+flatpickr("#tripDate", {
+    locale: "en",
+    minDate: new Date().fp_incr(1), // Tomorrow's date
+    dateFormat: "Y-m-d",
+    inline: false,
+    disableMobile: true,
+    onReady: function(selectedDates, dateStr, instance) {
+        // Add translate='no' to prevent auto-translation
+        const elements = [
+            instance.calendarContainer,
+            ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
+        ];
+        elements.forEach(el => el?.setAttribute('translate', 'no'));
+    },
+    onChange: updateSummary
+});
 
-
-
+// Inject your exact CSS with enhanced reliability
+const style = document.createElement('style');
+style.textContent = `
 
 /* Flatpickr Dark Theme Overrides */
 .flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
@@ -1077,7 +1095,8 @@
   color: #ffc207 !important;
 }
     
-    
+    `;
+document.head.appendChild(style);
         
 
         
