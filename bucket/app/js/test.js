@@ -1040,59 +1040,30 @@
         }
       });
 
-                  // Initialize Flatpickr
-            flatpickr("#tripDate", {
-                locale: "en", // Keep this
-                dateFormat: "Y-m-d",
-                inline: false,
-                theme: "dark",
-                disableMobile: true,
-                disable: [
-                    function(date) {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date <= today;
-                    }],
-                onChange: function(selectedDates, dateStr, instance) {
-                    console.log("Date selected:", dateStr);
-                    calculateTotal();
-                },
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    const date = dayElem.dateObj;
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    if (fp.currentMonth === date.getMonth() && fp.currentYear === date.getFullYear()) {
-                        // Disable past dates relative to today
-                        if (flatpickr.compareDates(date, today) < 0) {
-                            dayElem.classList.add("prev-day-disabled");
-                        }
-                    }
-
-
-                    if (flatpickr.compareDates(date, today) === 0) {
-                        dayElem.classList.add("today");
-                    }
-                },
-
-                onReady: function(selectedDates, dateStr, instance) {
-                    console.log("Flatpickr calendar ready. Applying translate='no' attribute(s).");
-                    if (instance.calendarContainer) {
-                        instance.calendarContainer.setAttribute('translate', 'no');
-                        console.log("Added translate='no' to Flatpickr calendar container.");
-
-                        const weekdaysElement = instance.calendarContainer.querySelector('.flatpickr-weekdays');
-                        if (weekdaysElement) {
-                            weekdaysElement.setAttribute('translate', 'no');
-                            console.log("Added translate='no' to .flatpickr-weekdays element.");
-                        } else {
-                            console.warn(".flatpickr-weekdays element not found inside container.");
-                        }
-                    } else {
-                        console.error("Flatpickr calendarContainer not found onReady.");
-                    }
-                }
-            });
+                  // Initialize Flatpickr with proper configuration
+flatpickr("#tripDate", {
+    locale: "en",
+    minDate: "today", // Automatically disables past dates
+    dateFormat: "Y-m-d",
+    inline: false,
+    theme: "dark",
+    disableMobile: true, // Better mobile experience
+    onReady: function(selectedDates, dateStr, instance) {
+        // Add translate='no' to prevent auto-translation of dates
+        const elementsToTranslate = [
+            instance.calendarContainer,
+            instance.calendarContainer.querySelector('.flatpickr-weekdays'),
+            instance.calendarContainer.querySelector('.flatpickr-current-month')
+        ];
+        
+        elementsToTranslate.forEach(el => {
+            if (el) el.setAttribute('translate', 'no');
+        });
+    },
+    onChange: function(selectedDates, dateStr, instance) {
+        updateSummary(); // Update the summary when date changes
+    }
+});
 
       // Trip type change handler
       document.getElementById('tripType').addEventListener('change', function() {
