@@ -1144,8 +1144,8 @@ flatpickr("#tripDate", {
             // Hover effect for enabled days
             if (!day.classList.contains('disabled') && !day.classList.contains('flatpickr-disabled')) {
                 day.onmouseenter = () => {
-                    day.style.backgroundColor = "#444";
-                    day.style.color = "#ffc207";
+                    
+                    day.style.color = "#fff";
                 };
                 day.onmouseleave = () => {
                     if (!day.classList.contains('selected')) {
