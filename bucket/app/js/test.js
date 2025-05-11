@@ -1042,155 +1042,127 @@
 
 
 
-// Initialize Flatpickr with proper error handling and enhanced reliability
-document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.getElementById('tripDate');
-    
-    if (dateInput) {
-        try {
-            flatpickr(dateInput, {
-                locale: "en",
-                minDate: new Date().fp_incr(1), // Tomorrow's date
-                dateFormat: "Y-m-d",
-                inline: false,
-                disableMobile: true,
-                onReady: function(selectedDates, dateStr, instance) {
-                    // Additional ready-state logic if needed
-                },
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (typeof updateSummary === 'function') {
-                        updateSummary();
-                    }
-                }
-            });
-
-            // Inject CSS only if Flatpickr is initialized
-            injectFlatpickrStyles();
-        } catch (error) {
-            console.error('Flatpickr initialization failed:', error);
-        }
-    }
+// Initialize Flatpickr with your exact styling requirements
+flatpickr("#tripDate", {
+    locale: "en",
+    minDate: new Date().fp_incr(1), // Tomorrow's date
+    dateFormat: "Y-m-d",
+    inline: false,
+    disableMobile: true,
+    onReady: function(selectedDates, dateStr, instance) {
+        // Add translate='no' to prevent auto-translation
+        const elements = [
+            instance.calendarContainer,
+            ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
+        ];
+        elements.forEach(el => el?.setAttribute('translate', 'no'));
+    },
+    onChange: updateSummary
 });
 
-// CSS injection with better organization and maintainability
-function injectFlatpickrStyles() {
-    const styleId = 'custom-flatpickr-styles';
-    
-    // Don't inject if already exists
-    if (document.getElementById(styleId)) return;
-    
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = `
-        /* Main Calendar Container */
-        .flatpickr-calendar {
-            background-color: #222 !important;
-            color: #ffc207 !important;
-            border-radius: 10px !important;
-            border: 1px solid #333 !important;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
-            font-family: inherit;
-        }
-
-        /* Day Cells */
-        .flatpickr-day {
-            color: #ffc207 !important;
-            background-color: #333 !important;
-            border-radius: 8px !important;
-            border: none;
-            font-weight: 500;
-        }
-
-        /* Selected Day */
-        .flatpickr-day.selected {
-            background-color: #ffc207 !important;
-            color: #111 !important;
-            font-weight: bold;
-        }
-
-        /* Hover State */
-        .flatpickr-day:hover {
-            background-color: #444 !important;
-            color: #ffc207 !important;
-        }
-
-        /* Adjacent Month Days */
-        .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay {
-            color: #666 !important;
-            opacity: 0.6;
-        }
-
-        /* Navigation Arrows */
-        .flatpickr-months .flatpickr-prev-month,
-        .flatpickr-months .flatpickr-next-month {
-            color: #ffc207 !important;
-            top: 10px;
-        }
-
-        /* Month/Year Title */
-        .flatpickr-months .flatpickr-month {
-            color: #ffc107 !important;
-            background-color: #222 !important;
-            border-radius: 8px !important;
-            height: 40px;
-            font-weight: 600;
-        }
-
-        /* Navigation Icons */
-        .flatpickr-months .flatpickr-prev-month svg,
-        .flatpickr-months .flatpickr-next-month svg {
-            fill: #ffc107 !important;
-            width: 14px;
-            height: 14px;
-        }
-
-        /* Weekday Headers */
-        .flatpickr-weekday {
-            color: #ffc207 !important;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85em;
-        }
-
-        /* Today's Date */
-        .flatpickr-day.today {
-            border: 1px solid #E64A19 !important;
-        }
-        .flatpickr-day.today.flatpickr-disabled {
-            background-color: #333 !important;
-            color: #ffffff !important;
-        }
-        .flatpickr-day.today.selected {
-            background-color: #388E3C !important;
-            color: #ffffff !important;
-        }
-
-        /* Disabled Previous Days */
-        .prev-day-disabled {
-            pointer-events: none;
-            opacity: 0.4;
-            color: #ffffff !important;
-            cursor: not-allowed;
-        }
-
-        /* Time Input Styling */
-        .flatpickr-time {
-            border-top: 1px solid #333 !important;
-        }
-        .flatpickr-time input,
-        .flatpickr-time .flatpickr-time-separator,
-        .flatpickr-time .flatpickr-am-pm {
-            color: #ffc207 !important;
-            font-weight: 600;
-        }
-        .flatpickr-time input:hover {
-            background: #333 !important;
-        }
-    `;
-    
-    document.head.appendChild(style);
+// Inject your exact CSS with enhanced reliability
+const style = document.createElement('style');
+style.textContent = `
+/* Main Calendar Container */
+.flatpickr-calendar {
+    background-color: #222 !important;
+    color: #ffc207 !important;
+    border-radius: 10px !important;
+    border: 1px solid #333 !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+    font-family: inherit !important;
 }
+
+/* Days - Normal State */
+.flatpickr-day {
+    color: #ffc207 !important;
+    background-color: #333 !important;
+    border-radius: 8px !important;
+    border: none !important;
+}
+
+/* Selected Day */
+.flatpickr-day.selected {
+    background-color: #ffc207 !important;
+    color: #111 !important;
+    font-weight: bold !important;
+}
+
+/* Hover State */
+.flatpickr-day:not(.disabled):not(.flatpickr-disabled):hover {
+    background-color: #444 !important;
+    color: #ffc207 !important;
+}
+
+/* Days from Other Months */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #666 !important;
+    background-color: transparent !important;
+}
+
+/* Navigation Arrows and Month */
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month,
+.flatpickr-months .flatpickr-month {
+    color: #ffc107 !important;
+    background-color: #222 !important;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    fill: #ffc107 !important;
+}
+
+/* Weekday Headers */
+.flatpickr-weekday {
+    color: #ffc207 !important;
+    background-color: #222 !important;
+}
+
+/* Today's Date - Special States */
+.flatpickr-day.today {
+    border: 1px solid #ffc107 !important;
+}
+
+.flatpickr-day.today.flatpickr-disabled {
+    background-color: #333 !important;
+    color: #ffffff !important;
+    border: 1px solid #E64A19 !important;
+}
+
+.flatpickr-day.today.selected {
+    background-color: #388E3C !important;
+    color: #ffffff !important;
+}
+
+/* Disabled Days (Past Dates) */
+.prev-day-disabled,
+.flatpickr-day.disabled,
+.flatpickr-day.flatpickr-disabled {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+    background-color: #333 !important;
+    cursor: not-allowed !important;
+    color: #666 !important;
+}
+
+/* Current Month Indicator */
+.flatpickr-current-month {
+    font-size: 110% !important;
+    padding: 4px 0 !important;
+}
+
+/* Input Field */
+.flatpickr-input {
+    background-color: #333 !important;
+    color: #ffc207 !important;
+    border: 1px solid #444 !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+}
+`;
+document.head.appendChild(style);
         
 
         
