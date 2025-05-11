@@ -1042,7 +1042,7 @@
 
 
 
-// Initialize Flatpickr with inline style overrides
+// Initialize Flatpickr with exact styling you want
 flatpickr("#tripDate", {
     locale: "en",
     minDate: new Date().fp_incr(1), // Tomorrow's date
@@ -1051,41 +1051,88 @@ flatpickr("#tripDate", {
     disableMobile: true,
     
     onReady: function(selectedDates, dateStr, instance) {
-        // Force styles with inline attributes as last resort
-        instance.calendarContainer.style.backgroundColor = "#333";
-        instance.calendarContainer.style.borderColor = "#ffc107";
+        // Add custom class for our styling
+        instance.calendarContainer.classList.add("brand-flatpickr");
         
-        // Style month navigation
-        const monthNav = instance.calendarContainer.querySelector('.flatpickr-months');
-        if (monthNav) {
-            monthNav.style.backgroundColor = "#333";
-            monthNav.style.borderBottomColor = "#ffc107";
-        }
-        
-        // Style arrows
-        const arrows = instance.calendarContainer.querySelectorAll('.flatpickr-prev-month, .flatpickr-next-month');
-        arrows.forEach(arrow => {
-            arrow.style.color = "#ffc107";
-        });
-        
-        // Add translate='no' to prevent auto-translation
-        const elementsToTranslate = [
-            instance.calendarContainer,
-            instance.calendarContainer.querySelector('.flatpickr-weekdays'),
-            instance.calendarContainer.querySelector('.flatpickr-current-month')
-        ];
-        
-        elementsToTranslate.forEach(el => {
-            if (el) {
-                el.setAttribute('translate', 'no');
-                el.style.color = "white"; // Force text color
-            }
-        });
+        // Apply translate='no'
+        document.querySelectorAll('.flatpickr-calendar, .flatpickr-weekdays, .flatpickr-current-month')
+               .forEach(el => el.setAttribute('translate', 'no'));
     },
-    onChange: function(selectedDates, dateStr, instance) {
-        updateSummary();
-    }
+    onChange: updateSummary
 });
+
+// Add our guaranteed CSS
+const style = document.createElement('style');
+style.textContent = `
+/* Main calendar container */
+.brand-flatpickr {
+    background: #333 !important;
+    border: 1px solid #ffc107 !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3) !important;
+}
+
+/* Header */
+.brand-flatpickr .flatpickr-months {
+    background: #333 !important;
+    border-bottom: 1px solid #ffc107 !important;
+}
+.brand-flatpickr .flatpickr-current-month,
+.brand-flatpickr .flatpickr-current-month input.cur-year {
+    color: white !important;
+}
+
+/* Weekdays */
+.brand-flatpickr .flatpickr-weekdays {
+    background: #333 !important;
+}
+.brand-flatpickr .flatpickr-weekday {
+    color: #ffc107 !important;
+}
+
+/* DAYS - EXACTLY AS YOU WANT THEM */
+/* Available days in current month (white) */
+.brand-flatpickr .flatpickr-day:not(.disabled):not(.prevMonthDay):not(.nextMonthDay) {
+    color: white !important;
+}
+
+/* Hover state for available days */
+.brand-flatpickr .flatpickr-day:not(.disabled):hover {
+    background: #555 !important;
+    border-color: #555 !important;
+}
+
+/* Selected day */
+.brand-flatpickr .flatpickr-day.selected {
+    background: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #333 !important;
+    font-weight: bold !important;
+}
+
+/* Today */
+.brand-flatpickr .flatpickr-day.today {
+    border-color: #ffc107 !important;
+}
+.brand-flatpickr .flatpickr-day.today:hover {
+    background: #ffc107 !important;
+    color: #333 !important;
+}
+
+/* DISABLED/PAST DAYS - CUSTOM STYLE */
+.brand-flatpickr .flatpickr-day.disabled,
+.brand-flatpickr .flatpickr-day.prevMonthDay,
+.brand-flatpickr .flatpickr-day.nextMonthDay {
+    color: #666 !important;
+    background: transparent !important;
+}
+
+/* Navigation arrows */
+.brand-flatpickr .flatpickr-prev-month:hover svg,
+.brand-flatpickr .flatpickr-next-month:hover svg {
+    fill: #ffc107 !important;
+}
+`;
+document.head.appendChild(style);
 
 
 
