@@ -1064,103 +1064,30 @@ flatpickr("#tripDate", {
 const style = document.createElement('style');
 style.textContent = `
 /* Main Calendar Container */
-.flatpickr-calendar {
-    background-color: #222 !important;
-    color: #ffc207 !important;
-    border-radius: 10px !important;
-    border: 1px solid #333 !important;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
-    font-family: inherit !important;
-}
 
-/* Days - Normal State */
-.flatpickr-day {
-    color: #ffc207 !important;
-    background-color: #333 !important;
-    border-radius: 8px !important;
-    border: none !important;
-}
+.flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
+        .flatpickr-day { color: #ffc207 !important; background-color: #333 !important; border-radius: 8px !important; }
+        .flatpickr-day.selected { background-color: #ffc207 !important; color: #111 !important; }
+        .flatpickr-day:hover { background-color: #444 !important; color: #ffc207 !important; }
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay { color: #666 !important; }
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month { color: #ffc207 !important; }
+        .flatpickr-months .flatpickr-month { color: #ffc107 !important; background-color: #222 !important; border-radius: 8px !important; }
+        .flatpickr-months .flatpickr-prev-month svg,
+        .flatpickr-months .flatpickr-next-month svg { fill: #ffc107 !important; }
+        .flatpickr-weekday { color: #ffc207 !important; }
+        .flatpickr-day.today.flatpickr-disabled {
+             background-color: #333 !important;
+             color: #ffffff !important;
+             border: 1px solid #E64A19 !important;
+        }
+        .flatpickr-day.today.selected {
+             background-color: #388E3C !important;
+             color: #ffffff !important;
+        }
+    .prev-day-disabled { pointer-events: none; opacity: 0.4; color: #ffffff  !important; cursor: not-allowed; }
 
-/* Selected Day */
-.flatpickr-day.selected {
-    background-color: #ffc207 !important;
-    color: #111 !important;
-    font-weight: bold !important;
-}
-
-/* Hover State */
-.flatpickr-day:not(.disabled):not(.flatpickr-disabled):hover {
-    background-color: #444 !important;
-    color: #ffc207 !important;
-}
-
-/* Days from Other Months */
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-    color: #666 !important;
-    background-color: transparent !important;
-}
-
-/* Navigation Arrows and Month */
-.flatpickr-months .flatpickr-prev-month,
-.flatpickr-months .flatpickr-next-month,
-.flatpickr-months .flatpickr-month {
-    color: #ffc107 !important;
-    background-color: #222 !important;
-}
-
-.flatpickr-months .flatpickr-prev-month svg,
-.flatpickr-months .flatpickr-next-month svg {
-    fill: #ffc107 !important;
-}
-
-/* Weekday Headers */
-.flatpickr-weekday {
-    color: #ffc207 !important;
-    background-color: #222 !important;
-}
-
-/* Today's Date - Special States */
-.flatpickr-day.today {
-    border: 1px solid #ffc107 !important;
-}
-
-.flatpickr-day.today.flatpickr-disabled {
-    background-color: #333 !important;
-    color: #ffffff !important;
-    border: 1px solid #E64A19 !important;
-}
-
-.flatpickr-day.today.selected {
-    background-color: #388E3C !important;
-    color: #ffffff !important;
-}
-
-/* Disabled Days (Past Dates) */
-.prev-day-disabled,
-.flatpickr-day.disabled,
-.flatpickr-day.flatpickr-disabled {
-    pointer-events: none !important;
-    opacity: 0.4 !important;
-    background-color: #333 !important;
-    cursor: not-allowed !important;
-    color: #666 !important;
-}
-
-/* Current Month Indicator */
-.flatpickr-current-month {
-    font-size: 110% !important;
-    padding: 4px 0 !important;
-}
-
-/* Input Field */
-.flatpickr-input {
-    background-color: #333 !important;
-    color: #ffc207 !important;
-    border: 1px solid #444 !important;
-    border-radius: 6px !important;
-    padding: 8px 12px !important;
-}
 `;
 document.head.appendChild(style);
         
