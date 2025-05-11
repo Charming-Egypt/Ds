@@ -1040,16 +1040,16 @@
         }
       });
 
-                  // Initialize Flatpickr with proper configuration
+                  // Initialize Flatpickr with tomorrow as the minimum date
 flatpickr("#tripDate", {
     locale: "en",
-    minDate: "today", // Automatically disables past dates
+    minDate: new Date().fp_incr(1), // Tomorrow's date
     dateFormat: "Y-m-d",
     inline: false,
     theme: "dark",
-    disableMobile: true, // Better mobile experience
+    disableMobile: true,
     onReady: function(selectedDates, dateStr, instance) {
-        // Add translate='no' to prevent auto-translation of dates
+        // Add translate='no' to prevent auto-translation
         const elementsToTranslate = [
             instance.calendarContainer,
             instance.calendarContainer.querySelector('.flatpickr-weekdays'),
