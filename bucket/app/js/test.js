@@ -284,8 +284,7 @@ function loadMediaContent(mediaData) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
-            ${priceInUSD} $<br>
-      <span class="text-xs">${Math.round(totalPrice)} EGP</span>
+            ${priceInUSD} $
       </div>
           <div class="tour-title-overlay">
             
