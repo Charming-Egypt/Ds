@@ -1,9 +1,3 @@
-
-
-
-
-
-
 .trt input{color:#333;}
     /* Custom Styles */
     .iti__selected-flag {
@@ -82,7 +76,7 @@
     .tour-details {
       flex: 1;
       min-width: 300px;
-      padding: 15px;
+      padding: 5px;
     }
     
     /* Right Column - Booking Form */
@@ -235,6 +229,7 @@
       color: white;
       display: flex;
       gap: 15px;
+      margin-bottom:5px;
     }
     
     .tour-meta-item {
