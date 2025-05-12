@@ -294,7 +294,7 @@ function loadMediaContent(mediaData) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="tour-title-overlay">
-            <h1>${currentTrip.name}</h1>
+        
           </div>
         `;
       }
