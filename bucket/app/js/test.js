@@ -214,7 +214,11 @@ async function fetchAllTripData() {
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
-    priceElement.textContent = `EGP ${currentTrip.price}`;
+    const priceInUSD = (currentTrip.price / exchangeRate).toFixed(2);
+    priceElement.innerHTML = `
+      <span class="notranslate">${priceInUSD} $</span>
+      <span class="text-sm text-gray-500 notranslate">(${currentTrip.price} EGP)</span>
+    `;
   }
 }
 
@@ -274,7 +278,10 @@ function loadMediaContent(mediaData) {
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="price-tag notranslate">EGP ${currentTrip.price}</div>
+          <div class="price-tag notranslate">
+      ${priceInUSD} $<br>
+      <span class="text-xs">${currentTrip.price} EGP</span>
+    </div>
           <div class="tour-title-overlay">
             
             <div class="tour-meta">
