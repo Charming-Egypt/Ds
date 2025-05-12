@@ -905,47 +905,10 @@ async function submitForm() {
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
 
-    showToast('Booking submitted! Opening payment window...');
+    showToast('Booking submitted! Redirecting to payment...');
     
-    // Open payment in full-screen popup
-    const width = Math.min(window.screen.width, 1200);
-    const height = Math.min(window.screen.height, 800);
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    
-    const paymentWindow = window.open(
-      kashierUrl,
-      'PaymentWindow',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,location=no,status=no,menubar=no`
-    );
-    
-    // Focus the window if it exists
-    if (paymentWindow) {
-      paymentWindow.focus();
-      
-      // Check if the window is closed every second
-      const checkWindowClosed = setInterval(() => {
-        if (paymentWindow.closed) {
-          clearInterval(checkWindowClosed);
-          // Refresh the page when payment window is closed
-          window.location.reload();
-        }
-      }, 1000);
-    } else {
-      // If popup was blocked, show error and provide alternative
-      showToast('Popup was blocked. Please allow popups or click the button below to proceed.', 'error');
-      const proceedBtn = document.createElement('button');
-      proceedBtn.textContent = 'Proceed to Payment';
-      proceedBtn.className = 'btn btn-primary mt-2';
-      proceedBtn.onclick = () => window.location.href = kashierUrl;
-      
-      const toast = document.querySelector('.toast-error');
-      if (toast) {
-        toast.appendChild(proceedBtn);
-      } else {
-        window.location.href = kashierUrl;
-      }
-    }
+    // Redirect to payment page in the same window
+    window.location.href = kashierUrl;
     
   } catch (error) {
     console.error('Submission Error:', error);
@@ -1089,7 +1052,7 @@ window.onload = async function () {
   initNumberControls();
 
   // Initialize date picker
-flatpickr("#tripDate", {
+  flatpickr("#tripDate", {
     locale: "en",
     minDate: new Date().fp_incr(1), // Tomorrow's date
     dateFormat: "Y-m-d",
@@ -1104,105 +1067,103 @@ flatpickr("#tripDate", {
         elements.forEach(el => el?.setAttribute('translate', 'no'));
     },
     onChange: updateSummary
-});
+  });
 
-// Inject your exact CSS with enhanced reliability
-const style = document.createElement('style');
-style.textContent = `
-/* Flatpickr Dark Theme Overrides */
-.flatpickr-calendar {
-  background: #222 !important;
-  color: #ffc207 !important;
-  border-radius: 10px !important;
-  border: 1px solid #333 !important;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
-}
+  // Inject CSS for date picker
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Flatpickr Dark Theme Overrides */
+    .flatpickr-calendar {
+      background: #222 !important;
+      color: #ffc207 !important;
+      border-radius: 10px !important;
+      border: 1px solid #333 !important;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+    }
 
-/* Month header */
-.flatpickr-months,
-.flatpickr-weekdays {
-  background: #222 !important;
-}
+    /* Month header */
+    .flatpickr-months,
+    .flatpickr-weekdays {
+      background: #222 !important;
+    }
 
-.flatpickr-month,
-.flatpickr-weekday {
-  color: #ffc207 !important;
-}
+    .flatpickr-month,
+    .flatpickr-weekday {
+      color: #ffc207 !important;
+    }
 
-/* Navigation arrows */
-.flatpickr-prev-month,
-.flatpickr-next-month,
-.flatpickr-prev-month svg,
-.flatpickr-next-month svg {
-  color: #ffc107 !important;
-  fill: #ffc107 !important;
-}
+    /* Navigation arrows */
+    .flatpickr-prev-month,
+    .flatpickr-next-month,
+    .flatpickr-prev-month svg,
+    .flatpickr-next-month svg {
+      color: #ffc107 !important;
+      fill: #ffc107 !important;
+    }
 
-/* Day cells */
-.flatpickr-day {
-  color: #ffc207 !important;
-  background: #333 !important;
-  border-radius: 8px !important;
-  border: none !important;
-}
+    /* Day cells */
+    .flatpickr-day {
+      color: #ffc207 !important;
+      background: #333 !important;
+      border-radius: 8px !important;
+      border: none !important;
+    }
 
-/* Hover state */
-.flatpickr-day:not(.flatpickr-disabled):hover {
-  background: #444 !important;
-  color: #ffc207 !important;
-}
+    /* Hover state */
+    .flatpickr-day:not(.flatpickr-disabled):hover {
+      background: #444 !important;
+      color: #ffc207 !important;
+    }
 
-/* Selected day */
-.flatpickr-day.selected {
-  background: #ffc207 !important;
-  color: #111 !important;
-  font-weight: bold !important;
-}
+    /* Selected day */
+    .flatpickr-day.selected {
+      background: #ffc207 !important;
+      color: #111 !important;
+      font-weight: bold !important;
+    }
 
-/* Adjacent month days */
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-  color: #666 !important;
-  background: transparent !important;
-}
+    /* Adjacent month days */
+    .flatpickr-day.prevMonthDay,
+    .flatpickr-day.nextMonthDay {
+      color: #666 !important;
+      background: transparent !important;
+    }
 
-/* Today */
-.flatpickr-day.today {
-  border: 1px solid #ffc107 !important;
-}
+    /* Today */
+    .flatpickr-day.today {
+      border: 1px solid #ffc107 !important;
+    }
 
-.flatpickr-day.today.flatpickr-disabled {
-  background: #333 !important;
-  color: #fff !important;
-  border-color: #E64A19 !important;
-}
+    .flatpickr-day.today.flatpickr-disabled {
+      background: #333 !important;
+      color: #fff !important;
+      border-color: #E64A19 !important;
+    }
 
-.flatpickr-day.today.selected {
-  background: #388E3C !important;
-  color: #fff !important;
-}
+    .flatpickr-day.today.selected {
+      background: #388E3C !important;
+      color: #fff !important;
+    }
 
-/* Disabled days */
-.flatpickr-day.flatpickr-disabled,
-.flatpickr-day.flatpickr-disabled:hover,
-.prev-day-disabled {
-  background: #333 !important;
-  color: #666 !important;
-  opacity: 0.4 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
-}
+    /* Disabled days */
+    .flatpickr-day.flatpickr-disabled,
+    .flatpickr-day.flatpickr-disabled:hover,
+    .prev-day-disabled {
+      background: #333 !important;
+      color: #666 !important;
+      opacity: 0.4 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
 
-/* Time input */
-.flatpickr-time input,
-.flatpickr-time .flatpickr-time-separator,
-.flatpickr-time .flatpickr-am-pm {
-  color: #ffc207 !important;
-}
-`;
-document.head.appendChild(style);
-        
-
+    /* Time input */
+    .flatpickr-time input,
+    .flatpickr-time .flatpickr-time-separator,
+    .flatpickr-time .flatpickr-am-pm {
+      color: #ffc207 !important;
+    }
+  `;
+  document.head.appendChild(style);
 
   // Trip type change handler
   document.getElementById('tripType').addEventListener('change', function() {
