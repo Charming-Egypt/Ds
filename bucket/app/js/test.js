@@ -274,9 +274,9 @@ function loadMediaContent(mediaData) {
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="price-tag">EGP ${currentTrip.price}</div>
+          <div class="price-tag notranslate">EGP ${currentTrip.price}</div>
           <div class="tour-title-overlay">
-            <h1>${currentTrip.name}</h1>
+            
             <div class="tour-meta">
               <span class="tour-meta-item">
                 <i class="fas fa-star"></i> ${currentTrip.rating?.average?.toFixed(1) || '4.9'}
@@ -332,7 +332,7 @@ function loadMediaContent(mediaData) {
           <i class="fas fa-play"></i>
         </div>
         <div class="tour-title-overlay">
-          <h1>${currentTrip.name}</h1>
+          
         </div>
       `;
       
@@ -383,7 +383,7 @@ function loadMediaContent(mediaData) {
                   <i class="fas fa-play"></i>
                 </div>
                 <div class="tour-title-overlay">
-                  <h1>${currentTrip.name}</h1>
+                
                 </div>
               `;
               currentVideoSlide = null;
