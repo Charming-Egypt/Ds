@@ -229,7 +229,7 @@
       color: white;
       display: flex;
       gap: 15px;
-      margin-bottom:5px;
+      bottom:25px;
     }
     
     .tour-meta-item {
