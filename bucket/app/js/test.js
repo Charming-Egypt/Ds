@@ -214,10 +214,12 @@ async function fetchAllTripData() {
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
-    const priceInUSD = (currentTrip.price / exchangeRate).toFixed(2);
+    // Calculate total price with taxes and commission
+    const totalPrice = calculateTotalWithTaxesAndCommission();
+    const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
     priceElement.innerHTML = `
       <span class="notranslate">${priceInUSD} $</span>
-      <span class="text-sm text-gray-500 notranslate">(${currentTrip.price} EGP)</span>
+      <span class="text-sm text-gray-500 notranslate">(${totalPrice.toFixed(2)} EGP)</span>
     `;
   }
 }
@@ -267,23 +269,24 @@ function loadMediaContent(mediaData) {
   if (swiperWrapper) swiperWrapper.innerHTML = '';
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
-const priceInUSD = currentTrip.price ? (currentTrip.price / exchangeRate).toFixed(2) : '0.00';
-  
+// Calculate total price with taxes and commission
+  const totalPrice = calculateTotalWithTaxesAndCommission();
+  const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
+
   // Add image slides
   if (mediaData.images && mediaData.images.length > 0) {
     mediaData.images.forEach((imageUrl, index) => {
       // Add main slide
       const slide = document.createElement('div');
       slide.className = 'swiper-slide';
-      
       // First slide gets special treatment (price tag and title)
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
-      ${priceInUSD} $<br>
-      <span class="text-xs">${currentTrip.price} EGP</span>
-    </div>
+            ${priceInUSD} $<br>
+      <span class="text-xs">${totalPrice.toFixed(2)} EGP</span>
+      </div>
           <div class="tour-title-overlay">
             
             <div class="tour-meta">
