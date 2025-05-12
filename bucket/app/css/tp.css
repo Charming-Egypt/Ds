@@ -1,35 +1,4 @@
-#tripDate { background: #525f7f; color: #fff; font-size: 1em; border-radius: 8px; border: none; padding: 10px; width: 100%; text-align: center; box-sizing: border-box; }
 
-/* === End Corrected Input and Select Styles === */
-
-
-        .flatpickr-calendar { background-color: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; }
-        .flatpickr-day { color: #ffc207 !important; background-color: #333 !important; border-radius: 8px !important; }
-        .flatpickr-day.selected { background-color: #ffc207 !important; color: #111 !important; }
-        .flatpickr-day:hover { background-color: #444 !important; color: #ffc207 !important; }
-        .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay { color: #666 !important; }
-        .flatpickr-months .flatpickr-prev-month,
-        .flatpickr-months .flatpickr-next-month { color: #ffc207 !important; }
-        .flatpickr-months .flatpickr-month { color: #ffc107 !important; background-color: #222 !important; border-radius: 8px !important; }
-        .flatpickr-months .flatpickr-prev-month svg,
-        .flatpickr-months .flatpickr-next-month svg { fill: #ffc107 !important; }
-        .flatpickr-weekday { color: #ffc207 !important; }
-        .flatpickr-day.today.flatpickr-disabled {
-             background-color: #333 !important;
-             color: #ffffff !important;
-             border: 1px solid #E64A19 !important;
-        }
-        .flatpickr-day.today.selected {
-             background-color: #388E3C !important;
-             color: #ffffff !important;
-        }
-
-
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; z-index: 999; }
-        .prev-day-disabled { pointer-events: none; opacity: 0.4; background-color: #333 !important; cursor: not-allowed; }
-          input[readonly] { background-color: #444; cursor: default; }
-        
 
 
 
@@ -69,3 +38,518 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+
+
+
+
+
+
+
+    :root {
+      --primary: #f59e0b;
+      --primary-dark: #d97706;
+      --dark-900: #0f172a;
+      --dark-800: #1e293b;
+      --dark-700: #334155;
+      --gray-500: #64748b;
+      --gray-400: #94a3b8;
+      --gray-300: #cbd5e1;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      
+    }
+  
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    /* Tour Booking Container */
+    .tour-booking-container {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      max-width: 100%;
+      overflow-x: hidden;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    /* Left Column - Main Content */
+    .tour-details {
+      flex: 1;
+      min-width: 300px;
+      padding: 15px;
+    }
+    
+    /* Right Column - Booking Form */
+    .booking-form-container {
+      flex: 0 0 350px;
+      padding: 15px;
+    
+      border-radius: 1rem;
+    }
+    
+    /* Swiper Gallery Styles */
+    .swiper {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .swiper-slide {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .swiper-slide img, .swiper-slide iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .swiper-slide-video {
+      position: relative;
+      background-color: #000;
+    }
+    
+    .swiper-slide-video .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background-color: rgba(245, 158, 11, 0.9);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+    
+    .swiper-slide-video .play-button:hover {
+      background-color: rgba(217, 119, 6, 0.9);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .swiper-slide-video .play-button i {
+      color: #0f172a;
+      font-size: 24px;
+    }
+    
+    .swiper-pagination-bullet {
+      background: white;
+      opacity: 0.5;
+    }
+    
+    .swiper-pagination-bullet-active {
+      background: var(--primary);
+      opacity: 1;
+    }
+    
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: var(--primary);
+      background-color: rgba(15, 23, 42, 0.5);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+      font-size: 20px;
+    }
+    
+    /* Thumbnail Gallery */
+    .thumbnail-gallery {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+      border-radius: 4px;
+      border: 2px solid white;
+      object-fit: cover;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .thumbnail:hover {
+      transform: scale(1.1);
+      border-color: var(--primary);
+    }
+    
+    .thumbnail.active {
+      border-color: var(--primary);
+    }
+    
+    /* Price Tag on First Slide */
+    .price-tag {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      z-index: 10;
+    }
+    
+    /* Tour Title Overlay */
+    .tour-title-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+      z-index: 10;
+    }
+    
+    .tour-title-overlay h1 {
+      color: white;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    .tour-meta {
+      color: white;
+      display: flex;
+      gap: 15px;
+    }
+    
+    .tour-meta-item {
+      
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+    
+    /* Rating Styles */
+    .rating-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    
+    .rating-stars {
+      color: #ffc107;
+      font-size: 18px;
+    }
+    
+    .rating-count {
+      font-size: 14px;
+      color: var(--gray-400);
+    }
+    
+    /* Timeline Styles */
+    .timeline-container {
+      margin: 20px 0;
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 20px;
+    }
+    
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: -20px;
+      width: 2px;
+      background-color: var(--primary);
+      opacity: 0.3;
+    }
+    
+    .timeline-item:last-child::before {
+      display: none;
+    }
+    
+    .timeline-time {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .timeline-time::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--dark-900);
+    }
+    
+    .timeline-content {
+      margin-left: 10px;
+    }
+    
+    .timeline-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .timeline-description {
+      color: var(--gray-300);
+      font-size: 14px;
+    }
+    
+    /* Form Steps */
+    .form-step {
+      display: none;
+    }
+    
+    .form-step.active {
+      display: block;
+    }
+    
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: var(--dark-700);
+      border: 1px solid var(--gray-500);
+      border-radius: 0.5rem;
+      color: white;
+      font-size: 1rem;
+    }
+    
+    /* Number Input Controls */
+    .number-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .number-box {
+      background-color: var(--dark-700);
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    
+    .number-box label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--gray-300);
+    }
+    
+    .button-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .button-container input {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem;
+      background-color: var(--dark-800);
+      border: 1px solid var(--gray-500);
+      border-radius: 0.25rem;
+      color: white;
+    }
+    
+    .bb {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: var(--dark-900);
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 0.5rem;
+      background-color: var(--dark-700);
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--dark-900);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: var(--dark-700);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--gray-500);
+    }
+    
+    /* Summary Section */
+    .summary-section {
+      background-color: var(--dark-700);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--gray-500);
+    }
+    
+    .summary-label {
+      color: var(--gray-400);
+    }
+    
+    .summary-value {
+      color: white;
+      font-weight: 500;
+    }
+    
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: var(--dark-800);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .toast-success {
+      border-left: 4px solid #10b981;
+    }
+    
+    .toast-error {
+      border-left: 4px solid #ef4444;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .tour-booking-container > div {
+        flex: 0 0 100% !important;
+      }
+      
+      .tour-gallery {
+        height: 300px !important;
+      }
+      
+      .booking-form-container {
+        margin-top: 2rem;
+      }
+    }
+    
+    /* Utility Classes */
+    .hidden {
+      display: none;
+    }
+    
+    .notranslate {
+      -webkit-translate: no;
+      translate: no;
+    }
+    
+    .border-red-500 {
+      border-color: #ef4444 !important;
+    }
+    
+    .text-red-500 {
+      color: #ef4444;
+    }
+  
