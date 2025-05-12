@@ -214,7 +214,7 @@ async function fetchAllTripData() {
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
-    priceElement.textContent = `${currentTrip.price} EGP`;
+    priceElement.textContent = `EGP ${currentTrip.price}`;
   }
 }
 
@@ -274,7 +274,7 @@ function loadMediaContent(mediaData) {
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="price-tag notranslate">${currentTrip.price} EGP</div>
+          <div class="price-tag notranslate">EGP ${currentTrip.price}</div>
           <div class="tour-title-overlay">
             
             <div class="tour-meta">
