@@ -266,6 +266,8 @@ function loadMediaContent(mediaData) {
   // Clear existing slides and thumbnails
   if (swiperWrapper) swiperWrapper.innerHTML = '';
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
+
+const priceInUSD = currentTrip.price ? (currentTrip.price / exchangeRate).toFixed(2) : '0.00';
   
   // Add image slides
   if (mediaData.images && mediaData.images.length > 0) {
