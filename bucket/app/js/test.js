@@ -978,66 +978,97 @@
         }
       }
 
-      // Initialize number controls
-      document.getElementById('adultsPlus').addEventListener('click', () => {
-        const input = document.getElementById('adults');
-        const currentValue = parseInt(input.value);
-        if (currentValue < MAX_PER_TYPE) {
-          input.value = currentValue + 1;
-          updateInfantsMax();
-          updateSummary();
-        }
-      });
+      // Number Controls
+function initNumberControls() {
+  // Adults controls
+  const adultsPlus = document.getElementById('adultsPlus');
+  const adultsMinus = document.getElementById('adultsMinus');
+  
+  if (adultsPlus && adultsMinus) {
+    adultsPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('adults');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+        updateInfantsMax();
+      }
+    });
+    
+    adultsMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('adults');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 1) {
+        input.value = currentValue - 1;
+        updateInfantsMax();
+      }
+    });
+  }
 
-      document.getElementById('adultsMinus').addEventListener('click', () => {
-        const input = document.getElementById('adults');
-        const currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-          input.value = currentValue - 1;
-          updateInfantsMax();
-          updateSummary();
-        }
-      });
+  // Children under 12 controls
+  const childrenPlus = document.getElementById('childrenUnder12Plus');
+  const childrenMinus = document.getElementById('childrenUnder12Minus');
+  
+  if (childrenPlus && childrenMinus) {
+    childrenPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('childrenUnder12');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+      }
+    });
+    
+    childrenMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('childrenUnder12');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 0) {
+        input.value = currentValue - 1;
+      }
+    });
+  }
 
-      document.getElementById('childrenUnder12Plus').addEventListener('click', () => {
-        const input = document.getElementById('childrenUnder12');
-        const currentValue = parseInt(input.value);
-        if (currentValue < MAX_PER_TYPE) {
-          input.value = currentValue + 1;
-          updateSummary();
-        }
-      });
-
-      document.getElementById('childrenUnder12Minus').addEventListener('click', () => {
-        const input = document.getElementById('childrenUnder12');
-        const currentValue = parseInt(input.value);
-        if (currentValue > 0) {
-          input.value = currentValue - 1;
-          updateSummary();
-        }
-      });
-
-      document.getElementById('infantsPlus').addEventListener('click', () => {
-        const input = document.getElementById('infants');
-        const adultsInput = document.getElementById('adults');
-        const currentValue = parseInt(input.value);
-        const adults = parseInt(adultsInput.value);
-        const maxInfants = Math.min(adults * MAX_INFANTS_PER_ADULT, MAX_TOTAL_INFANTS);
-        
-        if (currentValue < maxInfants) {
-          input.value = currentValue + 1;
-          updateSummary();
-        }
-      });
-
-      document.getElementById('infantsMinus').addEventListener('click', () => {
-        const input = document.getElementById('infants');
-        const currentValue = parseInt(input.value);
-        if (currentValue > 0) {
-          input.value = currentValue - 1;
-          updateSummary();
-        }
-      });
+  // Infants controls
+  const infantsPlus = document.getElementById('infantsPlus');
+  const infantsMinus = document.getElementById('infantsMinus');
+  
+  if (infantsPlus && infantsMinus) {
+    infantsPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('infants');
+      const adultsInput = document.getElementById('adults');
+      if (!input || !adultsInput) return;
+      
+      const currentValue = parseInt(input.value);
+      const adults = parseInt(adultsInput.value);
+      const maxInfants = Math.floor(adults / 2) * MAX_INFANTS_PER_2_ADULTS;
+      
+      if (currentValue < maxInfants && currentValue < MAX_PER_TYPE) {
+        input.value = currentValue + 1;
+      }
+    });
+    
+    infantsMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('infants');
+      if (!input) return;
+      
+      const currentValue = parseInt(input.value);
+      if (currentValue > 0) {
+        input.value = currentValue - 1;
+      }
+    });
+  }
 
 
 
