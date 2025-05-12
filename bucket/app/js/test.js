@@ -219,7 +219,7 @@ function updatePriceDisplay() {
     const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
     priceElement.innerHTML = `
       <span class="notranslate">${priceInUSD} $</span>
-      <span class="text-sm text-gray-500 notranslate">(${totalPrice.toFixed(2)} EGP)</span>
+      <span class="text-sm text-gray-500 notranslate">(${Math.round(totalPrice)} EGP)</span>
     `;
   }
 }
@@ -285,7 +285,7 @@ function loadMediaContent(mediaData) {
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
             ${priceInUSD} $<br>
-      <span class="text-xs">${totalPrice.toFixed(2)} EGP</span>
+      <span class="text-xs">${Math.round(totalPrice)} EGP</span>
       </div>
           <div class="tour-title-overlay">
             
