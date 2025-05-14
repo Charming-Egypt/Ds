@@ -183,7 +183,7 @@ function determinePaymentStatus(responseCode, transactionStatus) {
 
 async function verifyPaymentWithBackend(merchantOrderId) {
   try {
-    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/verify-payment', {
+    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ merchantOrderId })
