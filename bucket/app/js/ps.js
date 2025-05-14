@@ -153,10 +153,8 @@ function determinePaymentStatus(responseCode, transactionStatus) {
 async function updateBookingStatus(bookingId, statusData, user) {
   const updates = {
     status: statusData.status,
-    paymentStatus: statusData.paymentStatus,
-    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-    transactionResponseCode: statusData.responseCode,
-    transactionResponseMessage: statusData.responseMessage
+    paymentStatus: statusData.paymentStatus
+    
   };
 
   // Add audit info for admin/moderator
@@ -176,7 +174,7 @@ async function updateBookingStatus(bookingId, statusData, user) {
 function populateVoucherDisplay(data) {
   if (!data) return;
   document.getElementById('voucher-ref').textContent = BookingId || data.bookingId || 'N/A';
-  document.getElementById('voucher-transaction').textContent = data.transactionId || 'N/A';
+  document.getElementById('voucher-transaction').textContent = paymentData.orderId || 'N/A';
   document.getElementById('voucher-amount').textContent = `${data.totalPrice || '0'} ${data.currency || 'EGP'}`;
   document.getElementById('voucher-card').textContent = `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
   document.getElementById('customer-name2').textContent = data.username || data.name || 'Valued Customer';
