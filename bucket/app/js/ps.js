@@ -298,14 +298,15 @@ function handlePrintVoucher() {
 }
 
 async function initializeApp() {
-  // Get refNumber from localStorage
-  BookingId = localStorage.getItem('currentBookingRef');
-  
-  if (!BookingId) {
-    displayFailure(null, 'No booking data found. Please start your booking again.');
+  const urlParams = new URLSearchParams(window.location.search);
+  const merchantOrderId = urlParams.get('merchantOrderId');
+
+  if (!merchantOrderId) {
+    displayFailure(null, 'Missing order ID. Please restart the payment process.');
     return;
   }
 
+  BookingId = merchantOrderId;
   document.getElementById('loading-layout').classList.remove('hidden');
 
   try {
@@ -317,19 +318,10 @@ async function initializeApp() {
       currentUserRole = await getUserRole(user.uid);
     }
 
-    // First check if we have booking data in localStorage
-    const bookingDataFromStorage = JSON.parse(localStorage.getItem(`booking_${BookingId}`));
-    
-    if (!bookingDataFromStorage) {
-      displayFailure(BookingId, 'No booking data found in storage. Please contact support.');
-      return;
-    }
-
-    // Verify payment status with the payment processor
     const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ merchantOrderId: BookingId })
+      body: JSON.stringify({ merchantOrderId })
     });
 
     if (!response.ok) {
@@ -355,39 +347,43 @@ async function initializeApp() {
       const maskedCard = paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••';
 
       if (status === 'SUCCESS') {
-        // Combine payment data with stored booking data
-        BookingData = {
-          ...bookingDataFromStorage,
+        // Get existing booking data from Firebase
+        const bookingSnapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
+        BookingData = bookingSnapshot.val();
+        
+        if (!BookingData) {
+          throw new Error('Booking not found in database');
+        }
+
+        // Only update payment-related fields
+        const paymentUpdates = {
+          paymentStatus: 'paid',
           transactionId,
           cardBrand,
           maskedCard,
-          paymentStatus: 'SUCCESS',
-          paymentDate: new Date().toISOString(),
           totalPrice: amount,
-          currency
+          currency,
+          paymentDate: firebase.database.ServerValue.TIMESTAMP
         };
-        
-        // Save to Firebase
-        const updates = {
-          ...BookingData,
-          status: "completed",
-          lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP
-        };
-        
-        // Add audit fields for admin/moderator updates
+
+        // Add audit fields if admin/moderator
         if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
-          updates.lastUpdatedBy = user.uid;
+          paymentUpdates.lastUpdatedBy = user?.uid || 'system';
+          paymentUpdates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
         }
+
+        await db.ref(`trip-bookings/${BookingId}`).update(paymentUpdates);
         
-        await db.ref(`trip-bookings/${BookingId}`).update(updates);
-        
-        // Remove from localStorage after successful save
-        localStorage.removeItem(`booking_${BookingId}`);
+        // Merge payment data with existing booking data
+        BookingData = {
+          ...BookingData,
+          ...paymentUpdates
+        };
         
         populateVoucherDisplay(BookingData);
         document.getElementById('success-layout').classList.remove('hidden');
         launchConfetti();
-        
+
         // Send voucher email if not already sent
         if (!BookingData.voucherSent && user) {
           const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
@@ -397,18 +393,18 @@ async function initializeApp() {
         }
       } else {
         displayFailure(
-          BookingId,
+          merchantOrderId,
           `Payment ${latestTransaction.transactionResponseMessage?.en || 'failed'} (${status})`,
           amount,
           currency
         );
       }
     } else {
-      displayFailure(BookingId, 'No transactions found for this order.', '', '');
+      displayFailure(merchantOrderId, 'No transactions found for this order.', '', '');
     }
 
   } catch (error) {
-    console.error('Error processing payment status:', error.message);
+    console.error('Error processing payment:', error.message);
     displayFailure(BookingId, `Error processing payment: ${error.message}`);
   } finally {
     document.getElementById('loading-layout').classList.add('hidden');
