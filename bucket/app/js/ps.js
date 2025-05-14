@@ -298,11 +298,11 @@ function handlePrintVoucher() {
 }
 
 async function initializeApp() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const merchantOrderId = urlParams.get('merchantOrderId');
-
-  if (!merchantOrderId) {
-    displayFailure(null, 'Missing order ID. Please restart the payment process.');
+  // Get refNumber from localStorage
+  BookingId = localStorage.getItem('currentBookingRef');
+  
+  if (!BookingId) {
+    displayFailure(null, 'No booking data found. Please start your booking again.');
     return;
   }
 
@@ -317,10 +317,19 @@ async function initializeApp() {
       currentUserRole = await getUserRole(user.uid);
     }
 
+    // First check if we have booking data in localStorage
+    const bookingDataFromStorage = JSON.parse(localStorage.getItem(`booking_${BookingId}`));
+    
+    if (!bookingDataFromStorage) {
+      displayFailure(BookingId, 'No booking data found in storage. Please contact support.');
+      return;
+    }
+
+    // Verify payment status with the payment processor
     const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ merchantOrderId })
+      body: JSON.stringify({ merchantOrderId: BookingId })
     });
 
     if (!response.ok) {
@@ -345,37 +354,35 @@ async function initializeApp() {
       const cardBrand = paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card';
       const maskedCard = paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••';
 
-      BookingId = merchantOrderId;
-
       if (status === 'SUCCESS') {
-        // Get booking data from Firebase
-        const snapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
-        BookingData = { 
-          transactionId, 
-          cardBrand, 
-          maskedCard, 
-          totalPrice: amount, 
-          currency,
-          ...snapshot.val()
-        };
-        
-        // Update booking with payment details
-        const updates = {
-          paymentStatus: 'SUCCESS',
+        // Combine payment data with stored booking data
+        BookingData = {
+          ...bookingDataFromStorage,
           transactionId,
           cardBrand,
           maskedCard,
+          paymentStatus: 'SUCCESS',
+          paymentDate: new Date().toISOString(),
           totalPrice: amount,
-          currency,
+          currency
+        };
+        
+        // Save to Firebase
+        const updates = {
+          ...BookingData,
           status: "completed",
           lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP
         };
         
+        // Add audit fields for admin/moderator updates
         if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
           updates.lastUpdatedBy = user.uid;
         }
         
         await db.ref(`trip-bookings/${BookingId}`).update(updates);
+        
+        // Remove from localStorage after successful save
+        localStorage.removeItem(`booking_${BookingId}`);
         
         populateVoucherDisplay(BookingData);
         document.getElementById('success-layout').classList.remove('hidden');
@@ -390,19 +397,19 @@ async function initializeApp() {
         }
       } else {
         displayFailure(
-          merchantOrderId,
+          BookingId,
           `Payment ${latestTransaction.transactionResponseMessage?.en || 'failed'} (${status})`,
           amount,
           currency
         );
       }
     } else {
-      displayFailure(merchantOrderId, 'No transactions found for this order.', '', '');
+      displayFailure(BookingId, 'No transactions found for this order.', '', '');
     }
 
   } catch (error) {
-    console.error('Error fetching payment status:', error.message);
-    displayFailure(merchantOrderId, `Error checking payment status: ${error.message}`);
+    console.error('Error processing payment status:', error.message);
+    displayFailure(BookingId, `Error processing payment: ${error.message}`);
   } finally {
     document.getElementById('loading-layout').classList.add('hidden');
   }
