@@ -348,7 +348,7 @@ async function initializeApp() {
       BookingId = merchantOrderId;
 
       if (status === 'SUCCESS') {
-        // Get booking data with proper authorization check
+        // Get booking data from Firebase
         const snapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
         BookingData = { 
           transactionId, 
@@ -359,34 +359,33 @@ async function initializeApp() {
           ...snapshot.val()
         };
         
+        // Update booking with payment details
+        const updates = {
+          paymentStatus: 'SUCCESS',
+          transactionId,
+          cardBrand,
+          maskedCard,
+          totalPrice: amount,
+          currency,
+          status: "completed",
+          lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
+          updates.lastUpdatedBy = user.uid;
+        }
+        
+        await db.ref(`trip-bookings/${BookingId}`).update(updates);
+        
         populateVoucherDisplay(BookingData);
         document.getElementById('success-layout').classList.remove('hidden');
         launchConfetti();
-
-        if (user) {
-          const updates = {
-            paymentStatus: 'SUCCESS',
-            transactionId,
-            cardBrand,
-            maskedCard,
-            totalPrice: amount,
-            currency
-          };
-          
-          // Add audit fields for admin/moderator updates
-          if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
-            updates.lastUpdatedBy = user.uid;
-            updates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
-          }
-          
-          await db.ref(`trip-bookings/${BookingId}`).update(updates);
-          
-          // Send voucher email if not already sent and user has permission
-          if (!BookingData.voucherSent) {
-            const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
-            if (canSendVoucher) {
-              await sendVoucherEmail(user, 'email-status-message');
-            }
+        
+        // Send voucher email if not already sent
+        if (!BookingData.voucherSent && user) {
+          const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
+          if (canSendVoucher) {
+            await sendVoucherEmail(user, 'email-status-message');
           }
         }
       } else {
