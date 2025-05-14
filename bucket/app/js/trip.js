@@ -898,7 +898,7 @@ async function submitForm() {
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
-      merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
+      merchantRedirect: 'https://www.discover-sharm.com/p/thank-you.html',
       failureRedirect: 'false',
       redirectMethod: 'get'
     });
