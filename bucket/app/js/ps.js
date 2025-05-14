@@ -33,7 +33,7 @@ const PAYMENT_STATUS = {
 
 // Transaction status mapping
 const TRANSACTION_STATUS = {
-  SUCCESS: 'completed',
+  SUCCESS: 'paid',
   FAILED: 'failed',
   CANCELLED: 'cancelled',
   PENDING: 'processing'
@@ -210,7 +210,142 @@ function handlePrintVoucher() {
     printJS({
       printable: 'voucher-content',
       type: 'html',
-      scanStyles: true,
+      style:`.voucher-container {
+      display:none; /* Initially hidden for printJS and general layout control */
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .voucher-header {
+      background: linear-gradient(135deg, #ffc107 0%, #426 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .voucher-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(to right, #3b82f6, #10b981, #f59e0b);
+    }
+    
+    .voucher-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .voucher-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .voucher-body {
+      padding: 5px;
+    }
+    
+    .detail-section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Adjusted for better responsiveness */
+      gap: 1rem; /* Adjusted gap */
+      margin-bottom: 2rem;
+      padding: 0 1rem; /* Added padding for smaller screens */
+    }
+    
+    .detail-card {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 1rem; /* Adjusted padding */
+      border: 1px solid #e5e7eb;
+    }
+    
+    .detail-label {
+      font-size: 0.875rem;
+      color: #4b5563;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .detail-label img {
+      width:20px; /* Adjusted size */
+      height:20px; /* Adjusted size */
+      margin-right: 0.5rem;
+    }
+    
+    .detail-value {
+      font-size: 1rem; /* Adjusted size */
+      color: #111827;
+      font-weight: 500;
+      word-break: break-word; /* Added for long values */
+    }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem; /* Added padding */
+    }
+    
+    .section-title img {
+      width:20px;
+      height:20px;
+      margin-right: 0.5rem;
+    }
+    
+    .voucher-footer {
+      background: #f3f4f6;
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px dashed #d1d5db;
+    }
+    
+    .company-name {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+    
+    .company-contact {
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
+    
+    .threcolmn{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive columns */
+      gap: 1rem; /* Adjusted gap */
+      margin-bottom: 1rem; /* Adjusted margin */
+    }
+    
+    .confirmation-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #10b981;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 10; /* Ensure it's above header gradient */
+    }`,
+      scanStyles: false,
       onPrintDialogClose: () => {
         voucherEl.style.display = 'none';
       },
@@ -276,8 +411,7 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
       
       // Update booking with voucher sent info
       const updates = {
-        voucherSent: true,
-        voucherSentAt: firebase.database.ServerValue.TIMESTAMP
+        voucherSent: true
       };
       
       // Only admin/moderator can update these fields
