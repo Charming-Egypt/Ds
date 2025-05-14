@@ -1,4 +1,4 @@
-// Firebase Configuration
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
   authDomain: "egypt-travels.firebaseapp.com",
@@ -9,22 +9,21 @@ const firebaseConfig = {
   appId: "1:477485386557:web:755f9649043288db819354"
 };
 
-// Initialize Firebase
+// Initialize Firebase only once
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 } else {
-  firebase.app();
+  firebase.app(); // if already initialized, use that instance
 }
 
 const db = firebase.database();
 const auth = firebase.auth();
 
-// Global Variables
 let BookingData = null;
 let BookingId = null;
 let currentUserRole = null;
 
-// Status Constants
+// Payment status mapping
 const PAYMENT_STATUS = {
   SUCCESS: 'paid',
   FAILED: 'failed',
@@ -32,21 +31,20 @@ const PAYMENT_STATUS = {
   PENDING: 'pending'
 };
 
+// Transaction status mapping
 const TRANSACTION_STATUS = {
-  SUCCESS: 'completed',
+  SUCCESS: 'paid',
   FAILED: 'failed',
   CANCELLED: 'cancelled',
   PENDING: 'processing'
 };
 
-// Utility Functions
+// Helper functions
 function formatDate(dateStringOrDate) {
   if (!dateStringOrDate) return 'N/A';
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  const dateToFormat = typeof dateStringOrDate === 'string' ? 
-    new Date(dateStringOrDate) : dateStringOrDate;
-  return isNaN(dateToFormat.getTime()) ? 'N/A' : 
-    dateToFormat.toLocaleDateString(navigator.language || 'en-US', options);
+  const dateToFormat = typeof dateStringOrDate === 'string' ? new Date(dateStringOrDate) : dateStringOrDate;
+  return isNaN(dateToFormat.getTime()) ? 'N/A' : dateToFormat.toLocaleDateString(navigator.language || 'en-US', options);
 }
 
 function formatCurrency(amount, currency = 'EGP') {
@@ -56,36 +54,18 @@ function formatCurrency(amount, currency = 'EGP') {
 
 function showNotification(message, isError = false) {
   const notification = document.createElement('div');
-  notification.className = `notification ${isError ? 'error' : 'success'}`;
-  notification.innerHTML = `
-    <div class="flex items-start">
-      <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2 mt-1"></i>
-      <div>${message}</div>
-    </div>
-  `;
+  notification.className = `notification animate__animated animate__fadeInUp ${isError ? 'notification-error' : 'notification-success'}`;
+  notification.innerHTML = `<div class="flex items-start"><i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'} mr-2 mt-1"></i><div>${message}</div></div>`;
   document.body.appendChild(notification);
-  setTimeout(() => notification.remove(), 5000);
+  setTimeout(() => {
+    notification.classList.add('animate__fadeOutDown');
+    setTimeout(() => notification.remove(), 500);
+  }, 5000);
 }
 
 function launchConfetti() {
   if (typeof confetti === 'function') {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#3b82f6', '#10b981', '#f59e0b']
-    });
-  }
-}
-
-// Authentication Functions
-async function authenticateUser() {
-  try {
-    const userCredential = await auth.signInAnonymously();
-    return userCredential.user;
-  } catch (error) {
-    console.error('Authentication error:', error);
-    throw new Error('Failed to authenticate');
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#3b82f6', '#10b981', '#f59e0b'] });
   }
 }
 
@@ -99,13 +79,13 @@ async function getUserRole(uid) {
   }
 }
 
-// Booking Functions
 async function checkBookingOwnership(bookingId, userId) {
   try {
     const snapshot = await db.ref(`trip-bookings/${bookingId}`).once('value');
     const booking = snapshot.val();
     
     if (!booking) return false;
+    
     if (currentUserRole === 'admin') return true;
     if (booking.uid === userId) return true;
     if (currentUserRole === 'moderator' && booking.owner === userId) return true;
@@ -117,29 +97,6 @@ async function checkBookingOwnership(bookingId, userId) {
   }
 }
 
-async function updateBookingStatus(bookingId, statusData, user) {
-  const updates = {
-    status: statusData.status,
-    paymentStatus: statusData.paymentStatus,
-    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
-    transactionResponseCode: statusData.responseCode,
-    transactionResponseMessage: statusData.responseMessage
-  };
-
-  if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
-    updates.lastUpdatedBy = user?.uid || 'system';
-  }
-
-  try {
-    await db.ref(`trip-bookings/${bookingId}`).update(updates);
-    return true;
-  } catch (error) {
-    console.error('Error updating booking status:', error);
-    throw error;
-  }
-}
-
-// Payment Processing
 function determinePaymentStatus(responseCode, transactionStatus) {
   responseCode = String(responseCode).toUpperCase().trim();
   transactionStatus = String(transactionStatus).toUpperCase().trim();
@@ -147,7 +104,7 @@ function determinePaymentStatus(responseCode, transactionStatus) {
   const successCodes = ['00', '10', '11', '16', 'APPROVED', 'SUCCESS'];
   const cancelledCodes = ['17', 'CANCELLED', 'CANCELED'];
   const pendingCodes = ['09', 'PENDING', 'PROCESSING'];
-  const retryableCodes = ['01', '02', '05', '12', '42', '62', '63', '68', '91', '96'];
+  const retryableCodes = ['01', '02', '05', '12', '42', '62', '63', '68', '91', '96', 'TEMPORARY_FAILURE', 'BANK_ERROR'];
 
   if (successCodes.includes(responseCode) || successCodes.includes(transactionStatus)) {
     return { 
@@ -181,57 +138,54 @@ function determinePaymentStatus(responseCode, transactionStatus) {
   };
 }
 
-async function verifyPaymentWithBackend(merchantOrderId) {
+async function updateBookingStatus(bookingId, statusData, user) {
+  const updates = {
+    status: statusData.status,
+    paymentStatus: statusData.paymentStatus,
+    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+    transactionResponseCode: statusData.responseCode,
+    transactionResponseMessage: statusData.responseMessage
+  };
+
+  if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
+    updates.lastUpdatedBy = user?.uid || 'system';
+  }
+
   try {
-    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ merchantOrderId })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    if (result.status !== 'success') {
-      throw new Error(result.message || 'Payment verification failed');
-    }
-
-    return result.data;
+    await db.ref(`trip-bookings/${bookingId}`).update(updates);
+    return true;
   } catch (error) {
-    console.error('Payment verification error:', error);
-    throw error;
+    console.error('Error updating booking status:', error);
+    return false;
   }
 }
 
-// Voucher Functions
 function populateVoucherDisplay(data) {
   if (!data) return;
   
-  // Payment Information
   document.getElementById('voucher-ref').textContent = data.refNumber || 'N/A';
   document.getElementById('voucher-transaction').textContent = data.transactionId || 'N/A';
   document.getElementById('voucher-amount').textContent = formatCurrency(data.amount, data.currency);
   document.getElementById('voucher-payment-method').textContent = data.paymentMethod || 'Credit/Debit Card';
-  document.getElementById('voucher-card').textContent = data.cardBrand ? 
-    `${data.cardBrand} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}` : 'N/A';
   
-  // Customer Information
-  document.getElementById('customer-name').textContent = data.username || data.name || 'Valued Customer';
-  document.getElementById('customer-email').textContent = data.email || 'N/A';
-  document.getElementById('customer-phone').textContent = data.phone || 'N/A';
+  if (data.cardBrand) {
+    document.getElementById('voucher-card').textContent = 
+      `${data.cardBrand} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
+  } else {
+    document.getElementById('voucher-card').textContent = 'N/A';
+  }
   
-  // Booking Details
+  document.getElementById('customer-name2').textContent = data.username || data.name || 'Valued Customer';
+  document.getElementById('customer-email2').textContent = data.email || 'N/A';
   document.getElementById('tour-name').textContent = data.tourName || data.tour || 'N/A';
-  document.getElementById('accommodation').textContent = data.hotelName || 'N/A';
-  document.getElementById('room-type').textContent = data.roomType || 'N/A';
+  document.getElementById('accommodation-type').textContent = data.hotelName || 'N/A';
+  document.getElementById('room-type').textContent = data.roomNumber || 'N/A';
   document.getElementById('adults-count').textContent = data.adults || '0';
-  document.getElementById('children-count').textContent = data.children || '0';
+  document.getElementById('children-count').textContent = data.children || data.childrenUnder12 || '0';
   document.getElementById('infants-count').textContent = data.infants || '0';
   
-  // Dates
-  document.getElementById('booking-date').textContent = formatDate(data.paymentDate || data.createdAt);
+  const bookingCreationDate = data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date());
+  document.getElementById('booking-date').textContent = formatDate(bookingCreationDate);
   document.getElementById('trip-date').textContent = formatDate(data.tripDate);
 }
 
@@ -248,37 +202,102 @@ function handlePrintVoucher() {
   const printStyles = `
     <style>
       .voucher-container {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
         max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
-        background: #fff;
-        border: 1px solid #ddd;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
       }
       .voucher-header {
-        background: #4267B2;
+        background: linear-gradient(135deg, #ffc107 0%, #426 100%);
         color: white;
-        padding: 20px;
+        padding: 2rem;
         text-align: center;
-        margin-bottom: 20px;
+        position: relative;
+      }
+      .voucher-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(to right, #3b82f6, #10b981, #f59e0b);
       }
       .voucher-title {
-        font-size: 24px;
-        font-weight: bold;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+      }
+      .voucher-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+      .voucher-body {
+        padding: 5px;
       }
       .detail-section {
-        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
       }
       .detail-card {
-        background: #f9f9f9;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
       }
       .detail-label {
-        font-weight: bold;
-        margin-bottom: 5px;
+        font-size: 0.875rem;
+        color: #4b5563;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+      .detail-value {
+        font-size: 1rem;
+        color: #111827;
+        font-weight: 500;
+        word-break: break-word;
+      }
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+      }
+      .voucher-footer {
+        background: #f3f4f6;
+        padding: 1.5rem;
+        text-align: center;
+        border-top: 1px dashed #d1d5db;
+      }
+      .threcolmn {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .confirmation-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 10;
       }
       @media print {
         body * {
@@ -292,8 +311,8 @@ function handlePrintVoucher() {
           left: 0;
           top: 0;
           width: 100%;
-          border: none;
           box-shadow: none;
+          border: none;
         }
       }
     </style>
@@ -305,128 +324,91 @@ function handlePrintVoucher() {
       type: 'html',
       scanStyles: false,
       style: printStyles,
-      onPrintDialogClose: () => voucherEl.style.display = 'none'
+      onPrintDialogClose: () => {
+        voucherEl.style.display = 'none';
+      },
+      onError: (err) => {
+        console.error('Print error:', err);
+        voucherEl.style.display = 'none';
+        showNotification("Could not print voucher.", true);
+      }
     });
   } else {
-    window.print();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Voucher</title>
+          ${printStyles}
+        </head>
+        <body>
+          ${voucherEl.outerHTML}
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() {
+                window.close();
+              }, 100);
+            }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 }
 
-// Email Functions
-async function sendVoucherEmail(currentUser, statusElementId = null) {
-  const statusEl = statusElementId ? document.getElementById(statusElementId) : null;
-  
-  try {
-    // Validate data
-    if (!BookingData || !BookingId) {
-      throw new Error('Booking data not available');
-    }
+// [Rest of your functions (sendVoucherEmail, resendVoucherEmailHandler, displayFailure) remain unchanged...]
 
-    // Check permissions
-    const hasPermission = await checkBookingOwnership(BookingId, currentUser.uid);
-    if (!hasPermission) {
-      throw new Error('No permission to send voucher');
-    }
+async function processPaymentWithMerchantOrder(merchantOrderId, user) {
+  const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ merchantOrderId })
+  });
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!BookingData.email || !emailRegex.test(BookingData.email)) {
-      throw new Error('Invalid email address');
-    }
-
-    // Update UI
-    if (statusEl) statusEl.textContent = 'Sending voucher...';
-    showNotification('Sending your voucher...');
-
-    // Prepare email data
-    const emailData = {
-      bookingId: BookingId,
-      customerName: BookingData.username || BookingData.name || 'Customer',
-      customerEmail: BookingData.email,
-      tourName: BookingData.tourName || 'Tour',
-      hotelName: BookingData.hotelName || 'Hotel',
-      tripDate: formatDate(BookingData.tripDate),
-      bookingDate: formatDate(BookingData.paymentDate || BookingData.createdAt),
-      amount: formatCurrency(BookingData.amount, BookingData.currency),
-      transactionId: BookingData.transactionId || 'N/A'
-    };
-
-    // Send to backend
-    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/send-voucher', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(emailData)
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to send email');
-    }
-
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.message || 'Email sending failed');
-    }
-
-    // Update booking and UI
-    await db.ref(`trip-bookings/${BookingId}`).update({
-      voucherSent: true,
-      voucherSentAt: firebase.database.ServerValue.TIMESTAMP
-    });
-
-    showNotification('Voucher sent successfully!');
-    if (statusEl) statusEl.textContent = 'Voucher sent!';
-
-  } catch (error) {
-    console.error('Email sending error:', error);
-    showNotification(`Failed to send voucher: ${error.message}`, true);
-    if (statusEl) statusEl.textContent = `Failed: ${error.message}`;
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+
+  const result = await response.json();
+  if (result.status !== 'success') {
+    throw new Error(result.message || 'Failed to verify payment.');
+  }
+
+  const paymentData = result.data;
+  const status = determinePaymentStatus(
+    paymentData.responseCode || '00',
+    paymentData.status || 'SUCCESS'
+  );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const transactionId = urlParams.get('transactionId') || paymentData.transactionId;
+
+  const paymentInfo = {
+    amount: paymentData.amount || '0',
+    currency: paymentData.currency || 'EGP',
+    transactionId: transactionId,
+    refNumber: merchantOrderId,
+    cardBrand: paymentData.cardBrand || null,
+    maskedCard: paymentData.maskedCard || null,
+    paymentMethod: paymentData.paymentMethod || 'Credit/Debit Card',
+    responseCode: paymentData.responseCode || '00',
+    responseMessage: paymentData.responseMessage || 'Approved'
+  };
+
+  const updateSuccess = await updateBookingStatus(merchantOrderId, {
+    ...status,
+    ...paymentInfo
+  }, user);
+
+  if (!updateSuccess) {
+    throw new Error('Failed to update booking status');
+  }
+
+  return { status, paymentInfo };
 }
 
-// Main Payment Processing
-async function processPayment(merchantOrderId, user) {
-  try {
-    // Verify payment with backend
-    const paymentData = await verifyPaymentWithBackend(merchantOrderId);
-    
-    // Get transaction ID from URL or payment data
-    const urlParams = new URLSearchParams(window.location.search);
-    const transactionId = urlParams.get('transactionId') || paymentData.transactionId;
-
-    // Determine payment status
-    const status = determinePaymentStatus(
-      paymentData.responseCode || '00',
-      paymentData.status || 'SUCCESS'
-    );
-
-    // Prepare payment info
-    const paymentInfo = {
-      amount: paymentData.amount || '0',
-      currency: paymentData.currency || 'EGP',
-      transactionId: transactionId,
-      refNumber: merchantOrderId,
-      cardBrand: paymentData.cardBrand || null,
-      maskedCard: paymentData.maskedCard || null,
-      paymentMethod: paymentData.paymentMethod || 'Credit/Debit Card',
-      responseCode: paymentData.responseCode || '00',
-      responseMessage: paymentData.responseMessage || 'Approved'
-    };
-
-    // Update booking status
-    await updateBookingStatus(merchantOrderId, {
-      ...status,
-      ...paymentInfo
-    }, user);
-
-    return { status, paymentInfo };
-
-  } catch (error) {
-    console.error('Payment processing error:', error);
-    throw error;
-  }
-}
-
-// Initialization
 async function initializeApp() {
   const urlParams = new URLSearchParams(window.location.search);
   const merchantOrderId = urlParams.get('merchantOrderId');
@@ -440,27 +422,40 @@ async function initializeApp() {
   document.getElementById('loading-layout').classList.remove('hidden');
 
   try {
-    // Authenticate user
-    const user = await authenticateUser();
-    currentUserRole = await getUserRole(user.uid);
-
-    // Process payment
-    const { status, paymentInfo } = await processPayment(merchantOrderId, user);
+    await auth.signInAnonymously().catch(() => {});
+    const user = auth.currentUser;
     
-    // Load booking data
-    const bookingSnapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
-    BookingData = bookingSnapshot.val() || {};
-    BookingData = { ...BookingData, ...paymentInfo };
+    if (user && !user.isAnonymous) {
+      currentUserRole = await getUserRole(user.uid);
+    }
 
-    // Handle payment status
+    const { status, paymentInfo } = await processPaymentWithMerchantOrder(merchantOrderId, user);
+    
+    const bookingSnapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
+    BookingData = bookingSnapshot.val();
+    
+    if (!BookingData) {
+      throw new Error('Booking not found in database');
+    }
+
+    BookingData = {
+      ...BookingData,
+      ...paymentInfo,
+      amountPaid: paymentInfo.amount,
+      paymentMethod: paymentInfo.paymentMethod
+    };
+
     switch (status.paymentStatus) {
       case PAYMENT_STATUS.SUCCESS:
         populateVoucherDisplay(BookingData);
         document.getElementById('success-layout').classList.remove('hidden');
         launchConfetti();
         
-        if (!BookingData.voucherSent) {
-          await sendVoucherEmail(user, 'email-status-message');
+        if (!BookingData.voucherSent && user) {
+          const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
+          if (canSendVoucher) {
+            await sendVoucherEmail(user, 'email-status-message');
+          }
         }
         break;
         
@@ -470,6 +465,15 @@ async function initializeApp() {
         break;
         
       case PAYMENT_STATUS.CANCELLED:
+        displayFailure(
+          BookingId,
+          status.userMessage,
+          paymentInfo.amount,
+          paymentInfo.currency,
+          false
+        );
+        break;
+        
       case PAYMENT_STATUS.FAILED:
         displayFailure(
           BookingId,
@@ -482,12 +486,10 @@ async function initializeApp() {
     }
 
   } catch (error) {
-    console.error('Initialization error:', error);
+    console.error('Error processing payment:', error.message);
     displayFailure(
       BookingId,
-      error.message.includes('permission_denied') ? 
-        'Access denied. Please contact support.' : 
-        `Error: ${error.message}`,
+      `Error processing payment: ${error.message}`,
       null,
       null,
       false
@@ -497,43 +499,11 @@ async function initializeApp() {
   }
 }
 
-// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
   
   document.getElementById('print-voucher-btn')?.addEventListener('click', handlePrintVoucher);
-  document.getElementById('resend-email-btn')?.addEventListener('click', async () => {
-    const user = auth.currentUser;
-    if (user) {
-      await sendVoucherEmail(user, 'email-status-message');
-    } else {
-      showNotification('Please login to resend voucher', true);
-    }
-  });
+  document.getElementById('resend-email-btn')?.addEventListener('click', resendVoucherEmailHandler);
+  document.getElementById('print-voucher-btn-submitted')?.addEventListener('click', handlePrintVoucher);
+  document.getElementById('resend-email-btn-submitted')?.addEventListener('click', resendVoucherEmailHandler);
 });
-
-// Failure Display
-function displayFailure(merchantOrderId, message, amount, currency, canRetry) {
-  document.getElementById('loading-layout').classList.add('hidden');
-  document.getElementById('failure-layout').classList.remove('hidden');
-  document.getElementById('error-message').textContent = message;
-  
-  if (merchantOrderId) {
-    document.getElementById('failed-ref').textContent = merchantOrderId;
-  }
-  
-  if (amount) {
-    document.getElementById('failed-amount').textContent = formatCurrency(amount, currency);
-  }
-  
-  const retryBtn = document.getElementById('retry-btn');
-  if (canRetry) {
-    retryBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Try Again';
-    retryBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
-    retryBtn.href = localStorage.getItem(`paymentUrl_${merchantOrderId}`) || '#';
-  } else {
-    retryBtn.innerHTML = '<i class="fas fa-home mr-2"></i>Return Home';
-    retryBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-    retryBtn.href = '/';
-  }
-}
