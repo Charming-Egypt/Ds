@@ -1,6 +1,6 @@
 // --- Firebase Configuration ---
 const firebaseConfig = {
-  apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", // Replace with your actual API key if this is a placeholder
+  apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", // Replace with your actual API key
   authDomain: "egypt-travels.firebaseapp.com",
   databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
   projectId: "egypt-travels",
@@ -87,7 +87,7 @@ async function checkBookingOwnership(bookingId, userId) {
     if (!booking) return false;
     if (currentUserRole === 'admin') return true;
     if (booking.uid === userId) return true;
-    if (currentUserRole === 'moderator' && booking.owner === userId) return true; // Assumes booking.owner stores moderator/agent UID
+    if (currentUserRole === 'moderator' && booking.owner === userId) return true;
     return false;
   } catch (error) {
     console.error('Error during Firebase read:', error);
@@ -177,7 +177,7 @@ function populateVoucherDisplay(data) {
     'adults-count': data.adults || '0',
     'children-count': data.children || data.childrenUnder12 || '0',
     'infants-count': data.infants || '0',
-    'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())), // FIXED newDate() to new Date()
+    'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())),
     'trip-date': formatDate(data.tripDate),
     'phone-number2': data.phoneNumber || 'N/A',
     'trip-duration': data.duration ? `${data.duration} days` : 'N/A',
@@ -197,15 +197,15 @@ function handlePrintVoucher() {
     return;
   }
 
-  populateVoucherDisplay(BookingData); // Ensure latest data is populated before printing
+  populateVoucherDisplay(BookingData);
   const originalDisplay = voucherEl.style.display;
-  voucherEl.style.display = 'block'; // Make it visible for printing
+  voucherEl.style.display = 'block';
 
   if (typeof printJS === 'function') {
     printJS({
       printable: 'voucher-content',
       type: 'html',
-      scanStyles: false, // Important if you have specific print styles or want to avoid external ones
+      scanStyles: false,
       onPrintDialogClose: () => voucherEl.style.display = originalDisplay,
       onError: () => {
         voucherEl.style.display = originalDisplay;
@@ -213,13 +213,7 @@ function handlePrintVoucher() {
       }
     });
   } else {
-    // Fallback to browser print
     window.print();
-    // Note: Hiding voucherEl after window.print() is trickier as it's asynchronous
-    // and doesn't have a reliable callback like printJS.
-    // For simplicity, it might remain 'block' or be hidden by user interaction.
-    // If it must be hidden, a small timeout could be used, but it's not guaranteed.
-    // setTimeout(() => { voucherEl.style.display = originalDisplay; }, 1000); // Example, not ideal
   }
 }
 
@@ -254,9 +248,7 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
         try {
             const jsonError = JSON.parse(errorText);
             errorText = jsonError.message || jsonError.error || errorText;
-        } catch (e) {
-            // Not a JSON error, use text as is
-        }
+        } catch (e) { /* Not a JSON error, use text as is */ }
         throw new Error(errorText);
     }
 
@@ -274,13 +266,15 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
     };
 
     await db.ref(`trip-bookings/${BookingId}`).update(updates);
-    BookingData.voucherSent = true; // Update local BookingData state
-    BookingData.voucherSentAt = Date.now(); // Approximate client-side timestamp
+    if(BookingData) { // Update local BookingData state
+        BookingData.voucherSent = true;
+        BookingData.voucherSentAt = Date.now(); // Approximate client-side timestamp
+    }
     return true;
   } catch (error) {
     console.error("sendVoucherEmail error:", error);
     showNotification(`Failed to send voucher: ${error.message}`, true);
-    if (statusEl) statusEl.textContent = `Failed: ${error.message.substring(0, 100)}`; // Limit length
+    if (statusEl) statusEl.textContent = `Failed: ${error.message.substring(0, 100)}`;
     return false;
   }
 }
@@ -312,17 +306,17 @@ async function resendVoucherEmailHandler() {
           lastUpdatedBy: currentUser.uid,
           lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP
         });
-        BookingData.email = newEmail; // Update local BookingData
+        if(BookingData) BookingData.email = newEmail;
         showNotification('Email address updated successfully.');
       } catch (error) {
         console.error("Email update error:", error);
         showNotification('Failed to update email address. Please try again.', true);
         return;
       }
-    } else if (newEmail !== null) { // User entered something, but it was invalid
+    } else if (newEmail !== null) {
       showNotification('The email address you entered is invalid.', true);
       return;
-    } else { // User cancelled the prompt
+    } else {
       showNotification('Voucher resend cancelled.', false);
       return;
     }
@@ -334,16 +328,15 @@ async function resendVoucherEmailHandler() {
   } else if (document.getElementById('already-submitted-layout')?.classList.contains('hidden') === false) {
     statusId = 'submitted-email-status';
   }
-  // Add more else if blocks here if resend can be triggered from other layouts with status messages
 
   const success = await sendVoucherEmail(currentUser, statusId);
-  if (success && BookingId) { // sendVoucherEmail already updates voucherSent and voucherSentAt
+  if (success && BookingId) {
     await db.ref(`trip-bookings/${BookingId}`).update({
-      voucherResentAt: firebase.database.ServerValue.TIMESTAMP, // Specifically track resent
-      lastUpdatedBy: currentUser.uid, // This will be the same user as in sendVoucherEmail
-      lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP // Also updated in sendVoucherEmail, but good to be explicit
+      voucherResentAt: firebase.database.ServerValue.TIMESTAMP,
+      lastUpdatedBy: currentUser.uid,
+      lastUpdatedAt: firebase.database.ServerValue.TIMESTAMP
     });
-    if(BookingData) BookingData.voucherResentAt = Date.now(); // Update local state
+    if(BookingData) BookingData.voucherResentAt = Date.now();
   }
 }
 
@@ -369,7 +362,7 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
   const retryMessageEl = document.getElementById('retry-message');
   const contactSupportMessageEl = document.getElementById('contact-support-message');
 
-  let retryUrl = '/'; // Default to home
+  let retryUrl = '/';
   if (merchantOrderId) {
     const storedPaymentUrl = localStorage.getItem(`paymentUrl_${merchantOrderId}`);
     if (storedPaymentUrl) retryUrl = storedPaymentUrl;
@@ -387,7 +380,7 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
     if (retryMessageEl) retryMessageEl.classList.add('hidden');
     if (contactSupportMessageEl) contactSupportMessageEl.classList.remove('hidden');
     retryBtn.innerHTML = '<i class="fas fa-home mr-2"></i>Return Home';
-    retryBtn.href = '/'; // Ensure it always points to home if not retryable
+    retryBtn.href = '/';
     retryBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600', 'bg-red-500', 'hover:bg-red-600');
     retryBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
   }
@@ -404,7 +397,7 @@ function displayLoginRequired() {
   const loginRequiredEl = document.getElementById('login-required-layout');
   if (loginRequiredEl) {
     loginRequiredEl.classList.remove('hidden');
-  } else if (document.body) { // Fallback if the dedicated layout div is missing
+  } else if (document.body) {
     document.body.innerHTML = `
       <div class="container mx-auto p-6 text-center">
         <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
@@ -424,16 +417,16 @@ async function processPaymentResult(paymentData, user) {
   const transactions = paymentData.transactions || [];
   if (transactions.length === 0) throw new Error('No transactions found in payment data.');
 
-  const latestTransaction = transactions[0]; // Assuming the first transaction is the most relevant or final one
+  const latestTransaction = transactions[0];
   const statusDetails = determinePaymentStatus(
     latestTransaction.transactionResponseCode,
     latestTransaction.status
   );
 
   const paymentInfo = {
-    amount: paymentData.totalCapturedAmount, // This should be the actual amount charged
+    amount: paymentData.totalCapturedAmount,
     currency: latestTransaction.currency || paymentData.currency || 'EGP',
-    transactionId: paymentData.orderId, // This is often the merchant's order ID / booking ID
+    transactionId: paymentData.orderId,
     cardBrand: paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card',
     maskedCard: paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••',
     responseCode: latestTransaction.transactionResponseCode,
@@ -442,7 +435,6 @@ async function processPaymentResult(paymentData, user) {
 
   await updateBookingStatus(BookingId, { ...statusDetails, ...paymentInfo }, user);
 
-  // Re-fetch booking data to ensure local BookingData is up-to-date after status update
   const bookingSnapshot = await db.ref(`trip-bookings/${BookingId}`).once('value');
   BookingData = bookingSnapshot.val();
   if (!BookingData) throw new Error('Booking not found after update.');
@@ -454,27 +446,23 @@ async function initializeApp() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
     BookingId = urlParams.get('bookingId');
+    // SIMPLIFIED Booking ID retrieval: Only from query parameter.
     if (!BookingId) {
-      // Try to get booking ID from path if applicable, e.g., /booking/BOOKING_ID_HERE
-      // For this example, sticking to query param only.
-      const pathParts = window.location.pathname.split('/');
-      const bookingIdFromPath = pathParts[pathParts.length -1]; // Simplistic, adjust if path is different
-      if (pathParts.length > 1 && pathParts[pathParts.length-2] === 'booking') { // Example: /booking/ID
-          BookingId = bookingIdFromPath;
-      }
-      if(!BookingId) throw new Error('No booking ID found in URL query parameters (bookingId=...).');
-    }
+        console.warn('Booking ID not found in URL query parameter "bookingId".'); // For debugging
+        throw new Error('No booking ID found in URL query parameter (bookingId=...).');
+    }
 
-
-    const user = await waitForAuthState();
+    const user = await waitForAuthState(); // This is where line 470 might be around, after the config/utils
     if (!user) {
       displayLoginRequired();
       return;
     }
 
-    currentUserRole = await getUserRole(user.uid);
+    // Assuming this is the problematic area (around original line 470)
+    currentUserRole = await getUserRole(user.uid); // Check this exact line in your file
+    
     if (!await checkBookingOwnership(BookingId, user.uid)) {
-      displayLoginRequired(); // Or a "permission denied" page
+      displayLoginRequired();
       return;
     }
 
@@ -485,15 +473,13 @@ async function initializeApp() {
         return;
     }
 
-
     const paymentResultParam = urlParams.get('paymentResult');
     if (paymentResultParam) {
       try {
         const decodedResult = decodeURIComponent(paymentResultParam);
         const resultData = JSON.parse(decodedResult);
-        // Assuming resultData.data.response structure based on original code
         if (!resultData || !resultData.data || !resultData.data.response) {
-            throw new Error('Invalid payment result structure.');
+            throw new Error('Invalid payment result structure received from URL.');
         }
         const { status, paymentInfo } = await processPaymentResult(resultData.data.response, user);
 
@@ -505,62 +491,56 @@ async function initializeApp() {
             populateVoucherDisplay(BookingData);
             launchConfetti();
             if (!BookingData?.voucherSent) {
-              // checkBookingOwnership is implicitly handled by sendVoucherEmail
               await sendVoucherEmail(user, 'email-status-message');
             } else {
-                // If already sent, maybe update the status message or show resend button
                 const emailStatusEl = document.getElementById('email-status-message');
                 if (emailStatusEl) emailStatusEl.textContent = "Voucher previously sent.";
                 document.getElementById('resend-email-btn')?.classList.remove('hidden');
             }
             break;
-
           case PAYMENT_STATUS.PENDING:
             document.getElementById('pending-layout')?.classList.remove('hidden');
             document.getElementById('pending-ref')?.textContent = BookingId || 'N/A';
             document.getElementById('pending-amount')?.textContent = `${paymentInfo.amount || BookingData.totalPrice || '0'} ${paymentInfo.currency || BookingData.currency || 'EGP'}`;
             document.getElementById('pending-email')?.textContent = BookingData?.email || 'N/A';
             break;
-
           case PAYMENT_STATUS.CANCELLED:
             document.getElementById('payment-cancelled-layout')?.classList.remove('hidden');
             document.getElementById('cancelled-ref-info')?.textContent = `Booking Reference: ${BookingId}`;
             break;
-
           case PAYMENT_STATUS.FAILED:
-          default: // Also catches unexpected statuses
+          default:
             displayFailure(
               BookingId,
               status.userMessage + (paymentInfo.responseMessage ? ` (Details: ${paymentInfo.responseMessage})` : ''),
               paymentInfo.amount,
               paymentInfo.currency,
-              status.canRetry !== undefined ? status.canRetry : false // Ensure canRetry is boolean
+              status.canRetry !== undefined ? status.canRetry : false
             );
             break;
         }
       } catch (error) {
-        console.error("Error processing payment result:", error);
+        console.error("Error processing payment result from URL:", error);
         displayFailure(BookingId, `Error processing payment: ${error.message}`, BookingData?.totalPrice, BookingData?.currency, false);
       }
-    } else { // No paymentResult in URL query parameter (direct load, bookmark, etc.)
+    } else { // No paymentResult in URL (direct load)
       document.getElementById('loading-layout')?.classList.add('hidden');
-      if (!BookingData) { // Should have been caught earlier, but double check
-          displayFailure(BookingId, 'Booking data could not be loaded.', null, null, false);
+      if (!BookingData) {
+          displayFailure(BookingId, 'Booking data could not be loaded on direct visit.', null, null, false);
           return;
       }
 
       if (BookingData.paymentStatus === PAYMENT_STATUS.SUCCESS) {
         document.getElementById('success-layout')?.classList.remove('hidden');
         populateVoucherDisplay(BookingData);
-        if (BookingData.voucherSent) { // checkBookingOwnership is handled by resendVoucherEmailHandler
+        if (BookingData.voucherSent) {
           document.getElementById('resend-email-btn')?.classList.remove('hidden');
           const emailStatusEl = document.getElementById('email-status-message');
           if (emailStatusEl) emailStatusEl.textContent = "Voucher already sent. Resend if needed.";
         } else {
-           // If not sent, and user has permission, they could trigger send from here if a button exists
-           // For now, assuming initial send happens after payment.
            const emailStatusEl = document.getElementById('email-status-message');
            if (emailStatusEl) emailStatusEl.textContent = "Voucher not sent yet.";
+           // You might want to offer sending it here if appropriate
         }
       } else if (BookingData.paymentStatus === PAYMENT_STATUS.PENDING) {
         document.getElementById('pending-layout')?.classList.remove('hidden');
@@ -573,20 +553,19 @@ async function initializeApp() {
             `Booking status: Payment Failed.` + (BookingData.transactionResponseMessage ? ` (${BookingData.transactionResponseMessage})` : ''),
             BookingData.totalPrice,
             BookingData.currency,
-            false // Typically, canRetry is false when viewing a historical failed status
+            false
         );
       } else if (BookingData.paymentStatus === PAYMENT_STATUS.CANCELLED) {
         document.getElementById('payment-cancelled-layout')?.classList.remove('hidden');
         document.getElementById('cancelled-ref-info')?.textContent = `Booking Reference: ${BookingId}`;
-      } else { // Fallback for other statuses (e.g. if paymentStatus is null, undefined, or an old/unknown value)
+      } else {
         document.getElementById('already-submitted-layout')?.classList.remove('hidden');
-        populateVoucherDisplay(BookingData); // Display whatever data we have
-        // Show relevant buttons for this "already-submitted" or "other status" state
-        if (await checkBookingOwnership(BookingId, user.uid)) {
+        populateVoucherDisplay(BookingData);
+        if (await checkBookingOwnership(BookingId, user.uid)) { // Check ownership before showing buttons
             const printBtnSubmitted = document.getElementById('print-voucher-btn-submitted');
             if (printBtnSubmitted) printBtnSubmitted.classList.remove('hidden');
 
-            if (BookingData.voucherSent) { // Only show resend if it was successfully sent before
+            if (BookingData.voucherSent) {
                 const resendBtnSubmitted = document.getElementById('resend-email-btn-submitted');
                 if (resendBtnSubmitted) resendBtnSubmitted.classList.remove('hidden');
             }
@@ -604,7 +583,6 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
 
-  // Attach event listeners to buttons that might exist in different layouts
   const printBtn = document.getElementById('print-voucher-btn');
   if(printBtn) printBtn.addEventListener('click', handlePrintVoucher);
 
@@ -616,8 +594,4 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const resendBtnSubmitted = document.getElementById('resend-email-btn-submitted');
   if(resendBtnSubmitted) resendBtnSubmitted.addEventListener('click', resendVoucherEmailHandler);
-
-  // Example: If there's a print button in the failure layout (though less common)
-  // const printBtnFailed = document.getElementById('print-voucher-btn-failed');
-  // if(printBtnFailed) printBtnFailed.addEventListener('click', handlePrintVoucher);
 });
