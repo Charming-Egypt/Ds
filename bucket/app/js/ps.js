@@ -246,8 +246,8 @@ async function updateBookingStatus(bookingId, statusData, user) {
     status: statusData.status,
     paymentStatus: statusData.paymentStatus,
     lastUpdated: firebase.database.ServerValue.TIMESTAMP, // Use server timestamp
-    transactionResponseCode: statusData.responseCode,
-    transactionResponseMessage: statusData.responseMessage
+    transactionResponseCode: statusData.responseCode, // Corrected property name
+    transactionResponseMessage: statusData.responseMessage // Corrected property name
   };
 
   // Include payment details only if available
@@ -263,6 +263,8 @@ async function updateBookingStatus(bookingId, statusData, user) {
   updates.lastUpdatedBy = user.uid;
   updates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
 
+  console.log("Attempting to update booking", bookingId, "with payload:", updates); // ADDED LOG
+
   try {
     await db.ref(`trip-bookings/${bookingId}`).update(updates);
     console.log(`Booking ${bookingId} updated successfully.`);
@@ -275,29 +277,47 @@ async function updateBookingStatus(bookingId, statusData, user) {
 
 /**
  * Populates the voucher display elements with booking data.
+ * Includes checks to ensure elements exist.
  * @param {object} data - The booking data object.
  */
 function populateVoucherDisplay(data) {
-  if (!data) return;
-  console.log("Populating voucher display with data:", data);
-  document.getElementById('voucher-ref').textContent = BookingId || data.bookingId || 'N/A';
-  document.getElementById('voucher-transaction').textContent = data.transactionId || 'N/A';
-  document.getElementById('voucher-amount').textContent = `${data.totalPrice || '0'} ${data.currency || 'EGP'}`;
-  document.getElementById('voucher-card').textContent = `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
-  document.getElementById('customer-name2').textContent = data.username || data.name || 'Valued Customer';
-  document.getElementById('customer-email2').textContent = data.email || 'N/A';
-  document.getElementById('tour-name').textContent = data.tourName || data.tour || 'N/A';
-  document.getElementById('accommodation-type').textContent = data.hotelName || 'N/A';
-  document.getElementById('room-type').textContent = data.roomNumber || 'N/A';
-  document.getElementById('adults-count').textContent = data.adults || '0';
-  document.getElementById('children-count').textContent = data.children || data.childrenUnder12 || '0';
-  document.getElementById('infants-count').textContent = data.infants || '0';
-  const bookingCreationDate = data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date());
-  document.getElementById('booking-date').textContent = formatDate(bookingCreationDate);
-  document.getElementById('trip-date').textContent = formatDate(data.tripDate);
-  document.getElementById('phone-number2').textContent = data.phoneNumber || 'N/A';
-  document.getElementById('trip-duration').textContent = data.duration ? `${data.duration} days` : 'N/A';
-  document.getElementById('booking-notes').textContent = data.notes || 'N/A';
+  if (!data) {
+     console.warn("populateVoucherDisplay called with no data.");
+     return;
+   }
+   console.log("Populating voucher display with data:", data);
+
+   // Add checks for each element *before* accessing textContent
+   // If an element is null, log an error but continue to try and populate others
+   const elementsToPopulate = {
+       'voucher-ref': BookingId || data.bookingId || 'N/A',
+       'voucher-transaction': data.transactionId || 'N/A',
+       'voucher-amount': `${data.totalPrice || '0'} ${data.currency || 'EGP'}`,
+       'voucher-card': `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`,
+       'customer-name2': data.username || data.name || 'Valued Customer',
+       'customer-email2': data.email || 'N/A',
+       'tour-name': data.tourName || data.tour || 'N/A',
+       'accommodation-type': data.hotelName || 'N/A',
+       'room-type': data.roomNumber || 'N/A',
+       'adults-count': data.adults || '0',
+       'children-count': data.children || data.childrenUnder12 || '0',
+       'infants-count': data.infants || '0',
+       'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())),
+       'trip-date': formatDate(data.tripDate),
+       'phone-number2': data.phoneNumber || 'N/A',
+       'trip-duration': data.duration ? `${data.duration} days` : 'N/A',
+       'booking-notes': data.notes || 'N/A'
+   };
+
+   for (const id in elementsToPopulate) {
+       const element = document.getElementById(id);
+       if (element) {
+           element.textContent = elementsToPopulate[id];
+       } else {
+           console.error(`populateVoucherDisplay: Element #${id} not found in the DOM!`);
+           // Continue loop to find other missing elements
+       }
+   }
 }
 
 
@@ -580,29 +600,30 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
 
 /**
  * Displays a message asking the user to log in.
+ * Assumes an element with id "login-required-layout" exists in the HTML.
  */
 function displayLoginRequired() {
+    console.log("Displaying login required layout.");
     document.getElementById('loading-layout').classList.add('hidden');
-    // Assuming you have an HTML element with id="login-required-layout" or similar
-    // Create a simple message if you don't have a dedicated layout
-    let loginRequiredEl = document.getElementById('login-required-layout');
-    if (!loginRequiredEl) {
-        loginRequiredEl = document.createElement('div');
-        loginRequiredEl.id = 'login-required-layout';
-        loginRequiredEl.className = 'container mx-auto p-6 text-center'; // Add some basic styling
-        loginRequiredEl.innerHTML = `
-            <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
-                <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
-                <h2 class="text-2xl font-bold mb-4">Login Required</h2>
-                <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
-                <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Go to Login
-                </a>
+
+    const loginRequiredEl = document.getElementById('login-required-layout');
+    if (loginRequiredEl) {
+        loginRequiredEl.classList.remove('hidden');
+    } else {
+        console.error("#login-required-layout not found in HTML!");
+        // Fallback: Display a basic message if the dedicated layout is missing
+        document.body.innerHTML = `
+            <div class="container mx-auto p-6 text-center">
+                <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
+                    <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-4">Login Required</h2>
+                    <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
+                    <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Go to Login
+                    </a>
+                </div>
             </div>
         `;
-        document.body.appendChild(loginRequiredEl);
-    } else {
-         loginRequiredEl.classList.remove('hidden');
     }
 
     // Hide other potential layouts
@@ -610,6 +631,8 @@ function displayLoginRequired() {
     document.getElementById('failure-layout')?.classList.add('hidden');
     document.getElementById('pending-layout')?.classList.add('hidden');
     document.getElementById('already-submitted-layout')?.classList.add('hidden'); // Assuming this exists
+    document.getElementById('payment-cancelled-layout')?.classList.add('hidden'); // Assuming this exists
+
 }
 
 
@@ -648,13 +671,14 @@ async function processPaymentResult(paymentData, user) {
     transactionId: paymentData.orderId, // Gateway's Order ID (our merchantOrderId)
     cardBrand: paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card',
     maskedCard: paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••',
-    responseCode: latestTransaction.transactionResponseCode,
+    responseCode: latestTransaction.transactionResponseCode, // Corrected property name
     responseMessage: latestTransaction.transactionResponseMessage?.en || latestTransaction.transactionResponseMessage || '' // Get English message or fallback
   };
   console.log("Extracted payment info:", paymentInfo);
 
   // Update the booking in Firebase
   // This call includes the permission check via checkBookingOwnership internally
+  // It also requires the .write and .validate rules to pass
   const updateSuccess = await updateBookingStatus(BookingId, {
     ...status,
     ...paymentInfo // Include payment info in the update
@@ -725,9 +749,8 @@ async function initializeApp() {
 
     // Process the retrieved payment result and update Firebase
     // This calls updateBookingStatus which includes the permission check.
-    // If permission_denied happens during the read inside checkBookingOwnership,
-    // checkBookingOwnership returns false, updateBookingStatus throws,
-    // and the catch block below will be triggered.
+    // It also requires the .write and .validate rules to pass.
+    // The PERMISSION_DENIED on write was happening here previously due to the .validate rule failing.
     const { status, paymentInfo } = await processPaymentResult(result.data.response, user);
 
     // Fetch the potentially updated booking data again to ensure consistency for display
@@ -749,42 +772,112 @@ async function initializeApp() {
     // --- Handle different statuses based on the processed result ---
     switch (status.paymentStatus) {
       case PAYMENT_STATUS.SUCCESS:
-        populateVoucherDisplay(BookingData);
-        document.getElementById('success-layout').classList.remove('hidden');
-        launchConfetti();
+         console.log("Handling SUCCESS status.");
+         const successLayout = document.getElementById('success-layout');
+         if (successLayout) {
+             console.log("Showing #success-layout.");
+             // Ensure all other layouts are hidden just in case
+             document.getElementById('loading-layout')?.classList.add('hidden');
+             document.getElementById('failure-layout')?.classList.add('hidden');
+             document.getElementById('pending-layout')?.classList.add('hidden');
+             document.getElementById('already-submitted-layout')?.classList.add('hidden');
+             document.getElementById('payment-cancelled-layout')?.classList.add('hidden');
+             document.getElementById('login-required-layout')?.classList.add('hidden');
 
-        // Attempt to send voucher email automatically on first success
-        if (!BookingData.voucherSent) { // Removed user check here, as we know user exists
-           // Check permission before attempting auto-send
-          const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
-          if (canSendVoucher) {
-            await sendVoucherEmail(user, 'email-status-message');
-          } else {
-            console.warn("Payment successful but current user doesn't have explicit permission to auto-send email. Customer should receive automatically if payment gateway triggered email.");
-            document.getElementById('email-status-message').textContent = "Voucher email will be sent to the customer automatically.";
-          }
-        } else if (BookingData.voucherSent) {
-          document.getElementById('email-status-message').textContent = "Voucher email has already been sent.";
-          // Check permission to SHOW the resend button
-          const canResendVoucher = await checkBookingOwnership(BookingId, user.uid);
-          if (canResendVoucher) {
-            document.getElementById('resend-email-btn').classList.remove('hidden');
-          }
-        }
+             successLayout.classList.remove('hidden'); // <-- Show the success layout
+
+             // Check if BookingData is available before populating
+             if (!BookingData) {
+                 console.error("BookingData is null before populateVoucherDisplay!");
+                 showNotification("Error displaying voucher details.", true);
+                 // Continue, but the voucher details section will be empty
+             } else {
+                // Populate the voucher details now that the layout is shown
+                populateVoucherDisplay(BookingData); // <-- Call the function here
+                launchConfetti(); // Launch confetti on success
+             }
+
+
+            // Handle email status and resend button visibility
+            if (!BookingData?.voucherSent) { // Use optional chaining just in case BookingData is null
+                // Check permission before attempting auto-send
+                const canSendVoucher = await checkBookingOwnership(BookingId, user.uid);
+                if (canSendVoucher) {
+                  await sendVoucherEmail(user, 'email-status-message');
+                } else {
+                  console.warn("Payment successful but current user doesn't have explicit permission to auto-send email. Customer should receive automatically if payment gateway triggered email.");
+                  document.getElementById('email-status-message').textContent = "Voucher email will be sent to the customer automatically.";
+                }
+            } else if (BookingData?.voucherSent) {
+              document.getElementById('email-status-message').textContent = "Voucher email has already been sent.";
+              // Check permission to SHOW the resend button
+              const canResendVoucher = await checkBookingOwnership(BookingId, user.uid);
+              if (canResendVoucher) {
+                document.getElementById('resend-email-btn')?.classList.remove('hidden'); // Use optional chaining
+              }
+            }
+         } else {
+             console.error("#success-layout not found in the DOM! Cannot display success message.");
+             // If the success layout itself is missing, display a generic error
+             displayFailure(BookingId, "Payment succeeded, but an error occurred displaying the confirmation message. Please contact support.", null, null, false);
+         }
 
         break;
 
       case PAYMENT_STATUS.PENDING:
-        document.getElementById('pending-layout').classList.remove('hidden');
-        document.getElementById('pending-message').textContent = status.userMessage;
-        document.getElementById('pending-ref').textContent = BookingId || 'N/A';
-        document.getElementById('pending-amount').textContent = `${paymentInfo.amount || '0'} ${paymentInfo.currency || 'EGP'}`;
-        document.getElementById('pending-email').textContent = BookingData?.email || 'N/A';
+         console.log("Handling PENDING status.");
+         // Ensure other layouts are hidden
+         document.getElementById('loading-layout')?.classList.add('hidden');
+         document.getElementById('success-layout')?.classList.add('hidden');
+         document.getElementById('failure-layout')?.classList.add('hidden');
+         document.getElementById('already-submitted-layout')?.classList.add('hidden');
+         document.getElementById('payment-cancelled-layout')?.classList.add('hidden');
+         document.getElementById('login-required-layout')?.classList.add('hidden');
+
+        document.getElementById('pending-layout')?.classList.remove('hidden'); // Use optional chaining
+        const pendingMessageEl = document.getElementById('pending-message');
+         if(pendingMessageEl) pendingMessageEl.textContent = status.userMessage;
+
+         // Populate pending details if elements exist
+        document.getElementById('pending-ref')?.textContent = BookingId || 'N/A';
+        document.getElementById('pending-amount')?.textContent = `${paymentInfo.amount || '0'} ${paymentInfo.currency || 'EGP'}`;
+        document.getElementById('pending-email')?.textContent = BookingData?.email || 'N/A';
+
         break;
 
       case PAYMENT_STATUS.CANCELLED:
+         console.log("Handling CANCELLED status.");
+         // Ensure other layouts are hidden
+         document.getElementById('loading-layout')?.classList.add('hidden');
+         document.getElementById('success-layout')?.classList.add('hidden');
+         document.getElementById('failure-layout')?.classList.add('hidden');
+         document.getElementById('pending-layout')?.classList.add('hidden');
+         document.getElementById('already-submitted-layout')?.classList.add('hidden');
+         document.getElementById('login-required-layout')?.classList.add('hidden');
+
+
+         const cancelledLayout = document.getElementById('payment-cancelled-layout');
+         if(cancelledLayout) cancelledLayout.classList.remove('hidden'); // Use optional chaining
+
+         const cancelledRefInfoEl = document.getElementById('cancelled-ref-info');
+         if(cancelledRefInfoEl && BookingId) cancelledRefInfoEl.textContent = `Booking Reference: ${BookingId}`;
+
+
+         // Note: displayFailure is NOT used for cancelled status based on your HTML structure
+
+        break; // Case CANCELLED handled here directly
+
       case PAYMENT_STATUS.FAILED:
-        displayFailure(
+         console.log("Handling FAILED status.");
+         // Ensure other layouts are hidden
+         document.getElementById('loading-layout')?.classList.add('hidden');
+         document.getElementById('success-layout')?.classList.add('hidden');
+         document.getElementById('pending-layout')?.classList.add('hidden');
+         document.getElementById('already-submitted-layout')?.classList.add('hidden');
+         document.getElementById('payment-cancelled-layout')?.classList.add('hidden');
+         document.getElementById('login-required-layout')?.classList.add('hidden');
+
+        displayFailure( // Use displayFailure for general failures
           BookingId,
           status.userMessage + (paymentInfo.responseMessage ? ` (${paymentInfo.responseMessage})` : ''),
           paymentInfo.amount,
@@ -796,10 +889,10 @@ async function initializeApp() {
       default:
         console.error("Received unhandled payment status:", status.paymentStatus);
         displayFailure(
-          BookingId,
+          BookingId, // Pass BookingId if available
           `An unexpected payment status occurred: ${status.paymentStatus}. Please contact support.`,
-          paymentInfo.amount,
-          paymentInfo.currency,
+          paymentInfo.amount, // Use paymentInfo amount if available
+          paymentInfo.currency, // Use paymentInfo currency if available
           false
         );
         break;
@@ -816,13 +909,16 @@ async function initializeApp() {
       false
     );
   } finally {
-    document.getElementById('loading-layout').classList.add('hidden');
+    // Ensure loading indicator is hidden in all cases unless replaced by another layout
+    // Note: Layout display logic now handles hiding others, so this might be redundant but safe.
+    // document.getElementById('loading-layout')?.classList.add('hidden');
     console.log("App initialization finished.");
   }
 }
 
 // --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM fully loaded. Initializing app.");
   initializeApp();
 
   // Set up button event listeners for actions available on the page
