@@ -557,12 +557,19 @@ async function resendVoucherEmailHandler() {
  */
 function displayFailure(merchantOrderId, customErrorMessage, amount, currency, canRetry = false) {
   console.log("Displaying failure:", { merchantOrderId, customErrorMessage, amount, currency, canRetry });
-  document.getElementById('loading-layout').classList.add('hidden');
-  document.getElementById('failure-layout').classList.remove('hidden');
-  document.getElementById('error-message').textContent = customErrorMessage;
-  if (merchantOrderId) document.getElementById('failed-ref').textContent = merchantOrderId;
-  if (amount !== null && amount !== undefined) document.getElementById('failed-amount').textContent = `${amount} ${currency || 'EGP'}`;
-  else document.getElementById('failed-amount').textContent = 'N/A';
+  document.getElementById('loading-layout')?.classList.add('hidden'); // Use optional chaining
+  document.getElementById('failure-layout')?.classList.remove('hidden'); // Use optional chaining
+  const errorMessageEl = document.getElementById('error-message');
+  if(errorMessageEl) errorMessageEl.textContent = customErrorMessage; // Check before setting textContent
+
+  const failedRefEl = document.getElementById('failed-ref');
+  if (failedRefEl && merchantOrderId) failedRefEl.textContent = merchantOrderId; // Check before setting textContent
+
+  const failedAmountEl = document.getElementById('failed-amount');
+  if (failedAmountEl) { // Check before setting textContent
+    if (amount !== null && amount !== undefined) failedAmountEl.textContent = `${amount} ${currency || 'EGP'}`;
+    else failedAmountEl.textContent = 'N/A';
+  }
 
   const retryBtn = document.getElementById('retry-btn');
   const retryMessageEl = document.getElementById('retry-message');
@@ -578,16 +585,16 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
     }
   }
 
-  retryBtn.href = retryUrl; // Set the href for the button
+  if (retryBtn) retryBtn.href = retryUrl; // Check before setting href
 
-  if (canRetry && retryUrl !== '/') {
+  if (canRetry && retryUrl !== '/' && retryBtn) { // Check retryBtn exists
     // Only show retry if explicitly allowed and we have a URL other than home
     retryBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Try Again';
     retryBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
     retryBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
      if(retryMessageEl) retryMessageEl.classList.remove('hidden');
      if(contactSupportMessageEl) contactSupportMessageEl.classList.add('hidden');
-  } else {
+  } else if (retryBtn) { // Check retryBtn exists
     // Show return home if not retryable or no specific payment URL was stored
     if(retryMessageEl) retryMessageEl.classList.add('hidden');
     if(contactSupportMessageEl) contactSupportMessageEl.classList.remove('hidden');
@@ -604,26 +611,31 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
  */
 function displayLoginRequired() {
     console.log("Displaying login required layout.");
-    document.getElementById('loading-layout').classList.add('hidden');
+    document.getElementById('loading-layout')?.classList.add('hidden'); // Use optional chaining
 
     const loginRequiredEl = document.getElementById('login-required-layout');
     if (loginRequiredEl) {
         loginRequiredEl.classList.remove('hidden');
     } else {
-        console.error("#login-required-layout not found in HTML!");
+        console.error("#login-required-layout not found in HTML! Displaying fallback message.");
         // Fallback: Display a basic message if the dedicated layout is missing
-        document.body.innerHTML = `
-            <div class="container mx-auto p-6 text-center">
-                <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
-                    <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
-                    <h2 class="text-2xl font-bold mb-4">Login Required</h2>
-                    <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
-                    <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Go to Login
-                    </a>
+         // Check if body exists before writing to it
+         if (document.body) {
+            document.body.innerHTML = `
+                <div class="container mx-auto p-6 text-center">
+                    <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
+                        <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
+                        <h2 class="text-2xl font-bold mb-4">Login Required</h2>
+                        <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
+                        <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Go to Login
+                        </a>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+         } else {
+             console.error("Document body not available to display fallback message.");
+         }
     }
 
     // Hide other potential layouts
@@ -678,80 +690,9 @@ async function processPaymentResult(paymentData, user) {
 
   // Update the booking in Firebase
   // This call includes the permission check via checkBookingOwnership internally
-  // It also requires the .write and .validate rules to pass
-  const updateSuccess = await updateBookingStatus(BookingId, {
-    ...status,
-    ...paymentInfo // Include payment info in the update
-  }, user); // Pass the authenticated user
-
-
-  // updateBookingStatus throws if permission denied, so if we reach here, update was attempted/successful
-  // We don't need an explicit check for !updateSuccess here.
-
-  return { status, paymentInfo };
-}
-
-/**
- * The main function to initialize the payment result page.
- * Reads URL parameters, waits for auth state, fetches payment status, updates booking, and displays the result.
- * Only proceeds if a user is logged in.
- */
-async function initializeApp() {
-  console.log("App initializing...");
-  const urlParams = new URLSearchParams(window.location.search);
-  const merchantOrderId = urlParams.get('merchantOrderId');
-
-  if (!merchantOrderId) {
-    displayFailure(null, 'Missing order ID in URL. Please restart the payment process.', null, null, false);
-    return;
-  }
-
-  BookingId = merchantOrderId;
-  document.getElementById('loading-layout').classList.remove('hidden'); // Show loading indicator
-
-  try {
-    // Wait for Firebase Auth state to settle. Resolves with null if not logged in.
-    const user = await waitForAuthState();
-
-    if (!user) {
-      console.log("No user logged in. Displaying login required message.");
-      // Hide loading and show login required message
-      displayLoginRequired();
-      return; // Stop execution if no user is available
-    }
-
-    console.log("User logged in with UID:", user.uid);
-    // Fetch user role *now that we have a logged-in user*
-    currentUserRole = await getUserRole(user.uid);
-    console.log("User Role after fetching:", currentUserRole);
-
-
-    // --- Proceed with your existing logic, NOW that a logged-in user and role are confirmed ---
-
-    // Fetch payment status from the Netlify function proxy
-    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ merchantOrderId: BookingId }) // Use the extracted BookingId
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('HTTP error fetching payment status:', response.status, errorText);
-      throw new Error(`Could not retrieve payment status (HTTP ${response.status}).`);
-    }
-
-    const result = await response.json();
-    if (result.status !== 'success' || !result.data?.response) {
-      console.error('Payment status retrieval failed:', result.message, result.data);
-      throw new Error(result.message || 'Failed to retrieve payment status details.');
-    }
-
-    // Process the retrieved payment result and update Firebase
-    // This calls updateBookingStatus which includes the permission check.
-    // It also requires the .write and .validate rules to pass.
-    // The PERMISSION_DENIED on write was happening here previously due to the .validate rule failing.
-    const { status, paymentInfo } = await processPaymentResult(result.data.response, user);
+  // It also requires the .write and .validate rules to pass.
+  // The PERMISSION_DENIED on write was happening here previously due to the .validate rule failing.
+  const { status, paymentInfo } = await processPaymentResult(result.data.response, user);
 
     // Fetch the potentially updated booking data again to ensure consistency for display
     // This read also needs permission.
