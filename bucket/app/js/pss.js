@@ -225,7 +225,6 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency) {
   document.getElementById('failure-layout').classList.remove('hidden');
   document.getElementById('error-message').textContent = customErrorMessage;
   if (merchantOrderId) document.getElementById('failed-ref').textContent = merchantOrderId;
-  if (amount) document.getElementById('failed-amount').textContent = `${amount} ${currency || 'EGP'}`;
   const retryBtn = document.getElementById('retry-btn');
   let retryUrl = '#';
 
@@ -253,7 +252,7 @@ function populateVoucherDisplay(data) {
   if (!data) return;
   document.getElementById('voucher-ref').textContent = BookingId || data.bookingId || 'N/A';
   document.getElementById('voucher-transaction').textContent = data.transactionId || 'N/A';
-  document.getElementById('voucher-amount').textContent = `${data.totalPrice || '0'} ${data.currency || 'EGP'}`;
+  document.getElementById('voucher-amount').textContent = `${data.totalPrice.toFixed(2); || '0'} ${data.currency || 'EGP'}`;
   document.getElementById('voucher-card').textContent = `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
   document.getElementById('customer-name2').textContent = data.username || data.name || 'Valued Customer';
   document.getElementById('customer-email2').textContent = data.email || 'N/A';
@@ -340,10 +339,10 @@ async function initializeApp() {
     if (transactions.length > 0) {
       const latestTransaction = transactions[0];
       const status = latestTransaction.status;
-      const amount = paymentData.totalCapturedAmount;
+      const amount = ${data.totalPrice.toFixed(2); || '0'};
       const currency = transactions[0].currency;
       const transactionId = paymentData.orderId;
-      const cardBrand = paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card';
+      const cardBrand = paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'wallet';
       const maskedCard = paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••';
 
       if (status === 'SUCCESS') {
@@ -358,6 +357,7 @@ async function initializeApp() {
         // Only update payment-related fields
         const paymentUpdates = {
           paymentStatus: 'paid',
+          status:'paid',
           transactionId,
           cardBrand,
           maskedCard,
