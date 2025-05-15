@@ -175,21 +175,128 @@
         padding:0;
         display: block !important;
       }
-      .voucher-header, .voucher-body, .voucher-footer {
-        padding: 10px;
-      }
-      .detail-section {
-         grid-template-columns: repeat(2, 1fr);
-         gap: 0.5rem;
-      }
-      .detail-card {
-        padding: 0.5rem;
-      }
-      .hide-on-print {
-          display: none !important;
-      }
-      .voucher-title { font-size: 1.5rem; }
-      .detail-value { font-size: 0.9rem; }
+      .voucher-header {
+      background: linear-gradient(135deg, #ffc107 0%, #426 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .voucher-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(to right, #3b82f6, #10b981, #f59e0b);
+    }
+    
+    .voucher-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .voucher-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .voucher-body {
+      padding: 5px;
+    }
+    
+    .detail-section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+    }
+    
+    .detail-card {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .detail-label {
+      font-size: 0.875rem;
+      color: #4b5563;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .detail-label img {
+      width:20px;
+      height:20px;
+      margin-right: 0.5rem;
+    }
+    
+    .detail-value {
+      font-size: 1rem;
+      color: #111827;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+    }
+    
+    .section-title img {
+      width:20px;
+      height:20px;
+      margin-right: 0.5rem;
+    }
+    
+    .voucher-footer {
+      background: #f3f4f6;
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px dashed #d1d5db;
+    }
+    
+    .company-name {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+    
+    .company-contact {
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
+    
+    .threcolmn{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .confirmation-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #10b981;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 10;
     }
     
     @media (max-width: 640px) {
