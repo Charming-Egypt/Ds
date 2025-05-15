@@ -361,7 +361,7 @@ function handlePrintVoucher() {
 // [Rest of your functions (sendVoucherEmail, resendVoucherEmailHandler, displayFailure) remain unchanged...]
 
 async function processPaymentWithMerchantOrder(merchantOrderId, user) {
-  const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/verify-payment', {
+  const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ merchantOrderId })
