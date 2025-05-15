@@ -42,10 +42,10 @@ const TRANSACTION_STATUS = {
 // --- Helper Functions ---
 
 /**
- * Formats a date string or Date object into a human-readable string.
- * @param {string | Date} dateStringOrDate - The date input.
- * @returns {string} Formatted date string or 'N/A'.
- */
+ * Formats a date string or Date object into a human-readable string.
+ * @param {string | Date} dateStringOrDate - The date input.
+ * @returns {string} Formatted date string or 'N/A'.
+ */
 function formatDate(dateStringOrDate) {
   if (!dateStringOrDate) return 'N/A';
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -54,10 +54,10 @@ function formatDate(dateStringOrDate) {
 }
 
 /**
- * Displays a transient notification message.
- * @param {string} message - The message to display.
- * @param {boolean} isError - True if it's an error notification, false for success.
- */
+ * Displays a transient notification message.
+ * @param {string} message - The message to display.
+ * @param {boolean} isError - True if it's an error notification, false for success.
+ */
 function showNotification(message, isError = false) {
   const notification = document.createElement('div');
   notification.className = `notification animate__animated animate__fadeInUp ${isError ? 'notification-error' : 'notification-success'}`;
@@ -70,8 +70,8 @@ function showNotification(message, isError = false) {
 }
 
 /**
- * Launches a confetti animation if the confetti library is available.
- */
+ * Launches a confetti animation if the confetti library is available.
+ */
 function launchConfetti() {
   if (typeof confetti === 'function') {
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#3b82f6', '#10b981', '#f59e0b'] });
@@ -79,26 +79,26 @@ function launchConfetti() {
 }
 
 /**
- * Waits for Firebase Auth state to be ready and resolves with the current user.
- * This will resolve with null if no user is logged in.
- * @returns {Promise<firebase.User | null>} The authenticated user or null.
- */
+ * Waits for Firebase Auth state to be ready and resolves with the current user.
+ * This will resolve with null if no user is logged in.
+ * @returns {Promise<firebase.User | null>} The authenticated user or null.
+ */
 function waitForAuthState() {
-  console.log("Waiting for Firebase Auth state...");
+  console.log("Waiting for Firebase Auth state...");
   return new Promise(resolve => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       unsubscribe(); // Stop listening after the first state change
-      console.log("Auth state changed. User:", user ? user.uid : 'null (not logged in)');
+      console.log("Auth state changed. User:", user ? user.uid : 'null (not logged in)');
       resolve(user);
     });
   });
 }
 
 /**
- * Fetches the user's role from the database.
- * @param {string} uid - The user's unique ID.
- * @returns {Promise<string>} The user's role ('admin', 'moderator', or 'user').
- */
+ * Fetches the user's role from the database.
+ * @param {string} uid - The user's unique ID.
+ * @returns {Promise<string>} The user's role ('admin', 'moderator', or 'user').
+ */
 async function getUserRole(uid) {
   try {
     const snapshot = await db.ref(`egy_user/${uid}/role`).once('value');
@@ -110,53 +110,53 @@ async function getUserRole(uid) {
 }
 
 /**
- * Checks if the current user or an admin/moderator has permission to access/update a booking.
- * Attempts to read the data first, which is where Firebase rules apply.
- * Requires a logged-in user.
- * @param {string} bookingId - The ID of the booking.
- * @param {string} userId - The UID of the currently authenticated user.
- * @returns {Promise<boolean>} True if the user has permission (read allowed and conditions met), false otherwise.
- */
+ * Checks if the current user or an admin/moderator has permission to access/update a booking.
+ * Attempts to read the data first, which is where Firebase rules apply.
+ * Requires a logged-in user.
+ * @param {string} bookingId - The ID of the booking.
+ * @param {string} userId - The UID of the currently authenticated user.
+ * @returns {Promise<boolean>} True if the user has permission (read allowed and conditions met), false otherwise.
+ */
 async function checkBookingOwnership(bookingId, userId) {
-  // Ensure userId is provided (means a user is logged in)
-  if (!userId) {
-      console.warn("checkBookingOwnership called without logged-in userId.");
-      return false;
-  }
+  // Ensure userId is provided (means a user is logged in)
+  if (!userId) {
+      console.warn("checkBookingOwnership called without logged-in userId.");
+      return false;
+  }
   try {
     // This read operation is subject to Firebase Security Rules
-    console.log(`Attempting to read booking ${bookingId} for user ${userId}...`);
+    console.log(`Attempting to read booking ${bookingId} for user ${userId}...`);
     const snapshot = await db.ref(`trip-bookings/${bookingId}`).once('value');
     const booking = snapshot.val();
 
     // If snapshot.val() is null, the data wasn't found *or* Firebase rules denied the read.
     if (!booking) {
-        console.warn(`Read access denied by rule or booking ${bookingId} not found for user ${userId}.`);
+        console.warn(`Read access denied by rule or booking ${bookingId} not found for user ${userId}.`);
       return false; // Data not accessible or doesn't exist -> no permission
     }
 
-    // --- Client-side checks (These run ONLY if the server-side rule allowed the read) ---
-    // These checks should ideally mirror your .read rule conditions for $bookingId
+    // --- Client-side checks (These run ONLY if the server-side rule allowed the read) ---
+    // These checks should ideally mirror your .read rule conditions for $bookingId
 
-    // Admins have full access (check global role, set after auth state)
+    // Admins have full access (check global role, set after auth state)
     if (currentUserRole === 'admin') {
-        console.log(`User ${userId} is admin, granted permission.`);
-        return true;
-    }
+        console.log(`User ${userId} is admin, granted permission.`);
+        return true;
+    }
 
     // Users can access their own bookings (checked by uid from DB vs current auth.uid)
     if (booking.uid === userId) {
-         console.log(`User ${userId} matches booking uid, granted permission.`);
-         return true;
-    }
+         console.log(`User ${userId} matches booking uid, granted permission.`);
+         return true;
+    }
 
     // Moderators can access bookings where they are the owner of the associated trip
     if (currentUserRole === 'moderator' && booking.owner === userId) {
-        console.log(`User ${userId} is moderator and matches booking owner, granted permission.`);
+        console.log(`User ${userId} is moderator and matches booking owner, granted permission.`);
       return true;
-    }
+    }
 
-    console.warn(`Client-side permission checks failed for user ${userId} on booking ${bookingId}. Booking data UID: ${booking.uid}, Owner: ${booking.owner}, User Role: ${currentUserRole}`);
+    console.warn(`Client-side permission checks failed for user ${userId} on booking ${bookingId}. Booking data UID: ${booking.uid}, Owner: ${booking.owner}, User Role: ${currentUserRole}`);
     return false; // None of the client-side conditions were met
   } catch (error) {
     // This will catch the Firebase Error if the read was denied by rules (e.g., permission_denied)
@@ -166,11 +166,11 @@ async function checkBookingOwnership(bookingId, userId) {
 }
 
 /**
- * Determines the internal payment status and user message based on gateway response codes and statuses.
- * @param {string | number} responseCode - The gateway's response code.
- * @param {string} transactionStatus - The gateway's transaction status.
- * @returns {{paymentStatus: string, status: string, userMessage: string, canRetry?: boolean}} The determined status details.
- */
+ * Determines the internal payment status and user message based on gateway response codes and statuses.
+ * @param {string | number} responseCode - The gateway's response code.
+ * @param {string} transactionStatus - The gateway's transaction status.
+ * @returns {{paymentStatus: string, status: string, userMessage: string, canRetry?: boolean}} The determined status details.
+ */
 function determinePaymentStatus(responseCode, transactionStatus) {
   responseCode = String(responseCode).toUpperCase().trim();
   transactionStatus = String(transactionStatus).toUpperCase().trim();
@@ -218,14 +218,14 @@ function determinePaymentStatus(responseCode, transactionStatus) {
 }
 
 /**
- * Updates the booking status and payment details in the database.
- * Requires permission check before updating.
- * @param {string} bookingId - The ID of the booking to update.
- * @param {object} statusData - An object containing status and payment details.
- * @param {firebase.User} user - The currently authenticated user object.
- * @returns {Promise<boolean>} True if the update was successful, false otherwise.
- * @throws {Error} If user is not authenticated or lacks permission based on checkBookingOwnership.
- */
+ * Updates the booking status and payment details in the database.
+ * Requires permission check before updating.
+ * @param {string} bookingId - The ID of the booking to update.
+ * @param {object} statusData - An object containing status and payment details.
+ * @param {firebase.User} user - The currently authenticated user object.
+ * @returns {Promise<boolean>} True if the update was successful, false otherwise.
+ * @throws {Error} If user is not authenticated or lacks permission based on checkBookingOwnership.
+ */
 async function updateBookingStatus(bookingId, statusData, user) {
   if (!user) {
     console.error('updateBookingStatus called without authenticated user.');
@@ -240,7 +240,7 @@ async function updateBookingStatus(bookingId, statusData, user) {
     throw new Error('User does not have permission to update this booking');
   }
 
-  console.log(`Permission check passed for user ${user.uid} updating booking ${bookingId}. Proceeding with update.`);
+  console.log(`Permission check passed for user ${user.uid} updating booking ${bookingId}. Proceeding with update.`);
 
   const updates = {
     status: statusData.status,
@@ -263,11 +263,11 @@ async function updateBookingStatus(bookingId, statusData, user) {
   updates.lastUpdatedBy = user.uid;
   updates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
 
-  console.log("Attempting to update booking", bookingId, "with payload:", updates); // ADDED LOG
+  console.log("Attempting to update booking", bookingId, "with payload:", updates); // ADDED LOG
 
   try {
     await db.ref(`trip-bookings/${bookingId}`).update(updates);
-    console.log(`Booking ${bookingId} updated successfully.`);
+    console.log(`Booking ${bookingId} updated successfully.`);
     return true;
   } catch (error) {
     console.error('Error updating booking status in Firebase:', error);
@@ -276,55 +276,55 @@ async function updateBookingStatus(bookingId, statusData, user) {
 }
 
 /**
- * Populates the voucher display elements with booking data.
- * Includes checks to ensure elements exist.
- * @param {object} data - The booking data object.
- */
+ * Populates the voucher display elements with booking data.
+ * Includes checks to ensure elements exist.
+ * @param {object} data - The booking data object.
+ */
 function populateVoucherDisplay(data) {
-  if (!data) {
-     console.warn("populateVoucherDisplay called with no data.");
-     return;
-   }
-   console.log("Populating voucher display with data:", data);
+  if (!data) {
+     console.warn("populateVoucherDisplay called with no data.");
+     return;
+   }
+   console.log("Populating voucher display with data:", data);
 
-   // Add checks for each element *before* accessing textContent
-   // If an element is null, log an error but continue to try and populate others
-   const elementsToPopulate = {
-       'voucher-ref': BookingId || data.bookingId || 'N/A',
-       'voucher-transaction': data.transactionId || 'N/A',
-       'voucher-amount': `${data.totalPrice || '0'} ${data.currency || 'EGP'}`,
-       'voucher-card': `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`,
-       'customer-name2': data.username || data.name || 'Valued Customer',
-       'customer-email2': data.email || 'N/A',
-       'tour-name': data.tourName || data.tour || 'N/A',
-       'accommodation-type': data.hotelName || 'N/A',
-       'room-type': data.roomNumber || 'N/A',
-       'adults-count': data.adults || '0',
-       'children-count': data.children || data.childrenUnder12 || '0',
-       'infants-count': data.infants || '0',
-       'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())),
-       'trip-date': formatDate(data.tripDate),
-       'phone-number2': data.phoneNumber || 'N/A',
-       'trip-duration': data.duration ? `${data.duration} days` : 'N/A',
-       'booking-notes': data.notes || 'N/A'
-   };
+   // Add checks for each element *before* accessing textContent
+   // If an element is null, log an error but continue to try and populate others
+   const elementsToPopulate = {
+       'voucher-ref': BookingId || data.bookingId || 'N/A',
+       'voucher-transaction': data.transactionId || 'N/A',
+       'voucher-amount': `${data.totalPrice || '0'} ${data.currency || 'EGP'}`,
+       'voucher-card': `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`,
+       'customer-name2': data.username || data.name || 'Valued Customer',
+       'customer-email2': data.email || 'N/A',
+       'tour-name': data.tourName || data.tour || 'N/A',
+       'accommodation-type': data.hotelName || 'N/A',
+       'room-type': data.roomNumber || 'N/A',
+       'adults-count': data.adults || '0',
+       'children-count': data.children || data.childrenUnder12 || '0',
+       'infants-count': data.infants || '0',
+       'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())),
+       'trip-date': formatDate(data.tripDate),
+       'phone-number2': data.phoneNumber || 'N/A',
+       'trip-duration': data.duration ? `${data.duration} days` : 'N/A',
+       'booking-notes': data.notes || 'N/A'
+   };
 
-   for (const id in elementsToPopulate) {
-       const element = document.getElementById(id);
-       if (element) {
-           element.textContent = elementsToPopulate[id];
-       } else {
-           console.error(`populateVoucherDisplay: Element #${id} not found in the DOM!`);
-           // Continue loop to find other missing elements
-       }
-   }
+   for (const id in elementsToPopulate) {
+       const element = document.getElementById(id);
+       if (element) {
+           element.textContent = elementsToPopulate[id];
+       } else {
+           console.error(`populateVoucherDisplay: Element #${id} not found in the DOM!`);
+           // Continue loop to find other missing elements
+       }
+   }
 }
 
 
 /**
- * Handles the click event for printing the voucher.
- * Uses Print.js if available, otherwise falls back to window.print.
- */
+ * Handles the click event for printing the voucher.
+ * Uses Print.js if available, otherwise falls back to window.print.
+ */
 function handlePrintVoucher() {
   const voucherEl = document.getElementById('voucher-content');
   if (!voucherEl || !BookingData) {
@@ -369,28 +369,28 @@ function handlePrintVoucher() {
 
 
 /**
- * Sends the voucher email using a Netlify function.
- * Requires a logged-in user with permission.
- * @param {firebase.User} currentUser - The currently authenticated user.
- * @param {string} [statusElementId=null] - Optional ID of an element to display email sending status.
- * @returns {Promise<boolean>} True if the email was sent successfully, false otherwise.
- */
+ * Sends the voucher email using a Netlify function.
+ * Requires a logged-in user with permission.
+ * @param {firebase.User} currentUser - The currently authenticated user.
+ * @param {string} [statusElementId=null] - Optional ID of an element to display email sending status.
+ * @returns {Promise<boolean>} True if the email was sent successfully, false otherwise.
+ */
 async function sendVoucherEmail(currentUser, statusElementId = null) {
   const statusEl = statusElementId ? document.getElementById(statusElementId) : null;
   try {
     if (!currentUser) {
-        console.warn("sendVoucherEmail called without logged-in user.");
-        showNotification('You must be logged in to send the voucher.', true);
-        if (statusEl) statusEl.textContent = 'Email not sent: Not logged in.';
-        return false;
-    }
+        console.warn("sendVoucherEmail called without logged-in user.");
+        showNotification('You must be logged in to send the voucher.', true);
+        if (statusEl) statusEl.textContent = 'Email not sent: Not logged in.';
+        return false;
+    }
     if (!BookingData || !BookingId) {
       showNotification('Booking data not available for sending email.', true);
       if (statusEl) statusEl.textContent = 'Email not sent: Booking data missing.';
       return false;
     }
 
-    // Re-check permission immediately before sending email
+    // Re-check permission immediately before sending email
     const hasPermission = await checkBookingOwnership(BookingId, currentUser.uid);
     if (!hasPermission) {
       showNotification('You do not have permission to send this voucher.', true);
@@ -408,7 +408,7 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
     if (statusEl) statusEl.textContent = 'Sending your voucher...';
     showNotification('Sending your voucher...');
 
-    console.log(`Attempting to send voucher email for booking ${BookingId} to ${BookingData.email} by user ${currentUser.uid}`);
+    console.log(`Attempting to send voucher email for booking ${BookingId} to ${BookingData.email} by user ${currentUser.uid}`);
 
     const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/send-voucher', {
       method: 'POST',
@@ -435,7 +435,7 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
       // Update Firebase to mark voucher as sent
       const updates = {
         voucherSent: true,
-         voucherSentAt: firebase.database.ServerValue.TIMESTAMP, // Log when it was sent
+         voucherSentAt: firebase.database.ServerValue.TIMESTAMP, // Log when it was sent
       };
 
       // Log who sent it (the current user triggering the action)
@@ -444,15 +444,15 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
 
       try {
         await db.ref(`trip-bookings/${BookingId}`).update(updates);
-         console.log(`Firebase updated: voucherSent status for ${BookingId}.`);
+         console.log(`Firebase updated: voucherSent status for ${BookingId}.`);
       } catch (updateError) {
-         console.error('Error updating voucherSent status in Firebase:', updateError);
-         // Don't fail the email send process just because the log update failed
-      }
+         console.error('Error updating voucherSent status in Firebase:', updateError);
+         // Don't fail the email send process just because the log update failed
+      }
 
       return true;
     } else {
-      console.error('Netlify function reported failure:', result.message);
+      console.error('Netlify function reported failure:', result.message);
       throw new Error(result.message || 'Failed to send the voucher');
     }
 
@@ -465,10 +465,10 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
 }
 
 /**
- * Handles the click event for resending the voucher email.
- * Prompts for email if invalid or missing before sending.
- * Requires a logged-in user with permission.
- */
+ * Handles the click event for resending the voucher email.
+ * Prompts for email if invalid or missing before sending.
+ * Requires a logged-in user with permission.
+ */
 async function resendVoucherEmailHandler() {
   const currentUser = auth.currentUser;
   if (!currentUser) {
@@ -481,7 +481,7 @@ async function resendVoucherEmailHandler() {
     return;
   }
 
-    // Re-check permission immediately before resend attempt
+    // Re-check permission immediately before resend attempt
   const hasPermission = await checkBookingOwnership(BookingId, currentUser.uid);
   if (!hasPermission) {
     showNotification('You do not have permission to resend this voucher.', true);
@@ -533,13 +533,13 @@ async function resendVoucherEmailHandler() {
       voucherResentAt: firebase.database.ServerValue.TIMESTAMP
     };
 
-    // Log who resent it
+    // Log who resent it
     updates.lastUpdatedBy = currentUser.uid;
     updates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
 
     try {
       await db.ref(`trip-bookings/${BookingId}`).update(updates);
-       console.log(`Firebase updated: voucherResentAt status for ${BookingId}.`);
+       console.log(`Firebase updated: voucherResentAt status for ${BookingId}.`);
     } catch (error) {
       console.error('Error logging voucher resend:', error);
     }
@@ -548,15 +548,15 @@ async function resendVoucherEmailHandler() {
 
 
 /**
- * Displays the failure layout with relevant details.
- * @param {string} merchantOrderId - The booking/order ID.
- * @param {string} customErrorMessage - A user-friendly error message.
- * @param {number} amount - The transaction amount.
- * @param {string} currency - The transaction currency.
- * @param {boolean} canRetry - Whether a retry option should be shown.
- */
+ * Displays the failure layout with relevant details.
+ * @param {string} merchantOrderId - The booking/order ID.
+ * @param {string} customErrorMessage - A user-friendly error message.
+ * @param {number} amount - The transaction amount.
+ * @param {string} currency - The transaction currency.
+ * @param {boolean} canRetry - Whether a retry option should be shown.
+ */
 function displayFailure(merchantOrderId, customErrorMessage, amount, currency, canRetry = false) {
-  console.log("Displaying failure:", { merchantOrderId, customErrorMessage, amount, currency, canRetry });
+  console.log("Displaying failure:", { merchantOrderId, customErrorMessage, amount, currency, canRetry });
   document.getElementById('loading-layout').classList.add('hidden');
   document.getElementById('failure-layout').classList.remove('hidden');
   document.getElementById('error-message').textContent = customErrorMessage;
@@ -585,8 +585,8 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
     retryBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Try Again';
     retryBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
     retryBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
-     if(retryMessageEl) retryMessageEl.classList.remove('hidden');
-     if(contactSupportMessageEl) contactSupportMessageEl.classList.add('hidden');
+     if(retryMessageEl) retryMessageEl.classList.remove('hidden');
+     if(contactSupportMessageEl) contactSupportMessageEl.classList.add('hidden');
   } else {
     // Show return home if not retryable or no specific payment URL was stored
     if(retryMessageEl) retryMessageEl.classList.add('hidden');
@@ -599,57 +599,57 @@ function displayFailure(merchantOrderId, customErrorMessage, amount, currency, c
 }
 
 /**
- * Displays a message asking the user to log in.
- * Assumes an element with id "login-required-layout" exists in the HTML.
- */
+ * Displays a message asking the user to log in.
+ * Assumes an element with id "login-required-layout" exists in the HTML.
+ */
 function displayLoginRequired() {
-    console.log("Displaying login required layout.");
-    document.getElementById('loading-layout').classList.add('hidden');
+    console.log("Displaying login required layout.");
+    document.getElementById('loading-layout').classList.add('hidden');
 
-    const loginRequiredEl = document.getElementById('login-required-layout');
-    if (loginRequiredEl) {
-        loginRequiredEl.classList.remove('hidden');
-    } else {
-        console.error("#login-required-layout not found in HTML!");
-        // Fallback: Display a basic message if the dedicated layout is missing
-        document.body.innerHTML = `
-            <div class="container mx-auto p-6 text-center">
-                <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
-                    <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
-                    <h2 class="text-2xl font-bold mb-4">Login Required</h2>
-                    <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
-                    <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Go to Login
-                    </a>
-                </div>
-            </div>
-        `;
-    }
+    const loginRequiredEl = document.getElementById('login-required-layout');
+    if (loginRequiredEl) {
+        loginRequiredEl.classList.remove('hidden');
+    } else {
+        console.error("#login-required-layout not found in HTML!");
+        // Fallback: Display a basic message if the dedicated layout is missing
+        document.body.innerHTML = `
+            <div class="container mx-auto p-6 text-center">
+                <div class="flex flex-col items-center justify-center bg-white p-8 rounded-lg shadow-md">
+                    <i class="fas fa-user-circle text-6xl text-gray-400 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-4">Login Required</h2>
+                    <p class="text-gray-700 mb-6">Please log in to view your booking details and payment result.</p>
+                    <a href="/login" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Go to Login
+                    </a>
+                </div>
+            </div>
+        `;
+    }
 
-    // Hide other potential layouts
-    document.getElementById('success-layout')?.classList.add('hidden');
-    document.getElementById('failure-layout')?.classList.add('hidden');
-    document.getElementById('pending-layout')?.classList.add('hidden');
-    document.getElementById('already-submitted-layout')?.classList.add('hidden'); // Assuming this exists
-    document.getElementById('payment-cancelled-layout')?.classList.add('hidden'); // Assuming this exists
+    // Hide other potential layouts
+    document.getElementById('success-layout')?.classList.add('hidden');
+    document.getElementById('failure-layout')?.classList.add('hidden');
+    document.getElementById('pending-layout')?.classList.add('hidden');
+    document.getElementById('already-submitted-layout')?.classList.add('hidden'); // Assuming this exists
+    document.getElementById('payment-cancelled-layout')?.classList.add('hidden'); // Assuming this exists
 
 }
 
 
 /**
- * Processes the payment gateway response, determines the status, and updates the booking.
- * Requires a logged-in user.
- * @param {object} paymentData - The parsed response data from the payment gateway webhook/query.
- * @param {firebase.User} user - The currently authenticated user object.
- * @returns {Promise<{status: object, paymentInfo: object}>} The determined status and payment info.
- * @throws {Error} If no transactions are found or booking status update fails due to permissions etc.
- */
+ * Processes the payment gateway response, determines the status, and updates the booking.
+ * Requires a logged-in user.
+ * @param {object} paymentData - The parsed response data from the payment gateway webhook/query.
+ * @param {firebase.User} user - The currently authenticated user object.
+ * @returns {Promise<{status: object, paymentInfo: object}>} The determined status and payment info.
+ * @throws {Error} If no transactions are found or booking status update fails due to permissions etc.
+ */
 async function processPaymentResult(paymentData, user) {
-  if (!user) {
-      console.error("processPaymentResult called without authenticated user.");
-      throw new Error("Authentication required to process payment result.");
-  }
-  console.log("Processing payment result for user:", user.uid);
+  if (!user) {
+      console.error("processPaymentResult called without authenticated user.");
+      throw new Error("Authentication required to process payment result.");
+  }
+  console.log("Processing payment result for user:", user.uid);
   const transactions = paymentData.transactions || [];
   if (transactions.length === 0) {
     throw new Error('No transactions found in payment data');
@@ -661,7 +661,7 @@ async function processPaymentResult(paymentData, user) {
     latestTransaction.transactionResponseCode,
     latestTransaction.status
   );
-  console.log("Determined payment status:", status);
+  console.log("Determined payment status:", status);
 
 
   // Extract relevant payment details
@@ -674,7 +674,7 @@ async function processPaymentResult(paymentData, user) {
     responseCode: latestTransaction.transactionResponseCode, // Corrected property name
     responseMessage: latestTransaction.transactionResponseMessage?.en || latestTransaction.transactionResponseMessage || '' // Get English message or fallback
   };
-  console.log("Extracted payment info:", paymentInfo);
+  console.log("Extracted payment info:", paymentInfo);
 
   // Update the booking in Firebase
   // This call includes the permission check via checkBookingOwnership internally
@@ -692,10 +692,10 @@ async function processPaymentResult(paymentData, user) {
 }
 
 /**
- * The main function to initialize the payment result page.
- * Reads URL parameters, waits for auth state, fetches payment status, updates booking, and displays the result.
- * Only proceeds if a user is logged in.
- */
+ * The main function to initialize the payment result page.
+ * Reads URL parameters, waits for auth state, fetches payment status, updates booking, and displays the result.
+ * Only proceeds if a user is logged in.
+ */
 async function initializeApp() {
   console.log("App initializing...");
   const urlParams = new URLSearchParams(window.location.search);
@@ -715,7 +715,7 @@ async function initializeApp() {
 
     if (!user) {
       console.log("No user logged in. Displaying login required message.");
-      // Hide loading and show login required message
+      // Hide loading and show login required message
       displayLoginRequired();
       return; // Stop execution if no user is available
     }
@@ -809,7 +809,7 @@ async function initializeApp() {
                   document.getElementById('email-status-message').textContent = "Voucher email will be sent to the customer automatically.";
                 }
             } else if (BookingData?.voucherSent) {
-              document.getElementById('email-status-message').textContent = "Voucher email has already been sent.";
+              document.getElementById('email-status-message')?.textContent = "Voucher email has already been sent.";
               // Check permission to SHOW the resend button
               const canResendVoucher = await checkBookingOwnership(BookingId, user.uid);
               if (canResendVoucher) {
@@ -834,7 +834,8 @@ async function initializeApp() {
          document.getElementById('payment-cancelled-layout')?.classList.add('hidden');
          document.getElementById('login-required-layout')?.classList.add('hidden');
 
-        document.getElementById('pending-layout')?.classList.remove('hidden'); // Use optional chaining
+
+         document.getElementById('pending-layout')?.classList.remove('hidden'); // Use optional chaining
         const pendingMessageEl = document.getElementById('pending-message');
          if(pendingMessageEl) pendingMessageEl.textContent = status.userMessage;
 
@@ -842,6 +843,7 @@ async function initializeApp() {
         document.getElementById('pending-ref')?.textContent = BookingId || 'N/A';
         document.getElementById('pending-amount')?.textContent = `${paymentInfo.amount || '0'} ${paymentInfo.currency || 'EGP'}`;
         document.getElementById('pending-email')?.textContent = BookingData?.email || 'N/A';
+
 
         break;
 
