@@ -860,11 +860,9 @@ async function submitForm() {
       currency: 'EGP',
       total: total,
       netTotal: netTotal,
-      baseTax: baseTax,
-      taxOnTax: taxOnTax,
-      fixedFee: FIXED_FEE,
+      
       totalTax: totalTax,
-      commissionRate: commissionRate,
+      
       commission: commission,
       uid: user.uid,
       owner: tripOwnerId,
