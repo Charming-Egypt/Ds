@@ -692,7 +692,9 @@ async function processPaymentResult(paymentData, user) {
   // This call includes the permission check via checkBookingOwnership internally
   // It also requires the .write and .validate rules to pass.
   // The PERMISSION_DENIED on write was happening here previously due to the .validate rule failing.
-  const { status, paymentInfo } = await processPaymentResult(result.data.response, user);
+  const { status: processedStatus, paymentInfo: processedPaymentInfo } = await processPaymentResult(result.data.response, user);
+  // Renamed destructured variables to avoid conflict with 'status' inside the switch
+
 
     // Fetch the potentially updated booking data again to ensure consistency for display
     // This read also needs permission.
@@ -711,7 +713,7 @@ async function processPaymentResult(paymentData, user) {
 
 
     // --- Handle different statuses based on the processed result ---
-    switch (status.paymentStatus) {
+    switch (processedStatus.paymentStatus) { // Use processedStatus here
       case PAYMENT_STATUS.SUCCESS:
          console.log("Handling SUCCESS status.");
          const successLayout = document.getElementById('success-layout');
@@ -778,11 +780,11 @@ async function processPaymentResult(paymentData, user) {
 
          document.getElementById('pending-layout')?.classList.remove('hidden'); // Use optional chaining
         const pendingMessageEl = document.getElementById('pending-message');
-         if(pendingMessageEl) pendingMessageEl.textContent = status.userMessage;
+         if(pendingMessageEl) pendingMessageEl.textContent = processedStatus.userMessage; // Use processedStatus
 
          // Populate pending details if elements exist
         document.getElementById('pending-ref')?.textContent = BookingId || 'N/A';
-        document.getElementById('pending-amount')?.textContent = `${paymentInfo.amount || '0'} ${paymentInfo.currency || 'EGP'}`;
+        document.getElementById('pending-amount')?.textContent = `${processedPaymentInfo.amount || '0'} ${processedPaymentInfo.currency || 'EGP'}`; // Use processedPaymentInfo
         document.getElementById('pending-email')?.textContent = BookingData?.email || 'N/A';
 
 
@@ -822,20 +824,20 @@ async function processPaymentResult(paymentData, user) {
 
         displayFailure( // Use displayFailure for general failures
           BookingId,
-          status.userMessage + (paymentInfo.responseMessage ? ` (${paymentInfo.responseMessage})` : ''),
-          paymentInfo.amount,
-          paymentInfo.currency,
-          status.canRetry
+          processedStatus.userMessage + (processedPaymentInfo.responseMessage ? ` (${processedPaymentInfo.responseMessage})` : ''), // Use processed variables
+          processedPaymentInfo.amount, // Use processed variables
+          processedPaymentInfo.currency, // Use processed variables
+          processedStatus.canRetry // Use processedStatus
         );
         break;
 
       default:
-        console.error("Received unhandled payment status:", status.paymentStatus);
+        console.error("Received unhandled payment status:", processedStatus.paymentStatus); // Use processedStatus
         displayFailure(
           BookingId, // Pass BookingId if available
-          `An unexpected payment status occurred: ${status.paymentStatus}. Please contact support.`,
-          paymentInfo.amount, // Use paymentInfo amount if available
-          paymentInfo.currency, // Use paymentInfo currency if available
+          `An unexpected payment status occurred: ${processedStatus.paymentStatus}. Please contact support.`, // Use processedStatus
+          processedPaymentInfo.amount, // Use processedPaymentInfo amount if available
+          processedPaymentInfo.currency, // Use processedPaymentInfo currency if available
           false
         );
         break;
