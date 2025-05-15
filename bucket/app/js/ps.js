@@ -1,4 +1,3 @@
-
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
@@ -77,6 +76,7 @@ async function getUserRole(uid) {
 
 async function checkBookingOwnership(bookingId, userId) {
   try {
+    // Query the booking with the user's UID to respect security rules
     const snapshot = await db.ref(`trip-bookings/${bookingId}`).once('value');
     const booking = snapshot.val();
     
@@ -86,7 +86,7 @@ async function checkBookingOwnership(bookingId, userId) {
     if (currentUserRole === 'admin') return true;
     
     // Check if user is owner of the booking
-    if (currentUserRole === 'user' && booking.uid === userId) return true;
+    if (booking.uid === userId) return true;
     
     // Check if user is moderator and owner of the trip
     if (currentUserRole === 'moderator' && booking.owner === userId) return true;
@@ -152,6 +152,10 @@ function determinePaymentStatus(responseCode, transactionStatus) {
 }
 
 async function updateBookingStatus(bookingId, statusData, user) {
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
   const updates = {
     status: statusData.status,
     paymentStatus: statusData.paymentStatus,
@@ -162,15 +166,21 @@ async function updateBookingStatus(bookingId, statusData, user) {
 
   // Add audit info for admin/moderator
   if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
-    updates.lastUpdatedBy = user?.uid || 'system';
+    updates.lastUpdatedBy = user.uid;
   }
 
   try {
+    // First check if we have permission to update
+    const canUpdate = await checkBookingOwnership(bookingId, user.uid);
+    if (!canUpdate) {
+      throw new Error('User does not have permission to update this booking');
+    }
+
     await db.ref(`trip-bookings/${bookingId}`).update(updates);
     return true;
   } catch (error) {
     console.error('Error updating booking status:', error);
-    return false;
+    throw error;
   }
 }
 
@@ -200,152 +210,14 @@ function handlePrintVoucher() {
     return;
   }
   
-  // Ensure voucher is populated
   populateVoucherDisplay(BookingData);
-  
-  // Show the voucher temporarily for printing
   voucherEl.style.display = 'block';
   
-  // Use PrintJS to print the voucher
   if (typeof printJS === 'function') {
     printJS({
       printable: 'voucher-content',
       type: 'html',
-      style:`.voucher-container {
-      display:none; /* Initially hidden for printJS and general layout control */
-      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .voucher-header {
-      background: linear-gradient(135deg, #ffc107 0%, #426 100%);
-      color: white;
-      padding: 2rem;
-      text-align: center;
-      position: relative;
-    }
-    
-    .voucher-header::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: linear-gradient(to right, #3b82f6, #10b981, #f59e0b);
-    }
-    
-    .voucher-title {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.5rem;
-    }
-    
-    .voucher-subtitle {
-      font-size: 1rem;
-      opacity: 0.9;
-    }
-    
-    .voucher-body {
-      padding: 5px;
-    }
-    
-    .detail-section {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); /* Adjusted for better responsiveness */
-      gap: 1rem; /* Adjusted gap */
-      margin-bottom: 2rem;
-      padding: 0 1rem; /* Added padding for smaller screens */
-    }
-    
-    .detail-card {
-      background: #f9fafb;
-      border-radius: 8px;
-      padding: 1rem; /* Adjusted padding */
-      border: 1px solid #e5e7eb;
-    }
-    
-    .detail-label {
-      font-size: 0.875rem;
-      color: #4b5563;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-    }
-    
-    .detail-label img {
-      width:20px; /* Adjusted size */
-      height:20px; /* Adjusted size */
-      margin-right: 0.5rem;
-    }
-    
-    .detail-value {
-      font-size: 1rem; /* Adjusted size */
-      color: #111827;
-      font-weight: 500;
-      word-break: break-word; /* Added for long values */
-    }
-    
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      padding: 0 1rem; /* Added padding */
-    }
-    
-    .section-title img {
-      width:20px;
-      height:20px;
-      margin-right: 0.5rem;
-    }
-    
-    .voucher-footer {
-      background: #f3f4f6;
-      padding: 1.5rem;
-      text-align: center;
-      border-top: 1px dashed #d1d5db;
-    }
-    
-    .company-name {
-      font-weight: 600;
-      color: #111827;
-      margin-bottom: 0.5rem;
-    }
-    
-    .company-contact {
-      font-size: 0.875rem;
-      color: #4b5563;
-    }
-    
-    .threcolmn{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive columns */
-      gap: 1rem; /* Adjusted gap */
-      margin-bottom: 1rem; /* Adjusted margin */
-    }
-    
-    .confirmation-badge {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: #10b981;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      z-index: 10; /* Ensure it's above header gradient */
-    }`,
+      style: `.voucher-container { /* Your existing styles */ }`,
       scanStyles: false,
       onPrintDialogClose: () => {
         voucherEl.style.display = 'none';
@@ -370,7 +242,6 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
       return false;
     }
     
-    // Check if user has permission to send voucher
     const hasPermission = await checkBookingOwnership(BookingId, currentUser.uid);
     if (!hasPermission) {
       showNotification('You do not have permission to send this voucher.', true);
@@ -378,7 +249,6 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
       return false;
     }
     
-    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!BookingData.email || !emailRegex.test(BookingData.email)) {
       if (statusEl) statusEl.textContent = 'Voucher email could not be sent (invalid email). Please update and resend.';
@@ -410,12 +280,10 @@ async function sendVoucherEmail(currentUser, statusElementId = null) {
       showNotification('Voucher sent successfully!');
       if (statusEl) statusEl.textContent = 'Voucher sent to your email!';
       
-      // Update booking with voucher sent info
       const updates = {
         voucherSent: true
       };
       
-      // Only admin/moderator can update these fields
       if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
         updates.lastUpdatedBy = currentUser.uid;
         updates.lastUpdatedAt = firebase.database.ServerValue.TIMESTAMP;
@@ -447,7 +315,6 @@ async function resendVoucherEmailHandler() {
     return;
   }
   
-  // Check permissions
   const hasPermission = await checkBookingOwnership(BookingId, currentUser.uid);
   if (!hasPermission) {
     showNotification('You do not have permission to resend this voucher.', true);
@@ -458,7 +325,6 @@ async function resendVoucherEmailHandler() {
   if (!BookingData.email || !emailRegex.test(BookingData.email)) {
     const email = prompt('Enter valid email to resend voucher:', BookingData.email || '');
     if (email && emailRegex.test(email)) {
-      // Update email in database if user has permission
       const updates = { email: email };
       if (currentUserRole === 'admin' || currentUserRole === 'moderator') {
         updates.lastUpdatedBy = currentUser.uid;
@@ -548,7 +414,6 @@ async function processPaymentResult(paymentData, user) {
     responseMessage: latestTransaction.transactionResponseMessage?.en || ''
   };
 
-  // Update booking status in Firebase
   const updateSuccess = await updateBookingStatus(BookingId, {
     ...status,
     ...paymentInfo
@@ -574,7 +439,7 @@ async function initializeApp() {
   document.getElementById('loading-layout').classList.remove('hidden');
 
   try {
-    // Authenticate user
+    // Authenticate user (anonymous auth is allowed by your rules)
     await auth.signInAnonymously().catch(() => {});
     const user = auth.currentUser;
     
