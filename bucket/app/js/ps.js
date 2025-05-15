@@ -33,7 +33,7 @@ const PAYMENT_STATUS = {
 
 // Transaction status mapping
 const TRANSACTION_STATUS = {
-  SUCCESS: 'completed',
+  SUCCESS: 'paid',
   FAILED: 'failed',
   CANCELLED: 'cancelled',
   PENDING: 'processing'
@@ -175,10 +175,29 @@ async function updateBookingStatus(bookingId, statusData, user) {
 
 function populateVoucherDisplay(data) {
   if (!data) return;
+  
+  // Update transaction ID to use merchantOrderId if available
+  const transactionId = BookingId || data.merchantOrderId || data.transactionId || 'N/A';
+  
+  // Calculate paid amount (use totalPrice or amountPaid)
+  const paidAmount = data.amountPaid || data.totalPrice || '0';
+  
+  // Determine payment method (card, wallet, etc.)
+  const paymentMethod = data.paymentMethod || 
+                       (data.cardBrand ? `${data.cardBrand} Card` : 'Credit/Debit Card');
+
   document.getElementById('voucher-ref').textContent = BookingId || data.bookingId || 'N/A';
-  document.getElementById('voucher-transaction').textContent = data.transactionId || 'N/A';
-  document.getElementById('voucher-amount').textContent = `${data.totalPrice || '0'} ${data.currency || 'EGP'}`;
-  document.getElementById('voucher-card').textContent = `${data.cardBrand || 'Card'} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
+  document.getElementById('voucher-transaction').textContent = transactionId;
+  document.getElementById('voucher-amount').textContent = `${paidAmount} ${data.currency || 'EGP'}`;
+  document.getElementById('voucher-payment-method').textContent = paymentMethod;
+  
+  if (data.cardBrand) {
+    document.getElementById('voucher-card').textContent = 
+      `${data.cardBrand} ${data.maskedCard ? 'ending in ' + data.maskedCard.slice(-4) : '••••'}`;
+  } else {
+    document.getElementById('voucher-card').textContent = 'N/A';
+  }
+  
   document.getElementById('customer-name2').textContent = data.username || data.name || 'Valued Customer';
   document.getElementById('customer-email2').textContent = data.email || 'N/A';
   document.getElementById('tour-name').textContent = data.tourName || data.tour || 'N/A';
@@ -187,7 +206,9 @@ function populateVoucherDisplay(data) {
   document.getElementById('adults-count').textContent = data.adults || '0';
   document.getElementById('children-count').textContent = data.children || data.childrenUnder12 || '0';
   document.getElementById('infants-count').textContent = data.infants || '0';
-  const bookingCreationDate = data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date());
+  
+  const bookingCreationDate = data.paymentDate ? new Date(data.paymentDate) : 
+                            (data.createdAt ? new Date(data.createdAt) : new Date());
   document.getElementById('booking-date').textContent = formatDate(bookingCreationDate);
   document.getElementById('trip-date').textContent = formatDate(data.tripDate);
 }
@@ -199,7 +220,7 @@ function handlePrintVoucher() {
     return;
   }
   
-  // Ensure voucher is populated
+  // Ensure voucher is populated with latest data
   populateVoucherDisplay(BookingData);
   
   // Show the voucher temporarily for printing
@@ -403,12 +424,28 @@ async function processPaymentResult(paymentData, user) {
     latestTransaction.status
   );
 
+  // Get the actual paid amount (use captured amount if available)
+  const paidAmount = paymentData.totalCapturedAmount || 
+                   paymentData.amount || 
+                   latestTransaction.amount || 
+                   '0';
+
+  // Determine payment method
+  let paymentMethod = 'Credit/Debit Card'; // default
+  if (paymentData.sourceOfFunds?.type === 'CARD') {
+    paymentMethod = `${paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card'} Card`;
+  } else if (paymentData.paymentMethod) {
+    paymentMethod = paymentData.paymentMethod;
+  }
+
   const paymentInfo = {
-    amount: paymentData.totalCapturedAmount,
+    amount: paidAmount,
     currency: latestTransaction.currency || 'EGP',
-    transactionId: paymentData.orderId,
-    cardBrand: paymentData.sourceOfFunds?.cardInfo?.cardBrand || 'Card',
-    maskedCard: paymentData.sourceOfFunds?.cardInfo?.maskedCard || '••••',
+    transactionId: BookingId || paymentData.orderId, // Use BookingId as primary transaction ID
+    merchantOrderId: paymentData.orderId, // Store original order ID
+    cardBrand: paymentData.sourceOfFunds?.cardInfo?.cardBrand || null,
+    maskedCard: paymentData.sourceOfFunds?.cardInfo?.maskedCard || null,
+    paymentMethod: paymentMethod,
     responseCode: latestTransaction.transactionResponseCode,
     responseMessage: latestTransaction.transactionResponseMessage?.en || ''
   };
@@ -473,6 +510,14 @@ async function initializeApp() {
     if (!BookingData) {
       throw new Error('Booking not found in database');
     }
+
+    // Merge payment info with booking data
+    BookingData = {
+      ...BookingData,
+      ...paymentInfo,
+      amountPaid: paymentInfo.amount, // Add explicit amountPaid field
+      paymentMethod: paymentInfo.paymentMethod
+    };
 
     // Handle different statuses
     switch (status.paymentStatus) {
