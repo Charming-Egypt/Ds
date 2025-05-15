@@ -9,6 +9,7 @@ const firebaseConfig = {
   appId: "1:477485386557:web:755f9649043288db819354"
 };
 
+// Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 } else {
@@ -18,10 +19,12 @@ if (!firebase.apps.length) {
 const db = firebase.database();
 const auth = firebase.auth();
 
+// --- Global State Variables ---
 let BookingData = null;
 let BookingId = null;
 let currentUserRole = null;
 
+// --- Constants ---
 const PAYMENT_STATUS = {
   SUCCESS: 'paid',
   FAILED: 'failed',
@@ -36,6 +39,7 @@ const TRANSACTION_STATUS = {
   PENDING: 'processing'
 };
 
+// --- Helper Functions ---
 function formatDate(dateStringOrDate) {
   if (!dateStringOrDate) return 'N/A';
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -177,7 +181,7 @@ function populateVoucherDisplay(data) {
     'adults-count': data.adults || '0',
     'children-count': data.children || data.childrenUnder12 || '0',
     'infants-count': data.infants || '0',
-    'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : newDate())),
+    'booking-date': formatDate(data.paymentDate ? new Date(data.paymentDate) : (data.createdAt ? new Date(data.createdAt) : new Date())),
     'trip-date': formatDate(data.tripDate),
     'phone-number2': data.phoneNumber || 'N/A',
     'trip-duration': data.duration ? `${data.duration} days` : 'N/A',
