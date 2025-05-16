@@ -890,7 +890,7 @@ async function submitForm() {
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
 
     // Save complete booking to Firebase
-    await database.ref('trip-bookings').child(refNumber).set({
+    await db.ref('trip-bookings').child(refNumber).set({
       ...formData,
       paymenturl: kashierUrl,
     });
