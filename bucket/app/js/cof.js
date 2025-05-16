@@ -9,8 +9,7 @@ const Config = {
   appId: "1:477485386557:web:755f9649043288db819354"
 };
 
-// Make config available globally
-window.Config = Config;
+
 
 
 
