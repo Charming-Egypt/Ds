@@ -140,7 +140,7 @@ function prevStep() {
 // Exchange Rate Function
 async function fetchExchangeRate() {
   try {
-    const snapshot = await database.ref('exchangeRates').once('value');
+    const snapshot = await db.ref('exchangeRates').once('value');
     const rateData = snapshot.val();
     if (rateData && rateData.rate) {
       exchangeRate = parseFloat(rateData.rate);
@@ -154,7 +154,7 @@ async function fetchExchangeRate() {
 async function fetchAllTripData() {
   try {
     showSpinner();
-    const snapshot = await database.ref('trips').once('value');
+    const snapshot = await db.ref('trips').once('value');
     const allTripsData = snapshot.val();
     
     if (!allTripsData) {
@@ -721,7 +721,7 @@ async function populateForm() {
   if (!user) return;
 
   try {
-    const userSnapshot = await database.ref('egy_user').child(user.uid).once('value');
+    const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
     const userData = userSnapshot.val();
 
     if (userData) {
