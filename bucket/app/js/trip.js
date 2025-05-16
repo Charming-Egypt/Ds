@@ -858,12 +858,10 @@ async function submitForm() {
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
       currency: 'EGP',
-      total: total,
-      netTotal: netTotal,
-      
-      totalTax: totalTax,
-      
-      commission: commission,
+      total: total.toFixed(2),
+      netTotal: netTotal.toFixed(2),
+      totalTax: totalTax.toFixed(2),
+      commission: commission.toFixed(2),
       uid: user.uid,
       owner: tripOwnerId,
       exchangeRate: exchangeRate
@@ -901,7 +899,7 @@ async function submitForm() {
       redirectMethod: 'get'
     });
 
-    const kashierUrl = `https://checkout.kashier.io/?${paymentParams.toString()}`;
+    const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
 
     // Save complete booking to Firebase
     await database.ref('trip-bookings').child(refNumber).set({
