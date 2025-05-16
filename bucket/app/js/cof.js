@@ -11,3 +11,17 @@ const Config = {
 
 // Make config available globally
 window.Config = Config;
+
+
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(Config);
+    } else {
+      firebase.app();
+    }
+
+    const db = firebase.database();
+    const auth = firebase.auth();
+    
+  
