@@ -1,20 +1,20 @@
 {
-  "name": "blogger-pwa",
+  "name": "Discover-Sharm",
   "version": "0.0.1",
   "private": true,
-  "description": "Build a PWA for your Blogger Site",
+  "description": "",
   "license": "MIT",
   "author": {
-    "name": "Deo Kumar",
-    "url": "https://github.com/kumardeo"
+    "name": "Mohamed Gamal",
+    "url": "https://www.discover-sharm.com"
   },
-  "homepage": "https://github.com/kumardeo/blogger-pwa",
+  "homepage": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kumardeo/blogger-pwa"
+    "url": ""
   },
   "bugs": {
-    "url": "https://github.com/kumardeo/blogger-pwa/issues"
+    "url": ""
   },
   "type": "module",
   "scripts": {
