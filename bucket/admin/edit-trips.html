@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Sharm - Trip Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      color: white;
+      z-index: 1000;
+      animation: fadeIn 0.3s;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    
+    .toast-success {
+      background: rgba(16, 185, 129, 0.9);
+    }
+    
+    .toast-error {
+      background: rgba(239, 68, 68, 0.9);
+    }
+    
+    .toast-warning {
+      background: rgba(245, 158, 11, 0.9);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .array-item {
+      position: relative;
+      background-color: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    
+    .array-item:hover {
+      background-color: #e2e8f0;
+    }
+    
+    .remove-item {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .remove-item:hover {
+      transform: scale(1.1);
+    }
+    
+    .rating-star {
+      color: #f59e0b;
+    }
+    
+    .empty-star {
+      color: #cbd5e1;
+    }
+    
+    .input-field {
+      color: #1e293b;
+      transition: all 0.2s;
+      border: 1px solid #e2e8f0;
+      background-color: #ffffff;
+    }
+    
+    .input-field:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    
+    .tab-active {
+      position: relative;
+      color: #f59e0b;
+      font-weight: 600;
+    }
+    
+    .tab-active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #f59e0b;
+      border-radius: 3px;
+    }
+    
+    .trip-card {
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+    
+    .trip-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .role-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .role-admin {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .role-moderator {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .role-user {
+      background-color: #64748b;
+      color: white;
+    }
+    
+    .disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .read-only {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+    }
+    
+    .floating-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      z-index: 50;
+      transition: all 0.3s;
+    }
+    
+    .floating-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    
+    .stat-card {
+      transition: all 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Animation for skeleton loading */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .glass-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      
+      .toast {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 gradient-bg text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-white/20 rounded-lg">
+            <i class="fas fa-map-marked-alt text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold">Discover Sharm</h1>
+            <div class="flex items-center mt-1">
+              <span id="userRole" class="role-badge mr-2">Loading...</span>
+              <span id="userEmail" class="text-xs text-white/80"></span>
+            </div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Total Trips</p>
+            <h3 class="text-2xl font-bold" id="totalTrips">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+            <i class="fas fa-suitcase-rolling"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Top Rated</p>
+            <h3 class="text-2xl font-bold" id="topRated">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-green-100 text-green-600">
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card hidden lg:block">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Your Trips</p>
+            <h3 class="text-2xl font-bold" id="userTrips">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card hidden lg:block">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Pending</p>
+            <h3 class="text-2xl font-bold" id="pendingTrips">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
+      <button id="tripListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-list mr-2"></i>Trip List
+      </button>
+      <button id="tripEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-edit mr-2"></i>Trip Editor
+      </button>
+      <button id="analyticsTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base hidden">
+        <i class="fas fa-chart-line mr-2"></i>Analytics
+      </button>
+    </div>
+
+    <!-- Trip List Section -->
+    <div id="tripListSection">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-slate-800">All Trips</h2>
+        <div class="flex space-x-2">
+          <div class="relative">
+            <input type="text" placeholder="Search trips..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+            <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+          </div>
+          <button id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all">
+            <i class="fas fa-plus mr-1"></i> New Trip
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Filter:</span>
+          <select class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option>All Categories</option>
+            <option>Adventure</option>
+            <option>Cultural</option>
+            <option>Nature</option>
+            <option>Beach</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Sort:</span>
+          <select class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option>Newest First</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Rating</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
+        <!-- Skeleton loading -->
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-suitcase text-slate-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-slate-700 mb-2">No trips found</h3>
+        <p class="text-slate-500 mb-4">Create your first trip to get started</p>
+        <button id="emptyStateNewTripBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
+          <i class="fas fa-plus mr-2"></i> Create New Trip
+        </button>
+      </div>
+    </div>
+
+    <!-- Trip Editor Section -->
+    <div id="tripEditorSection" class="hidden">
+      <form id="tripForm">
+        <input type="hidden" id="tripId">
+        <input type="hidden" id="ownerId">
+        
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-slate-800" id="editorTitle">Create New Trip</h2>
+            <div class="flex space-x-2">
+              <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                Cancel
+              </button>
+              <button type="button" id="deleteBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition hidden">
+                Delete
+              </button>
+              <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition flex items-center">
+                <span>Save</span>
+                <span id="spinner" class="ml-1 hidden">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Basic Info Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <h3 class="font-medium text-slate-700 mb-4 flex items-center">
+                  <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
+                </h3>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Trip Name*</label>
+                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                  </div>
+                  
+                  <div>
+                    <label for="bookingLink" class="block text-sm font-medium text-slate-700 mb-1">Booking Link ID*</label>
+                    <div class="flex">
+                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
+                        discoversharm.com/
+                      </span>
+                      <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="price" class="block text-sm font-medium text-slate-700 mb-1">Price (EGP)*</label>
+                      <div class="relative">
+                        <input type="number" id="price" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500 pl-8">
+                        <span class="absolute left-3 top-3.5 text-slate-400">EGP</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="duration" class="block text-sm font-medium text-slate-700 mb-1">Duration*</label>
+                      <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Category*</label>
+                      <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Category</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Nature">Nature</option>
+                        <option value="Beach">Beach</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="rating" class="block text-sm font-medium text-slate-700 mb-1">Rating*</label>
+                      <select id="rating" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Rating</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="5">★★★★★ (5)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description*</label>
+                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Media Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-images text-amber-500 mr-2"></i> Media
+                  </h3>
+                  <div class="flex space-x-2" id="mediaButtons">
+                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-image mr-1"></i> Add Image
+                    </button>
+                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-video mr-1"></i> Add Video
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label for="mainImage" class="block text-sm font-medium text-slate-700 mb-1">Main Image URL*</label>
+                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                  </div>
+                  
+                  <div id="imageList">
+                    <!-- Image URLs will be added here -->
+                  </div>
+                  <div id="videoList">
+                    <!-- Video entries will be added here -->
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Timeline Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-clock text-amber-500 mr-2"></i> Timeline
+                  </h3>
+                  <button type="button" id="addTimelineBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Item
+                  </button>
+                </div>
+                
+                <div id="timelineList" class="space-y-3">
+                  <!-- Timeline items will be added here -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-4">
+              <!-- Included/Not Included Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="grid grid-cols-1 gap-4">
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <h3 class="font-medium text-slate-700 flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
+                      </h3>
+                      <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                        <i class="fas fa-plus mr-1"></i> Add Item
+                      </button>
+                    </div>
+                    <div id="includedList" class="space-y-2">
+                      <!-- Included items will be added here -->
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <h3 class="font-medium text-slate-700 flex items-center">
+                        <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
+                      </h3>
+                      <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                        <i class="fas fa-plus mr-1"></i> Add Item
+                      </button>
+                    </div>
+                    <div id="notIncludedList" class="space-y-2">
+                      <!-- Not included items will be added here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- What to Bring Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
+                  </h3>
+                  <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Item
+                  </button>
+                </div>
+                <div id="whatToBringList" class="space-y-2">
+                  <!-- What to bring items will be added here -->
+                </div>
+              </div>
+              
+              <!-- Extra Services Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
+                  </h3>
+                  <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Service
+                  </button>
+                </div>
+                <div id="tourTypeList" class="space-y-2">
+                  <!-- Tour types will be added here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Floating Action Button (Mobile) -->
+  <button id="mobileNewTripBtn" class="floating-btn gradient-bg text-white lg:hidden hidden">
+    <i class="fas fa-plus text-xl"></i>
+  </button>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+      authDomain: "egypt-travels.firebaseapp.com",
+      databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+      projectId: "egypt-travels",
+      storageBucket: "egypt-travels.appspot.com",
+      messagingSenderId: "477485386557",
+      appId: "1:477485386557:web:755f9649043288db819354"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const auth = firebase.auth();
+
+    // DOM Elements
+    const tripList = document.getElementById('tripList');
+    const tripForm = document.getElementById('tripForm');
+    const editorTitle = document.getElementById('editorTitle');
+    const tripIdInput = document.getElementById('tripId');
+    const ownerIdInput = document.getElementById('ownerId');
+    const nameInput = document.getElementById('name');
+    const bookingLinkInput = document.getElementById('bookingLink');
+    const priceInput = document.getElementById('price');
+    const durationInput = document.getElementById('duration');
+    const categoryInput = document.getElementById('category');
+    const ratingInput = document.getElementById('rating');
+    const mainImageInput = document.getElementById('mainImage');
+    const descriptionInput = document.getElementById('description');
+    const imageList = document.getElementById('imageList');
+    const videoList = document.getElementById('videoList');
+    const includedList = document.getElementById('includedList');
+    const notIncludedList = document.getElementById('notIncludedList');
+    const timelineList = document.getElementById('timelineList');
+    const whatToBringList = document.getElementById('whatToBringList');
+    const tourTypeList = document.getElementById('tourTypeList');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const newTripBtn = document.getElementById('newTripBtn');
+    const mobileNewTripBtn = document.getElementById('mobileNewTripBtn');
+    const emptyStateNewTripBtn = document.getElementById('emptyStateNewTripBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const spinner = document.getElementById('spinner');
+    const tripListTab = document.getElementById('tripListTab');
+    const tripEditorTab = document.getElementById('tripEditorTab');
+    const analyticsTab = document.getElementById('analyticsTab');
+    const tripListSection = document.getElementById('tripListSection');
+    const tripEditorSection = document.getElementById('tripEditorSection');
+    const totalTripsEl = document.getElementById('totalTrips');
+    const topRatedEl = document.getElementById('topRated');
+    const userTripsEl = document.getElementById('userTrips');
+    const pendingTripsEl = document.getElementById('pendingTrips');
+    const userRoleEl = document.getElementById('userRole');
+    const userEmailEl = document.getElementById('userEmail');
+    const addImageBtn = document.getElementById('addImageBtn');
+    const addVideoBtn = document.getElementById('addVideoBtn');
+    const addIncludedBtn = document.getElementById('addIncludedBtn');
+    const addNotIncludedBtn = document.getElementById('addNotIncludedBtn');
+    const addTimelineBtn = document.getElementById('addTimelineBtn');
+    const addWhatToBringBtn = document.getElementById('addWhatToBringBtn');
+    const addTourTypeBtn = document.getElementById('addTourTypeBtn');
+    const mediaButtons = document.getElementById('mediaButtons');
+    const emptyState = document.getElementById('emptyState');
+
+    // Current User
+    let currentUser = null;
+    let currentUserRole = null;
+    let allTrips = {};
+
+    // Show Toast Notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} mr-2"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'fadeIn 0.3s reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Show Loading Spinner
+    function showLoading() {
+      spinner.classList.remove('hidden');
+      saveBtn.disabled = true;
+    }
+
+    // Hide Loading Spinner
+    function hideLoading() {
+      spinner.classList.add('hidden');
+      saveBtn.disabled = false;
+    }
+
+    // Reset Form
+    function resetForm() {
+      tripForm.reset();
+      tripIdInput.value = '';
+      ownerIdInput.value = '';
+      bookingLinkInput.value = '';
+      editorTitle.textContent = 'Create New Trip';
+      deleteBtn.classList.add('hidden');
+      
+      // Clear all dynamic lists
+      imageList.innerHTML = '';
+      videoList.innerHTML = '';
+      includedList.innerHTML = '';
+      notIncludedList.innerHTML = '';
+      timelineList.innerHTML = '';
+      whatToBringList.innerHTML = '';
+      tourTypeList.innerHTML = '';
+    }
+
+    // Show list section
+    function showListSection() {
+      tripListSection.classList.remove('hidden');
+      tripEditorSection.classList.add('hidden');
+      tripListTab.classList.add('tab-active');
+      tripEditorTab.classList.remove('tab-active');
+      analyticsTab.classList.remove('tab-active');
+    }
+
+    // Show editor section
+    function showEditorSection() {
+      tripListSection.classList.add('hidden');
+      tripEditorSection.classList.remove('hidden');
+      tripListTab.classList.remove('tab-active');
+      tripEditorTab.classList.add('tab-active');
+      analyticsTab.classList.remove('tab-active');
+    }
+
+    // Create Array Input Field
+    function createArrayInput(container, placeholder, value = '') {
+      const div = document.createElement('div');
+      div.className = 'array-item';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      input.placeholder = placeholder;
+      input.value = value;
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-item';
+      removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      removeBtn.addEventListener('click', () => div.remove());
+      
+      div.appendChild(input);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+      
+      return input;
+    }
+
+    // Create Timeline Input Fields
+    function createTimelineInput(container, timelineItem = { time: '', title: '', description: '' }) {
+      const div = document.createElement('div');
+      div.className = 'array-item';
+      
+      const timeInput = document.createElement('input');
+      timeInput.type = 'text';
+      timeInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      timeInput.placeholder = 'Time (e.g., 09:00 AM)';
+      timeInput.value = timelineItem.time || '';
+      
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      titleInput.placeholder = 'Title';
+      titleInput.value = timelineItem.title || '';
+      
+      const descInput = document.createElement('input');
+      descInput.type = 'text';
+      descInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      descInput.placeholder = 'Description';
+      descInput.value = timelineItem.description || '';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-item';
+      removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      removeBtn.addEventListener('click', () => div.remove());
+      
+      div.appendChild(timeInput);
+      div.appendChild(titleInput);
+      div.appendChild(descInput);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+      
+      return { timeInput, titleInput, descInput };
+    }
+
+    // Create Tour Type Input Fields
+    function createTourTypeInput(container, key = '', value = '') {
+      const div = document.createElement('div');
+      div.className = 'array-item grid grid-cols-5 gap-2 items-center';
+      
+      const keyInput = document.createElement('input');
+      keyInput.type = 'text';
+      keyInput.className = 'col-span-3 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      keyInput.placeholder = 'Service Name';
+      keyInput.value = key || '';
+      
+      const valueInput = document.createElement('input');
+      valueInput.type = 'number';
+      valueInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+      valueInput.placeholder = 'Price';
+      valueInput.value = value || '';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-item';
+      removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      removeBtn.addEventListener('click', () => div.remove());
+      
+      div.appendChild(keyInput);
+      div.appendChild(valueInput);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+      
+      return { keyInput, valueInput };
+    }
+
+    // Update dashboard stats
+    function updateDashboardStats() {
+      const trips = Object.values(allTrips);
+      totalTripsEl.textContent = trips.length;
+      topRatedEl.textContent = trips.filter(t => t.rating >= 4).length;
+      userTripsEl.textContent = trips.filter(t => t.owner === currentUser?.uid).length;
+      pendingTripsEl.textContent = trips.filter(t => t.approved === 'false').length;
+    }
+
+    // Check if user can edit trips
+    function canEditTrips() {
+      return currentUserRole === 'admin' || currentUserRole === 'moderator';
+    }
+
+    // Check if user can edit specific trip
+    function canEditTrip(tripOwnerId) {
+      return currentUserRole === 'admin' || (currentUserRole === 'moderator' && tripOwnerId === currentUser.uid);
+    }
+
+    // Load User Role
+    function loadUserRole(userId) {
+      return database.ref('egy_user/' + userId).once('value').then(snapshot => {
+        const userData = snapshot.val();
+        currentUserRole = userData?.role || 'user';
+        userRoleEl.textContent = currentUserRole;
+        userRoleEl.className = 'role-badge ' + (
+          currentUserRole === 'admin' ? 'role-admin' : 
+          currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+        );
+        userEmailEl.textContent = currentUser.email;
+        
+        // Show/hide new trip button based on role
+        if (canEditTrips()) {
+          newTripBtn.classList.remove('hidden');
+          mobileNewTripBtn.classList.remove('hidden');
+          emptyStateNewTripBtn.classList.remove('hidden');
+        }
+        
+        // Show analytics tab for admins
+        if (currentUserRole === 'admin') {
+          analyticsTab.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Load Trip List
+    function loadTripList() {
+      database.ref('trips').once('value').then(snapshot => {
+        allTrips = snapshot.val() || {};
+        tripList.innerHTML = '';
+        
+        const tripsArray = Object.entries(allTrips);
+        
+        if (tripsArray.length === 0) {
+          emptyState.classList.remove('hidden');
+          return;
+        } else {
+          emptyState.classList.add('hidden');
+        }
+        
+        tripsArray.forEach(([tripId, trip]) => {
+          const canEdit = canEditTrip(trip.owner);
+          const card = document.createElement('div');
+          card.className = `trip-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
+          
+          // Rating stars
+          let stars = '';
+          const rating = trip.rating || 0;
+          for (let i = 1; i <= 5; i++) {
+            stars += i <= rating ? '<span class="rating-star">★</span>' : '<span class="empty-star">★</span>';
+          }
+          
+          // Action buttons (only for users who can edit trips)
+          const actionButtons = canEditTrips() ? `
+            <div class="flex justify-end mt-4 space-x-2">
+              <button class="text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${tripId}" ${!canEdit ? 'disabled' : ''}>
+                <i class="fas fa-edit mr-1"></i> Edit
+              </button>
+              <button class="text-xs bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 px-3 py-1.5 rounded-full delete-btn" data-id="${tripId}" ${!canEdit ? 'disabled' : ''}>
+                <i class="fas fa-trash mr-1"></i> Delete
+              </button>
+            </div>
+          ` : '';
+          
+          card.innerHTML = `
+            <div class="h-48 bg-slate-200 relative overflow-hidden">
+              ${trip.image ? `<img class="h-full w-full object-cover" src="${trip.image}" alt="${trip.name}" loading="lazy">` : ''}
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                <h3 class="font-bold text-white">${trip.name}</h3>
+                <div class="flex items-center mt-1">
+                  ${stars}
+                  <span class="text-xs text-white/80 ml-1">(${rating})</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-sm text-slate-500">
+                  <i class="fas fa-clock mr-1"></i>
+                  <span>${trip.duration}</span>
+                </div>
+                <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">${trip.category}</span>
+              </div>
+              
+              <div class="mt-2 flex items-center justify-between">
+                <div class="text-lg font-bold text-slate-800">${trip.price} EGP</div>
+                ${trip.owner === currentUser?.uid ? '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Your Trip</span>' : ''}
+              </div>
+              
+              ${actionButtons}
+            </div>
+          `;
+          
+          // Add event listeners for edit/delete if user can edit trips
+          if (canEditTrips()) {
+            const editBtn = card.querySelector('.edit-btn');
+            const deleteBtn = card.querySelector('.delete-btn');
+            
+            if (editBtn && !editBtn.disabled) {
+              editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                loadTripForEditing(tripId, trip);
+                showEditorSection();
+              });
+            }
+            
+            if (deleteBtn && !deleteBtn.disabled) {
+              deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete "${trip.name}"?`)) {
+                  deleteTrip(tripId);
+                }
+              });
+            }
+          }
+          
+          // Make entire card clickable for preview (if implemented)
+          card.addEventListener('click', () => {
+            // Could implement a preview modal here
+          });
+          
+          tripList.appendChild(card);
+        });
+        
+        updateDashboardStats();
+      }).catch(error => {
+        showToast('Failed to load trips: ' + error.message, 'error');
+      });
+    }
+
+    // Load Trip for Editing
+    function loadTripForEditing(tripId, tripData) {
+      resetForm();
+      
+      // Check if user can edit this trip
+      if (!canEditTrip(tripData.owner)) {
+        showToast('You do not have permission to edit this trip', 'error');
+        showListSection();
+        return;
+      }
+      
+      // Set basic info
+      tripIdInput.value = tripId;
+      ownerIdInput.value = tripData.owner || currentUser.uid;
+      nameInput.value = tripData.name || '';
+      bookingLinkInput.value = tripId || '';
+      priceInput.value = tripData.price || '';
+      durationInput.value = tripData.duration || '';
+      categoryInput.value = tripData.category || '';
+      ratingInput.value = tripData.rating || '';
+      mainImageInput.value = tripData.image || '';
+      descriptionInput.value = tripData.description || '';
+      editorTitle.textContent = `Edit ${tripData.name}`;
+      deleteBtn.classList.remove('hidden');
+      
+      // Load media
+      if (tripData.media?.images) {
+        tripData.media.images.forEach(imageUrl => {
+          createArrayInput(imageList, 'Image URL', imageUrl);
+        });
+      }
+      
+      if (tripData.media?.videos) {
+        tripData.media.videos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'array-item';
+          
+          const thumbnailInput = document.createElement('input');
+          thumbnailInput.type = 'text';
+          thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+          thumbnailInput.placeholder = 'Thumbnail URL';
+          thumbnailInput.value = video.thumbnail || '';
+          
+          const videoUrlInput = document.createElement('input');
+          videoUrlInput.type = 'text';
+          videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+          videoUrlInput.placeholder = 'Video URL';
+          videoUrlInput.value = video.videoUrl || '';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'remove-item';
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          removeBtn.addEventListener('click', () => videoDiv.remove());
+          
+          videoDiv.appendChild(thumbnailInput);
+          videoDiv.appendChild(videoUrlInput);
+          videoDiv.appendChild(removeBtn);
+          videoList.appendChild(videoDiv);
+        });
+      }
+      
+      // Load included/not included
+      if (tripData.included) {
+        tripData.included.forEach(item => {
+          createArrayInput(includedList, 'Included item', item);
+        });
+      }
+      
+      if (tripData.notIncluded) {
+        tripData.notIncluded.forEach(item => {
+          createArrayInput(notIncludedList, 'Not included item', item);
+        });
+      }
+      
+      // Load timeline
+      if (tripData.timeline) {
+        tripData.timeline.forEach(item => {
+          createTimelineInput(timelineList, item);
+        });
+      }
+      
+      // Load what to bring
+      if (tripData.whatToBring) {
+        tripData.whatToBring.forEach(item => {
+          createArrayInput(whatToBringList, 'What to bring item', item);
+        });
+      }
+      
+      // Load tour types
+      if (tripData.tourtype) {
+        Object.entries(tripData.tourtype).forEach(([key, value]) => {
+          createTourTypeInput(tourTypeList, key, value);
+        });
+      }
+    }
+
+    // Save Trip
+    function saveTrip(e) {
+      e.preventDefault();
+      
+      // Check if user can edit trips
+      if (!canEditTrips()) {
+        showToast('You do not have permission to create or edit trips', 'error');
+        return;
+      }
+      
+      showLoading();
+      
+      // Validate required fields
+      if (!nameInput.value || !bookingLinkInput.value || !priceInput.value || 
+          !durationInput.value || !categoryInput.value || !ratingInput.value) {
+        showToast('Please fill all required fields', 'error');
+        hideLoading();
+        return;
+      }
+      
+      const tripId = bookingLinkInput.value.trim().toLowerCase().replace(/\s+/g, '-');
+      const tripData = {
+        approved: 'false',
+        name: nameInput.value,
+        bookingLink: tripId,
+        price: parseFloat(priceInput.value),
+        duration: durationInput.value,
+        category: categoryInput.value,
+        rating: parseFloat(ratingInput.value),
+        image: mainImageInput.value,
+        description: descriptionInput.value,
+        owner: ownerIdInput.value || currentUser.uid,
+        lastUpdated: Date.now(),
+        media: {
+          images: [],
+          videos: []
+        },
+        included: [],
+        notIncluded: [],
+        timeline: [],
+        whatToBring: [],
+        tourtype: {}
+      };
+      
+      // Get image URLs
+      const imageInputs = imageList.querySelectorAll('input');
+      imageInputs.forEach(input => {
+        if (input.value.trim()) {
+          tripData.media.images.push(input.value.trim());
+        }
+      });
+      
+      // Get video data
+      const videoDivs = videoList.querySelectorAll('.array-item');
+      videoDivs.forEach(div => {
+        const thumbnail = div.querySelector('input:nth-child(1)').value.trim();
+        const videoUrl = div.querySelector('input:nth-child(2)').value.trim();
+        
+        if (thumbnail && videoUrl) {
+          tripData.media.videos.push({
+            thumbnail,
+            videoUrl
+          });
+        }
+      });
+      
+      // Get included items
+      const includedInputs = includedList.querySelectorAll('input');
+      includedInputs.forEach(input => {
+        if (input.value.trim()) {
+          tripData.included.push(input.value.trim());
+        }
+      });
+      
+      // Get not included items
+      const notIncludedInputs = notIncludedList.querySelectorAll('input');
+      notIncludedInputs.forEach(input => {
+        if (input.value.trim()) {
+          tripData.notIncluded.push(input.value.trim());
+        }
+      });
+      
+      // Get timeline items
+      const timelineDivs = timelineList.querySelectorAll('.array-item');
+      timelineDivs.forEach(div => {
+        const time = div.querySelector('input:nth-child(1)').value.trim();
+        const title = div.querySelector('input:nth-child(2)').value.trim();
+        const description = div.querySelector('input:nth-child(3)').value.trim();
+        
+        if (time && title && description) {
+          tripData.timeline.push({
+            time,
+            title,
+            description
+          });
+        }
+      });
+      
+      // Get what to bring items
+      const whatToBringInputs = whatToBringList.querySelectorAll('input');
+      whatToBringInputs.forEach(input => {
+        if (input.value.trim()) {
+          tripData.whatToBring.push(input.value.trim());
+        }
+      });
+      
+      // Get tour types
+      const tourTypeDivs = tourTypeList.querySelectorAll('.array-item');
+      tourTypeDivs.forEach(div => {
+        const key = div.querySelector('input:nth-child(1)').value.trim();
+        const value = parseFloat(div.querySelector('input:nth-child(2)').value);
+        
+        if (key && !isNaN(value)) {
+          tripData.tourtype[key] = value;
+        }
+      });
+      
+      // Check if this is an existing trip
+      const isExistingTrip = tripIdInput.value && tripIdInput.value !== '';
+      
+      if (isExistingTrip) {
+        // For existing trips, we need to verify ownership before updating
+        database.ref('trips/' + tripId).once('value').then(snapshot => {
+          const existingTrip = snapshot.val();
+          
+          if (!existingTrip) {
+            showToast('Trip not found', 'error');
+            hideLoading();
+            return;
+          }
+          
+          if (!canEditTrip(existingTrip.owner)) {
+            showToast('You do not have permission to edit this trip', 'error');
+            hideLoading();
+            return;
+          }
+          
+          // Only update changed fields to minimize write operations
+          const updates = {};
+          Object.keys(tripData).forEach(key => {
+            if (JSON.stringify(tripData[key]) !== JSON.stringify(existingTrip[key])) {
+              updates[key] = tripData[key];
+            }
+          });
+          
+          if (Object.keys(updates).length === 0) {
+            showToast('No changes detected', 'warning');
+            hideLoading();
+            return;
+          }
+          
+          // Add lastUpdated to updates
+          updates.lastUpdated = Date.now();
+          
+          // Perform the update
+          database.ref('trips/' + tripId).update(updates)
+            .then(() => {
+              showToast('Trip updated successfully!');
+              loadTripList();
+              resetForm();
+              showListSection();
+            })
+            .catch(error => {
+              showToast('Failed to update trip: ' + error.message, 'error');
+            })
+            .finally(() => {
+              hideLoading();
+            });
+        });
+      } else {
+        // For new trips, just create them
+        database.ref('trips/' + tripId).set(tripData)
+          .then(() => {
+            showToast('Trip created successfully!');
+            loadTripList();
+            resetForm();
+            showListSection();
+          })
+          .catch(error => {
+            showToast('Failed to create trip: ' + error.message, 'error');
+          })
+          .finally(() => {
+            hideLoading();
+          });
+      }
+    }
+
+    // Delete Trip
+    function deleteTrip(tripId) {
+      if (!tripId) return;
+      
+      // Check if user can edit trips
+      if (!canEditTrips()) {
+        showToast('You do not have permission to delete trips', 'error');
+        return;
+      }
+      
+      showLoading();
+      
+      // First verify ownership
+      database.ref('trips/' + tripId).once('value').then(snapshot => {
+        const tripData = snapshot.val();
+        
+        if (!tripData) {
+          showToast('Trip not found', 'error');
+          hideLoading();
+          return;
+        }
+        
+        if (!canEditTrip(tripData.owner)) {
+          showToast('You do not have permission to delete this trip', 'error');
+          hideLoading();
+          return;
+        }
+        
+        // Delete the trip
+        database.ref('trips/' + tripId).remove()
+          .then(() => {
+            showToast('Trip deleted successfully!');
+            loadTripList();
+            if (tripIdInput.value === tripId) {
+              resetForm();
+              showListSection();
+            }
+          })
+          .catch(error => {
+            showToast('Failed to delete trip: ' + error.message, 'error');
+          })
+          .finally(() => {
+            hideLoading();
+          });
+      });
+    }
+
+    // Initialize Event Listeners
+    function initEventListeners() {
+      // Form submission (only if user can edit)
+      if (canEditTrips()) {
+        tripForm.addEventListener('submit', saveTrip);
+        
+        // Add buttons for dynamic fields
+        addImageBtn.addEventListener('click', () => createArrayInput(imageList, 'Image URL'));
+        addVideoBtn.addEventListener('click', () => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'array-item';
+          
+          const thumbnailInput = document.createElement('input');
+          thumbnailInput.type = 'text';
+          thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+          thumbnailInput.placeholder = 'Thumbnail URL';
+          
+          const videoUrlInput = document.createElement('input');
+          videoUrlInput.type = 'text';
+          videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+          videoUrlInput.placeholder = 'Video URL';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'remove-item';
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          removeBtn.addEventListener('click', () => videoDiv.remove());
+          
+          videoDiv.appendChild(thumbnailInput);
+          videoDiv.appendChild(videoUrlInput);
+          videoDiv.appendChild(removeBtn);
+          videoList.appendChild(videoDiv);
+        });
+        
+        addIncludedBtn.addEventListener('click', () => createArrayInput(includedList, 'Included item'));
+        addNotIncludedBtn.addEventListener('click', () => createArrayInput(notIncludedList, 'Not included item'));
+        addTimelineBtn.addEventListener('click', () => createTimelineInput(timelineList));
+        addWhatToBringBtn.addEventListener('click', () => createArrayInput(whatToBringList, 'What to bring item'));
+        addTourTypeBtn.addEventListener('click', () => createTourTypeInput(tourTypeList));
+        
+        // New trip buttons
+        newTripBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+        
+        mobileNewTripBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+        
+        emptyStateNewTripBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+      }
+      
+      // Common event listeners
+      cancelBtn.addEventListener('click', showListSection);
+      logoutBtn.addEventListener('click', () => {
+        auth.signOut().then(() => {
+          window.location.href = 'login.html';
+        });
+      });
+      
+      // Tab switching
+      tripListTab.addEventListener('click', showListSection);
+      tripEditorTab.addEventListener('click', showEditorSection);
+      analyticsTab.addEventListener('click', () => {
+        tripListSection.classList.add('hidden');
+        tripEditorSection.classList.add('hidden');
+        tripListTab.classList.remove('tab-active');
+        tripEditorTab.classList.remove('tab-active');
+        analyticsTab.classList.add('tab-active');
+        showToast('Analytics dashboard coming soon!', 'warning');
+      });
+    }
+
+    // Initialize App
+    function initApp() {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadUserRole(user.uid).then(() => {
+            loadTripList();
+            initEventListeners();
+          });
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+    }
+
+    // Start the app
+    initApp();
+  </script>
+</body>
+</html>
