@@ -263,7 +263,7 @@
           <div>
             <h1 class="text-xl font-bold">Discover Sharm</h1>
             <div class="flex items-center mt-1">
-              <span id="userRole" class="role-badge mr-2">Loading...</span> </br>
+              <span id="userRole" class="role-badge mr-2">Loading...</span>
               <span id="userEmail" class="text-xs text-white/80"></span>
             </div>
           </div>
@@ -277,7 +277,7 @@
 
   <main class="container mx-auto px-4 py-6">
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <div class="glass-card p-4 rounded-xl stat-card">
         <div class="flex items-center justify-between">
           <div>
@@ -302,19 +302,7 @@
         </div>
       </div>
       
-      <div class="glass-card p-4 rounded-xl stat-card hidden lg:block">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-slate-500">Your Trips</p>
-            <h3 class="text-2xl font-bold" id="userTrips">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-            <i class="fas fa-user"></i>
-          </div>
-        </div>
-      </div>
-      
-      <div class="glass-card p-4 rounded-xl stat-card hidden lg:block">
+      <div class="glass-card p-4 rounded-xl stat-card">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm text-slate-500">Pending</p>
@@ -335,46 +323,40 @@
       <button id="tripEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
         <i class="fas fa-edit mr-2"></i>Trip Editor
       </button>
-      <button id="analyticsTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base hidden">
-        <i class="fas fa-chart-line mr-2"></i>Analytics
-      </button>
     </div>
 
     <!-- Trip List Section -->
     <div id="tripListSection">
       <div class="flex justify-between items-center mb-4">
-    
-        <div class="flex space-x-2">
-          <div class="relative">
-            <input type="text" placeholder="Search trips..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-            <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
-          </div>
-                    <button id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all">
-            <i class="fas fa-plus mr-1"></i> New Trip
-          </button>
+        <div class="relative w-full max-w-md">
+          <input type="text" id="searchInput" placeholder="Search trips..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 w-full">
+          <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
         </div>
+        <button id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full text-sm font-medium shadow-sm transition-all">
+          <i class="fas fa-plus mr-1"></i> New Trip
+        </button>
       </div>
       
       <!-- Filters -->
       <div class="flex flex-wrap gap-2 mb-4">
         <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
           <span class="text-slate-500 text-sm">Filter:</span>
-          <select class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
-            <option>All Categories</option>
-            <option>Adventure</option>
-            <option>Cultural</option>
-            <option>Nature</option>
-            <option>Beach</option>
+          <select id="categoryFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="">All Categories</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Nature">Nature</option>
+            <option value="Beach">Beach</option>
           </select>
         </div>
         
         <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
           <span class="text-slate-500 text-sm">Sort:</span>
-          <select class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
-            <option>Newest First</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-            <option>Rating</option>
+          <select id="sortFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="newest">Newest First</option>
+            <option value="priceLow">Price: Low to High</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="rating">Rating</option>
           </select>
         </div>
       </div>
@@ -698,7 +680,6 @@
     const tripEditorSection = document.getElementById('tripEditorSection');
     const totalTripsEl = document.getElementById('totalTrips');
     const topRatedEl = document.getElementById('topRated');
-    const userTripsEl = document.getElementById('userTrips');
     const pendingTripsEl = document.getElementById('pendingTrips');
     const userRoleEl = document.getElementById('userRole');
     const userEmailEl = document.getElementById('userEmail');
@@ -711,6 +692,9 @@
     const addTourTypeBtn = document.getElementById('addTourTypeBtn');
     const mediaButtons = document.getElementById('mediaButtons');
     const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
 
     // Current User
     let currentUser = null;
@@ -877,14 +861,51 @@
       return { keyInput, valueInput };
     }
 
-    // Update dashboard stats
-    function updateDashboardStats() {
-      const trips = Object.values(allTrips);
-      totalTripsEl.textContent = trips.length;
-      topRatedEl.textContent = trips.filter(t => t.rating >= 4).length;
-      userTripsEl.textContent = trips.filter(t => t.owner === currentUser?.uid).length;
-      pendingTripsEl.textContent = trips.filter(t => t.approved === 'false').length;
+    // Filter and sort trips
+    function filterAndSortTrips(trips) {
+      // Filter by search term
+      const searchTerm = searchInput.value.toLowerCase();
+      if (searchTerm) {
+  trips = trips.filter(t => 
+    t.name.toLowerCase().includes(searchTerm) || 
+    (t.description && t.description.toLowerCase().includes(searchTerm))
+  );
+}
+      
+      // Filter by category
+      const category = categoryFilter.value;
+      if (category) {
+        trips = trips.filter(t => t.category === category);
+      }
+      
+      // Sort
+      const sortBy = sortFilter.value;
+      switch (sortBy) {
+        case 'priceLow':
+          trips.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+          break;
+        case 'priceHigh':
+          trips.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+          break;
+        case 'rating':
+          trips.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+          break;
+        case 'newest':
+        default:
+          trips.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
+          break;
+      }
+      
+      return trips;
     }
+
+    // Update dashboard stats
+function updateDashboardStats() {
+  const trips = Object.values(allTrips).filter(t => t.owner === currentUser?.uid);
+  totalTripsEl.textContent = trips.length;
+  topRatedEl.textContent = trips.filter(t => t.rating >= 4).length;
+  pendingTripsEl.textContent = trips.filter(t => t.approved === 'false').length;
+}
 
     // Check if user can edit trips
     function canEditTrips() {
@@ -914,11 +935,6 @@
           mobileNewTripBtn.classList.remove('hidden');
           emptyStateNewTripBtn.classList.remove('hidden');
         }
-        
-        // Show analytics tab for admins
-        if (currentUserRole === 'admin') {
-          analyticsTab.classList.remove('hidden');
-        }
       });
     }
 
@@ -928,7 +944,13 @@
         allTrips = snapshot.val() || {};
         tripList.innerHTML = '';
         
-        const tripsArray = Object.entries(allTrips);
+        // Filter trips to only show those owned by current moderator
+        let tripsArray = Object.entries(allTrips)
+          .filter(([_, trip]) => trip.owner === currentUser?.uid)
+          .map(([id, trip]) => ({ id, ...trip }));
+        
+        // Apply filters and sorting
+        tripsArray = filterAndSortTrips(tripsArray);
         
         if (tripsArray.length === 0) {
           emptyState.classList.remove('hidden');
@@ -937,7 +959,7 @@
           emptyState.classList.add('hidden');
         }
         
-        tripsArray.forEach(([tripId, trip]) => {
+        tripsArray.forEach(({ id, ...trip }) => {
           const canEdit = canEditTrip(trip.owner);
           const card = document.createElement('div');
           card.className = `trip-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
@@ -952,10 +974,10 @@
           // Action buttons (only for users who can edit trips)
           const actionButtons = canEditTrips() ? `
             <div class="flex justify-end mt-4 space-x-2">
-              <button class="text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${tripId}" ${!canEdit ? 'disabled' : ''}>
+              <button class="text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
                 <i class="fas fa-edit mr-1"></i> Edit
               </button>
-              <button class="text-xs bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 px-3 py-1.5 rounded-full delete-btn" data-id="${tripId}" ${!canEdit ? 'disabled' : ''}>
+              <button class="text-xs bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 px-3 py-1.5 rounded-full delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
                 <i class="fas fa-trash mr-1"></i> Delete
               </button>
             </div>
@@ -998,7 +1020,7 @@
             if (editBtn && !editBtn.disabled) {
               editBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                loadTripForEditing(tripId, trip);
+                loadTripForEditing(id, trip);
                 showEditorSection();
               });
             }
@@ -1007,16 +1029,11 @@
               deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (confirm(`Are you sure you want to delete "${trip.name}"?`)) {
-                  deleteTrip(tripId);
+                  deleteTrip(id);
                 }
               });
             }
           }
-          
-          // Make entire card clickable for preview (if implemented)
-          card.addEventListener('click', () => {
-            // Could implement a preview modal here
-          });
           
           tripList.appendChild(card);
         });
@@ -1419,21 +1436,18 @@
       cancelBtn.addEventListener('click', showListSection);
       logoutBtn.addEventListener('click', () => {
         auth.signOut().then(() => {
-          window.location.href = 'login.html';
+          window.location.href = '/p/login.html';
         });
       });
       
       // Tab switching
       tripListTab.addEventListener('click', showListSection);
       tripEditorTab.addEventListener('click', showEditorSection);
-      analyticsTab.addEventListener('click', () => {
-        tripListSection.classList.add('hidden');
-        tripEditorSection.classList.add('hidden');
-        tripListTab.classList.remove('tab-active');
-        tripEditorTab.classList.remove('tab-active');
-        analyticsTab.classList.add('tab-active');
-        showToast('Analytics dashboard coming soon!', 'warning');
-      });
+      
+      // Filter event listeners
+      searchInput.addEventListener('input', loadTripList);
+      categoryFilter.addEventListener('change', loadTripList);
+      sortFilter.addEventListener('change', loadTripList);
     }
 
     // Initialize App
