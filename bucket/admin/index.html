@@ -44,8 +44,32 @@
         }
     </script>
 
-<body  class="bg-black container px-2 py-6 mx-auto">
-    <div class="container mx-auto">
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 gradient-bg text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          
+          <div>
+            <div class="flex items-start">
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" class="w-auto h-12"></i>
+      
+          </div>
+            <div class="flex items-center gap-2 mt-1">
+              <span id="userRole" class="role-badge mr-2">Loading...</span>
+              <span id="userEmail" class="text-xs text-white/80"></span>
+            </div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+  
+    <div class="container px-2 py-6 mx-auto">
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h1 class="text-2xl md:text-3xl font-bold text-primary">Analytics Dashboard</h1>
