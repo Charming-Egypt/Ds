@@ -381,7 +381,7 @@ function loadMediaContent(mediaData) {
                 <div class="play-button">
                   <i class="fas fa-play"></i>
                 </div>
-                <div class="tour-title-overlay">
+                
                 
                 </div>
               `;
