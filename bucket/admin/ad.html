@@ -4,26 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TourMaster - Trip Management Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #ffc107;
-            --primary-dark: #ffab00;
-            --primary-light: #ffecb3;
-            --bg-dark: #333;
-            --bg-darker: #222;
-            --bg-light: #444;
-            --text-light: #f5f5f5;
-            --text-muted: #aaa;
-            --success: #4caf50;
-            --warning: #ff9800;
-            --danger: #f44336;
-            --info: #2196f3;
-            --border-radius: 10px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-            --bottom-nav-height: 60px;
+            --primary: #6C5CE7;
+            --primary-dark: #5649C0;
+            --primary-light: #A29BFE;
+            --secondary: #00B894;
+            --accent: #FD79A8;
+            --bg-dark: #1A1A2E;
+            --bg-darker: #16213E;
+            --bg-light: #2D3748;
+            --text-light: #F8F9FA;
+            --text-muted: #ADB5BD;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #D63031;
+            --info: #0984E3;
+            --border-radius: 12px;
+            --border-radius-sm: 6px;
+            --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            --box-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --bottom-nav-height: 70px;
+            --glass-bg: rgba(26, 26, 46, 0.7);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(10px);
         }
 
         * {
@@ -34,24 +41,29 @@
         }
 
         body {
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             line-height: 1.6;
             padding-bottom: var(--bottom-nav-height);
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(108, 92, 231, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(253, 121, 168, 0.15) 0%, transparent 20%);
         }
 
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
+        h1, h2, h3, h4, h5 {
+            font-family: 'Space Grotesk', sans-serif;
             font-weight: 600;
+            letter-spacing: -0.025em;
         }
 
         /* App Layout */
         .app-container {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             position: relative;
+            min-height: 100vh;
         }
 
         /* Header */
@@ -61,31 +73,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            background-color: var(--bg-darker);
-            box-shadow: var(--box-shadow);
-            z-index: 100;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: var(--glass-border);
+            box-shadow: var(--box-shadow-sm);
+            z-index: 1000;
         }
 
         .header-title {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .app-logo {
-            height: 32px;
+            height: 36px;
             width: auto;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .notification-badge {
             position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .notification-badge:hover {
+            transform: translateY(-2px);
         }
 
         .badge {
@@ -95,12 +126,29 @@
             background-color: var(--danger);
             color: white;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.7rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         /* Bottom Navigation */
@@ -113,9 +161,12 @@
             justify-content: space-around;
             align-items: center;
             height: var(--bottom-nav-height);
-            background-color: var(--bg-darker);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 100;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-top: var(--glass-border);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
         .nav-item {
@@ -129,26 +180,43 @@
             font-size: 0.75rem;
             transition: var(--transition);
             flex: 1;
+            position: relative;
         }
 
         .nav-item.active {
             color: var(--primary);
         }
 
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            width: 30px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
         .nav-icon {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             margin-bottom: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: translateY(-5px);
         }
 
         /* Main Content Sections */
         .content-section {
-            padding: 1rem;
+            padding: 1.5rem;
             display: none;
+            min-height: calc(100vh - 80px - var(--bottom-nav-height));
         }
 
         .content-section.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
@@ -156,37 +224,249 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Dashboard Content */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg-darker);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card.primary .icon {
+            background: rgba(108, 92, 231, 0.2);
+            color: var(--primary);
+        }
+
+        .stat-card.success .icon {
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+        }
+
+        .stat-card.warning .icon {
+            background: rgba(253, 203, 110, 0.2);
+            color: var(--warning);
+        }
+
+        .stat-card.danger .icon {
+            background: rgba(214, 48, 49, 0.2);
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .main-chart {
+            background: var(--bg-darker);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: var(--box-shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .recent-bookings {
+            background: var(--bg-darker);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: var(--box-shadow-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .booking-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .booking-card:hover {
+            transform: translateX(5px);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .booking-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+
+        .booking-info {
+            flex: 1;
+        }
+
+        .booking-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .booking-tour {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .booking-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .booking-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        .status-confirmed {
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(253, 203, 110, 0.2);
+            color: var(--warning);
+        }
+
+        .status-cancelled {
+            background: rgba(214, 48, 49, 0.2);
+            color: var(--danger);
+        }
+
         /* Buttons */
         .btn {
-            padding: 0.5rem;
+            padding: 0.75rem 1.25rem;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: var(--border-radius-sm);
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             font-size: 0.85rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            box-shadow: var(--box-shadow-sm);
         }
 
         .btn-primary {
-            background-color: var(--primary);
-            color: #333;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(108, 92, 231, 0.3);
         }
 
         .btn-secondary {
-            background-color: var(--bg-light);
+            background: var(--bg-light);
             color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .btn-secondary:hover {
-            background-color: var(--bg-darker);
+            background: var(--bg-darker);
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            width: 36px;
+            height: 36px;
         }
 
         /* Utility Classes */
@@ -194,19 +474,39 @@
             color: var(--primary);
         }
 
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
         .text-muted {
             color: var(--text-muted);
         }
 
+        .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: var(--glass-border);
+        }
+
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+
         /* Responsive Adjustments */
-        @media (min-width: 900px) {
+        @media (min-width: 1024px) {
             .app-container {
                 display: grid;
-                grid-template-columns: 250px 1fr;
+                grid-template-columns: 280px 1fr;
             }
 
             .app-header {
                 grid-column: 1 / -1;
+                padding: 1rem 2.5rem;
             }
 
             .bottom-nav {
@@ -218,13 +518,21 @@
                 position: sticky;
                 top: 80px;
                 height: calc(100vh - 80px);
-                padding: 1.5rem 0;
-                background-color: var(--bg-darker);
-                border-right: 1px solid var(--bg-light);
+                padding: 2rem 0;
+                background: var(--glass-bg);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                border-right: var(--glass-border);
+                z-index: 900;
             }
 
             .side-nav ul {
                 list-style: none;
+                padding: 0 1rem;
+            }
+
+            .side-nav li {
+                margin-bottom: 0.5rem;
             }
 
             .side-nav li a {
@@ -235,30 +543,42 @@
                 text-decoration: none;
                 transition: var(--transition);
                 gap: 1rem;
+                border-radius: var(--border-radius-sm);
             }
 
             .side-nav li a:hover {
-                background-color: var(--bg-light);
+                background: rgba(108, 92, 231, 0.1);
                 color: var(--primary);
+                transform: translateX(5px);
             }
 
             .side-nav li.active a {
-                background-color: var(--bg-light);
+                background: linear-gradient(90deg, rgba(108, 92, 231, 0.2), transparent);
                 color: var(--primary);
-                border-left: 4px solid var(--primary);
+                border-left: 3px solid var(--primary);
+                font-weight: 500;
+            }
+
+            .side-nav .badge {
+                margin-left: auto;
             }
 
             .main-content {
-                padding: 1.5rem;
-                padding-bottom: 2rem;
+                padding: 2rem;
+                padding-bottom: 3rem;
             }
 
             .content-section {
                 padding: 0;
+                min-height: calc(100vh - 80px);
             }
 
             body {
                 padding-bottom: 0;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             }
         }
 
@@ -267,22 +587,32 @@
             min-width: 44px;
             min-height: 44px;
         }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
-        <header class="app-header">
+        <header class="app-header glass-effect">
             <div class="header-title">
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" alt="Discover Sharm Logo" class="app-logo">
-                
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" alt="TourMaster Logo" class="app-logo">
+            
             </div>
             <div class="header-actions">
                 <div class="notification-badge">
                     <span class="badge">3</span>
-                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-bell fa-lg"></i>
                 </div>
-                <img src="https://via.placeholder.com/32x32" alt="User Avatar" class="avatar">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Avatar" class="user-avatar">
             </div>
         </header>
 
@@ -305,6 +635,7 @@
                     <a href="#bookings">
                         <i class="fas fa-calendar-check"></i>
                         <span>Bookings</span>
+                        <span class="badge">12</span>
                     </a>
                 </li>
                 <li data-section="participants">
@@ -320,10 +651,22 @@
                         <span class="badge">5</span>
                     </a>
                 </li>
+                <li data-section="reports">
+                    <a href="#reports">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
                 <li data-section="settings">
                     <a href="#settings">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
+                    </a>
+                </li>
+                <li style="margin-top: 2rem;">
+                    <a href="#help" style="color: var(--accent);">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help & Support</span>
                     </a>
                 </li>
             </ul>
@@ -333,37 +676,160 @@
         <main class="main-content">
             <!-- Dashboard Section -->
             <section class="content-section active" id="dashboard-section">
-                <!-- Dashboard content would go here -->
+                <div class="dashboard-header">
+                    <h1>Welcome back, Sarah!</h1>
+                    <p class="text-muted">Here's what's happening with your tours today</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="stat-card primary">
+                        <div class="icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Tours Today</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 12% from yesterday
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Participants</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% from yesterday
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Pending Bookings</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i> 3% from yesterday
+                        </div>
+                    </div>
+
+                    <div class="stat-card danger">
+                        <div class="icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-value">$3,845</div>
+                        <div class="stat-label">Revenue Today</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 15% from yesterday
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h3>Weekly Performance</h3>
+                        <div>
+                            <button class="btn btn-secondary btn-sm">
+                                <i class="fas fa-calendar"></i> This Week
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line fa-2x mb-1"></i>
+                        <p>Weekly performance chart will be displayed here</p>
+                    </div>
+                </div>
+
+                <div class="recent-bookings">
+                    <div class="section-header">
+                        <h3>Recent Bookings</h3>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                    </div>
+
+                    <div class="booking-card">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Participant" class="booking-avatar">
+                        <div class="booking-info">
+                            <div class="booking-name">Michael Johnson</div>
+                            <div class="booking-tour">Red Sea Snorkeling Adventure</div>
+                        </div>
+                        <div class="booking-date">Today, 10:30 AM</div>
+                        <div class="booking-status status-confirmed">Confirmed</div>
+                    </div>
+
+                    <div class="booking-card">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Participant" class="booking-avatar">
+                        <div class="booking-info">
+                            <div class="booking-name">Emily Chen</div>
+                            <div class="booking-tour">Desert Safari Experience</div>
+                        </div>
+                        <div class="booking-date">Today, 2:00 PM</div>
+                        <div class="booking-status status-confirmed">Confirmed</div>
+                    </div>
+
+                    <div class="booking-card">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Participant" class="booking-avatar">
+                        <div class="booking-info">
+                            <div class="booking-name">Robert Smith</div>
+                            <div class="booking-tour">Mount Sinai Sunrise Trek</div>
+                        </div>
+                        <div class="booking-date">Tomorrow, 4:00 AM</div>
+                        <div class="booking-status status-pending">Pending</div>
+                    </div>
+
+                    <div class="booking-card">
+                        <img src="https://randomuser.me/api/portraits/women/90.jpg" alt="Participant" class="booking-avatar">
+                        <div class="booking-info">
+                            <div class="booking-name">Sophia Williams</div>
+                            <div class="booking-tour">Luxor Day Trip</div>
+                        </div>
+                        <div class="booking-date">Tomorrow, 6:30 AM</div>
+                        <div class="booking-status status-cancelled">Cancelled</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Tours Section -->
             <section class="content-section" id="tours-section">
+                <h1>Tours Management</h1>
+                <p class="text-muted">Manage your tour offerings and schedules</p>
                 <!-- Tours content would go here -->
             </section>
 
             <!-- Bookings Section -->
             <section class="content-section" id="bookings-section">
+                <h1>Bookings</h1>
+                <p class="text-muted">View and manage all bookings</p>
                 <!-- Bookings content would go here -->
             </section>
 
             <!-- Participants Section -->
             <section class="content-section" id="participants-section">
+                <h1>Participants</h1>
+                <p class="text-muted">Manage your tour participants</p>
                 <!-- Participants content would go here -->
             </section>
 
             <!-- Messages Section -->
             <section class="content-section" id="messages-section">
+                <h1>Messages</h1>
+                <p class="text-muted">Communicate with participants</p>
                 <!-- Messages content would go here -->
             </section>
 
             <!-- Settings Section -->
             <section class="content-section" id="settings-section">
+                <h1>Settings</h1>
+                <p class="text-muted">Configure your account and preferences</p>
                 <!-- Settings content would go here -->
             </section>
         </main>
 
         <!-- Bottom Navigation (Mobile Only) -->
-        <nav class="bottom-nav">
+        <nav class="bottom-nav glass-effect">
             <a href="#dashboard" class="nav-item active" data-section="dashboard">
                 <i class="fas fa-tachometer-alt nav-icon"></i>
                 <span>Dashboard</span>
@@ -379,10 +845,6 @@
             <a href="#messages" class="nav-item" data-section="messages">
                 <i class="fas fa-comments nav-icon"></i>
                 <span>Messages</span>
-            </a>
-            <a href="#settings" class="nav-item" data-section="settings">
-                <i class="fas fa-cog nav-icon"></i>
-                <span>Settings</span>
             </a>
         </nav>
     </div>
@@ -410,6 +872,9 @@
                     section.classList.remove('active');
                 }
             });
+
+            // Scroll to top when changing sections
+            window.scrollTo(0, 0);
         }
 
         // Add click event listeners to navigation items
@@ -418,15 +883,46 @@
                 e.preventDefault();
                 const sectionId = this.dataset.section;
                 setActiveSection(sectionId);
+                
+                // Add ripple effect
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                this.appendChild(ripple);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
             });
         });
 
         // Set initial active section
         setActiveSection('dashboard');
 
+        // Add ripple effect style dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple-effect {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple {
+                to {
+                    transform: scale(2.5);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
         // Handle window resize
         function handleResize() {
-            if (window.innerWidth >= 900) {
+            if (window.innerWidth >= 1024) {
                 // Desktop-specific adjustments
             }
         }
