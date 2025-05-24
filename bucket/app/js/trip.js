@@ -446,8 +446,7 @@ function playVideo(slide) {
     if (videoId) {
       slide.innerHTML = `
         <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        <div class="tour-title-overlay">
-          <h1>${currentTrip.name}</h1>
+        
         </div>
       `;
       currentVideoSlide = slide;
