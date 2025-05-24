@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Sharm - Accommodation Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <style>
+    /* Same styles as the trip management page */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      color: white;
+      z-index: 1000;
+      animation: fadeIn 0.3s;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    
+    .toast-success {
+      background: rgba(16, 185, 129, 0.9);
+    }
+    
+    .toast-error {
+      background: rgba(239, 68, 68, 0.9);
+    }
+    
+    .toast-warning {
+      background: rgba(245, 158, 11, 0.9);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .array-item {
+      position: relative;
+      background-color: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    
+    .array-item:hover {
+      background-color: #e2e8f0;
+    }
+    
+    .remove-item {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .remove-item:hover {
+      transform: scale(1.1);
+    }
+    
+    .rating-star {
+      color: #f59e0b;
+    }
+    
+    .empty-star {
+      color: #cbd5e1;
+    }
+    
+    .input-field {
+      color: #1e293b;
+      transition: all 0.2s;
+      border: 1px solid #e2e8f0;
+      background-color: #ffffff;
+    }
+    
+    .input-field:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    
+    .tab-active {
+      position: relative;
+      color: #3b82f6;
+      font-weight: 600;
+    }
+    
+    .tab-active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #3b82f6;
+      border-radius: 3px;
+    }
+    
+    .accommodation-card {
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+    
+    .accommodation-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .role-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .role-admin {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .role-moderator {
+      background-color: #10b981;
+      color: white;
+    }
+    
+    .role-user {
+      background-color: #64748b;
+      color: white;
+    }
+    
+    .disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .read-only {
+      background-color: #f1f5f9;
+      cursor: not-allowed;
+    }
+    
+    .floating-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      z-index: 50;
+      transition: all 0.3s;
+    }
+    
+    .floating-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    
+    .stat-card {
+      transition: all 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Animation for skeleton loading */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .glass-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      
+      .toast {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#3b82f6',
+              light: '#93c5fd',
+              dark: '#1d4ed8'
+            },
+            secondary: '#6366f1',
+            accent: '#f59e0b',
+            dark: '#333',
+            darker: '#222',
+            darkest: '#111',
+            light: '#f5f5f5',
+            gray: {
+              DEFAULT: '#666',
+              light: '#444',
+              lighter: '#555'
+            },
+            success: '#4caf50',
+            warning: '#ff9800',
+            danger: '#f44336',
+            info: '#2196f3'
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-darker text-light">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 gradient-bg text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <div>
+            <div class="flex items-start">
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" class="w-auto h-12">
+          </div>
+            <div class="flex items-center gap-2 mt-1 hidden">
+              <span id="userRole" class="role-badge mr-2">Loading...</span>
+              <span id="userEmail" class="text-xs text-white/80"></span>
+            </div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Total Properties</p>
+            <h3 class="text-2xl font-bold" id="totalAccommodations">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+            <i class="fas fa-hotel"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Top Rated</p>
+            <h3 class="text-2xl font-bold" id="topRated">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-green-100 text-green-600">
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Pending</p>
+            <h3 class="text-2xl font-bold" id="pendingAccommodations">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
+      <button id="accommodationListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-list mr-2"></i>Properties List
+      </button>
+      <button id="accommodationEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-edit mr-2"></i>Property Editor
+      </button>
+    </div>
+
+    <!-- Accommodation List Section -->
+    <div id="accommodationListSection">
+      <div class="flex justify-between gap-4 items-center mb-4">
+        <div class="relative w-full max-w-md">
+          <input type="text" id="searchInput" placeholder="Search properties..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full">
+          <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+        </div>
+        <button id="newAccommodationBtn" class="hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
+          <i class="fas fa-plus mr-1"></i>
+        </button>
+      </div>
+      
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Filter:</span>
+          <select id="typeFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="">All Types</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Resort">Resort</option>
+            <option value="Villa">Villa</option>
+            <option value="Apartment">Apartment</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Sort:</span>
+          <select id="sortFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="newest">Newest First</option>
+            <option value="priceLow">Price: Low to High</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="accommodationList">
+        <!-- Skeleton loading -->
+        <div class="accommodation-card glass-card rounded-xl overflow-hidden animate-pulse">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="accommodation-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="accommodation-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-hotel text-slate-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-slate-700 mb-2">No properties found</h3>
+        <p class="text-slate-500 mb-4">Create your first property to get started</p>
+        <button id="emptyStateNewAccommodationBtn" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
+          <i class="fas fa-plus mr-2"></i> Create New Property
+        </button>
+      </div>
+    </div>
+
+    <!-- Accommodation Editor Section -->
+    <div id="accommodationEditorSection" class="hidden">
+      <form id="accommodationForm">
+        <input type="hidden" id="accommodationId">
+        <input type="hidden" id="ownerId">
+        
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-slate-800" id="editorTitle">Create New Property</h2>
+            <div class="flex space-x-2">
+              <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                Cancel
+              </button>
+              <button type="button" id="deleteBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition hidden">
+                Delete
+              </button>
+              <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm transition flex items-center">
+                <span>Save</span>
+                <span id="spinner" class="ml-1 hidden">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Basic Info Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <h3 class="font-medium text-slate-700 mb-4 flex items-center">
+                  <i class="fas fa-info-circle text-blue-500 mr-2"></i> Basic Information
+                </h3>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Property Name*</label>
+                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  </div>
+                  
+                  <div>
+                    <label for="bookingLink" class="block text-sm font-medium text-slate-700 mb-1">Booking Link ID*</label>
+                    <div class="flex">
+                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
+                        discover-sharm.com
+                      </span>
+                      <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">URL-friendly ID (e.g., "luxury-resort-sharm")</p>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="price" class="block text-sm font-medium mb-1">Price per Night (EGP)*</label>
+                      <div class="flex">
+                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
+                          EGP 
+                        </span>
+                        <input type="number" id="price" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-blue-500">
+                      </div>
+                    </div>
+                    <div>
+                      <label for="type" class="block text-sm font-medium text-slate-700 mb-1">Property Type*</label>
+                      <select id="type" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Type</option>
+                        <option value="Hotel">Hotel</option>
+                        <option value="Resort">Resort</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Apartment">Apartment</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="location" class="block text-sm font-medium text-slate-700 mb-1">Location*</label>
+                      <input type="text" id="location" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500" placeholder="Sharm El Sheikh, Egypt">
+                    </div>
+                    <div>
+                      <label for="rating" class="block text-sm font-medium text-slate-700 mb-1">Rating*</label>
+                      <select id="rating" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Rating</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="5">★★★★★ (5)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description*</label>
+                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500"></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Media Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-images text-blue-500 mr-2"></i> Media
+                  </h3>
+                  <div class="flex space-x-2" id="mediaButtons">
+                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-image mr-1"></i> Add Image
+                    </button>
+                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-video mr-1"></i> Add Video
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label for="mainImage" class="block text-sm font-medium text-slate-700 mb-1">Main Image URL*</label>
+                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  </div>
+                  
+                  <div id="imageList">
+                    <!-- Image URLs will be added here -->
+                  </div>
+                  <div id="videoList">
+                    <!-- Video entries will be added here -->
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Amenities Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Amenities
+                  </h3>
+                  <button type="button" id="addAmenityBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Amenity
+                  </button>
+                </div>
+                
+                <div id="amenitiesList" class="space-y-3">
+                  <!-- Amenities will be added here -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-4">
+              <!-- Room Types Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-bed text-blue-500 mr-2"></i> Room Types
+                  </h3>
+                  <button type="button" id="addRoomTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Room
+                  </button>
+                </div>
+                <div id="roomTypeList" class="space-y-2">
+                  <!-- Room types will be added here -->
+                </div>
+              </div>
+              
+              <!-- Policies Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-clipboard-list text-blue-500 mr-2"></i> Policies
+                  </h3>
+                  <button type="button" id="addPolicyBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Policy
+                  </button>
+                </div>
+                <div id="policiesList" class="space-y-2">
+                  <!-- Policies will be added here -->
+                </div>
+              </div>
+              
+              <!-- Contact Info Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <h3 class="font-medium text-slate-700 mb-3 flex items-center">
+                  <i class="fas fa-phone-alt text-blue-500 mr-2"></i> Contact Information
+                </h3>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label for="contactPhone" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                    <input type="text" id="contactPhone" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  </div>
+                  
+                  <div>
+                    <label for="contactEmail" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                    <input type="email" id="contactEmail" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  </div>
+                  
+                  <div>
+                    <label for="contactWebsite" class="block text-sm font-medium text-slate-700 mb-1">Website</label>
+                    <input type="url" id="contactWebsite" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Floating Action Button (Mobile) -->
+  <button id="mobileNewAccommodationBtn" class="floating-btn gradient-bg text-white lg:hidden hidden">
+    <i class="fas fa-plus text-xl"></i>
+  </button>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+      authDomain: "egypt-travels.firebaseapp.com",
+      databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+      projectId: "egypt-travels",
+      storageBucket: "egypt-travels.appspot.com",
+      messagingSenderId: "477485386557",
+      appId: "1:477485386557:web:755f9649043288db819354"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const auth = firebase.auth();
+
+    // DOM Elements
+    const accommodationList = document.getElementById('accommodationList');
+    const accommodationForm = document.getElementById('accommodationForm');
+    const editorTitle = document.getElementById('editorTitle');
+    const accommodationIdInput = document.getElementById('accommodationId');
+    const ownerIdInput = document.getElementById('ownerId');
+    const nameInput = document.getElementById('name');
+    const bookingLinkInput = document.getElementById('bookingLink');
+    const priceInput = document.getElementById('price');
+    const typeInput = document.getElementById('type');
+    const locationInput = document.getElementById('location');
+    const ratingInput = document.getElementById('rating');
+    const mainImageInput = document.getElementById('mainImage');
+    const descriptionInput = document.getElementById('description');
+    const imageList = document.getElementById('imageList');
+    const videoList = document.getElementById('videoList');
+    const amenitiesList = document.getElementById('amenitiesList');
+    const roomTypeList = document.getElementById('roomTypeList');
+    const policiesList = document.getElementById('policiesList');
+    const contactPhoneInput = document.getElementById('contactPhone');
+    const contactEmailInput = document.getElementById('contactEmail');
+    const contactWebsiteInput = document.getElementById('contactWebsite');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const newAccommodationBtn = document.getElementById('newAccommodationBtn');
+    const mobileNewAccommodationBtn = document.getElementById('mobileNewAccommodationBtn');
+    const emptyStateNewAccommodationBtn = document.getElementById('emptyStateNewAccommodationBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const spinner = document.getElementById('spinner');
+    const accommodationListTab = document.getElementById('accommodationListTab');
+    const accommodationEditorTab = document.getElementById('accommodationEditorTab');
+    const accommodationListSection = document.getElementById('accommodationListSection');
+    const accommodationEditorSection = document.getElementById('accommodationEditorSection');
+    const totalAccommodationsEl = document.getElementById('totalAccommodations');
+    const topRatedEl = document.getElementById('topRated');
+    const pendingAccommodationsEl = document.getElementById('pendingAccommodations');
+    const userRoleEl = document.getElementById('userRole');
+    const userEmailEl = document.getElementById('userEmail');
+    const addImageBtn = document.getElementById('addImageBtn');
+    const addVideoBtn = document.getElementById('addVideoBtn');
+    const addAmenityBtn = document.getElementById('addAmenityBtn');
+    const addRoomTypeBtn = document.getElementById('addRoomTypeBtn');
+    const addPolicyBtn = document.getElementById('addPolicyBtn');
+    const mediaButtons = document.getElementById('mediaButtons');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    // Current User
+    let currentUser = null;
+    let currentUserRole = null;
+    let allAccommodations = {};
+
+    // Show Toast Notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `
+        <div class="flex items-center">
+          <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} mr-2"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'fadeIn 0.3s reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Show Loading Spinner
+    function showLoading() {
+      spinner.classList.remove('hidden');
+      saveBtn.disabled = true;
+    }
+
+    // Hide Loading Spinner
+    function hideLoading() {
+      spinner.classList.add('hidden');
+      saveBtn.disabled = false;
+    }
+
+    // Reset Form
+    function resetForm() {
+      accommodationForm.reset();
+      accommodationIdInput.value = '';
+      ownerIdInput.value = '';
+      bookingLinkInput.value = '';
+      editorTitle.textContent = 'Create New Property';
+      deleteBtn.classList.add('hidden');
+      
+      // Clear all dynamic lists
+      imageList.innerHTML = '';
+      videoList.innerHTML = '';
+      amenitiesList.innerHTML = '';
+      roomTypeList.innerHTML = '';
+      policiesList.innerHTML = '';
+    }
+
+    // Show list section
+    function showListSection() {
+      accommodationListSection.classList.remove('hidden');
+      accommodationEditorSection.classList.add('hidden');
+      accommodationListTab.classList.add('tab-active');
+      accommodationEditorTab.classList.remove('tab-active');
+    }
+
+    // Show editor section
+    function showEditorSection() {
+      accommodationListSection.classList.add('hidden');
+      accommodationEditorSection.classList.remove('hidden');
+      accommodationListTab.classList.remove('tab-active');
+      accommodationEditorTab.classList.add('tab-active');
+    }
+
+    // Create Array Input Field
+    function createArrayInput(container, placeholder, value = '') {
+      const div = document.createElement('div');
+      div.className = 'array-item';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+      input.placeholder = placeholder;
+      input.value = value;
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-item';
+      removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      removeBtn.addEventListener('click', () => div.remove());
+      
+      div.appendChild(input);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+      
+      return input;
+    }
+
+    // Create Room Type Input Fields
+    function createRoomTypeInput(container, roomType = { name: '', price: '', capacity: '' }) {
+      const div = document.createElement('div');
+      div.className = 'array-item grid grid-cols-5 gap-2 items-center';
+      
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.className = 'col-span-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+      nameInput.placeholder = 'Room Type';
+      nameInput.value = roomType.name || '';
+      
+      const priceInput = document.createElement('input');
+      priceInput.type = 'number';
+      priceInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+      priceInput.placeholder = 'Price';
+      priceInput.value = roomType.price || '';
+      
+      const capacityInput = document.createElement('input');
+      capacityInput.type = 'number';
+      capacityInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+      capacityInput.placeholder = 'Capacity';
+      capacityInput.value = roomType.capacity || '';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-item';
+      removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+      removeBtn.addEventListener('click', () => div.remove());
+      
+      div.appendChild(nameInput);
+      div.appendChild(priceInput);
+      div.appendChild(capacityInput);
+      div.appendChild(removeBtn);
+      container.appendChild(div);
+      
+      return { nameInput, priceInput, capacityInput };
+    }
+
+    // Filter and sort accommodations
+    function filterAndSortAccommodations(accommodations) {
+      // Filter by search term
+      const searchTerm = searchInput.value.toLowerCase();
+      if (searchTerm) {
+        accommodations = accommodations.filter(a => 
+          a.name.toLowerCase().includes(searchTerm) || 
+          (a.description && a.description.toLowerCase().includes(searchTerm)) ||
+          (a.location && a.location.toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      // Filter by type
+      const type = typeFilter.value;
+      if (type) {
+        accommodations = accommodations.filter(a => a.type === type);
+      }
+      
+      // Sort
+      const sortBy = sortFilter.value;
+      switch (sortBy) {
+        case 'priceLow':
+          accommodations.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+          break;
+        case 'priceHigh':
+          accommodations.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+          break;
+        case 'rating':
+          accommodations.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+          break;
+        case 'newest':
+        default:
+          accommodations.sort((a, b) => (b.lastUpdated || 0) - (a.lastUpdated || 0));
+          break;
+      }
+      
+      return accommodations;
+    }
+
+    // Update dashboard stats
+    function updateDashboardStats() {
+      const accommodations = Object.values(allAccommodations).filter(a => a.owner === currentUser?.uid);
+      totalAccommodationsEl.textContent = accommodations.length;
+      topRatedEl.textContent = accommodations.filter(a => a.rating >= 4).length;
+      pendingAccommodationsEl.textContent = accommodations.filter(a => a.approved === 'false').length;
+    }
+
+    // Check if user can edit accommodations
+    function canEditAccommodations() {
+      return currentUserRole === 'admin' || currentUserRole === 'moderator';
+    }
+
+    // Check if user can edit specific accommodation
+    function canEditAccommodation(accommodationOwnerId) {
+      return currentUserRole === 'admin' || (currentUserRole === 'moderator' && accommodationOwnerId === currentUser.uid);
+    }
+
+    // Load User Role
+    function loadUserRole(userId) {
+      return database.ref('egy_user/' + userId).once('value').then(snapshot => {
+        const userData = snapshot.val();
+        currentUserRole = userData?.role || 'user';
+        userRoleEl.textContent = currentUserRole;
+        userRoleEl.className = 'role-badge ' + (
+          currentUserRole === 'admin' ? 'role-admin' : 
+          currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+        );
+        userEmailEl.textContent = currentUser.email;
+        
+        // Show/hide new accommodation button based on role
+        if (canEditAccommodations()) {
+          newAccommodationBtn.classList.remove('hidden');
+          mobileNewAccommodationBtn.classList.remove('hidden');
+          emptyStateNewAccommodationBtn.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Load Accommodation List
+    function loadAccommodationList() {
+      database.ref('accommodations').once('value').then(snapshot => {
+        allAccommodations = snapshot.val() || {};
+        accommodationList.innerHTML = '';
+        
+        // Filter accommodations to only show those owned by current moderator
+        let accommodationsArray = Object.entries(allAccommodations)
+          .filter(([_, accommodation]) => accommodation.owner === currentUser?.uid)
+          .map(([id, accommodation]) => ({ id, ...accommodation }));
+        
+        // Apply filters and sorting
+        accommodationsArray = filterAndSortAccommodations(accommodationsArray);
+        
+        if (accommodationsArray.length === 0) {
+          emptyState.classList.remove('hidden');
+          return;
+        } else {
+          emptyState.classList.add('hidden');
+        }
+        
+        accommodationsArray.forEach(({ id, ...accommodation }) => {
+          const canEdit = canEditAccommodation(accommodation.owner);
+          const card = document.createElement('div');
+          card.className = `accommodation-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
+          
+          // Rating stars
+          let stars = '';
+          const rating = accommodation.rating || 0;
+          for (let i = 1; i <= 5; i++) {
+            stars += i <= rating ? '<span class="rating-star">★</span>' : '<span class="empty-star">★</span>';
+          }
+          
+          // Action buttons (only for users who can edit accommodations)
+          const actionButtons = canEditAccommodations() ? `
+            <div class="flex justify-end mt-4 space-x-2">
+              <button class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
+                <i class="fas fa-edit mr-1"></i> Edit
+              </button>
+              <button class="text-xs bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 px-3 py-1.5 rounded-full delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
+                <i class="fas fa-trash mr-1"></i> Delete
+              </button>
+            </div>
+          ` : '';
+          
+          card.innerHTML = `
+            <div class="h-48 bg-slate-200 relative overflow-hidden">
+              ${accommodation.image ? `<img class="h-full w-full object-cover" src="${accommodation.image}" alt="${accommodation.name}" loading="lazy">` : ''}
+              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                <h3 class="font-bold text-white">${accommodation.name}</h3>
+                <div class="flex items-center mt-1">
+                  ${stars}
+                  <span class="text-xs text-white/80 ml-1">(${rating})</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center text-sm text-slate-500">
+                  <i class="fas fa-map-marker-alt mr-1"></i>
+                  <span>${accommodation.location || 'Sharm El Sheikh'}</span>
+                </div>
+                <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">${accommodation.type}</span>
+              </div>
+              
+              <div class="mt-2 flex items-center justify-between">
+                <div class="text-lg font-bold text-slate-800">${accommodation.price} EGP/night</div>
+                ${accommodation.owner === currentUser?.uid ? '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Your Property</span>' : ''}
+              </div>
+              
+              ${actionButtons}
+            </div>
+          `;
+          
+          // Add event listeners for edit/delete if user can edit accommodations
+          if (canEditAccommodations()) {
+            const editBtn = card.querySelector('.edit-btn');
+            const deleteBtn = card.querySelector('.delete-btn');
+            
+            if (editBtn && !editBtn.disabled) {
+              editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                loadAccommodationForEditing(id, accommodation);
+                showEditorSection();
+              });
+            }
+            
+            if (deleteBtn && !deleteBtn.disabled) {
+              deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete "${accommodation.name}"?`)) {
+                  deleteAccommodation(id);
+                }
+              });
+            }
+          }
+          
+          accommodationList.appendChild(card);
+        });
+        
+        updateDashboardStats();
+      }).catch(error => {
+        showToast('Failed to load accommodations: ' + error.message, 'error');
+      });
+    }
+
+    // Load Accommodation for Editing
+    function loadAccommodationForEditing(accommodationId, accommodationData) {
+      resetForm();
+      
+      // Check if user can edit this accommodation
+      if (!canEditAccommodation(accommodationData.owner)) {
+        showToast('You do not have permission to edit this property', 'error');
+        showListSection();
+        return;
+      }
+      
+      // Set basic info
+      accommodationIdInput.value = accommodationId;
+      ownerIdInput.value = accommodationData.owner || currentUser.uid;
+      nameInput.value = accommodationData.name || '';
+      bookingLinkInput.value = accommodationId || '';
+      priceInput.value = accommodationData.price || '';
+      typeInput.value = accommodationData.type || '';
+      locationInput.value = accommodationData.location || '';
+      ratingInput.value = accommodationData.rating || '';
+      mainImageInput.value = accommodationData.image || '';
+      descriptionInput.value = accommodationData.description || '';
+      contactPhoneInput.value = accommodationData.contact?.phone || '';
+      contactEmailInput.value = accommodationData.contact?.email || '';
+      contactWebsiteInput.value = accommodationData.contact?.website || '';
+      editorTitle.textContent = `Edit ${accommodationData.name}`;
+      deleteBtn.classList.remove('hidden');
+      
+      // Load media
+      if (accommodationData.media?.images) {
+        accommodationData.media.images.forEach(imageUrl => {
+          createArrayInput(imageList, 'Image URL', imageUrl);
+        });
+      }
+      
+      if (accommodationData.media?.videos) {
+        accommodationData.media.videos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'array-item';
+          
+          const thumbnailInput = document.createElement('input');
+          thumbnailInput.type = 'text';
+          thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+          thumbnailInput.placeholder = 'Thumbnail URL';
+          thumbnailInput.value = video.thumbnail || '';
+          
+          const videoUrlInput = document.createElement('input');
+          videoUrlInput.type = 'text';
+          videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+          videoUrlInput.placeholder = 'Video URL';
+          videoUrlInput.value = video.videoUrl || '';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'remove-item';
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          removeBtn.addEventListener('click', () => videoDiv.remove());
+          
+          videoDiv.appendChild(thumbnailInput);
+          videoDiv.appendChild(videoUrlInput);
+          videoDiv.appendChild(removeBtn);
+          videoList.appendChild(videoDiv);
+        });
+      }
+      
+      // Load amenities
+      if (accommodationData.amenities) {
+        accommodationData.amenities.forEach(amenity => {
+          createArrayInput(amenitiesList, 'Amenity (e.g., Swimming Pool, WiFi)', amenity);
+        });
+      }
+      
+      // Load room types
+      if (accommodationData.roomTypes) {
+        accommodationData.roomTypes.forEach(roomType => {
+          createRoomTypeInput(roomTypeList, roomType);
+        });
+      }
+      
+      // Load policies
+      if (accommodationData.policies) {
+        accommodationData.policies.forEach(policy => {
+          createArrayInput(policiesList, 'Policy (e.g., Check-in: 2PM, Check-out: 12PM)', policy);
+        });
+      }
+    }
+
+    // Save Accommodation
+    function saveAccommodation(e) {
+      e.preventDefault();
+      
+      // Check if user can edit accommodations
+      if (!canEditAccommodations()) {
+        showToast('You do not have permission to create or edit properties', 'error');
+        return;
+      }
+      
+      showLoading();
+      
+      // Validate required fields
+      if (!nameInput.value || !bookingLinkInput.value || !priceInput.value || 
+          !typeInput.value || !locationInput.value || !ratingInput.value) {
+        showToast('Please fill all required fields', 'error');
+        hideLoading();
+        return;
+      }
+      
+      const accommodationId = bookingLinkInput.value.trim().toLowerCase().replace(/\s+/g, '-');
+      const accommodationData = {
+        approved: 'false',
+        name: nameInput.value,
+        bookingLink: accommodationId,
+        price: parseFloat(priceInput.value),
+        type: typeInput.value,
+        location: locationInput.value,
+        rating: parseFloat(ratingInput.value),
+        image: mainImageInput.value,
+        description: descriptionInput.value,
+        owner: ownerIdInput.value || currentUser.uid,
+        lastUpdated: Date.now(),
+        contact: {
+          phone: contactPhoneInput.value,
+          email: contactEmailInput.value,
+          website: contactWebsiteInput.value
+        },
+        media: {
+          images: [],
+          videos: []
+        },
+        amenities: [],
+        roomTypes: [],
+        policies: []
+      };
+      
+      // Get image URLs
+      const imageInputs = imageList.querySelectorAll('input');
+      imageInputs.forEach(input => {
+        if (input.value.trim()) {
+          accommodationData.media.images.push(input.value.trim());
+        }
+      });
+      
+      // Get video data
+      const videoDivs = videoList.querySelectorAll('.array-item');
+      videoDivs.forEach(div => {
+        const thumbnail = div.querySelector('input:nth-child(1)').value.trim();
+        const videoUrl = div.querySelector('input:nth-child(2)').value.trim();
+        
+        if (thumbnail && videoUrl) {
+          accommodationData.media.videos.push({
+            thumbnail,
+            videoUrl
+          });
+        }
+      });
+      
+      // Get amenities
+      const amenitiesInputs = amenitiesList.querySelectorAll('input');
+      amenitiesInputs.forEach(input => {
+        if (input.value.trim()) {
+          accommodationData.amenities.push(input.value.trim());
+        }
+      });
+      
+      // Get room types
+      const roomTypeDivs = roomTypeList.querySelectorAll('.array-item');
+      roomTypeDivs.forEach(div => {
+        const name = div.querySelector('input:nth-child(1)').value.trim();
+        const price = parseFloat(div.querySelector('input:nth-child(2)').value);
+        const capacity = parseInt(div.querySelector('input:nth-child(3)').value);
+        
+        if (name && !isNaN(price) && !isNaN(capacity)) {
+          accommodationData.roomTypes.push({
+            name,
+            price,
+            capacity
+          });
+        }
+      });
+      
+      // Get policies
+      const policiesInputs = policiesList.querySelectorAll('input');
+      policiesInputs.forEach(input => {
+        if (input.value.trim()) {
+          accommodationData.policies.push(input.value.trim());
+        }
+      });
+      
+      // Check if this is an existing accommodation
+      const isExistingAccommodation = accommodationIdInput.value && accommodationIdInput.value !== '';
+      
+      if (isExistingAccommodation) {
+        // For existing accommodations, we need to verify ownership before updating
+        database.ref('accommodations/' + accommodationId).once('value').then(snapshot => {
+          const existingAccommodation = snapshot.val();
+          
+          if (!existingAccommodation) {
+            showToast('Property not found', 'error');
+            hideLoading();
+            return;
+          }
+          
+          if (!canEditAccommodation(existingAccommodation.owner)) {
+            showToast('You do not have permission to edit this property', 'error');
+            hideLoading();
+            return;
+          }
+          
+          // Only update changed fields to minimize write operations
+          const updates = {};
+          Object.keys(accommodationData).forEach(key => {
+            if (JSON.stringify(accommodationData[key]) !== JSON.stringify(existingAccommodation[key])) {
+              updates[key] = accommodationData[key];
+            }
+          });
+          
+          if (Object.keys(updates).length === 0) {
+            showToast('No changes detected', 'warning');
+            hideLoading();
+            return;
+          }
+          
+          // Add lastUpdated to updates
+          updates.lastUpdated = Date.now();
+          
+          // Perform the update
+          database.ref('accommodations/' + accommodationId).update(updates)
+            .then(() => {
+              showToast('Property updated successfully!');
+              loadAccommodationList();
+              resetForm();
+              showListSection();
+            })
+            .catch(error => {
+              showToast('Failed to update property: ' + error.message, 'error');
+            })
+            .finally(() => {
+              hideLoading();
+            });
+        });
+      } else {
+        // For new accommodations, just create them
+        database.ref('accommodations/' + accommodationId).set(accommodationData)
+          .then(() => {
+            showToast('Property created successfully!');
+            loadAccommodationList();
+            resetForm();
+            showListSection();
+          })
+          .catch(error => {
+            showToast('Failed to create property: ' + error.message, 'error');
+          })
+          .finally(() => {
+            hideLoading();
+          });
+      }
+    }
+
+    // Delete Accommodation
+    function deleteAccommodation(accommodationId) {
+      if (!accommodationId) return;
+      
+      // Check if user can edit accommodations
+      if (!canEditAccommodations()) {
+        showToast('You do not have permission to delete properties', 'error');
+        return;
+      }
+      
+      showLoading();
+      
+      // First verify ownership
+      database.ref('accommodations/' + accommodationId).once('value').then(snapshot => {
+        const accommodationData = snapshot.val();
+        
+        if (!accommodationData) {
+          showToast('Property not found', 'error');
+          hideLoading();
+          return;
+        }
+        
+        if (!canEditAccommodation(accommodationData.owner)) {
+          showToast('You do not have permission to delete this property', 'error');
+          hideLoading();
+          return;
+        }
+        
+        // Delete the accommodation
+        database.ref('accommodations/' + accommodationId).remove()
+          .then(() => {
+            showToast('Property deleted successfully!');
+            loadAccommodationList();
+            if (accommodationIdInput.value === accommodationId) {
+              resetForm();
+              showListSection();
+            }
+          })
+          .catch(error => {
+            showToast('Failed to delete property: ' + error.message, 'error');
+          })
+          .finally(() => {
+            hideLoading();
+          });
+      });
+    }
+
+    // Initialize Event Listeners
+    function initEventListeners() {
+      // Form submission (only if user can edit)
+      if (canEditAccommodations()) {
+        accommodationForm.addEventListener('submit', saveAccommodation);
+        
+        // Add buttons for dynamic fields
+        addImageBtn.addEventListener('click', () => createArrayInput(imageList, 'Image URL'));
+        addVideoBtn.addEventListener('click', () => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'array-item';
+          
+          const thumbnailInput = document.createElement('input');
+          thumbnailInput.type = 'text';
+          thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+          thumbnailInput.placeholder = 'Thumbnail URL';
+          
+          const videoUrlInput = document.createElement('input');
+          videoUrlInput.type = 'text';
+          videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-blue-500';
+          videoUrlInput.placeholder = 'Video URL';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'remove-item';
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          removeBtn.addEventListener('click', () => videoDiv.remove());
+          
+          videoDiv.appendChild(thumbnailInput);
+          videoDiv.appendChild(videoUrlInput);
+          videoDiv.appendChild(removeBtn);
+          videoList.appendChild(videoDiv);
+        });
+        
+        addAmenityBtn.addEventListener('click', () => createArrayInput(amenitiesList, 'Amenity (e.g., Swimming Pool, WiFi)'));
+        addRoomTypeBtn.addEventListener('click', () => createRoomTypeInput(roomTypeList));
+        addPolicyBtn.addEventListener('click', () => createArrayInput(policiesList, 'Policy (e.g., Check-in: 2PM, Check-out: 12PM)'));
+        
+        // New accommodation buttons
+        newAccommodationBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+        
+        mobileNewAccommodationBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+        
+        emptyStateNewAccommodationBtn.addEventListener('click', () => {
+          resetForm();
+          showEditorSection();
+        });
+      }
+      
+      // Common event listeners
+      cancelBtn.addEventListener('click', showListSection);
+      logoutBtn.addEventListener('click', () => {
+        auth.signOut().then(() => {
+          window.location.href = '/p/login.html';
+        });
+      });
+      
+      // Tab switching
+      accommodationListTab.addEventListener('click', showListSection);
+      accommodationEditorTab.addEventListener('click', showEditorSection);
+      
+      // Filter event listeners
+      searchInput.addEventListener('input', loadAccommodationList);
+      typeFilter.addEventListener('change', loadAccommodationList);
+      sortFilter.addEventListener('change', loadAccommodationList);
+    }
+
+    // Initialize App
+    function initApp() {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadUserRole(user.uid).then(() => {
+            loadAccommodationList();
+            initEventListeners();
+          });
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+    }
+
+    // Start the app
+    initApp();
+  </script>
+</body>
+</html>
