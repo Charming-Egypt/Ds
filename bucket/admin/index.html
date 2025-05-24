@@ -1154,23 +1154,31 @@
         // Initialize App
         function initApp() {
             try {
-                initCharts();
-                initDateRangePicker();
-                setupFilterButtons();
                 
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        currentUser = user;
-                        loadBookingData();
-                    } else {
-                        window.location.href = "/p/login.html";
-                    }
-                });
-            } catch (error) {
-                console.error("Error initializing app:", error);
-            }
+                
+                // Initialize App
+    
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          loadUserRole(user.uid).then(() => {
+            initCharts();
+    initDateRangePicker();
+    setupFilterButtons();
+            initEventListeners();
+          });
+        } else {
+          window.location.href = 'https://www.discover-sharm.com/p/login.html';
         }
+      });
+    
 
+    // Start the app
+    
+    initApp();
+
+
+              
         // Start the application
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
