@@ -1151,36 +1151,47 @@
             }
         }
 
-        // Initialize App
-        function initApp() {
-            try {
-                
-                
-                // Initialize App
+        
     
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          currentUser = user;
-          loadUserRole(user.uid).then(() => {
-            initCharts();
-    initDateRangePicker();
-    setupFilterButtons();
-            initEventListeners();
-          });
-        } else {
-          window.location.href = 'https://www.discover-sharm.com/p/login.html';
-        }
-      });
     
+    // Initialize App
+function initApp() {
+    try {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                loadUserRole(user.uid).then(() => {
+                    initCharts();
+                    initDateRangePicker();
+                    setupFilterButtons();
+                    loadBookingData();
+                });
+            } else {
+                window.location.href = 'https://www.discover-sharm.com/p/login.html';
+            }
+        });
+    } catch (error) {
+        console.error("Error initializing app:", error);
+    }
+}
 
-    // Start the app
-    
+// Initialize Event Listeners
+function initEventListeners() {
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        auth.signOut().then(() => {
+            window.location.href = 'https://www.discover-sharm.com/p/login.html';
+        }).catch(error => {
+            console.error("Logout error:", error);
+            showToast("Logout failed: " + error.message, 'error');
+        });
+    });
+}
+
+// Start the application
+document.addEventListener('DOMContentLoaded', function() {
     initApp();
-
-
-              
-        // Start the application
-        document.addEventListener('DOMContentLoaded', initApp);
+    initEventListeners();
+});
     </script>
 
     <style>
