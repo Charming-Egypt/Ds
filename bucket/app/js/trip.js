@@ -330,7 +330,7 @@ function loadMediaContent(mediaData) {
         <div class="play-button">
           <i class="fas fa-play"></i>
         </div>
-        <div class="tour-title-overlay">
+        
           
         </div>
       `;
@@ -423,8 +423,7 @@ function playVideo(slide) {
         <div class="play-button">
           <i class="fas fa-play"></i>
         </div>
-        <div class="tour-title-overlay">
-          <h1>${currentTrip.name}</h1>
+        
         </div>
       `;
     }
@@ -460,8 +459,7 @@ function playVideo(slide) {
         <source src="${videoUrl}" type="video/mp4">
         Your browser does not support the video tag.
       </video>
-      <div class="tour-title-overlay">
-        <h1>${currentTrip.name}</h1>
+      
       </div>
     `;
     currentVideoSlide = slide;
