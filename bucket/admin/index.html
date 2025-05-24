@@ -1,5 +1,10 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,9 +15,9 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <style>
-.gradient-bg {
-      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-    }
+        .gradient-bg {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        }
     </style>
     <script>
         tailwind.config = {
@@ -47,32 +52,30 @@
             }
         }
     </script>
-
-<body class="min-h-screen">
-  <!-- Header -->
-  <header class="sticky top-0 z-50 gradient-bg text-white shadow-lg">
-    <div class="container mx-auto px-4 py-3">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          
-          <div>
-            <div class="flex items-start">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" class="w-auto h-12"></i>
-      
-          </div>
-            <div class="flex items-center gap-2 mt-1">
-              <span id="userRole" class="role-badge mr-2">Loading...</span>
-              <span id="userEmail" class="text-xs text-white/80"></span>
+</head>
+<body class="min-h-screen bg-darker text-light">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div>
+                        <div class="flex items-start">
+                            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5RYSZreRpwMYh-lQE6dj3YeAV4UArrIV9pmqQFF1RT2-asCldrobt8fIt_1eMP2dOfwOOaWKyMbnXdZcGTNTf4Ij9i-diV4KZ1WaUxj28ZCB3K-Hf-hNqnX416GDa0GM06iJc3QnpfFVa0HwzOaGc9TfI-OJsRDELxg5j7ENgp4wx-Bs3vO7BY1xl3_Y=s1600" class="w-auto h-12">
+                        </div>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span id="userRole" class="role-badge mr-2">Loading...</span>
+                            <span id="userEmail" class="text-xs text-white/80"></span>
+                        </div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
-          </div>
         </div>
-        <button id="logoutBtn" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition">
-          <i class="fas fa-sign-out-alt"></i>
-        </button>
-      </div>
-    </div>
-  </header>
-  
+    </header>
+    
     <div class="container px-2 py-6 mx-auto">
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -179,8 +182,8 @@
                     <h2 class="card-title">Tour Trend</h2>
                     <div class="flex gap-2">
                         <select id="tourPerformanceMetric" class="filter-btn">
-                            <option value="bookings" />By Bookings
-                            <option value="revenue" />By Revenue
+                            <option value="bookings">By Bookings</option>
+                            <option value="revenue">By Revenue</option>
                         </select>
                     </div>
                 </div>
@@ -211,7 +214,7 @@
 
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
-</body>
+
     <!-- Firebase JS -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -237,11 +240,16 @@
         // Chart Variables
         let statusChart, trendChart, guestChart, tourPerformanceChart;
         let currentUser = null;
+        let currentUserRole = 'user';
         let currentPeriod = 'week';
         let bookingData = [];
         let filteredBookingData = [];
         let tourPerformanceMetric = 'bookings';
         let dateRangePicker;
+
+        // DOM Elements
+        const userRoleEl = document.getElementById('userRole');
+        const userEmailEl = document.getElementById('userEmail');
 
         // Show toast notification
         function showToast(message, type = 'success') {
@@ -254,35 +262,20 @@
             }, 3000);
         }
 
-
-
-
-// Load User Role
-    function loadUserRole(userId) {
-      return database.ref('egy_user/' + userId).once('value').then(snapshot => {
-        const userData = snapshot.val();
-        currentUserRole = userData?.role || 'user';
-        userRoleEl.textContent = currentUserRole;
-        userRoleEl.className = 'role-badge ' + (
-          currentUserRole === 'admin' ? 'role-admin' : 
-          currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
-        );
-        userEmailEl.textContent = currentUser.email;
-        
-        
-      });
-    }
-
-
-
-
-
-
-
-
-
-
-      
+        // Load User Role
+        function loadUserRole(userId) {
+            return database.ref('egy_user/' + userId).once('value').then(snapshot => {
+                const userData = snapshot.val();
+                currentUserRole = userData?.role || 'user';
+                userRoleEl.textContent = currentUserRole;
+                userRoleEl.className = 'role-badge ' + (
+                    currentUserRole === 'admin' ? 'role-admin' : 
+                    currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+                );
+                userEmailEl.textContent = currentUser.email;
+                return currentUserRole;
+            });
+        }
 
         // Format date for filename (YYYY-MM-DD)
         function formatDateForFilename(date) {
@@ -1151,47 +1144,44 @@
             }
         }
 
-        
-    
-    
-    // Initialize App
-function initApp() {
-    try {
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                loadUserRole(user.uid).then(() => {
-                    initCharts();
-                    initDateRangePicker();
-                    setupFilterButtons();
-                    loadBookingData();
+        // Initialize Event Listeners
+        function initEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    window.location.href = 'https://www.discover-sharm.com/p/login.html';
+                }).catch(error => {
+                    console.error("Logout error:", error);
+                    showToast("Logout failed: " + error.message, 'error');
                 });
-            } else {
-                window.location.href = 'https://www.discover-sharm.com/p/login.html';
+            });
+        }
+
+        // Initialize App
+        function initApp() {
+            try {
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        currentUser = user;
+                        loadUserRole(user.uid).then(() => {
+                            initCharts();
+                            initDateRangePicker();
+                            setupFilterButtons();
+                            initEventListeners();
+                            loadBookingData();
+                        });
+                    } else {
+                        window.location.href = 'https://www.discover-sharm.com/p/login.html';
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing app:", error);
             }
-        });
-    } catch (error) {
-        console.error("Error initializing app:", error);
-    }
-}
+        }
 
-// Initialize Event Listeners
-function initEventListeners() {
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        auth.signOut().then(() => {
-            window.location.href = 'https://www.discover-sharm.com/p/login.html';
-        }).catch(error => {
-            console.error("Logout error:", error);
-            showToast("Logout failed: " + error.message, 'error');
+        // Start the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
         });
-    });
-}
-
-// Start the application
-document.addEventListener('DOMContentLoaded', function() {
-    initApp();
-    initEventListeners();
-});
     </script>
 
     <style>
@@ -1404,6 +1394,32 @@ document.addEventListener('DOMContentLoaded', function() {
             display: none;
         }
 
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .role-admin {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .role-moderator {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+            border: 1px solid #2196f3;
+        }
+
+        .role-user {
+            background-color: rgba(158, 158, 158, 0.1);
+            color: #9e9e9e;
+            border: 1px solid #9e9e9e;
+        }
+
         /* Flatpickr Custom Styles */
         .flatpickr-calendar {
             background: #222 !important;
@@ -1512,3 +1528,5 @@ document.addEventListener('DOMContentLoaded', function() {
             color: #ffc207 !important;
         }
     </style>
+</body>
+</html>
