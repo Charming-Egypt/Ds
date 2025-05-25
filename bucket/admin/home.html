@@ -670,7 +670,7 @@
                                 <div class="form-group">
                                     <label for="profile-pic">Profile Picture</label>
                                     <div class="profile-pic-upload">
-                                        <img src="https://via.placeholder.com/100" class="profile-photo" alt="Profile" id="profile-pic-preview">
+                                        <img src="" class="profile-photo2" alt="Profile" id="profile-pic-preview">
                                         <input type="file" id="profile-pic" accept="image/*">
                                         <label for="profile-pic" class="upload-btn">Change</label>
                                     </div>
@@ -747,6 +747,14 @@
         profilePhoto.onerror = function() {
           this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
         };
+
+
+const profilePhoto2 = document.querySelector('.profile-photo2');
+        profilePhoto2.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        profilePhoto2.onerror = function() {
+          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        };
+        
 
       } else {
         
