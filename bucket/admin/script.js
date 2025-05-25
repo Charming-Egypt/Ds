@@ -138,26 +138,6 @@ function handleSidebarClick() {
 }
 
 
-const isUserLoggedIn = getCookie('username');
-
-      // Simulate network delay for demo (remove in production)
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      if (isUserLoggedIn) {
-        document.getElementById('userName').innerText = isUserLoggedIn;
-        document.getElementById('userEmail').innerText = getCookie('email');
-        const backgroundImageUrl = getCookie('photo');
-        
-        // Set default profile photo if none exists
-        const profilePhoto = document.querySelector('.profile-photo');
-        profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        profilePhoto.onerror = function() {
-          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        };
-
-      } else {
-        
-      }
                           
 
 // Initialize on DOM load
