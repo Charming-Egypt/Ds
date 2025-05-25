@@ -47,14 +47,9 @@
             return database.ref('egy_user/' + userId).once('value').then(snapshot => {
                 const userData = snapshot.val();
                 currentUserRole = userData?.role || 'user';
-                userRoleEl.textContent = currentUserRole;
-                userRoleEl.className = 'role-badge ' + (
-                    currentUserRole === 'admin' ? 'role-admin' : 
-                    currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+                
                 );
-                userEmailEl.textContent = currentUser.email;
-            
-              userNameEl.textContent = currentUser.username;
+                
                 return currentUserRole;
             });
         }
