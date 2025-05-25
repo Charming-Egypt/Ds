@@ -289,9 +289,14 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+
+#content nav .profile {width: 37px;
+    height: 37px;}
+
 #content nav .profile img {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     object-fit: cover;
     border-radius: 100%;
     transition: all 0.3s ease;
