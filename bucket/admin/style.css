@@ -102,6 +102,7 @@ body {
     display: flex;
     justify-content: center;
     border-radius: 50%;
+  object-fit: cover;
 }
 
 
