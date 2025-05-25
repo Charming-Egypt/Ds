@@ -28,6 +28,8 @@
         // DOM Elements
         const userRoleEl = document.getElementById('userRole');
         const userEmailEl = document.getElementById('userEmail');
+        const userNameEl = document.getElementById('userName');
+
 
         // Show toast notification
         function showToast(message, type = 'success') {
@@ -51,6 +53,8 @@
                     currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
                 );
                 userEmailEl.textContent = currentUser.email;
+            
+              userNameEl.textContent = currentUser.username;
                 return currentUserRole;
             });
         }
