@@ -1022,6 +1022,8 @@
             });
         }
 
+
+
         function updateStatsCards() {
             const confirmed = filteredBookingData.filter(b => b.resStatus?.toLowerCase() === 'confirmed');
             
@@ -1030,12 +1032,14 @@
                 t + (parseInt(b.adults) || 0) + (parseInt(b.childrenUnder12) || 0) + (parseInt(b.infants) || 0), 0);
             
             document.getElementById('totalRevenue').textContent = 'EGP ' + 
-                confirmed.reduce((t, b) => t + (parseFloat(b.netTotal) || 0, 0).toLocaleString();
+                confirmed.reduce((t, b) => t + (parseFloat(b.netTotal) || 0), 0).toLocaleString();
             
             const ratings = confirmed.filter(b => b.rating).map(b => parseFloat(b.rating));
             document.getElementById('avgRating').textContent = ratings.length ? 
                 (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '0.0';
         }
+
+
 
         function updateStatusChart() {
             const statusCounts = {
