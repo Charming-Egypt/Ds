@@ -731,12 +731,10 @@
      <script src="script2.js"></script>
   <script type="module">
   // Authentication check with loading state
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
+  
       const isUserLoggedIn = getCookie('username');
 
-      // Simulate network delay for demo (remove in production)
-      await new Promise(resolve => setTimeout(resolve, 500));
+      
 
       if (isUserLoggedIn) {
         document.getElementById('userName').innerText = isUserLoggedIn;
@@ -752,13 +750,7 @@
 
       } else {
         
-      } catch (error) {
-      console.error("Authentication check failed:", error);
-      
-    } finally {
-      
-    }
-    });
+      } 
     </script>
 </body>
 </html>
