@@ -737,8 +737,8 @@
       
 
       if (isUserLoggedIn) {
-        document.getElementById('userName').innerText = isUserLoggedIn;
-        document.getElementById('userEmail').innerText = getCookie('email');
+        document.getElementById('userName').value = isUserLoggedIn;
+        document.getElementById('userEmail').value = getCookie('email');
         const backgroundImageUrl = getCookie('photo');
         
         // Set default profile photo if none exists
