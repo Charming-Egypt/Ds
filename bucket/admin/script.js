@@ -140,39 +140,5 @@ document.addEventListener('DOMContentLoaded', () => {
   showSection(savedSection || defaultSection);
 
   
-  try {
-    
-      function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-      }
-
-      const isUserLoggedIn = getCookie('username');
-
-      // Simulate network delay for demo (remove in production)
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      if (isUserLoggedIn) {
-        document.getElementById('userName').innerText = isUserLoggedIn;
-        document.getElementById('userEmail').innerText = getCookie('email');
-        const backgroundImageUrl = getCookie('photo');
-        
-        // Set default profile photo if none exists
-        const profilePhoto = document.querySelector('.profile-photo');
-        profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        profilePhoto.onerror = function() {
-          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        };
-
-      } else {
-        
-      }
-    } catch (error) {
-      console.error("Authentication check failed:", error);
   
-    } finally {
-      
-    }
   });
