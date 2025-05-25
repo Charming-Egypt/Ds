@@ -291,19 +291,7 @@ body {
 }
 
 
-#content nav .profile {width: 37px;
-    height: 37px;}
 
-#content nav .profile img {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 100%;
-    transition: all 0.3s ease;
-}
-#content nav .profile img:hover {
-    transform: scale(1.1);
-}
 #content nav .switch-mode {
     display: block;
     min-width: 50px;
