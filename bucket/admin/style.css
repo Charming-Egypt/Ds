@@ -290,10 +290,10 @@ body {
     align-items: center;
 }
 #content nav .profile img {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 100%;
     transition: all 0.3s ease;
 }
 #content nav .profile img:hover {
