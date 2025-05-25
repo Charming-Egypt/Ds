@@ -752,7 +752,12 @@
 
       } else {
         
-      }
+      } catch (error) {
+      console.error("Authentication check failed:", error);
+      
+    } finally {
+      
+    }
     });
     </script>
 </body>
