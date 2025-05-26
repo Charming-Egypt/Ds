@@ -561,7 +561,7 @@ function updateTourPerformanceChart() {
                     formatter: function(value) {
                         return tourPerformanceMetric === 'bookings'
                             ? value
-                            : 'EGP ' + value.toFixed(2);
+                            : value.toFixed(2);
                     }
                 }
             },
