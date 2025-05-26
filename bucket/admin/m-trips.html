@@ -298,7 +298,18 @@
     </div>
 
     <!-- Trip List Section -->
-          <!-- Filters -->
+              <div id="tripListSection">
+      <div class="flex justify-between gap-4 items-center mb-4">
+        <div class="relative w-full max-w-md">
+          <input type="text" id="searchInput" placeholder="Search trips..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 w-full">
+          <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+        </div>
+        <button id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
+          <i class="fas fa-plus mr-1"></i>
+        </button>
+      </div>
+      
+      <!-- Filters -->
       <div class="flex flex-wrap gap-2 mb-4">
         <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
           <span class="text-slate-500 text-sm">Filter:</span>
