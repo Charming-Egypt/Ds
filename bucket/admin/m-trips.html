@@ -8,7 +8,9 @@
     <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,6 +38,40 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
+
+     <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#ffc107',
+                            light: '#ffd54f',
+                            dark: '#ffa000'
+                        },
+                        secondary: '#ff9800',
+                        accent: '#ff5722',
+                        dark: '#333',
+                        darker: '#222',
+                        darkest: '#111',
+                        light: '#f5f5f5',
+                        gray: {
+                            DEFAULT: '#666',
+                            light: '#444',
+                            lighter: '#555'
+                        },
+                        success: '#4caf50',
+                        warning: '#ff9800',
+                        danger: '#f44336',
+                        info: '#2196f3'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- SIDEBAR -->
@@ -216,78 +252,352 @@
                 </div>
 
                 <div class="container">
-                    <div class="card full-width">
-                        <div class="card-header">
-                            <h2 class="card-title">trips</h2>
-                            <div class="card-actions">
-                                <button class="filter-btn active">All</button>
-                                <button class="filter-btn">Active</button>
-                                <button class="filter-btn">Pending</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="trip-table">
-                                    <thead>
-                                        <tr>
-                                            <th>trip</th>
-                                            <th>Price</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="trip-info">
-                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
-                                                    <span>safari</span>
-                                                </div>
-                                            </td>
-                                            <td>EGP 250</td>
-                                            <td>10/5/2025</td>
-                                            <td><span class="status completed">confiremed</span></td>
-                                            <td>
-                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
-                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="trip-info">
-                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
-                                                    <span>cairo</span>
-                                                </div>
-                                            </td>
-                                            <td>EGP 180</td>
-                                            <td>10/5/2025</td>
-                                            <td><span class="status completed">confiremed</span></td>
-                                            <td>
-                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
-                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="trip-info">
-                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
-                                                    <span>ras Mohamed</span>
-                                                </div>
-                                            </td>
-                                            <td>EGP 350</td>
-                                            <td>10/5/2025</td>
-                                            <td><span class="status pending">canceled</span></td>
-                                            <td>
-                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
-                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Total Trips</p>
+            <h3 class="text-2xl font-bold" id="totalTrips">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+            <i class="fas fa-suitcase-rolling"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card hidden">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Top Rated</p>
+            <h3 class="text-2xl font-bold" id="topRated">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-green-100 text-green-600">
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass-card p-4 rounded-xl stat-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500">Pending</p>
+            <h3 class="text-2xl font-bold" id="pendingTrips">0</h3>
+          </div>
+          <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
+      <button id="tripListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-list mr-2"></i>Trip List
+      </button>
+      <button id="tripEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
+        <i class="fas fa-edit mr-2"></i>Trip Editor
+      </button>
+    </div>
+
+    <!-- Trip List Section -->
+    <div id="tripListSection">
+      <div class="flex justify-between gap-4 items-center mb-4">
+        <div class="relative w-full max-w-md">
+          <input type="text" id="searchInput" placeholder="Search trips..." class="pl-8 pr-4 py-1.5 text-sm rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500 w-full">
+          <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+        </div>
+        <button id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
+          <i class="fas fa-plus mr-1"></i>
+        </button>
+      </div>
+      
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Filter:</span>
+          <select id="categoryFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="">All Categories</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Nature">Nature</option>
+            <option value="Beach">Beach</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
+          <span class="text-slate-500 text-sm">Sort:</span>
+          <select id="sortFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
+            <option value="newest">Newest First</option>
+            <option value="priceLow">Price: Low to High</option>
+            <option value="priceHigh">Price: High to Low</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
+        <!-- Skeleton loading -->
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+        
+        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
+          <div class="h-40 bg-slate-200"></div>
+          <div class="p-4">
+            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-suitcase text-slate-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-slate-700 mb-2">No trips found</h3>
+        <p class="text-slate-500 mb-4">Create your first trip to get started</p>
+        <button id="emptyStateNewTripBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
+          <i class="fas fa-plus mr-2"></i> Create New Trip
+        </button>
+      </div>
+    </div>
+
+    <!-- Trip Editor Section -->
+    <div id="tripEditorSection" class="hidden">
+      <form id="tripForm">
+        <input type="hidden" id="tripId">
+        <input type="hidden" id="ownerId">
+        
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-slate-800" id="editorTitle">Create New Trip</h2>
+            <div class="flex space-x-2">
+              <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
+                Cancel
+              </button>
+              <button type="button" id="deleteBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition hidden">
+                Delete
+              </button>
+              <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition flex items-center">
+                <span>Save</span>
+                <span id="spinner" class="ml-1 hidden">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Basic Info Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <h3 class="font-medium text-slate-700 mb-4 flex items-center">
+                  <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
+                </h3>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Trip Name*</label>
+                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                  </div>
+                  
+                  <div>
+                    <label for="bookingLink" class="block text-sm font-medium text-slate-700 mb-1">Booking Link ID*</label>
+                    <div class="flex">
+                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
+                        discover-sharm.com
+                      </span>
+                      <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
                     </div>
+                    <p class="text-xs text-slate-500 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="price" class="block text-sm font-medium  mb-1">Price (EGP)*</label>
+                      <div class="flex">
+                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
+                        EGP 
+                      </span>
+                        
+                        <input type="number" id="price" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500"">
+                        
+                      </div>
+                    </div>
+                    <div>
+                      <label for="duration" class="block text-sm font-medium text-slate-700 mb-1">Duration*</label>
+                      <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Category*</label>
+                      <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Category</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Nature">Nature</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="rating" class="block text-sm font-medium text-slate-700 mb-1">Rating*</label>
+                      <select id="rating" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="">Select Rating</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="5">★★★★★ (5)</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Description*</label>
+                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Media Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-images text-amber-500 mr-2"></i> Media
+                  </h3>
+                  <div class="flex space-x-2" id="mediaButtons">
+                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-image mr-1"></i> Add Image
+                    </button>
+                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                      <i class="fas fa-video mr-1"></i> Add Video
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="space-y-3">
+                  <div>
+                    <label for="mainImage" class="block text-sm font-medium text-slate-700 mb-1">Main Image URL*</label>
+                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                  </div>
+                  
+                  <div id="imageList">
+                    <!-- Image URLs will be added here -->
+                  </div>
+                  <div id="videoList">
+                    <!-- Video entries will be added here -->
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Timeline Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-clock text-amber-500 mr-2"></i> Timeline
+                  </h3>
+                  <button type="button" id="addTimelineBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Item
+                  </button>
+                </div>
+                
+                <div id="timelineList" class="space-y-3">
+                  <!-- Timeline items will be added here -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="space-y-4">
+              <!-- Included/Not Included Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="grid grid-cols-1 gap-4">
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <h3 class="font-medium text-slate-700 flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
+                      </h3>
+                      <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                        <i class="fas fa-plus mr-1"></i> Add Item
+                      </button>
+                    </div>
+                    <div id="includedList" class="space-y-2">
+                      <!-- Included items will be added here -->
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <h3 class="font-medium text-slate-700 flex items-center">
+                        <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
+                      </h3>
+                      <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                        <i class="fas fa-plus mr-1"></i> Add Item
+                      </button>
+                    </div>
+                    <div id="notIncludedList" class="space-y-2">
+                      <!-- Not included items will be added here -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- What to Bring Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
+                  </h3>
+                  <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Item
+                  </button>
+                </div>
+                <div id="whatToBringList" class="space-y-2">
+                  <!-- What to bring items will be added here -->
+                </div>
+              </div>
+              
+              <!-- Extra Services Card -->
+              <div class="glass-card p-5 rounded-xl">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="font-medium text-slate-700 flex items-center">
+                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
+                  </h3>
+                  <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Service
+                  </button>
+                </div>
+                <div id="tourTypeList" class="space-y-2">
+                  <!-- Tour types will be added here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
                 </div>
             </section>
 
