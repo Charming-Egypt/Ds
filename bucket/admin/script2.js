@@ -274,14 +274,48 @@ function initCharts() {
 
 
   
-    // Initialize Tour Performance Chart container only
-    const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-    if (tourPerformanceDom) {
-        // Just prepare the DOM element, we'll initialize the chart in update function
-        tourPerformanceDom.style.width = '100%';
-        tourPerformanceDom.style.height = '400px';
-    }
-}
+                // Initialize Tour Performance Chart
+            const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+            if (tourPerformanceDom) {
+                // Set up resize observer for the container
+                if (chartResizeObserver) {
+                    chartResizeObserver.disconnect();
+                }
+                
+                chartResizeObserver = new ResizeObserver(() => {
+                    if (tourPerformanceChart && typeof tourPerformanceChart.resize === 'function') {
+                        tourPerformanceChart.resize();
+                    }
+                });
+                
+                chartResizeObserver.observe(tourPerformanceDom);
+                
+                // Initialize chart
+                tourPerformanceChart = echarts.init(tourPerformanceDom);
+                
+                // Set initial empty option
+                tourPerformanceChart.setOption({
+                    backgroundColor: 'transparent',
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    xAxis: {
+                        type: 'value'
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: []
+                    },
+                    series: [{
+                        type: 'bar',
+                        data: []
+                    }]
+                });
+            }
+        }
 
 // Process Booking Data
 function processBookingData(data) {
