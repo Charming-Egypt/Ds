@@ -276,15 +276,15 @@ function initCharts() {
   
                 // Initialize Tour Performance Chart
             const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-            if (tourPerformanceDom) {
-// Initialize chart
-                tourPerformanceChart = echarts.init(tourPerformanceDom);
-              
-                
-                
-                
-                
-        }
+    if (tourPerformanceDom) {
+        tourPerformanceChart = echarts.init(tourPerformanceDom);
+        
+        window.addEventListener('resize', function() {
+            tourPerformanceChart.resize();
+        });
+    }
+}
+
 
 // Process Booking Data
 function processBookingData(data) {
