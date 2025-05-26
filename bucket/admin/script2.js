@@ -124,7 +124,7 @@ function initCharts() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#f5f5f5',
+                            
                             usePointStyle: true,
                             padding: 20,
                             font: {
