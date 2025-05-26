@@ -599,7 +599,7 @@ function updateGuestChart() {
 }
 
 // Update Tour Performance Chart function
-function updateTourPerformanceChart() {
+
 function updateTourPerformanceChart() {
     try {
         if (!tourPerformanceChart) return;
