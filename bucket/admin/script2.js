@@ -124,7 +124,6 @@ function initCharts() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            
                             usePointStyle: true,
                             padding: 20,
                             font: {
@@ -135,7 +134,6 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        
                         borderColor: '#666',
                         borderWidth: 1,
                         callbacks: {
@@ -184,7 +182,6 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        
                         borderColor: '#666',
                         borderWidth: 1,
                         mode: 'index',
@@ -197,18 +194,12 @@ function initCharts() {
                         grid: {
                             color: '#444',
                             drawBorder: false
-                        },
-                        ticks: {
-                            
                         }
                     },
                     x: {
                         grid: {
                             color: '#444',
                             display: false
-                        },
-                        ticks: {
-                            
                         }
                     }
                 }
@@ -248,7 +239,6 @@ function initCharts() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            
                             usePointStyle: true,
                             padding: 20,
                             font: {
@@ -259,7 +249,6 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        
                         borderColor: '#666',
                         borderWidth: 1,
                         callbacks: {
@@ -277,120 +266,10 @@ function initCharts() {
         });
     }
 
-    // Initialize Tour Performance Chart with ECharts (Vertical Bar Chart)
+    // Initialize Tour Performance Chart with ECharts
     const tourPerformanceDom = document.getElementById('tourPerformanceChart');
     if (tourPerformanceDom) {
         tourPerformanceChart = echarts.init(tourPerformanceDom);
-        
-        
-            const tourPerformanceOption = {
-    backgroundColor: 'transparent',
-    tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-            type: 'shadow'
-        },
-        formatter: function(params) {
-            if (tourPerformanceMetric === 'bookings') {
-                return `${params[0].name}<br/>Bookings: ${Math.round(params[0].value).toLocaleString()}`;
-            } else {
-                return `${params[0].name}<br/>Revenue: EGP ${params[0].value.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })}`;
-            }
-        },
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        borderColor: '#ffc107',
-        textStyle: {
-            
-        }
-    },
-    grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-    },
-    xAxis: {
-        type: 'value',
-        axisLine: {
-            lineStyle: {
-                color: '#666'
-            }
-        },
-        axisLabel: {
-            
-            formatter: function(value) {
-                if (tourPerformanceMetric === 'bookings') {
-                    return Math.round(value).toLocaleString();
-                } else {
-                    return 'EGP ' + value.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                }
-            }
-        },
-        splitLine: {
-            lineStyle: {
-                color: '#444'
-            }
-        }
-    },
-    yAxis: {
-        type: 'category',
-        data: [],
-        axisLine: {
-            lineStyle: {
-                color: '#666'
-            }
-        },
-        axisLabel: {
-            
-            fontSize: 12
-        }
-    },
-    series: [
-        {
-            name: tourPerformanceMetric === 'revenue' ? 'Revenue' : 'Bookings',
-            type: 'bar',
-            data: [],
-            itemStyle: {
-                color: function(params) {
-                    const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
-                    return colors[params.dataIndex % colors.length];
-                },
-                borderRadius: [0, 4, 4, 0]
-            },
-            label: {
-                show: true,
-                position: 'right',
-                formatter: function(params) {
-                    if (tourPerformanceMetric === 'bookings') {
-                        return Math.round(params.value).toLocaleString();
-                    } else {
-                        return 'EGP ' + params.value.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        });
-                    }
-                },
-                color: '#333',
-                fontWeight: 'bold'
-            },
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(255, 193, 7, 0.5)'
-                }
-            }
-        }
-    ]
-};
-        
-        tourPerformanceChart.setOption(tourPerformanceOption);
         
         window.addEventListener('resize', function() {
             tourPerformanceChart.resize();
@@ -598,23 +477,11 @@ function updateGuestChart() {
     }
 }
 
-// Update Tour Performance Chart function
-
+// Update Tour Performance Chart
 function updateTourPerformanceChart() {
     try {
-        const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-        if (!tourPerformanceDom) return;
+        if (!tourPerformanceChart) return;
         
-        // Initialize chart if not already done
-        if (!window.tourPerformanceChart) {
-            window.tourPerformanceChart = echarts.init(tourPerformanceDom);
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                window.tourPerformanceChart.resize();
-            });
-        }
-
         // Aggregate data by tour name
         const tourData = {};
         filteredBookingData.forEach(booking => {
@@ -644,7 +511,7 @@ function updateTourPerformanceChart() {
                 : parseFloat(item[1].revenue.toFixed(2));
         });
 
-        // Chart configuration (matches your preferred style)
+        // Chart configuration
         const tourPerformanceOption = {
             backgroundColor: 'transparent',
             tooltip: {
@@ -697,12 +564,13 @@ function updateTourPerformanceChart() {
                         return tourPerformanceMetric === 'bookings'
                             ? params.value
                             : 'EGP ' + params.value.toFixed(2);
-                    }
+                    },
+                    fontWeight: 'bold'
                 }
             }]
         };
 
-        window.tourPerformanceChart.setOption(tourPerformanceOption);
+        tourPerformanceChart.setOption(tourPerformanceOption);
 
     } catch (error) {
         console.error("Error updating tour performance chart:", error);
