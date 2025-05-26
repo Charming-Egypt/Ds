@@ -48,7 +48,7 @@
                 const userData = snapshot.val();
                 currentUserRole = userData?.role || 'user';
                 
-                );
+                
                 
                 return currentUserRole;
             });
