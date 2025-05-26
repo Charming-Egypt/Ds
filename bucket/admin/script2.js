@@ -277,7 +277,7 @@ function initCharts() {
     // Initialize Tour Performance Chart with ECharts
     const tourPerformanceDom = document.getElementById('tourPerformanceChart');
     if (tourPerformanceDom) {
-        tourPerformanceChart = echarts.init(tourPerformanceDom);
+        
         
         tourPerformanceDom.style.width = '100%';
         tourPerformanceDom.style.height = '400px';
