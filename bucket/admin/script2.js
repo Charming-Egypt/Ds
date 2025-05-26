@@ -274,14 +274,12 @@ function initCharts() {
 
 
   
-    // Initialize Tour Performance Chart with ECharts
+    // Initialize Tour Performance Chart container only
     const tourPerformanceDom = document.getElementById('tourPerformanceChart');
     if (tourPerformanceDom) {
-        
-        
+        // Just prepare the DOM element, we'll initialize the chart in update function
         tourPerformanceDom.style.width = '100%';
         tourPerformanceDom.style.height = '400px';
-        });
     }
 }
 
