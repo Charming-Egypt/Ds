@@ -101,16 +101,16 @@
                     <span class="text"> Analytics </span>
                 </a>
             </li>
-            <li data-section="messages">
+            <li data-section="reservation">
                 <a href="#">
                     <i class="bx bxs-file-pdf"></i>
                     <span class="text">Reservations</span>
                 </a>
             </li>
-            <li data-section="team">
+            <li data-section="withdraw">
                 <a href="#">
                     <i class='bx bx-money'></i>
-                    <span class="text">Withdraw</span>
+                    <span class="text">payout</span>
                 </a>
             </li>
         </ul>
@@ -157,15 +157,7 @@
                 <div class="head-title">
                     <div class="left">
                         <h1>Dashboard</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Overview</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Home</a>
-                            </li>
-                        </ul>
+   
                     </div>
                 </div>
 
@@ -230,6 +222,11 @@
                 </div>
             </section>
 
+
+
+
+
+
             <!-- trips Section -->
             <section id="trips-section" class="content-section">
                 <div class="head-title">
@@ -237,7 +234,7 @@
                         <h1>My trips</h1>
                         <ul class="breadcrumb">
                             <li>
-                 <a href="#"></a>
+                 <a href="#">Dashboard</a>
                             </li>
                             <li><i class='bx bx-chevron-right'></i></li>
                             <li>
@@ -312,29 +309,7 @@
         </button>
       </div>
       
-      <!-- Filters -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
-          <span class="text-slate-500 text-sm">Filter:</span>
-          <select id="categoryFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
-            <option value="">All Categories</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Cultural">Cultural</option>
-            <option value="Nature">Nature</option>
-            <option value="Beach">Beach</option>
-          </select>
-        </div>
-        
-        <div class="flex items-center space-x-2 bg-white rounded-full px-3 py-1.5 shadow-xs border border-slate-200">
-          <span class="text-slate-500 text-sm">Sort:</span>
-          <select id="sortFilter" class="text-sm border-none focus:ring-0 focus:outline-none bg-transparent">
-            <option value="newest">Newest First</option>
-            <option value="priceLow">Price: Low to High</option>
-            <option value="priceHigh">Price: High to Low</option>
-            <option value="rating">Rating</option>
-          </select>
-        </div>
-      </div>
+ 
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
         <!-- Skeleton loading -->
@@ -601,6 +576,15 @@
                 </div>
             </section>
 
+
+
+
+
+
+
+
+
+
             <!-- Analytics Section -->
             <section id="analytics-section" class="content-section">
                 <div class="head-title">
@@ -618,11 +602,11 @@
                     </div>
                     <a href="#" class="btn-download">
                         <i class='bx bxs-cloud-download'></i>
-                        <span class="text">Export Data</span>
+                        <span class="text">Export</span>
                     </a>
                 </div>
 
-                <div class="container">
+                <div class="container full-width">
                     
                         <div class="card-header">
                             <h2 class="card-title">Sales Analytics</h2>
@@ -635,11 +619,15 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="card-body">
-            <!-- Main Charts Grid -->
-                    <div class="charts-grid full-width">
+                        
+                        
+                    
+<div>
+
+         <!-- Main Charts Grid -->
+                    <div class="charts-grid">
                         <!-- Booking Status Distribution -->
-                        <div class="card full-width">
+                        <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">Booking Status</h2>
                                 <div class="card-actions">
@@ -657,7 +645,7 @@
                       </div>
                         
                         <!-- Monthly Booking Trends -->
-                        <div class="card full-width">
+                        <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">Monthly Trends</h2>
                                 <div class="card-actions">
@@ -673,11 +661,14 @@
                                 </div>
                             </div>
                         </div>
+                                                </div>
                         
+                        
+                   <div class="charts-grid">
                         <!-- Tour Performance -->
-                        <div class="card full-width">
+                        <div class="card">
                             <div class="card-header">
-                                <h2 class="card-title">Tour Performance</h2>
+                                <h2 class="card-title">Tour trend</h2>
                                 <div class="card-actions">
                                     <select id="tourPerformanceMetric" class="filter-btn">
                                         <option value="bookings">By Bookings</option>
@@ -693,7 +684,7 @@
                         </div>
                         
                         <!-- Guest Composition -->
-                        <div class="card full-width">
+                        <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">Guest Composition</h2>
                                 <div class="card-actions">
@@ -710,206 +701,195 @@
                             </div>
                         </div>
                     </div>
-                        </div>
                     
-
                     
-                </div>
-            </section>
-
-            <!-- Messages Section -->
-            <section id="messages-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Messages</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Messages</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a href="#" class="btn-download">
-                        <i class='bx bxs-envelope'></i>
-                        <span class="text">New Message</span>
-                    </a>
-                </div>
-
-                <div class="container full-width">
-                    <div class="card full-width">
-                        <div class="card-header">
-                            <h2 class="card-title">Inbox</h2>
-                            <div class="card-actions">
-                                <button class="filter-btn active">All</button>
-                                <button class="filter-btn">Unread</button>
-                                <button class="filter-btn">Important</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="messages-list">
-                                <div class="message-item unread">
-                                    <div class="message-checkbox">
-                                        <input type="checkbox">
-                                    </div>
-                                    <div class="message-sender">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
-                                        <span>Ahmed Mohamed</span>
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-title">Question about my booking</div>
-                                        <div class="message-preview">Hi, I have a question about the tour I booked for next week...</div>
-                                    </div>
-                                    <div class="message-time">2 hours ago</div>
-                                    <div class="message-actions">
-                                        <button class="action-btn"><i class='bx bx-star'></i></button>
-                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
-                                    </div>
-                                </div>
-
-                                <div class="message-item">
-                                    <div class="message-checkbox">
-                                        <input type="checkbox">
-                                    </div>
-                                    <div class="message-sender">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
-                                        <span>Sarah Johnson</span>
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-title">Thank you for the great experience!</div>
-                                        <div class="message-preview">Just wanted to say thank you for the amazing tour...</div>
-                                    </div>
-                                    <div class="message-time">1 day ago</div>
-                                    <div class="message-actions">
-                                        <button class="action-btn"><i class='bx bx-star'></i></button>
-                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
-                                    </div>
-                                </div>
-
-                                <div class="message-item important">
-                                    <div class="message-checkbox">
-                                        <input type="checkbox">
-                                    </div>
-                                    <div class="message-sender">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
-                                        <span>Tour Operator</span>
-                                    </div>
-                                    <div class="message-content">
-                                        <div class="message-title">Urgent: Schedule change</div>
-                                        <div class="message-preview">There's been a change in the schedule for tomorrow's...</div>
-                                    </div>
-                                    <div class="message-time">3 days ago</div>
-                                    <div class="message-actions">
-                                        <button class="action-btn"><i class='bx bx-star'></i></button>
-                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
-                                    </div>
-                                </div>
+</div>
+                    
+                              </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Team Section -->
-            <section id="team-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Team</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Team Members</a>
-                            </li>
-                        </ul>
+
+
+
+
+
+
+
+<!-- Reservations Section -->
+<section id="reservation-section" class="content-section">
+  <div class="head-title">
+    <div class="left">
+      <h1>Reservations</h1>
+      <ul class="breadcrumb">
+        <li><a href="#">Dashboard</a></li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li><a class="active" href="#">Reservations</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container full-width">
+    <div class="card full-width">
+      <div class="card-header flex justify-between items-center">
+        <h2 class="card-title">Your Bookings</h2>
+      </div>
+      <div class="card-body overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Booking ID</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Customer</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Trip Date</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Guests</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Total Price</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Status</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Payment</th>
+              <th class="px-4 py-3 text-left font-medium text-gray-700">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reservations-list" class="divide-y divide-slate-100">
+            <!-- Example Row (will be replaced dynamically) -->
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-4 py-3">#RES-12345</td>
+              <td class="px-4 py-3">John Doe</td>
+              <td class="px-4 py-3">2025-06-15</td>
+              <td class="px-4 py-3">1 Adult<br><span class="text-xs text-gray-500">0 Children</span></td>
+              <td class="px-4 py-3">EGP 8.25</td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Confirmed
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Paid
+                </span>
+              </td>
+              <td class="px-4 py-3 space-x-2">
+                <button onclick="viewReservation('${bookingId}')" class="text-blue-600 hover:underline">View</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div id="emptyReservations" class="hidden text-center py-8">
+          <i class="fas fa-calendar-alt text-slate-400 text-4xl mb-4"></i>
+          <p class="text-slate-600">You have no active reservations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+<!-- Inside #withdraw-section -->
+<section id="withdraw-section" class="content-section">
+  <div class="head-title">
+    <div class="left">
+      <h1>Payout Method</h1>
+      <ul class="breadcrumb">
+        <li><a href="#">Dashboard</a></li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li><a class="active" href="#">Payout Method</a></li>
+      </ul>
+    </div>
+  </div>
+
+<!-- Inside #withdraw-section -->
+<div class="container">
+    <div class="card full-width">
+        <div class="card-header">
+            <h2 class="card-title">Payout Method</h2>
+            <div class="card-actions">
+                <button id="editPayoutMethod" class="save-btn">Edit Payout Method</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="payoutForm">
+                <!-- Payout Method Selection -->
+                <div class="form-group">
+                    <label>Payout Method</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="bankAccount" name="payoutMethod" value="bank_account" checked>
+                            <label for="bankAccount">Bank Account</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="wallet" name="payoutMethod" value="wallet">
+                            <label for="wallet">Wallet</label>
+                        </div>
                     </div>
-                    <a href="#" class="btn-download">
-                        <i class='bx bxs-user-plus'></i>
-                        <span class="text">Add Member</span>
-                    </a>
                 </div>
 
-                <div class="container">
-                    <div class="card full-width">
-                        <div class="card-header">
-                            <h2 class="card-title">Team Members</h2>
-                            <div class="card-actions">
-                                <div class="search-box">
-                                    <i class='bx bx-search'></i>
-                                    <input type="text" placeholder="Search team members...">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="team-grid">
-                                <div class="team-member">
-                                    <div class="member-avatar">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
-                                    </div>
-                                    <div class="member-info">
-                                        <h3>Mohamed Ali</h3>
-                                        <p>Tour Guide</p>
-                                        <div class="member-contacts">
-                                            <a href="#"><i class='bx bx-phone'></i></a>
-                                            <a href="#"><i class='bx bx-envelope'></i></a>
-                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Always Visible Fields -->
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" placeholder="Enter your account number" required>
+                </div>
 
-                                <div class="team-member">
-                                    <div class="member-avatar">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
-                                    </div>
-                                    <div class="member-info">
-                                        <h3>Fatima Hassan</h3>
-                                        <p>Customer Support</p>
-                                        <div class="member-contacts">
-                                            <a href="#"><i class='bx bx-phone'></i></a>
-                                            <a href="#"><i class='bx bx-envelope'></i></a>
-                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="team-member">
-                                    <div class="member-avatar">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
-                                    </div>
-                                    <div class="member-info">
-                                        <h3>Omar Ibrahim</h3>
-                                        <p>Sales Manager</p>
-                                        <div class="member-contacts">
-                                            <a href="#"><i class='bx bx-phone'></i></a>
-                                            <a href="#"><i class='bx bx-envelope'></i></a>
-                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="team-member">
-                                    <div class="member-avatar">
-                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
-                                    </div>
-                                    <div class="member-info">
-                                        <h3>Laila Mahmoud</h3>
-                                        <p>Marketing Specialist</p>
-                                        <div class="member-contacts">
-                                            <a href="#"><i class='bx bx-phone'></i></a>
-                                            <a href="#"><i class='bx bx-envelope'></i></a>
-                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Conditional Fields (Bank Account Only) -->
+                <div id="bankFields" class="conditional-fields">
+                    <div class="form-group">
+                        <label for="bankName">Bank Name</label>
+                        <input type="text" id="bankName" placeholder="Enter bank name (e.g., Banque Misr)">
+                    </div>
+                    <div class="form-group">
+                        <label for="branchName">Branch Name</label>
+                        <input type="text" id="branchName" placeholder="Enter branch name (e.g., Sharm El-Sheikh)">
                     </div>
                 </div>
-            </section>
+            </form>
+        </div>
+    </div>
+
+    <!-- Events Section -->
+    <div class="card full-width mt-6">
+        <div class="card-header">
+            <h2 class="card-title">Events</h2>
+        </div>
+        <div class="card-body">
+            <div class="event-list">
+                <div class="event-item">
+                    <span class="event-date">22 Apr 2025 12:08 AM</span>
+                    <span class="event-description">Mohamed Gamal has updated the payout information.</span>
+                </div>
+                <!-- More events can be added dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
 
             <!-- Settings Section -->
             <section id="settings-section" class="content-section">
