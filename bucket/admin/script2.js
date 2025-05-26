@@ -282,103 +282,113 @@ function initCharts() {
     if (tourPerformanceDom) {
         tourPerformanceChart = echarts.init(tourPerformanceDom);
         
-        const tourPerformanceOption = {
-            backgroundColor: 'transparent',
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'shadow'
+        
+            const tourPerformanceOption = {
+    backgroundColor: 'transparent',
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow'
+        },
+        formatter: function(params) {
+            if (tourPerformanceMetric === 'bookings') {
+                return `${params[0].name}<br/>Bookings: ${Math.round(params[0].value).toLocaleString()}`;
+            } else {
+                return `${params[0].name}<br/>Revenue: EGP ${params[0].value.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`;
+            }
+        },
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        borderColor: '#ffc107',
+        textStyle: {
+            
+        }
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'value',
+        axisLine: {
+            lineStyle: {
+                color: '#666'
+            }
+        },
+        axisLabel: {
+            
+            formatter: function(value) {
+                if (tourPerformanceMetric === 'bookings') {
+                    return Math.round(value).toLocaleString();
+                } else {
+                    return 'EGP ' + value.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            }
+        },
+        splitLine: {
+            lineStyle: {
+                color: '#444'
+            }
+        }
+    },
+    yAxis: {
+        type: 'category',
+        data: [],
+        axisLine: {
+            lineStyle: {
+                color: '#666'
+            }
+        },
+        axisLabel: {
+            
+            fontSize: 12
+        }
+    },
+    series: [
+        {
+            name: tourPerformanceMetric === 'revenue' ? 'Revenue' : 'Bookings',
+            type: 'bar',
+            data: [],
+            itemStyle: {
+                color: function(params) {
+                    const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
+                    return colors[params.dataIndex % colors.length];
                 },
+                borderRadius: [0, 4, 4, 0]
+            },
+            label: {
+                show: true,
+                position: 'right',
                 formatter: function(params) {
-                    return params[0].name + '<br/>' + 
-                        (tourPerformanceMetric === 'revenue' 
-                            ? 'Revenue: EGP ' + params[0].value.toLocaleString() 
-                            : 'Bookings: ' + params[0].value.toLocaleString());
+                    if (tourPerformanceMetric === 'bookings') {
+                        return Math.round(params.value).toLocaleString();
+                    } else {
+                        return 'EGP ' + params.value.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                    }
                 },
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                borderColor: '#ffc107',
-                textStyle: {
-                    
-                }
+                color: '#333',
+                fontWeight: 'bold'
             },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true,
-                top: '10%'
-            },
-            xAxis: {
-                type: 'category',
-                data: [],
-                axisLine: {
-                    lineStyle: {
-                        color: '#666'
-                    }
-                },
-                axisLabel: {
-                    
-                    rotate: 45,
-                    fontSize: 12
-                },
-                axisTick: {
-                    alignWithLabel: true
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(255, 193, 7, 0.5)'
                 }
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: {
-                    lineStyle: {
-                        color: '#666'
-                    }
-                },
-                axisLabel: {
-                    
-                    formatter: function(value) {
-                        return tourPerformanceMetric === 'revenue' 
-                            ? 'EGP ' + value.toLocaleString() 
-                            : value.toLocaleString();
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#444'
-                    }
-                }
-            },
-            series: [
-                {
-                    name: tourPerformanceMetric === 'revenue' ? 'Revenue' : 'Bookings',
-                    type: 'bar',
-                    barWidth: '60%',
-                    data: [],
-                    itemStyle: {
-                        color: function(params) {
-                            const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3', '#9c27b0', '#607d8b', '#795548'];
-                            return colors[params.dataIndex % colors.length];
-                        },
-                        borderRadius: [4, 4, 0, 0]
-                    },
-                    label: {
-                        show: true,
-                        position: 'top',
-                        formatter: function(params) {
-                            return tourPerformanceMetric === 'revenue' 
-                                ? 'EGP ' + params.value.toLocaleString() 
-                                : params.value.toLocaleString();
-                        },
-                        
-                    },
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(255, 193, 7, 0.5)'
-                        }
-                    }
-                }
-            ]
-        };
+            }
+        }
+    ]
+};
         
         tourPerformanceChart.setOption(tourPerformanceOption);
         
@@ -619,18 +629,56 @@ function updateTourPerformanceChart() {
         const tourValues = sortedTours.map(item => item[1][tourPerformanceMetric]);
         
         tourPerformanceChart.setOption({
-            xAxis: {
+            yAxis: {
                 data: tourNames
             },
-            yAxis: {
-                name: tourPerformanceMetric === 'revenue' ? 'Revenue (EGP)' : 'Bookings',
-                nameTextStyle: {
-                    color: '#f5f5f5'
+            xAxis: {
+                type: 'value',
+                axisLine: {
+                    lineStyle: {
+                        color: '#666'
+                    }
+                },
+                axisLabel: {
+                    
+                    formatter: function(value) {
+                        if (tourPerformanceMetric === 'bookings') {
+                            return Math.round(value).toLocaleString(); // Whole numbers for bookings
+                        } else {
+                            // 2 decimal places for revenue
+                            return 'EGP ' + value.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: '#444'
+                    }
                 }
             },
             series: [{
                 name: tourPerformanceMetric === 'revenue' ? 'Revenue' : 'Bookings',
-                data: tourValues
+                data: tourValues,
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: function(params) {
+                        if (tourPerformanceMetric === 'bookings') {
+                            return Math.round(params.value).toLocaleString(); // Whole numbers for bookings
+                        } else {
+                            // 2 decimal places for revenue
+                            return 'EGP ' + params.value.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    },
+                    color: '#333',
+                    fontWeight: 'bold'
+                }
             }]
         });
     } catch (error) {
