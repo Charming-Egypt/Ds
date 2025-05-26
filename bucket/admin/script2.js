@@ -478,10 +478,24 @@ function updateGuestChart() {
 }
 
 // Update Tour Performance Chart
+// Update Tour Performance Chart
 function updateTourPerformanceChart() {
     try {
-        if (!tourPerformanceChart) return;
+        const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+        if (!tourPerformanceDom) return;
         
+        // Initialize chart if not already done or if destroyed
+        if (!tourPerformanceChart || typeof tourPerformanceChart.setOption !== 'function') {
+            tourPerformanceChart = echarts.init(tourPerformanceDom);
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (tourPerformanceChart && typeof tourPerformanceChart.resize === 'function') {
+                    tourPerformanceChart.resize();
+                }
+            });
+        }
+
         // Aggregate data by tour name
         const tourData = {};
         filteredBookingData.forEach(booking => {
@@ -570,10 +584,23 @@ function updateTourPerformanceChart() {
             }]
         };
 
+        // Clear previous chart instance if it exists
+        if (tourPerformanceChart && typeof tourPerformanceChart.dispose === 'function') {
+            tourPerformanceChart.dispose();
+        }
+        
+        // Reinitialize chart
+        tourPerformanceChart = echarts.init(tourPerformanceDom);
         tourPerformanceChart.setOption(tourPerformanceOption);
 
     } catch (error) {
         console.error("Error updating tour performance chart:", error);
+        
+        // Attempt to reinitialize chart on error
+        const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+        if (tourPerformanceDom) {
+            tourPerformanceChart = echarts.init(tourPerformanceDom);
+        }
     }
 }
 
