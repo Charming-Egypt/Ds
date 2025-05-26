@@ -600,87 +600,101 @@ function updateGuestChart() {
 
 // Update Tour Performance Chart function
 function updateTourPerformanceChart() {
+function updateTourPerformanceChart() {
     try {
         if (!tourPerformanceChart) return;
         
-        const tourData = {};
+        // Aggregate data using Map to prevent duplicates
+        const tourMap = new Map();
         
         filteredBookingData.forEach(booking => {
             if (booking.resStatus?.toLowerCase() === 'confirmed') {
-                const tour = booking.tour || 'Other';
+                const tourName = booking.tour || 'Other';
+                const current = tourMap.get(tourName) || { 
+                    bookings: 0, 
+                    revenue: 0 
+                };
                 
-                if (!tourData[tour]) {
-                    tourData[tour] = {
-                        bookings: 0,
-                        revenue: 0
-                    };
-                }
-                
-                tourData[tour].bookings++;
-                tourData[tour].revenue += parseFloat(booking.netTotal) || 0;
+                current.bookings += 1;
+                current.revenue += parseFloat(booking.netTotal) || 0;
+                tourMap.set(tourName, current);
             }
         });
-        
-        const sortedTours = Object.entries(tourData)
+
+        // Convert to sorted array
+        const sortedTours = Array.from(tourMap.entries())
             .sort((a, b) => b[1][tourPerformanceMetric] - a[1][tourPerformanceMetric])
             .slice(0, 8);
-        
+
         const tourNames = sortedTours.map(item => item[0]);
         const tourValues = sortedTours.map(item => item[1][tourPerformanceMetric]);
-        
+
+        // Calculate optimal interval for x-axis
+        const maxValue = Math.max(...tourValues, 1);
+        const interval = tourPerformanceMetric === 'bookings' 
+            ? Math.ceil(maxValue / 5) 
+            : Math.ceil(maxValue / 500) * 100;
+
+        // Update chart with clean configuration
         tourPerformanceChart.setOption({
+            backgroundColor: 'transparent',
             yAxis: {
-                data: tourNames
+                type: 'category',
+                data: tourNames,
+                axisLine: {
+                    show: true
+                }
             },
             xAxis: {
                 type: 'value',
                 axisLine: {
-                    lineStyle: {
-                        color: '#666'
-                    }
+                    show: true
                 },
                 axisLabel: {
-                    
                     formatter: function(value) {
                         if (tourPerformanceMetric === 'bookings') {
-                            return Math.round(value).toLocaleString(); // Whole numbers for bookings
-                        } else {
-                            // 2 decimal places for revenue
-                            return 'EGP ' + value.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
+                            return Math.round(value);
                         }
+                        return 'EGP ' + value.toFixed(2);
                     }
                 },
                 splitLine: {
-                    lineStyle: {
-                        color: '#444'
-                    }
-                }
+                    show: true
+                },
+                interval: interval,
+                min: 0,
+                max: maxValue * 1.1
             },
             series: [{
-                name: tourPerformanceMetric === 'revenue' ? 'Revenue' : 'Bookings',
+                type: 'bar',
                 data: tourValues,
                 label: {
                     show: true,
                     position: 'right',
                     formatter: function(params) {
                         if (tourPerformanceMetric === 'bookings') {
-                            return Math.round(params.value).toLocaleString(); // Whole numbers for bookings
-                        } else {
-                            // 2 decimal places for revenue
-                            return 'EGP ' + params.value.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
+                            return params.value;
                         }
+                        return 'EGP ' + params.value.toFixed(2);
                     },
-                    color: '#333',
                     fontWeight: 'bold'
+                },
+                itemStyle: {
+                    borderRadius: [0, 4, 4, 0]
                 }
-            }]
-        });
+            }],
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    const data = params[0];
+                    if (tourPerformanceMetric === 'bookings') {
+                        return `${data.name}<br/>Bookings: ${data.value}`;
+                    }
+                    return `${data.name}<br/>Revenue: EGP ${data.value.toFixed(2)}`;
+                }
+            }
+        }, true);
+
     } catch (error) {
         console.error("Error updating tour performance chart:", error);
     }
