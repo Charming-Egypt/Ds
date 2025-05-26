@@ -92,6 +92,18 @@ function getDateRangeLabel() {
 
 // Initialize Charts
 function initCharts() {
+  
+
+  const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+    if (tourPerformanceDom) {
+        // Just prepare the DOM element, we'll initialize the chart in update function
+        tourPerformanceDom.style.width = '100%';
+        tourPerformanceDom.style.height = '400px';
+    }
+
+
+  
+
     // Booking Status Chart (Doughnut)
     const statusCtx = document.getElementById('statusChart')?.getContext('2d');
     if (statusCtx) {
