@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard || Discover Sharm</title>
+    
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  
+  
+  <!-- Date Range Picker -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    
+    
+    <!-- Firebase JS -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <div class="logo-container">
+                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjGLYfehf5gTkhli-onh8WqHg2Ve_BEw1GHxqS5E0pUMywRV9LXj0M45PfhXXgiEwCcR3t8EzzoBUAbhLjIlbAmttq5Jf1Quhxke9PBW5GFu1fwSIjtAzPwRhjUTAk_vV1kpZzApx6V-nYEfRpPMeBI7QUDp7yUTk_0pwLbC3lXPnwQzvZPfuDSigaHziw=s1600" alt="Discover Sharm Logo" class="app-logo">
+            </div>
+            <span  id="userRole" class="text">Discover Sharm</span>
+        </a>
+        <ul class="side-menu top">
+            <li class="active" data-section="dashboard">
+                <a href="#">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li data-section="trips">
+                <a href="#">
+                    <i class='bx bxs-shopping-bag-alt'></i>
+                    <span class="text">My Trips</span>
+                </a>
+            </li>
+            <li data-section="analytics">
+                <a href="#">
+                    <i class='bx bxs-doughnut-chart'></i>
+                    <span class="text"> Analytics </span>
+                </a>
+            </li>
+            <li data-section="messages">
+                <a href="#">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Messages</span>
+                </a>
+            </li>
+            <li data-section="team">
+                <a href="#">
+                    <i class='bx bxs-group'></i>
+                    <span class="text">Team</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="side-menu">
+            <li data-section="settings">
+                <a href="#">
+                    <img src="" alt="Profile Image" class="profile-photo bx rounded-full" id="profile-photo">
+         
+                    <span class="text text-center">Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
+
+            
+        </nav>
+        <!-- NAVBAR -->
+
+        <!-- MAIN CONTENT SECTIONS -->
+        <main>
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Dashboard</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Overview</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Home</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <!-- Filter Bar -->
+                    <div class="filter-bar">
+
+                                <button class="filter-btn active whitespace-nowrap" data-period="week">This Week</button>
+            <button class="filter-btn whitespace-nowrap" data-period="month">This Month</button>
+            <button class="filter-btn whitespace-nowrap" data-period="quarter">This Quarter</button>
+            <button class="filter-btn whitespace-nowrap" data-period="year">This Year</button>
+            <button class="filter-btn whitespace-nowrap" data-period="all">All Time</button>
+            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap" placeholder="Select date range" />
+                    
+                    
+                    </div>
+                    
+                    <!-- Stats Summary -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalBookings">0</div>
+                                <div class="stat-label">Total Bookings</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalGuests">0</div>
+                                <div class="stat-label">Total Guests</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalRevenue">EGP 0</div>
+                                <div class="stat-label">Total Revenue</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="avgRating">0.0</div>
+                                <div class="stat-label">Avg. Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+        
+                </div>
+            </section>
+
+            <!-- trips Section -->
+            <section id="trips-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>My trips</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                 <a href="#"></a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">trips</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-download">
+                        <i class='bx bxs-plus-circle'></i>
+                        <span class="text">Add trip</span>
+                    </a>
+                </div>
+
+                <div class="container">
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2 class="card-title">trips</h2>
+                            <div class="card-actions">
+                                <button class="filter-btn active">All</button>
+                                <button class="filter-btn">Active</button>
+                                <button class="filter-btn">Pending</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="trip-table">
+                                    <thead>
+                                        <tr>
+                                            <th>trip</th>
+                                            <th>Price</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="trip-info">
+                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
+                                                    <span>safari</span>
+                                                </div>
+                                            </td>
+                                            <td>EGP 250</td>
+                                            <td>10/5/2025</td>
+                                            <td><span class="status completed">confiremed</span></td>
+                                            <td>
+                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
+                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="trip-info">
+                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
+                                                    <span>cairo</span>
+                                                </div>
+                                            </td>
+                                            <td>EGP 180</td>
+                                            <td>10/5/2025</td>
+                                            <td><span class="status completed">confiremed</span></td>
+                                            <td>
+                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
+                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="trip-info">
+                                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="trip Image">
+                                                    <span>ras Mohamed</span>
+                                                </div>
+                                            </td>
+                                            <td>EGP 350</td>
+                                            <td>10/5/2025</td>
+                                            <td><span class="status pending">canceled</span></td>
+                                            <td>
+                                                <button class="action-btn edit"><i class='bx bx-edit'></i></button>
+                                                <button class="action-btn delete"><i class='bx bx-trash'></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Analytics</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Analytics</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-download">
+                        <i class='bx bxs-cloud-download'></i>
+                        <span class="text">Export Data</span>
+                    </a>
+                </div>
+
+                <div class="container">
+                    
+                        <div class="card-header">
+                            <h2 class="card-title">Sales Analytics</h2>
+                            <div class="card-actions">
+                                <select class="filter-btn">
+                                    <option>Last 7 Days</option>
+                                    <option>Last 30 Days</option>
+                                    <option>Last 90 Days</option>
+                                    <option>This Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+            <!-- Main Charts Grid -->
+                    <div class="charts-grid full-width">
+                        <!-- Booking Status Distribution -->
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2 class="card-title">Booking Status</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-new" id="statusUpdated">Today</div>
+                                    <button class="export-btn" data-chart="statusChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                      </div>
+                        
+                        <!-- Monthly Booking Trends -->
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2 class="card-title">Monthly Trends</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-confirmed" id="trendUpdated">2023</div>
+                                    <button class="export-btn" data-chart="trendChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tour Performance -->
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2 class="card-title">Tour Performance</h2>
+                                <div class="card-actions">
+                                    <select id="tourPerformanceMetric" class="filter-btn">
+                                        <option value="bookings">By Bookings</option>
+                                        <option value="revenue">By Revenue</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <div id="tourPerformanceChart" style="width:100%; height:100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Guest Composition -->
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h2 class="card-title">Guest Composition</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-confirmed" id="guestUpdated">Current</div>
+                                    <button class="export-btn" data-chart="guestChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="half-pie-container">
+                                    <canvas id="guestChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+                    
+
+                    
+                </div>
+            </section>
+
+            <!-- Messages Section -->
+            <section id="messages-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Messages</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Messages</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-download">
+                        <i class='bx bxs-envelope'></i>
+                        <span class="text">New Message</span>
+                    </a>
+                </div>
+
+                <div class="container full-width">
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2 class="card-title">Inbox</h2>
+                            <div class="card-actions">
+                                <button class="filter-btn active">All</button>
+                                <button class="filter-btn">Unread</button>
+                                <button class="filter-btn">Important</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="messages-list">
+                                <div class="message-item unread">
+                                    <div class="message-checkbox">
+                                        <input type="checkbox">
+                                    </div>
+                                    <div class="message-sender">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
+                                        <span>Ahmed Mohamed</span>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-title">Question about my booking</div>
+                                        <div class="message-preview">Hi, I have a question about the tour I booked for next week...</div>
+                                    </div>
+                                    <div class="message-time">2 hours ago</div>
+                                    <div class="message-actions">
+                                        <button class="action-btn"><i class='bx bx-star'></i></button>
+                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="message-item">
+                                    <div class="message-checkbox">
+                                        <input type="checkbox">
+                                    </div>
+                                    <div class="message-sender">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
+                                        <span>Sarah Johnson</span>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-title">Thank you for the great experience!</div>
+                                        <div class="message-preview">Just wanted to say thank you for the amazing tour...</div>
+                                    </div>
+                                    <div class="message-time">1 day ago</div>
+                                    <div class="message-actions">
+                                        <button class="action-btn"><i class='bx bx-star'></i></button>
+                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="message-item important">
+                                    <div class="message-checkbox">
+                                        <input type="checkbox">
+                                    </div>
+                                    <div class="message-sender">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Sender">
+                                        <span>Tour Operator</span>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-title">Urgent: Schedule change</div>
+                                        <div class="message-preview">There's been a change in the schedule for tomorrow's...</div>
+                                    </div>
+                                    <div class="message-time">3 days ago</div>
+                                    <div class="message-actions">
+                                        <button class="action-btn"><i class='bx bx-star'></i></button>
+                                        <button class="action-btn"><i class='bx bx-trash'></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Section -->
+            <section id="team-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Team</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Team Members</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn-download">
+                        <i class='bx bxs-user-plus'></i>
+                        <span class="text">Add Member</span>
+                    </a>
+                </div>
+
+                <div class="container">
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2 class="card-title">Team Members</h2>
+                            <div class="card-actions">
+                                <div class="search-box">
+                                    <i class='bx bx-search'></i>
+                                    <input type="text" placeholder="Search team members...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="team-grid">
+                                <div class="team-member">
+                                    <div class="member-avatar">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
+                                    </div>
+                                    <div class="member-info">
+                                        <h3>Mohamed Ali</h3>
+                                        <p>Tour Guide</p>
+                                        <div class="member-contacts">
+                                            <a href="#"><i class='bx bx-phone'></i></a>
+                                            <a href="#"><i class='bx bx-envelope'></i></a>
+                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="team-member">
+                                    <div class="member-avatar">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
+                                    </div>
+                                    <div class="member-info">
+                                        <h3>Fatima Hassan</h3>
+                                        <p>Customer Support</p>
+                                        <div class="member-contacts">
+                                            <a href="#"><i class='bx bx-phone'></i></a>
+                                            <a href="#"><i class='bx bx-envelope'></i></a>
+                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="team-member">
+                                    <div class="member-avatar">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
+                                    </div>
+                                    <div class="member-info">
+                                        <h3>Omar Ibrahim</h3>
+                                        <p>Sales Manager</p>
+                                        <div class="member-contacts">
+                                            <a href="#"><i class='bx bx-phone'></i></a>
+                                            <a href="#"><i class='bx bx-envelope'></i></a>
+                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="team-member">
+                                    <div class="member-avatar">
+                                        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Team Member">
+                                    </div>
+                                    <div class="member-info">
+                                        <h3>Laila Mahmoud</h3>
+                                        <p>Marketing Specialist</p>
+                                        <div class="member-contacts">
+                                            <a href="#"><i class='bx bx-phone'></i></a>
+                                            <a href="#"><i class='bx bx-envelope'></i></a>
+                                            <a href="#"><i class='bx bxl-whatsapp'></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Settings</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Settings</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2 class="card-title">Account Settings</h2>
+                        </div>
+                        <div class="card-body">
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="profile-pic">Profile Picture</label>
+                                    <div class="profile-pic-upload">
+                                        <img src="" class="profile-photo2" alt="Profile" id="profile-pic-preview">
+                                      
+                                    
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="username">Moderator Name</label>
+                                    <input type="text" id="userName" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="userEmail" value="">
+                                </div>
+
+                              <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="phone" id="userPhone" value="">
+                                </div>
+
+                                
+
+                                <div class="form-group">
+                                    <label for="notifications">Notifications</label>
+                                    <div class="switch-container">
+                                        <label class="switch">
+                                            <input type="checkbox" id="notifications" checked>
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <span>Enable notifications</span>
+                                    </div>
+                                </div>
+
+                                
+
+                                <div class="form-actions">
+                                    <button type="button" class="cancel-btn">Cancel</button>
+                                    <button type="submit" class="save-btn">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- MAIN CONTENT SECTIONS -->
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+    </section>
+    <!-- CONTENT -->
+
+    <script src="script.js"></script>
+     <script src="script2.js"></script>
+  <script type="module">
+  // Authentication check with loading state
+  
+      const isUserLoggedIn = getCookie('username');
+
+      
+
+      if (isUserLoggedIn) {
+        document.getElementById('userName').value = isUserLoggedIn;
+        document.getElementById('userEmail').value = getCookie('email');
+        document.getElementById('userPhone').value = getCookie('phone');
+        const backgroundImageUrl = getCookie('photo');
+        
+        // Set default profile photo if none exists
+        const profilePhoto = document.querySelector('.profile-photo');
+        profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        profilePhoto.onerror = function() {
+          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        };
+
+
+const profilePhoto2 = document.querySelector('.profile-photo2');
+        profilePhoto2.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        profilePhoto2.onerror = function() {
+          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        };
+        
+
+      } else {
+        
+      } 
+    </script>
+</body>
+</html>
