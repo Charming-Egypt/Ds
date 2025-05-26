@@ -489,7 +489,7 @@ function updateGuestChart() {
     }
 }
 
-// Update Tour Performance Chart
+
 // Update Tour Performance Chart
 function updateTourPerformanceChart() {
     try {
@@ -563,7 +563,7 @@ function updateTourPerformanceChart() {
                 axisLabel: {
                     formatter: function(value) {
                         return tourPerformanceMetric === 'bookings'
-                            ? Math.round(value)
+                            ? value
                             : 'EGP ' + value.toFixed(2);
                     }
                 }
