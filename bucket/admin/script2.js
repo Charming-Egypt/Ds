@@ -24,8 +24,7 @@ let filteredBookingData = [];
 let tourPerformanceMetric = 'bookings';
 let dateRangePicker;
 
-// DOM Elements
-const userRoleEl = document.getElementById('userRole');
+// DOM Element
 const userEmailEl = document.getElementById('userEmail');
 const userNameEl = document.getElementById('userName');
 
@@ -94,12 +93,7 @@ function getDateRangeLabel() {
 function initCharts() {
   
 
-  const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-    if (tourPerformanceDom) {
-        // Just prepare the DOM element, we'll initialize the chart in update function
-        tourPerformanceDom.style.width = '100%';
-        tourPerformanceDom.style.height = '400px';
-    }
+  
 
 
   
@@ -278,13 +272,15 @@ function initCharts() {
         });
     }
 
+
+  
     // Initialize Tour Performance Chart with ECharts
     const tourPerformanceDom = document.getElementById('tourPerformanceChart');
     if (tourPerformanceDom) {
         tourPerformanceChart = echarts.init(tourPerformanceDom);
         
-        window.addEventListener('resize', function() {
-            tourPerformanceChart.resize();
+        tourPerformanceDom.style.width = '100%';
+        tourPerformanceDom.style.height = '400px';
         });
     }
 }
