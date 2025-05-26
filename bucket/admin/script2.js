@@ -135,7 +135,7 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        bodyColor: '#f5f5f5',
+                        
                         borderColor: '#666',
                         borderWidth: 1,
                         callbacks: {
@@ -184,7 +184,7 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        bodyColor: '#f5f5f5',
+                        
                         borderColor: '#666',
                         borderWidth: 1,
                         mode: 'index',
@@ -199,7 +199,7 @@ function initCharts() {
                             drawBorder: false
                         },
                         ticks: {
-                            color: '#f5f5f5'
+                            
                         }
                     },
                     x: {
@@ -208,7 +208,7 @@ function initCharts() {
                             display: false
                         },
                         ticks: {
-                            color: '#f5f5f5'
+                            
                         }
                     }
                 }
@@ -248,7 +248,7 @@ function initCharts() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#f5f5f5',
+                            
                             usePointStyle: true,
                             padding: 20,
                             font: {
@@ -259,7 +259,7 @@ function initCharts() {
                     tooltip: {
                         backgroundColor: '#222',
                         titleColor: '#ffc107',
-                        bodyColor: '#f5f5f5',
+                        
                         borderColor: '#666',
                         borderWidth: 1,
                         callbacks: {
@@ -298,7 +298,7 @@ function initCharts() {
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 borderColor: '#ffc107',
                 textStyle: {
-                    color: '#f5f5f5'
+                    
                 }
             },
             grid: {
@@ -317,7 +317,7 @@ function initCharts() {
                     }
                 },
                 axisLabel: {
-                    color: '#f5f5f5',
+                    
                     rotate: 45,
                     fontSize: 12
                 },
@@ -333,7 +333,7 @@ function initCharts() {
                     }
                 },
                 axisLabel: {
-                    color: '#f5f5f5',
+                    
                     formatter: function(value) {
                         return tourPerformanceMetric === 'revenue' 
                             ? 'EGP ' + value.toLocaleString() 
@@ -367,7 +367,7 @@ function initCharts() {
                                 ? 'EGP ' + params.value.toLocaleString() 
                                 : params.value.toLocaleString();
                         },
-                        color: '#f5f5f5'
+                        
                     },
                     emphasis: {
                         itemStyle: {
