@@ -360,8 +360,13 @@ const tripManager = {
           
           <div class="mt-2 flex items-center justify-between">
             <div class="text-lg font-bold text-slate-800">${trip.price} EGP</div>
-            ${trip.owner === state.currentUser?.uid ? '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Your Trip</span>' : ''}
-          </div>
+            ${trip.owner === state.currentUser?.uid ? 
+  `<span class="text-xs ${trip.approved === true || trip.approved === 'true' ? 
+    'bg-emerald-100 text-emerald-800' : 
+    'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded-full">
+    ${trip.approved === true || trip.approved === 'true' ? 'Active' : 'Pending'}
+  </span>` : ''}
+              </div>
           
           ${actionButtons}
         </div>
