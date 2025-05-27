@@ -792,7 +792,7 @@ const setupEventListeners = () => {
   elements.cancelBtn.addEventListener('click', tripManager.showListSection);
   elements.logoutBtn.addEventListener('click', () => {
     auth.signOut().then(() => {
-      window.location.href = '/p/login.html';
+      window.location.href = 'https://www.discover-sharm.com/p/login.html';
     });
   });
   
