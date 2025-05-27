@@ -72,9 +72,8 @@ const elements = {
      addTourTypeBtn : document.getElementById('addTourTypeBtn'),
      mediaButtons : document.getElementById('mediaButtons'),
      emptyState : document.getElementById('emptyState'),
-     searchInput : document.getElementById('searchInput'),
-     categoryFilter : document.getElementById('categoryFilter'),
-     sortFilter : document.getElementById('sortFilter'),
+
+
   
   // Dashboard Elements
   totalBookings: document.getElementById('totalBookings'),
