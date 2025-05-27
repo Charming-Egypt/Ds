@@ -26,7 +26,6 @@ const elements = {
   price: document.getElementById('price'),
   duration: document.getElementById('duration'),
   category: document.getElementById('category'),
-  rating: document.getElementById('rating'),
   mainImage: document.getElementById('mainImage'),
   description: document.getElementById('description'),
   imageList: document.getElementById('imageList'),
@@ -48,7 +47,6 @@ const elements = {
   tripListSection: document.getElementById('tripListSection'),
   tripEditorSection: document.getElementById('tripEditorSection'),
   totalTrips: document.getElementById('totalTrips'),
-  topRated: document.getElementById('topRated'),
   pendingTrips: document.getElementById('pendingTrips'),
   userRole: document.getElementById('userRole'),
   userEmail: document.getElementById('userEmail'),
@@ -116,7 +114,6 @@ const utils = {
     if (isNaN(data.price) || data.price <= 0) errors.push('Price must be a positive number');
     if (!data.duration) errors.push('Duration is required');
     if (!data.category) errors.push('Category is required');
-    if (!data.rating || data.rating < 1 || data.rating > 5) errors.push('Rating must be between 1-5');
     if (!data.image) errors.push('Main image is required');
     return errors.length ? errors : null;
   }
@@ -252,7 +249,6 @@ const tripManager = {
   const pendingTrips = trips.filter(t => !t.approved || t.approved === 'false');
   
   elements.totalTrips.textContent = approvedTrips.length;
-  elements.topRated.textContent = approvedTrips.filter(t => t.rating >= 4).length;
   elements.pendingTrips.textContent = pendingTrips.length;
 },
 
@@ -322,12 +318,7 @@ const tripManager = {
       const card = document.createElement('div');
       card.className = `trip-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
       
-      // Rating stars
-      let stars = '';
-      const rating = trip.rating || 0;
-      for (let i = 1; i <= 5; i++) {
-        stars += i <= rating ? '<span class="rating-star">★</span>' : '<span class="empty-star">★</span>';
-      }
+      
       
       // Action buttons (only for users who can edit trips)
       const actionButtons = tripManager.canEditTrips() ? `
@@ -346,10 +337,7 @@ const tripManager = {
           ${trip.image ? `<img class="h-full w-full object-cover" src="${trip.image}" alt="${trip.name}" loading="lazy">` : ''}
           <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
             <h3 class="font-bold text-white">${trip.name}</h3>
-            <div class="flex items-center mt-1">
-              ${stars}
-              <span class="text-xs text-white/80 ml-1">(${rating})</span>
-            </div>
+            
           </div>
         </div>
         <div class="p-4">
@@ -420,7 +408,6 @@ const tripManager = {
     elements.price.value = tripData.price || '';
     elements.duration.value = tripData.duration || '';
     elements.category.value = tripData.category || '';
-    elements.rating.value = tripData.rating || '';
     elements.mainImage.value = tripData.image || '';
     elements.description.value = tripData.description || '';
     elements.editorTitle.textContent = `Edit ${tripData.name}`;
@@ -516,7 +503,6 @@ const tripManager = {
       price: parseFloat(utils.sanitizeInput(elements.price.value)),
       duration: utils.sanitizeInput(elements.duration.value),
       category: utils.sanitizeInput(elements.category.value),
-      rating: parseFloat(utils.sanitizeInput(elements.rating.value)),
       image: utils.sanitizeInput(elements.mainImage.value),
       description: utils.sanitizeInput(elements.description.value)
     };
