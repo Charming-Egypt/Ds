@@ -213,29 +213,18 @@ const tripManager = {
   showListSection: () => {
     elements.tripListSection.classList.remove('hidden');
     elements.tripEditorSection.classList.add('hidden');
-    elements.dashboardSection.classList.add('hidden');
     elements.tripListTab.classList.add('tab-active');
     elements.tripEditorTab.classList.remove('tab-active');
-    elements.dashboardTab.classList.remove('tab-active');
   },
 
   showEditorSection: () => {
     elements.tripListSection.classList.add('hidden');
     elements.tripEditorSection.classList.remove('hidden');
-    elements.dashboardSection.classList.add('hidden');
     elements.tripListTab.classList.remove('tab-active');
     elements.tripEditorTab.classList.add('tab-active');
-    elements.dashboardTab.classList.remove('tab-active');
   },
 
-  showDashboardSection: () => {
-    elements.tripListSection.classList.add('hidden');
-    elements.tripEditorSection.classList.add('hidden');
-    elements.dashboardSection.classList.remove('hidden');
-    elements.tripListTab.classList.remove('tab-active');
-    elements.tripEditorTab.classList.remove('tab-active');
-    elements.dashboardTab.classList.add('tab-active');
-  },
+  
 
   createArrayInput: (container, placeholder, value = '') => {
     const div = document.createElement('div');
@@ -1654,7 +1643,7 @@ const setupEventListeners = () => {
   // Tab switching
   if (elements.tripListTab) elements.tripListTab.addEventListener('click', tripManager.showListSection);
   if (elements.tripEditorTab) elements.tripEditorTab.addEventListener('click', tripManager.showEditorSection);
-  if (elements.dashboardTab) elements.dashboardTab.addEventListener('click', tripManager.showDashboardSection);
+  
   
   // Dashboard event listeners
   // Period filter buttons
