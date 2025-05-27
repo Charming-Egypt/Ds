@@ -23,50 +23,56 @@ let tourPerformanceMetric = 'bookings';
 let dateRangePicker;
 
 // DOM Elements
-const elements = {
-  // Trip Management Elements
-  tripList: document.getElementById('tripList'),
-  tripForm: document.getElementById('tripForm'),
-  editorTitle: document.getElementById('editorTitle'),
-  tripId: document.getElementById('tripId'),
-  ownerId: document.getElementById('ownerId'),
-  name: document.getElementById('name'),
-  bookingLink: document.getElementById('bookingLink'),
-  price: document.getElementById('price'),
-  duration: document.getElementById('duration'),
-  category: document.getElementById('category'),
-  mainImage: document.getElementById('mainImage'),
-  description: document.getElementById('description'),
-  imageList: document.getElementById('imageList'),
-  videoList: document.getElementById('videoList'),
-  includedList: document.getElementById('includedList'),
-  notIncludedList: document.getElementById('notIncludedList'),
-  timelineList: document.getElementById('timelineList'),
-  whatToBringList: document.getElementById('whatToBringList'),
-  tourTypeList: document.getElementById('tourTypeList'),
-  saveBtn: document.getElementById('saveBtn'),
-  cancelBtn: document.getElementById('cancelBtn'),
-  deleteBtn: document.getElementById('deleteBtn'),
-  newTripBtn: document.getElementById('newTripBtn'),
-  emptyStateNewTripBtn: document.getElementById('emptyStateNewTripBtn'),
-  logoutBtn: document.getElementById('logoutBtn'),
-  spinner: document.getElementById('spinner'),
-  tripListTab: document.getElementById('tripListTab'),
-  tripEditorTab: document.getElementById('tripEditorTab'),
-  tripListSection: document.getElementById('tripListSection'),
-  tripEditorSection: document.getElementById('tripEditorSection'),
-  totalTrips: document.getElementById('totalTrips'),
-  pendingTrips: document.getElementById('pendingTrips'),
-  userRole: document.getElementById('userRole'),
-  userEmail: document.getElementById('userEmail'),
-  addImageBtn: document.getElementById('addImageBtn'),
-  addVideoBtn: document.getElementById('addVideoBtn'),
-  addIncludedBtn: document.getElementById('addIncludedBtn'),
-  addNotIncludedBtn: document.getElementById('addNotIncludedBtn'),
-  addTimelineBtn: document.getElementById('addTimelineBtn'),
-  addWhatToBringBtn: document.getElementById('addWhatToBringBtn'),
-  addTourTypeBtn: document.getElementById('addTourTypeBtn'),
-  emptyState: document.getElementById('emptyState'),
+const tripList = document.getElementById('tripList');
+    const tripForm = document.getElementById('tripForm');
+    const editorTitle = document.getElementById('editorTitle');
+    const tripIdInput = document.getElementById('tripId');
+    const ownerIdInput = document.getElementById('ownerId');
+    const nameInput = document.getElementById('name');
+    const bookingLinkInput = document.getElementById('bookingLink');
+    const priceInput = document.getElementById('price');
+    const durationInput = document.getElementById('duration');
+    const categoryInput = document.getElementById('category');
+    const ratingInput = document.getElementById('rating');
+    const mainImageInput = document.getElementById('mainImage');
+    const descriptionInput = document.getElementById('description');
+    const imageList = document.getElementById('imageList');
+    const videoList = document.getElementById('videoList');
+    const includedList = document.getElementById('includedList');
+    const notIncludedList = document.getElementById('notIncludedList');
+    const timelineList = document.getElementById('timelineList');
+    const whatToBringList = document.getElementById('whatToBringList');
+    const tourTypeList = document.getElementById('tourTypeList');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const newTripBtn = document.getElementById('newTripBtn');
+    const mobileNewTripBtn = document.getElementById('mobileNewTripBtn');
+    const emptyStateNewTripBtn = document.getElementById('emptyStateNewTripBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const spinner = document.getElementById('spinner');
+    const tripListTab = document.getElementById('tripListTab');
+    const tripEditorTab = document.getElementById('tripEditorTab');
+    const analyticsTab = document.getElementById('analyticsTab');
+    const tripListSection = document.getElementById('tripListSection');
+    const tripEditorSection = document.getElementById('tripEditorSection');
+    const totalTripsEl = document.getElementById('totalTrips');
+    const topRatedEl = document.getElementById('topRated');
+    const pendingTripsEl = document.getElementById('pendingTrips');
+    const userRoleEl = document.getElementById('userRole');
+    const userEmailEl = document.getElementById('userEmail');
+    const addImageBtn = document.getElementById('addImageBtn');
+    const addVideoBtn = document.getElementById('addVideoBtn');
+    const addIncludedBtn = document.getElementById('addIncludedBtn');
+    const addNotIncludedBtn = document.getElementById('addNotIncludedBtn');
+    const addTimelineBtn = document.getElementById('addTimelineBtn');
+    const addWhatToBringBtn = document.getElementById('addWhatToBringBtn');
+    const addTourTypeBtn = document.getElementById('addTourTypeBtn');
+    const mediaButtons = document.getElementById('mediaButtons');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
   
   // Dashboard Elements
   totalBookings: document.getElementById('totalBookings'),
