@@ -81,7 +81,7 @@ const utils = {
   showToast: (message, type = 'success') => {
     const toast = document.createElement('div');
     toast.className = `fixed bottom-4 right-4 bg-${type === 'success' ? 'green' : type === 'error' ? 'red' : 'yellow'}-500 text-white px-4 py-2 rounded shadow-lg flex items-center`;
-    toast.innerHTML = `
+        toast.innerHTML = `
       <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} mr-2"></i>
       <span>${message}</span>
     `;
