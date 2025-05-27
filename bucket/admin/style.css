@@ -395,9 +395,7 @@ body {
     margin-bottom: 24px;
     gap: 10px;
     scrollbar-width: none;
-  
 }
-
 .filter-bar::-webkit-scrollbar {
     display: none;
 }
@@ -1103,24 +1101,7 @@ input:checked + .slider:before {
       cursor: not-allowed;
     }
     
-    .floating-btn {
-      position: fixed;
-      bottom: 70px;
-      right: 10px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-      z-index: 50;
-      transition: all 0.3s;
-    }
     
-    .floating-btn:hover {
-      transform: translateY(-2px) scale(1.05);
-    }
     
     .stat-card {
       transition: all 0.3s;
