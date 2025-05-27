@@ -648,16 +648,17 @@ function initApp() {
       state.currentUser = user;
       tripManager.loadUserRole(user.uid).then(() => {
         tripManager.loadTripList();
-        initCharts();
+        setupEventListeners();
         initDateRangePicker();
         setupFilterButtons();
+        initEventListeners();
         loadBookingData();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
     }
   });
-}
+};
 
 // Start the app when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
