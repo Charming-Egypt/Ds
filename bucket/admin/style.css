@@ -1416,3 +1416,234 @@ body.dark {
 .card-header {
   @apply px-4 md:px-6 py-4 border-b border-slate-200 flex justify-between items-center;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        .glass-card {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+      .status-badge2 , .status-badge {
+            padding: 0.15rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+      .status-badge {
+            width:100px;
+        }
+        
+        .status-new {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+        }
+        
+        .status-confirmed {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        
+        .status-cancelled {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+      
+      .status-noshow {
+            background-color: rgba(254, 238, 46, 0.2);
+            color: #ffc107;
+        }
+        
+        .responsive-table {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            background: #ffa107;
+            color: white;
+        }
+
+        /* Custom Flatpickr Styles */
+        .flatpickr-calendar { 
+            background-color: #222 !important; 
+            color: #ffc107 !important; 
+            border-radius: 0.625rem !important; 
+            border: 1px solid #333 !important; 
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; 
+        }
+        .flatpickr-day { 
+            color: #fff !important; 
+            background-color: #333 !important; 
+            border-radius: 0.5rem !important; 
+        }
+        .flatpickr-day.selected { 
+            background-color: #ffc107 !important; 
+            color: #111 !important; 
+        }
+        .flatpickr-day.enabled {
+            color: #ffc107 !important;
+        }
+        .flatpickr-day:hover { 
+            background-color: #444 !important; 
+            color: #ffc107 !important; 
+        }
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay { 
+            color: #666 !important; 
+        }
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month { 
+            color: #ffc207 !important; 
+        }
+        .flatpickr-months .flatpickr-month { 
+            color: #ffc107 !important; 
+            background-color: #222 !important; 
+            border-radius: 0.5rem !important; 
+        }
+        .flatpickr-months .flatpickr-prev-month svg,
+        .flatpickr-months .flatpickr-next-month svg { 
+            fill: #ffc107 !important; 
+        }
+        .flatpickr-weekday { 
+            color: #ffc207 !important; 
+        }
+        .flatpickr-day.today.flatpickr-disabled {
+             background-color: #333 !important;
+             color: #444 !important;
+             border: 1px solid #E64A19 !important;
+        }
+        .flatpickr-day.today.selected {
+             background-color: #ffa107 !important;
+             color: #444 !important;
+        }
+        .flatpickr-day.disabled {
+            color: #444 !important;
+        }
+      
+        input[readonly] { background-color: #444; cursor: default; }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            left: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            max-width: calc(100% - 2rem);
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+        .toast.success {
+            border-left: 4px solid #10B981;
+        }
+        .toast.error {
+            border-left: 4px solid #EF4444;
+        }
+        .toast.warning {
+            border-left: 4px solid #F59E0B;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (min-width: 640px) {
+            .toast {
+                left: auto;
+                max-width: 350px;
+            }
+            
+            .glass-card {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Table cell styles for mobile */
+        .table-cell {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        
+        /* Hide less important columns on mobile */
+        @media (max-width: 767px) {
+            .mobile-hidden {
+                display: none;
+            }
+        }
+        
+        /* Action button styles */
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Stats card adjustments */
+        .stat-card {
+            padding: 1rem;
+        }
+        
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        /* Modal adjustments for mobile */
+        .modal-content {
+            width: 95%;
+            max-height: 85vh;
+        }
+        
+        /* Dropdown menu adjustments */
+        .dropdown-content {
+            min-width: 12rem;
+        }
+        
+        /* Search and filter bar adjustments */
+        .filter-bar {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        @media (min-width: 640px) {
+            .filter-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    
