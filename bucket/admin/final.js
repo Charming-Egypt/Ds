@@ -24,8 +24,9 @@ let dateRangePicker;
 
 // DOM Elements
 const elements = {
-    tripList = document.getElementById('tripList'),
-    tripForm = document.getElementById('tripForm'),
+  // Trip Management Elements
+  tripList: document.getElementById('tripList'),
+     tripForm = document.getElementById('tripForm'),
      editorTitle = document.getElementById('editorTitle'),
      tripIdInput = document.getElementById('tripId'),
      ownerIdInput = document.getElementById('ownerId'),
