@@ -720,7 +720,7 @@ const tripManager = {
       const tourTypeDivs = elements.tourTypeList.querySelectorAll('.array-item');
       tourTypeDivs.forEach(div => {
         const key = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-        const value = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
+        const value = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(2)').value));
         
         if (key && !isNaN(value)) {
           tripData.tourtype[key] = value;
