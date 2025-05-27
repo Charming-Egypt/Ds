@@ -114,18 +114,17 @@ const utils = {
   },
 
   validateTripData: (data) => {
-  const errors = [];
-  if (!data.name || data.name.length < 5) errors.push('Name must be at least 5 characters');
-  if (isNaN(data.price) || data.price <= 0) errors.push('Price must be a positive number');
-  if (!data.duration) errors.push('Duration is required');
-  if (!data.category) errors.push('Category is required');
-  if (!data.rating || data.rating < 1 || data.rating > 5) errors.push('Rating must be between 1-5');
-  if (!data.image) errors.push('Main image is required');
-  return errors.length ? errors : null;
-}
+    const errors = [];
+    if (!data.name || data.name.length < 5) errors.push('Name must be at least 5 characters');
+    if (isNaN(data.price) || data.price <= 0) errors.push('Price must be a positive number');
+    if (!data.duration) errors.push('Duration is required');
+    if (!data.category) errors.push('Category is required');
+    if (!data.rating || data.rating < 1 || data.rating > 5) errors.push('Rating must be between 1-5');
+    if (!data.image) errors.push('Main image is required');
+    return errors.length ? errors : null;
+  }
+};
 
-
-    
 // Trip Management Functions
 const tripManager = {
   resetForm: () => {
@@ -648,7 +647,7 @@ const tripManager = {
     const tourTypeDivs = elements.tourTypeList.querySelectorAll('.array-item');
     tourTypeDivs.forEach(div => {
       const key = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const value = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
+      const value = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(2)').value));
       
       if (key && !isNaN(value)) {
         tripData.tourtype[key] = value;
@@ -865,4 +864,4 @@ const initApp = () => {
 };
 
 // Start the app
-initApp(); 
+initApp();
