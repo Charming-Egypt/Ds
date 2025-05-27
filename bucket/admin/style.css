@@ -395,7 +395,7 @@ body {
     margin-bottom: 24px;
     gap: 10px;
     scrollbar-width: none;
-  white-space: nowrap;
+  
 }
 
 .filter-bar::-webkit-scrollbar {
