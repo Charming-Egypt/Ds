@@ -23,7 +23,8 @@ let tourPerformanceMetric = 'bookings';
 let dateRangePicker;
 
 // DOM Elements
-const tripList = document.getElementById('tripList');
+const elements = {
+    tripList = document.getElementById('tripList');
     tripForm = document.getElementById('tripForm');
      editorTitle = document.getElementById('editorTitle');
      tripIdInput = document.getElementById('tripId');
