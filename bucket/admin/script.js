@@ -65,15 +65,7 @@ window.addEventListener('resize', function () {
 
 
 
-const switchMode = document.getElementById('switch-mode');
 
-switchMode.addEventListener('change', function () {
-	if(this.checked) {
-		document.body.classList.add('dark');
-	} else {
-		document.body.classList.remove('dark');
-	}
-})
 
 
 
@@ -215,67 +207,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-function loadReservations(userId) {
-  const tbody = document.getElementById("reservations-list");
-  const emptyState = document.getElementById("emptyReservations");
-  tbody.innerHTML = ""; // Clear existing rows
 
-  firebase.database().ref(`trip-bookings`)
-    .orderByChild("uid")
-    .equalTo(userId)
-    .on("value", (snapshot) => {
-      if (!snapshot.exists()) {
-        emptyState.classList.remove("hidden");
-        return;
-      }
-      emptyState.classList.add("hidden");
-
-      snapshot.forEach((childSnapshot) => {
-        const res = childSnapshot.val();
-        const bookingId = childSnapshot.key;
-
-        const statusClass = res.status === "confirmed"
-          ? "bg-green-100 text-green-800"
-          : res.status === "pending"
-          ? "bg-yellow-100 text-yellow-800"
-          : "bg-red-100 text-red-800";
-
-        const paymentClass = res.paymentStatus === "paid"
-          ? "bg-blue-100 text-blue-800"
-          : "bg-gray-100 text-gray-800";
-
-        const row = `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="px-4 py-3">${bookingId || "-"}</td>
-            <td class="px-4 py-3">${res.username || "-"}</td>
-            <td class="px-4 py-3">${res.tripDate || "-"}</td>
-            <td class="px-4 py-3">${res.adults || 0} Adult(s)<br><span class="text-xs text-gray-500">${res.childrenUnder12 || 0} Children</span></td>
-            <td class="px-4 py-3">EGP ${(parseFloat(res.total) || 0).toFixed(2)}</td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
-                ${capitalizeFirstLetter(res.status || "N/A")}
-              </span>
-            </td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${paymentClass}">
-                ${capitalizeFirstLetter(res.paymentStatus || "Pending")}
-              </span>
-            </td>
-            <td class="px-4 py-3 space-x-2">
-              <button onclick="viewReservation('${bookingId}')" class="text-blue-600 hover:underline">View</button>
-            </td>
-          </tr>
-        `;
-        tbody.innerHTML += row;
-      });
-    });
-}
-
-// Helper function
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function viewReservation(id) {
-  alert("Viewing reservation: " + id);
-}
