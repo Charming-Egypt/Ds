@@ -247,11 +247,14 @@ const tripManager = {
   },
 
   updateDashboardStats: () => {
-    const trips = Object.values(state.allTrips).filter(t => t.owner === state.currentUser?.uid);
-    elements.totalTrips.textContent = trips.length;
-    elements.topRated.textContent = trips.filter(t => t.rating >= 4).length;
-    elements.pendingTrips.textContent = trips.filter(t => t.approved === 'false').length;
-  },
+  const trips = Object.values(state.allTrips).filter(t => t.owner === state.currentUser?.uid);
+  const approvedTrips = trips.filter(t => t.approved === true || t.approved === 'true');
+  const pendingTrips = trips.filter(t => !t.approved || t.approved === 'false');
+  
+  elements.totalTrips.textContent = approvedTrips.length;
+  elements.topRated.textContent = approvedTrips.filter(t => t.rating >= 4).length;
+  elements.pendingTrips.textContent = pendingTrips.length;
+},
 
   canEditTrips: () => {
     return state.currentUserRole === 'admin' || state.currentUserRole === 'moderator';
