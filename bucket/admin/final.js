@@ -1,4 +1,3 @@
-```javascript
 // Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
@@ -68,11 +67,9 @@ const state = {
   currentUser: null,
   currentUserRole: null,
   allTrips: {},
-  allBookings: {},
   currentPage: 1,
   tripsPerPage: 10,
   tripsCache: null,
-  bookingsCache: null,
   lastFetchTime: 0
 };
 
@@ -80,14 +77,17 @@ const state = {
 const utils = {
   showToast: (message, type = 'success') => {
     const toast = document.createElement('div');
-    toast.className = `fixed bottom-4 right-4 bg-${type === 'success' ? 'green' : type === 'error' ? 'red' : 'yellow'}-500 text-white px-4 py-2 rounded shadow-lg flex items-center`;
-        toast.innerHTML = `
-      <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} mr-2"></i>
-      <span>${message}</span>
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <div class="flex items-center">
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'} mr-2"></i>
+        <span>${message}</span>
+      </div>
     `;
     document.body.appendChild(toast);
+    
     setTimeout(() => {
-      toast.style.opacity = '0';
+      toast.style.animation = 'fadeIn 0.3s reverse';
       setTimeout(() => toast.remove(), 300);
     }, 4000);
   },
@@ -103,12 +103,11 @@ const utils = {
   },
 
   sanitizeInput: (input) => {
-    if (typeof input !== 'string') return input;
     return input.trim()
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
+      .replace(/'/g, '&#39;');
   },
 
   validateTripData: (data) => {
@@ -118,12 +117,8 @@ const utils = {
     if (!data.duration) errors.push('Duration is required');
     if (!data.category) errors.push('Category is required');
     if (!data.rating || data.rating < 1 || data.rating > 5) errors.push('Rating must be between 1-5');
-    if (!data.image) errors.push('Main image URL is required');
-    return errors.length ? errors.join(', ') : null;
-  },
-
-  generateBookingLink: (name) => {
-    return name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    if (!data.image) errors.push('Main image is required');
+    return errors.length ? errors : null;
   }
 };
 
@@ -134,363 +129,391 @@ const tripManager = {
     elements.tripId.value = '';
     elements.ownerId.value = '';
     elements.bookingLink.value = '';
-    elements.editorTitle.textContent = 'Add New Trip';
+    elements.editorTitle.textContent = 'Create New Trip';
     elements.deleteBtn.classList.add('hidden');
+    
+    // Clear all dynamic lists
     elements.imageList.innerHTML = '';
-    elements.videoList.innerHTML = [];
-    elements.includedList.innerHTML = [];
-    elements.notIncludedList.innerHTML = [];
-    elements.timelineList.innerHTML = [];
-    elements.whatToBringList.innerHTML = [];
-    elements.tourTypeList.innerHTML = [];
+    elements.videoList.innerHTML = '';
+    elements.includedList.innerHTML = '';
+    elements.notIncludedList.innerHTML = '';
+    elements.timelineList.innerHTML = '';
+    elements.whatToBringList.innerHTML = '';
+    elements.tourTypeList.innerHTML = '';
   },
 
   showListSection: () => {
     elements.tripListSection.classList.remove('hidden');
     elements.tripEditorSection.classList.add('hidden');
-    elements.tripListTab.classList.add('tab-active', 'text-blue-600');
-    elements.tripEditorTab.classList.remove('tab-active', 'text-blue-600');
+    elements.tripListTab.classList.add('tab-active');
+    elements.tripEditorTab.classList.remove('tab-active');
   },
 
   showEditorSection: () => {
     elements.tripListSection.classList.add('hidden');
     elements.tripEditorSection.classList.remove('hidden');
-    elements.tripListTab.classList.remove('tab-active', 'text-blue-600');
-    elements.tripEditorTab.classList.add('tab-active', 'text-blue-600');
+    elements.tripListTab.classList.remove('tab-active');
+    elements.tripEditorTab.classList.add('tab-active');
   },
 
-  createArrayItem: (container, placeholder, value = '') => {
+  createArrayInput: (container, placeholder, value = '') => {
     const div = document.createElement('div');
-    div.className = 'flex items-center space-x-2 mb-2';
+    div.className = 'array-item';
+    
     const input = document.createElement('input');
     input.type = 'text';
-    input.className = 'flex-1 p-2 border rounded text-sm focus:ring-2 focus:ring-amber-500';
+    input.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     input.placeholder = placeholder;
-    input.value = utils.sanitize(value);
+    input.value = value;
+    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'text-red-500 hover:text-red-700';
-    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    removeBtn.onclick = () => div.remove();
+    removeBtn.className = 'remove-item';
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.addEventListener('click', () => div.remove());
+    
     div.appendChild(input);
     div.appendChild(removeBtn);
     container.appendChild(div);
+    
     return input;
   },
 
-  createTimelineItem: (data = { time: '', title: '', description: '' }) => {
+  createTimelineInput: (container, timelineItem = { time: '', title: '', description: '' }) => {
     const div = document.createElement('div');
-    div.className = 'space-y-2 mb-4 p-4 bg-gray-50 rounded border';
-    const inputs = ['time', 'title', 'description'].map((field) => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'w-full p-2 border rounded text-sm focus:ring-2 focus:ring-amber-500';
-      input.placeholder = field.charAt(0).toUpperCase() + field.slice(1);
-      input.value = utils.sanitize(data[field] || '');
-      div.appendChild(input);
-      return input;
-    });
+    div.className = 'array-item';
+    
+    const timeInput = document.createElement('input');
+    timeInput.type = 'text';
+    timeInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+    timeInput.placeholder = 'Time (e.g., 09:00 AM)';
+    timeInput.value = timelineItem.time || '';
+    
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+    titleInput.placeholder = 'Title';
+    titleInput.value = timelineItem.title || '';
+    
+    const descInput = document.createElement('input');
+    descInput.type = 'text';
+    descInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+    descInput.placeholder = 'Description';
+    descInput.value = timelineItem.description || '';
+    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'text-red-500 hover:text-red-700';
-    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    removeBtn.onclick = () => div.remove();
+    removeBtn.className = 'remove-item';
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.addEventListener('click', () => div.remove());
+    
+    div.appendChild(timeInput);
+    div.appendChild(titleInput);
+    div.appendChild(descInput);
     div.appendChild(removeBtn);
-    elements.timelineList.appendChild(div);
-    return { time: inputs[0], title: inputs[1], description: inputs[2] };
+    container.appendChild(div);
+    
+    return { timeInput, titleInput, descInput };
   },
 
-  createTourTypeItem: (key = '', value = '') => {
+  createTourTypeInput: (container, key = '', value = '') => {
     const div = document.createElement('div');
-    div.className = 'flex items-center space-x-2 mb-2';
+    div.className = 'array-item grid grid-cols-5 gap-2 items-center';
+    
     const keyInput = document.createElement('input');
     keyInput.type = 'text';
-    keyInput.className = 'flex-1 p-2 border rounded text-sm focus:ring-2 focus:ring-amber-500';
+    keyInput.className = 'col-span-3 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     keyInput.placeholder = 'Service Name';
-    keyInput.value = utils.sanitize(key);
+    keyInput.value = key || '';
+    
     const valueInput = document.createElement('input');
     valueInput.type = 'number';
-    valueInput.className = 'w-1/3 p-2 border rounded text-sm focus:ring-2 focus:ring-amber-500';
+    valueInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     valueInput.placeholder = 'Price';
-    valueInput.value = value;
+    valueInput.value = value || '';
+    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'text-red-500 hover:text-red-700';
-    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
-    removeBtn.onclick = () => div.remove();
+    removeBtn.className = 'remove-item';
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.addEventListener('click', () => div.remove());
+    
     div.appendChild(keyInput);
     div.appendChild(valueInput);
     div.appendChild(removeBtn);
-    elements.tourTypeList.appendChild(div);
-    return { key: keyInput, value: valueInput };
+    container.appendChild(div);
+    
+    return { keyInput, valueInput };
   },
 
   updateDashboardStats: () => {
-    const trips = Object.values(state.allTrips).filter(t => t.owner === state.currentUser?.uid);
-    const approvedTrips = trips.filter(t => t.approved === true);
-    const pendingTrips = trips.filter(t => t.approved === false);
-    elements.totalTrips.textContent = approvedTrips.length;
-    elements.topRated.textContent = approvedTrips.filter(t => t.rating >= 4).length;
-    elements.pendingTrips.textContent = pendingTrips.length;
-  },
+  const trips = Object.values(state.allTrips).filter(t => t.owner === state.currentUser?.uid);
+  const approvedTrips = trips.filter(t => t.approved === true || t.approved === 'true');
+  const pendingTrips = trips.filter(t => !t.approved || t.approved === 'false');
+  
+  elements.totalTrips.textContent = approvedTrips.length;
+  elements.topRated.textContent = approvedTrips.filter(t => t.rating >= 4).length;
+  elements.pendingTrips.textContent = pendingTrips.length;
+},
 
   canEditTrips: () => {
     return state.currentUserRole === 'admin' || state.currentUserRole === 'moderator';
   },
 
-  canEditTrip: (ownerId) => {
-    return state.currentUserRole === 'admin' || (state.currentUserRole === 'moderator' && ownerId === state.currentUser.uid);
+  canEditTrip: (tripOwnerId) => {
+    return state.currentUserRole === 'admin' || (state.currentUserRole === 'moderator' && tripOwnerId === state.currentUser.uid);
   },
 
-  loadUserRole: () => {
-    return database.ref(`egy_user/${state.currentUser.uid}`).once('value').then(snapshot => {
+  loadUserRole: (userId) => {
+    return database.ref('egy_user/' + userId).once('value').then(snapshot => {
       const userData = snapshot.val();
       state.currentUserRole = userData?.role || 'user';
-      elements.userRole.textContent = state.currentUserRole.charAt(0).toUpperCase() + state.currentUserRole.slice(1);
-      elements.userRole.className = `px-2 py-1 rounded-full text-xs font-medium bg-${state.currentUserRole === 'admin' ? 'blue' : 'green'}-100 text-${state.currentUserRole === 'admin' ? 'blue' : 'green'}-800`;
-      elements.userEmail.value = state.currentUser.email || '';
-    }).catch(() => {
-      utils.showToast('Failed to load user role', 'error');
+      elements.userRole.textContent = state.currentUserRole;
+      elements.userRole.className = 'role-badge ' + (
+        state.currentUserRole === 'admin' ? 'role-admin' : 
+        state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+      );
+      elements.userEmail.textContent = state.currentUser.email;
+      
+      // Show/hide new trip button based on role
+      if (tripManager.canEditTrips()) {
+        elements.newTripBtn.classList.remove('hidden');
+        elements.emptyStateNewTripBtn.classList.remove('hidden');
+      }
     });
   },
 
-  loadTripsAndBookings: () => {
-    Promise.all([
-      database.ref('trips').once('value').then(s => s.val() || {}),
-      database.ref('trip-bookings').once('value').then(s => s.val() || {})
-    ]).then(([trips, bookings]) => {
-      state.allTrips = trips;
-      state.allBookings = bookings;
-      state.tripsCache = Object.entries(trips).map(([id, trip]) => ({ id, ...trip }));
-      state.bookingsCache = Object.entries(bookings).map(([id, booking]) => ({ id, ...booking }));
-      state.lastFetchTime = Date.now();
+  loadTripList: (forceRefresh = false) => {
+    // Check cache first if not forcing refresh
+    if (!forceRefresh && state.tripsCache && Date.now() - state.lastFetchTime < 300000) {
+      tripManager.renderTrips(state.tripsCache);
+      return;
+    }
 
-      const userTrips = state.tripsCache.filter(trip => trip.owner === state.currentUser.uid);
-      elements.emptyState.classList.toggle('hidden', userTrips.length > 0);
-      tripManager.renderTrips(userTrips);
+    database.ref('trips').once('value').then(snapshot => {
+      state.allTrips = snapshot.val() || {};
+      state.tripsCache = Object.values(state.allTrips);
+      state.lastFetchTime = Date.now();
+      
+      // Filter trips to only show those owned by current moderator
+      let tripsArray = Object.entries(state.allTrips)
+        .filter(([_, trip]) => trip.owner === state.currentUser?.uid)
+        .map(([id, trip]) => ({ id, ...trip }));
+      
+      if (tripsArray.length === 0) {
+        elements.emptyState.classList.remove('hidden');
+        return;
+      } else {
+        elements.emptyState.classList.add('hidden');
+      }
+      
+      tripManager.renderTrips(tripsArray);
       tripManager.updateDashboardStats();
     }).catch(error => {
-      utils.showToast(`Failed to load data: ${error.message}`, 'error');
+      utils.showToast('Failed to load trips: ' + error.message, 'error');
     });
   },
 
   renderTrips: (trips) => {
     elements.tripList.innerHTML = '';
+    
     trips.forEach(({ id, ...trip }) => {
-      const bookings = state.bookingsCache.filter(b => b.tour === trip.name);
+      const canEdit = tripManager.canEditTrip(trip.owner);
       const card = document.createElement('div');
-      card.className = 'bg-white p-4 rounded-lg shadow-md';
+      card.className = `trip-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
+      
+      // Rating stars
+      let stars = '';
+      const rating = trip.rating || 0;
+      for (let i = 1; i <= 5; i++) {
+        stars += i <= rating ? '<span class="rating-star">★</span>' : '<span class="empty-star">★</span>';
+      }
+      
+      // Action buttons (only for users who can edit trips)
+      const actionButtons = tripManager.canEditTrips() ? `
+        <div class="flex justify-end mt-4 space-x-2">
+          <button class="text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
+            <i class="fas fa-edit mr-1"></i> Edit
+          </button>
+          <button class="text-xs bg-gradient-to-r from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 px-3 py-1.5 rounded-full delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
+            <i class="fas fa-trash mr-1"></i> Delete
+          </button>
+        </div>
+      ` : '';
+      
       card.innerHTML = `
-        <img src="${trip.image || 'https://via.placeholder.com/150'}" alt="${trip.name}" class="w-full h-48 object-cover rounded-t-lg">
-        <div class="p-4">
-          <h3 class="text-lg font-semibold">${trip.name}</h3>
-          <p class="text-sm text-gray-600">${trip.category} | ${trip.duration}</p>
-          <p class="text-lg font-bold text-amber-600">${trip.price} EGP</p>
-          <p class="text-sm">Status: <span class="text-${trip.approved ? 'green' : 'yellow'}-600">${trip.approved ? 'Approved' : 'Pending'}</span></p>
-          <p class="text-sm">Bookings: ${bookings.length}</p>
-          <div class="mt-4 space-x-2">
-            <button class="view-bookings bg-blue-500 text-white px-3 py-1 rounded" data-id="${id}">View Bookings</button>
-            ${tripManager.canEditTrip(trip.owner) ? `
-              <button class="edit-trip bg-amber-500 text-white px-3 py-1 rounded" data-id="${id}">Edit</button>
-              <button class="delete-trip bg-red-500 text-white px-3 py-1 rounded" data-id="${id}">Delete</button>
-            ` : ''}
+        <div class="h-48 bg-slate-200 relative overflow-hidden">
+          ${trip.image ? `<img class="h-full w-full object-cover" src="${trip.image}" alt="${trip.name}" loading="lazy">` : ''}
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+            <h3 class="font-bold text-white">${trip.name}</h3>
+            <div class="flex items-center mt-1">
+              ${stars}
+              <span class="text-xs text-white/80 ml-1">(${rating})</span>
+            </div>
           </div>
         </div>
+        <div class="p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center text-sm text-slate-500">
+              <i class="fas fa-clock mr-1"></i>
+              <span>${trip.duration}</span>
+            </div>
+            <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">${trip.category}</span>
+          </div>
+          
+          <div class="mt-2 flex items-center justify-between">
+            <div class="text-lg font-bold text-slate-800">${trip.price} EGP</div>
+            ${trip.owner === state.currentUser?.uid ? 
+  `<span class="text-xs ${trip.approved === true || trip.approved === 'true' ? 
+    'bg-emerald-100 text-emerald-800' : 
+    'bg-amber-100 text-amber-800'} px-2 py-0.5 rounded-full">
+    ${trip.approved === true || trip.approved === 'true' ? 'Active' : 'Pending'}
+  </span>` : ''}
+              </div>
+          
+          ${actionButtons}
+        </div>
       `;
+      
+      // Add event listeners for edit/delete if user can edit trips
+      if (tripManager.canEditTrips()) {
+        const editBtn = card.querySelector('.edit-btn');
+        const deleteBtn = card.querySelector('.delete-btn');
+        
+        if (editBtn && !editBtn.disabled) {
+          editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tripManager.loadTripForEditing(id, trip);
+            tripManager.showEditorSection();
+          });
+        }
+        
+        if (deleteBtn && !deleteBtn.disabled) {
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm(`Are you sure you want to delete "${trip.name}"?`)) {
+              tripManager.deleteTrip(id);
+            }
+          });
+        }
+      }
+      
       elements.tripList.appendChild(card);
-
-      card.querySelector('.view-bookings')?.addEventListener('click', () => tripManager.showBookings(id, trip.name));
-      card.querySelector('.edit-trip')?.addEventListener('click', () => {
-        tripManager.loadTripForEditing(id, trip);
-        tripManager.showEditorSection();
-      });
-      card.querySelector('.delete-trip')?.addEventListener('click', () => {
-        if (confirm(`Delete ${trip.name}?`)) tripManager.deleteTrip(id);
-      });
     });
   },
 
-  showBookings: (tripId, tripName) => {
-    const bookings = state.bookingsCache.filter(b => b.tour === tripName);
-    elements.tripList.innerHTML = `
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-bold mb-4">Bookings for ${tripName}</h2>
-        <button class="back-to-trips bg-gray-500 text-white px-4 py-2 rounded mb-4">Back to Trips</button>
-        ${bookings.length === 0 ? '<p>No bookings found.</p>' : `
-          <table class="w-full text-sm">
-            <thead><tr class="bg-gray-100"><th class="p-2">ID</th><th class="p-2">Customer</th><th class="p-2">Date</th><th class="p-2">Total</th><th class="p-2">Status</th></tr></thead>
-            <tbody>${bookings.map(b => `
-              <tr>
-                <td class="p-2">${b.refNumber}</td>
-                <td class="p-2">${b.email}</td>
-                <td class="p-2">${b.tripDate}</td>
-                <td class="p-2">${b.total} ${b.currency}</td>
-                <td class="p-2">${b.resStatus}</td>
-              </tr>
-            `).join('')}</tbody>
-          </table>
-        `}
-      </div>
-    `;
-    elements.tripList.querySelector('.back-to-trips').addEventListener('click', () => tripManager.loadTripsAndBookings());
-  },
-
-  loadTripForEditing: (tripId, trip) => {
-    if (!tripManager.canEditTrip(trip.owner)) {
-      utils.showToast('No permission to edit this trip', 'error');
+  loadTripForEditing: (tripId, tripData) => {
+    tripManager.resetForm();
+    
+    // Check if user can edit this trip
+    if (!tripManager.canEditTrip(tripData.owner)) {
+      utils.showToast('You do not have permission to edit this trip', 'error');
+      tripManager.showListSection();
       return;
     }
-    tripManager.resetForm();
+    
+    // Set basic info
     elements.tripId.value = tripId;
-    elements.ownerId.value = trip.owner || state.currentUser.uid;
-    elements.name.value = trip.name || '';
-    elements.bookingLink.value = trip.bookingLink || utils.generateBookingLink(trip.name);
-    elements.price.value = trip.price || '';
-    elements.duration.value = trip.duration || '';
-    elements.category.value = trip.category || '';
-    elements.rating.value = trip.rating || 1;
-    elements.mainImage.value = trip.image || '';
-    elements.description.value = trip.description || '';
-    elements.editorTitle.textContent = `Edit ${trip.name}`;
+    elements.ownerId.value = tripData.owner || state.currentUser.uid;
+    elements.name.value = tripData.name || '';
+    elements.bookingLink.value = tripId || '';
+    elements.price.value = tripData.price || '';
+    elements.duration.value = tripData.duration || '';
+    elements.category.value = tripData.category || '';
+    elements.rating.value = tripData.rating || '';
+    elements.mainImage.value = tripData.image || '';
+    elements.description.value = tripData.description || '';
+    elements.editorTitle.textContent = `Edit ${tripData.name}`;
     elements.deleteBtn.classList.remove('hidden');
-
-    (trip.media?.images || []).forEach(url => tripManager.createArrayItem(elements.imageList, 'Image URL', url));
-    (trip.included || []).forEach(item => tripManager.createArrayItem(elements.includedList, 'Included Item', item));
-    (trip.notIncluded || []).forEach(item => tripManager.createArrayItem(elements.notIncludedList, 'Not Included Item', item));
-    (trip.whatToBring || []).forEach(item => tripManager.createArrayItem(elements.whatToBringList, 'What to Bring', item));
-    (trip.timeline || []).forEach(t => tripManager.createTimelineItem(t));
-    if (trip.tourtype) {
-      Object.entries(trip.tourtype).forEach(([k, v]) => tripManager.createTourTypeItem(k, v));
+    
+    // Load media
+    if (tripData.media?.images) {
+      tripData.media.images.forEach(imageUrl => {
+        tripManager.createArrayInput(elements.imageList, 'Image URL', imageUrl);
+      });
+    }
+    
+    if (tripData.media?.videos) {
+      tripData.media.videos.forEach(video => {
+        const videoDiv = document.createElement('div');
+        videoDiv.className = 'array-item';
+        
+        const thumbnailInput = document.createElement('input');
+        thumbnailInput.type = 'text';
+        thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+        thumbnailInput.placeholder = 'Thumbnail URL';
+        thumbnailInput.value = video.thumbnail || '';
+        
+        const videoUrlInput = document.createElement('input');
+        videoUrlInput.type = 'text';
+        videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+        videoUrlInput.placeholder = 'Video URL';
+        videoUrlInput.value = video.videoUrl || '';
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-item';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.addEventListener('click', () => videoDiv.remove());
+        
+        videoDiv.appendChild(thumbnailInput);
+        videoDiv.appendChild(videoUrlInput);
+        videoDiv.appendChild(removeBtn);
+        elements.videoList.appendChild(videoDiv);
+      });
+    }
+    
+    // Load included/not included
+    if (tripData.included) {
+      tripData.included.forEach(item => {
+        tripManager.createArrayInput(elements.includedList, 'Included item', item);
+      });
+    }
+    
+    if (tripData.notIncluded) {
+      tripData.notIncluded.forEach(item => {
+        tripManager.createArrayInput(elements.notIncludedList, 'Not included item', item);
+      });
+    }
+    
+    // Load timeline
+    if (tripData.timeline) {
+      tripData.timeline.forEach(item => {
+        tripManager.createTimelineInput(elements.timelineList, item);
+      });
+    }
+    
+    // Load what to bring
+    if (tripData.whatToBring) {
+      tripData.whatToBring.forEach(item => {
+        tripManager.createArrayInput(elements.whatToBringList, 'What to bring item', item);
+      });
+    }
+    
+    // Load tour types
+    if (tripData.tourtype) {
+      Object.entries(tripData.tourtype).forEach(([key, value]) => {
+        tripManager.createTourTypeInput(elements.tourTypeList, key, value);
+      });
     }
   },
 
   saveTrip: (e) => {
     e.preventDefault();
+    
+    // Check if user can edit trips
     if (!tripManager.canEditTrips()) {
-      utils.showToast('No permission to save trips', 'error');
+      utils.showToast('You do not have permission to create or edit trips', 'error');
       return;
     }
+    
     utils.showLoading();
-
-    const tripData = {
-      name: elements.name.value,
-      bookingLink: elements.bookingLink.value || utils.generateBookingLink(elements.name.value),
-      price: parseFloat(elements.price.value) || 0,
-      duration: elements.duration.value,
-      category: elements.category.value,
-      rating: parseInt(elements.rating.value) || 1,
-      image: elements.mainImage.value,
-      description: elements.description.value,
-      owner: elements.ownerId.value || state.currentUser.uid,
-      approved: false,
-      lastUpdated: Date.now(),
-      media: { images: [] },
-      included: [],
-      notIncluded: [],
-      timeline: [],
-      whatToBring: [],
-      tourtype: {}
-    };
-
-    const validationError = utils.validateTripData(tripData);
-    if (validationError) {
-      utils.showToast(validationError, 'error');
-      utils.hideLoading();
-      return;
-    }
-
-    elements.imageList.querySelectorAll('input').forEach(i => {
-      if (i.value) tripData.media.images.push(i.value);
-    });
-    elements.includedList.querySelectorAll('input').forEach(i => {
-      if (i.value) tripData.included.push(i.value);
-    });
-    elements.notIncludedList.querySelectorAll('input').forEach(i => {
-      if (i.value) tripData.notIncluded.push(i.value);
-    });
-    elements.whatToBringList.querySelectorAll('input').forEach(i => {
-      if (i.value) tripData.whatToBring.push(i.value);
-    });
-    elements.timelineList.querySelectorAll('div').forEach(div => {
-      const [time, title, desc] = div.querySelectorAll('input');
-      if (time.value && title.value && desc.value) {
-        tripData.timeline.push({ time: time.value, title: title.value, description: desc.value });
-      }
-    });
-    elements.tourTypeList.querySelectorAll('div').forEach(div => {
-      const [key, value] = div.querySelectorAll('input');
-      if (key.value && value.value) tripData.tourtype[key.value] = parseFloat(value.value);
-    });
-
-    const tripId = elements.tripId.value || tripData.bookingLink;
-    database.ref(`trips/${tripId}`).set(tripData).then(() => {
-      utils.showToast(elements.tripId.value ? 'Trip updated!' : 'Trip created!');
-      tripManager.loadTripsAndBookings();
-      tripManager.resetForm();
-      tripManager.showListSection();
-    }).catch(error => {
-      utils.showToast(`Error saving trip: ${error.message}`, 'error');
-    }).finally(() => {
-      utils.hideLoading();
-    });
-  },
-
-  deleteTrip: (tripId) => {
-    if (!tripManager.canEditTrips()) {
-      utils.showToast('No permission to delete trips', 'error');
-      return;
-    }
-    utils.showLoading();
-    database.ref(`trips/${tripId}`).remove().then(() => {
-      utils.showToast('Trip deleted!');
-      tripManager.loadTripsAndBookings();
-      if (elements.tripId.value === tripId) tripManager.resetForm();
-    }).catch(error => {
-      utils.showToast(`Error deleting trip: ${error.message}`, 'error');
-    }).finally(() => {
-      utils.hideLoading();
-    });
-  }
-};
-
-// Event Listeners
-elements.tripForm.addEventListener('submit', tripManager.saveTrip);
-elements.cancelBtn.addEventListener('click', () => {
-  tripManager.resetForm();
-  tripManager.showListSection();
-});
-elements.deleteBtn.addEventListener('click', () => {
-  if (confirm('Delete this trip?')) tripManager.deleteTrip(elements.tripId.value);
-});
-elements.newTripBtn.addEventListener('click', () => {
-  tripManager.resetForm();
-  tripManager.showEditorSection();
-});
-elements.emptyStateNewTripBtn.addEventListener('click', () => {
-  tripManager.resetForm();
-  tripManager.showEditorSection();
-});
-elements.logoutBtn.addEventListener('click', () => {
-  auth.signOut().then(() => {
-    window.location.href = 'https://www.discover-sharm.com/p/login.html';
-  });
-});
-elements.tripListTab.addEventListener('click', tripManager.showListSection);
-elements.tripEditorTab.addEventListener('click', tripManager.showEditorSection);
-elements.addImageBtn.addEventListener('click', () => tripManager.createArrayItem(elements.imageList, 'Image URL'));
-elements.addIncludedBtn.addEventListener('click', () => tripManager.createArrayItem(elements.includedList, 'Included Item'));
-elements.addNotIncludedBtn.addEventListener('click', () => tripManager.createArrayItem(elements.notIncludedList, 'Not Included Item'));
-elements.addWhatToBringBtn.addEventListener('click', () => tripManager.createArrayItem(elements.whatToBringList, 'What to Bring'));
-elements.addTimelineBtn.addEventListener('click', () => tripManager.createTimelineItem());
-elements.addTourTypeBtn.addEventListener('click', () => tripManager.createTourTypeItem());
-
-// Initialize App
-auth.onAuthStateChanged(user => {
-  if (user) {
-    state.currentUser = user;
-    tripManager.loadUserRole().then(tripManager.loadTripsAndBookings);
-  } else {
-    window.location.href = 'https://www.discover-sharm.com/p/login.html';
-  }
-});
-```
+    
+    // Sanitize inputs
+    const sanitizedData = {
+      name: utils.sanitizeInput(elements.name.value),
+      bookingLink: utils.sanitizeInput(elements.bookingLink.value),
+      price: parseFloat(utils.sanitizeInput(elements.price.value)),
+      duration: utils.sanitizeInput(elements.duration.value),
+      category: utils.sanitizeInput(elements.category.value),
+      rating: parseFloat(utils.sanitizeInput(elements.rati
