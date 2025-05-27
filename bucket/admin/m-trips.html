@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+  <meta http-equiv="origin-trial" content="your-firebase-origin-trial-token-if-any">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard || Discover Sharm</title>
     
@@ -84,7 +85,7 @@
         </a>
         <ul class="side-menu top">
             <li class="active" data-section="dashboard">
-                <a href="#">
+                <a href="#" id="dashboardTab">
                     <i class='bx bxs-dashboard'></i>
                     <span class="text">Dashboard</span>
                 </a>
@@ -363,7 +364,7 @@
               </button>
 
 <!-- Add this delete button -->
-  <button type="button" id="deleteBtn" class="hidden px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition">
+  <button type="button" id="deleteBtn" class="hidden px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}  >
     <i class="fas fa-trash"></i>
   </button>
               
