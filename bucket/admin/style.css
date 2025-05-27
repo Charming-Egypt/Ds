@@ -982,62 +982,6 @@ input:checked + .slider:before {
     }
 }
 
-/* Custom Flatpickr Styles for Dark Mode */
-.flatpickr-calendar { 
-    background-color: #222 !important; 
-    color: #ffc107 !important; 
-    border-radius: 0.625rem !important; 
-    border: 1px solid #333 !important; 
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important; 
-}
-.flatpickr-day { 
-    color: #fff !important; 
-    background-color: #333 !important; 
-    border-radius: 0.5rem !important; 
-}
-.flatpickr-day.selected { 
-    background-color: #ffc107 !important; 
-    color: #111 !important; 
-}
-.flatpickr-day.enabled {
-    color: #ffc107 !important;
-}
-.flatpickr-day:hover { 
-    background-color: #444 !important; 
-    color: #ffc107 !important; 
-}
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay { 
-    color: #666 !important; 
-}
-.flatpickr-months .flatpickr-prev-month,
-.flatpickr-months .flatpickr-next-month { 
-    color: #ffc207 !important; 
-}
-.flatpickr-months .flatpickr-month { 
-    color: #ffc107 !important; 
-    background-color: #222 !important; 
-    border-radius: 0.5rem !important; 
-}
-.flatpickr-months .flatpickr-prev-month svg,
-.flatpickr-months .flatpickr-next-month svg { 
-    fill: #ffc107 !important; 
-}
-.flatpickr-weekday { 
-    color: #ffc207 !important; 
-}
-.flatpickr-day.today.flatpickr-disabled {
-     background-color: #333 !important;
-     color: #444 !important;
-     border: 1px solid #E64A19 !important;
-}
-.flatpickr-day.today.selected {
-     background-color: #ffa107 !important;
-     color: #444 !important;
-}
-.flatpickr-day.disabled {
-    color: #444 !important;
-}
 
 /* Custom scrollbar for dark mode */
 ::-webkit-scrollbar {
@@ -1057,3 +1001,49 @@ input:checked + .slider:before {
 ::-webkit-scrollbar-thumb:hover {
     background: #4E5869;
 }
+
+
+
+
+
+  
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .array-item {
+      position: relative;
+      background-color: #f1f5f9;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    
+    .array-item:hover {
+      background-color: #e2e8f0;
+    }
+    
+    .remove-item {
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .remove-item:hover {
+      transform: scale(1.1);
+    }
+  
