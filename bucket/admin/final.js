@@ -418,7 +418,7 @@ const tripManager = {
         </div>
         <div class="p-4">
           <div class="flex items-center justify-between">
-            <div class="flex items-center text-sm text-slate-500">
+            <div class="flex items-center text-sm text-slate-300">
               <i class="fas fa-clock mr-1"></i>
               <span>${trip.duration}</span>
             </div>
@@ -426,7 +426,7 @@ const tripManager = {
           </div>
           
           <div class="mt-2 flex items-center justify-between">
-            <div class="text-lg font-bold text-slate-800">${trip.price} EGP</div>
+            <div class="text-lg font-bold text-slate-100">${trip.price} EGP</div>
             ${trip.owner === state.currentUser?.uid ? 
               `<span class="text-xs ${trip.approved === true || trip.approved === 'true' ? 
                 'bg-emerald-100 text-emerald-800' : 
