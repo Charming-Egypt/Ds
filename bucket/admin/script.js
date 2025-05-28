@@ -178,41 +178,39 @@ function savePayoutMethod() {
 }
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Get elements by ID
+document.addEventListener("DOMContentLoaded", function() {
+    // Get form elements
+    const form = document.getElementById('payoutForm');
     const payoutMethod = document.getElementById('payoutMethod');
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
-    const payoutForm = document.getElementById('payoutForm');
 
-    // Toggle bank fields and required attributes
+    // Toggle bank fields visibility and requirement
     function toggleBankFields() {
-        const isBankAccount = payoutMethod.value === 'bankAccount';
+        const showBankFields = payoutMethod.value === 'bankAccount';
         
-        // Show/hide bank fields
-        bankFields.style.display = isBankAccount ? 'block' : 'none';
-        
-        // Toggle required attributes
-        bankName.required = isBankAccount;
-        branchName.required = isBankAccount;
+        bankFields.style.display = showBankFields ? 'block' : 'none';
+        bankName.required = showBankFields;
+        branchName.required = showBankFields;
     }
 
-    // Initialize on page load
+    // Initialize on load
     toggleBankFields();
-
-    // Add event listener
+    
+    // Handle method change
     payoutMethod.addEventListener('change', toggleBankFields);
 
-    // Form submission handling
-    payoutForm.addEventListener('submit', function(e) {
-        console.log('Submitting with method:', payoutMethod.value);
-        // Add any additional validation here
-        // e.preventDefault(); // Uncomment for testing
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            // Add visual feedback for invalid fields
+            form.classList.add('was-validated');
+        } else {
+            // Proceed with form submission
+            console.log('Form submitted with method:', payoutMethod.value);
+            // Add AJAX submission or other logic here
+        }
     });
 });
-
-
-
-
-
