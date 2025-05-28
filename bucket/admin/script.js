@@ -179,27 +179,38 @@ function savePayoutMethod() {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const paymentMethodSelect = document.getElementById("paymentMethod"); // Assuming your select has id="paymentMethod"
-  const bankFields = document.getElementById("bankFields");
+    // Get elements by ID
+    const payoutMethod = document.getElementById('payoutMethod');
+    const bankFields = document.getElementById('bankFields');
+    const bankName = document.getElementById('bankName');
+    const branchName = document.getElementById('branchName');
+    const payoutForm = document.getElementById('payoutForm');
 
-  // Function to toggle visibility based on selected option
-  function toggleBankFields() {
-    if (paymentMethodSelect.value === "bankAccount") {
-      bankFields.style.display = "block";
-    } else {
-      bankFields.style.display = "none";
+    // Toggle bank fields and required attributes
+    function toggleBankFields() {
+        const isBankAccount = payoutMethod.value === 'bankAccount';
+        
+        // Show/hide bank fields
+        bankFields.style.display = isBankAccount ? 'block' : 'none';
+        
+        // Toggle required attributes
+        bankName.required = isBankAccount;
+        branchName.required = isBankAccount;
     }
-  }
 
-  // Initial check on page load
-  toggleBankFields();
+    // Initialize on page load
+    toggleBankFields();
 
-  // Add event listener to select element
-  paymentMethodSelect.addEventListener("change", toggleBankFields);
+    // Add event listener
+    payoutMethod.addEventListener('change', toggleBankFields);
+
+    // Form submission handling
+    payoutForm.addEventListener('submit', function(e) {
+        console.log('Submitting with method:', payoutMethod.value);
+        // Add any additional validation here
+        // e.preventDefault(); // Uncomment for testing
+    });
 });
-
-
-
 
 
 
