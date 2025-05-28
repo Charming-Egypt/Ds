@@ -37,7 +37,7 @@ li {
 
 body {
     background: var(--grey);
-    overflow-x: hidden;
+ 
     font-family: var(--lato);
     color: var(--dark);
 }
