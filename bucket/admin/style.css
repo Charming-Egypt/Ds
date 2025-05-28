@@ -680,7 +680,8 @@ body {
 .form-group input[type="email"],
 .form-group input[type="number"],
 .form-group input[type="password"],
-.form-group textarea {
+.form-group textarea ,
+.input-field {
     width: 100%;
     padding: 10px 15px;
     border: 1px solid #2D3748;
@@ -1027,12 +1028,7 @@ input:checked + .slider:before {
       color: #cbd5e1;
     }
     
-    .input-field {
-      color: #1e293b;
-      transition: all 0.2s;
-      border: 1px solid #e2e8f0;
-      background-color: #ffffff;
-    }
+    
     
     .input-field:focus {
       border-color: #333;
