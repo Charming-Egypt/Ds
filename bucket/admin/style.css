@@ -34,9 +34,6 @@ li {
     --green: #4CAF50;
 }
 
-html {
-    overflow-x: hidden;
-}
 
 body {
     background: var(--grey);
