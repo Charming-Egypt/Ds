@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
-    const userId = getCookie('userId');
+    
 
 
   
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Form submission
     payoutForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+        const userId = getCookie('userId');
         try {
             // Validate user
             if (!userId) {
