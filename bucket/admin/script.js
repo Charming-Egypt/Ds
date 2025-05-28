@@ -179,13 +179,12 @@ function savePayoutMethod() {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const bankAccountRadio = document.getElementById("bankAccount");
-  const walletRadio = document.getElementById("wallet");
+  const paymentMethodSelect = document.getElementById("paymentMethod"); // Assuming your select has id="paymentMethod"
   const bankFields = document.getElementById("bankFields");
 
-  // Function to toggle visibility based on selected radio
+  // Function to toggle visibility based on selected option
   function toggleBankFields() {
-    if (bankAccountRadio.checked) {
+    if (paymentMethodSelect.value === "bankAccount") {
       bankFields.style.display = "block";
     } else {
       bankFields.style.display = "none";
@@ -195,11 +194,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initial check on page load
   toggleBankFields();
 
-  // Add event listeners to radios
-  bankAccountRadio.addEventListener("change", toggleBankFields);
-  walletRadio.addEventListener("change", toggleBankFields);
+  // Add event listener to select element
+  paymentMethodSelect.addEventListener("change", toggleBankFields);
 });
-
 
 
 
