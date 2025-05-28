@@ -1,103 +1,268 @@
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>منظم حفلات التخرج</title>
-  <script src="https://cdn.tailwindcss.com "></script>
+  <title>منظم حفلات التخرج | احترافي</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js "></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js "></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js "></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen font-sans">
 
   <!-- Login Form -->
-  <div id="loginScreen" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-100 to-purple-100 px-4">
-    <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
-      <h1 class="text-2xl font-bold text-center text-indigo-700 mb-6">تسجيل الدخول</h1>
+  <div id="loginScreen" class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 px-4">
+    <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md animate__animated animate__fadeIn">
+      <div class="text-center mb-6">
+        <img src="https://via.placeholder.com/100x50?text=شعار+الشركة" alt="شعار الشركة" class="mx-auto h-12 mb-4">
+        <h1 class="text-2xl font-bold text-indigo-700" id="authTitle">تسجيل الدخول</h1>
+      </div>
       <form id="authForm" class="space-y-4">
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required
-          class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        <input type="password" id="password" placeholder="كلمة المرور" required
-          class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        <button type="submit" id="loginBtn"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition">
+        <div>
+          <input type="email" id="email" placeholder="البريد الإلكتروني" required
+            class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+        <div>
+          <input type="password" id="password" placeholder="كلمة المرور" required
+            class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+        <div id="confirmPasswordDiv" class="hidden">
+          <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور"
+            class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+        </div>
+        <button type="submit" id="authBtn"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded transition duration-300 shadow-md">
           دخول
         </button>
       </form>
-      <p class="mt-4 text-center text-sm text-gray-600">ليس لديك حساب؟</p>
-      <button id="registerBtn"
-        class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded transition">
-        إنشاء حساب
-      </button>
+      <div class="mt-4 text-center">
+        <button id="toggleAuthBtn" class="text-sm text-indigo-600 hover:text-indigo-800">
+          ليس لديك حساب؟ <span class="font-semibold">إنشاء حساب</span>
+        </button>
+      </div>
+      <div class="mt-4 text-center">
+        <button id="resetPasswordBtn" class="text-sm text-gray-600 hover:text-gray-800">
+          نسيت كلمة المرور؟
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Main App -->
   <div id="appScreen" class="hidden">
-    <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6 my-10">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-indigo-700">منظم حفلات التخرج</h1>
-        <button id="logoutBtn" class="text-sm text-red-600 hover:text-red-800">تسجيل الخروج</button>
+    <header class="bg-white shadow-sm">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center">
+          <img src="https://via.placeholder.com/100x50?text=شعار+الشركة" alt="شعار الشركة" class="h-10 mr-3">
+          <h1 class="text-xl font-bold text-indigo-700">منظم حفلات التخرج</h1>
+        </div>
+        <div class="flex items-center space-x-4 space-x-reverse">
+          <button id="addEventBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
+            + إضافة حفلة جديدة
+          </button>
+          <button id="logoutBtn" class="text-gray-600 hover:text-gray-900 text-sm">
+            تسجيل الخروج
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto py-6 px-4">
+      <!-- Event Form (Hidden by default) -->
+      <div id="eventFormContainer" class="hidden bg-white rounded-lg shadow-md p-6 mb-8 animate__animated animate__fadeIn">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800" id="formTitle">إضافة حفلة جديدة</h2>
+          <button id="closeFormBtn" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <form id="eventForm" class="space-y-4">
+          <input type="hidden" id="eventId" />
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">عنوان الحفل *</label>
+              <input type="text" id="title" required
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">التاريخ *</label>
+              <input type="date" id="date" required
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">الموقع *</label>
+              <input type="text" id="location" required
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">حالة الحفل</label>
+              <select id="status" class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                <option value="planned">مخطط</option>
+                <option value="in_progress">قيد التنفيذ</option>
+                <option value="completed">منتهي</option>
+                <option value="cancelled">ملغى</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">الصورة</label>
+              <div class="flex items-center">
+                <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                <input type="text" id="imageUrl" placeholder="رابط الصورة أو ارفع صورة"
+                  class="flex-1 border-gray-300 rounded-l-md focus:border-indigo-500 focus:ring-indigo-500 p-2">
+                <button type="button" id="uploadBtn" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-r-md">
+                  رفع
+                </button>
+              </div>
+              <div id="imagePreview" class="mt-2 hidden">
+                <img id="previewImage" src="" alt="معاينة الصورة" class="h-32 object-cover rounded-md">
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">وصف الحفل</label>
+              <textarea id="description" rows="3"
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">الميزانية (ريال) *</label>
+              <input type="number" id="budget" required min="0" step="100"
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">المصروف (ريال)</label>
+              <input type="number" id="spent" min="0" step="100"
+                class="w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition duration-200 shadow-md">
+              حفظ الحفل
+            </button>
+          </div>
+        </form>
       </div>
 
-      <!-- Event Form -->
-      <form id="eventForm" class="mb-8 space-y-4">
-        <input type="hidden" id="eventId" />
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">عنوان الحفل</label>
-          <input type="text" id="title" required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">التاريخ</label>
-          <input type="date" id="date"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">الموقع</label>
-          <input type="text" id="location" required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">الصورة (رابط)</label>
-          <input type="url" id="imageUrl"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">وصف الحفل</label>
-          <textarea id="description" rows="3"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2"></textarea>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">الميزانية</label>
-            <input type="number" id="budget"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+      <!-- Filters -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center space-x-2 space-x-reverse">
+            <label class="text-sm text-gray-700">تصفية حسب:</label>
+            <select id="statusFilter" class="border-gray-300 rounded-md p-2 text-sm">
+              <option value="all">جميع الحفلات</option>
+              <option value="planned">مخطط</option>
+              <option value="in_progress">قيد التنفيذ</option>
+              <option value="completed">منتهي</option>
+              <option value="cancelled">ملغى</option>
+            </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">المصروف</label>
-            <input type="number" id="spent"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2" />
+          <div class="relative">
+            <input type="text" id="searchInput" placeholder="ابحث عن حفلة..." 
+              class="border-gray-300 rounded-md p-2 pl-10 text-sm w-64">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute right-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
         </div>
+      </div>
 
-        <button type="submit"
-          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
-          حفظ الحفل
-        </button>
-      </form>
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded-lg shadow-md p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">إجمالي الحفلات</p>
+              <h3 class="text-2xl font-bold" id="totalEvents">0</h3>
+            </div>
+            <div class="bg-indigo-100 p-3 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">إجمالي الميزانية</p>
+              <h3 class="text-2xl font-bold" id="totalBudget">0 ريال</h3>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500">متوسط المصروف</p>
+              <h3 class="text-2xl font-bold" id="avgSpent">0 ريال</h3>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Events List -->
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">حفلات التخرج</h2>
-      <ul id="eventsList" class="space-y-6"></ul>
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-6 py-4 border-b">
+          <h2 class="text-lg font-semibold text-gray-800">حفلات التخرج</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحفل</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الميزانية</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المصروف</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="eventsList" class="bg-white divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+        <div class="px-6 py-4 border-t flex justify-between items-center">
+          <div class="text-sm text-gray-500" id="paginationInfo">عرض 0 إلى 0 من 0 عناصر</div>
+          <div class="flex space-x-2 space-x-reverse">
+            <button id="prevPage" class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">السابق</button>
+            <button id="nextPage" class="px-3 py-1 border rounded-md text-sm disabled:opacity-50">التالي</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg hidden animate__animated animate__fadeInUp">
+      <div class="flex items-center">
+        <span id="toastMessage">تم الحفظ بنجاح</span>
+        <button id="closeToast" class="ml-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -116,147 +281,457 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const auth = firebase.auth();
+    const storage = firebase.storage();
 
+    // DOM Elements
     const loginScreen = document.getElementById('loginScreen');
     const appScreen = document.getElementById('appScreen');
-    const eventsList = document.getElementById('eventsList');
-
-    // Auth handlers
     const authForm = document.getElementById('authForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
+    const authTitle = document.getElementById('authTitle');
+    const authBtn = document.getElementById('authBtn');
+    const toggleAuthBtn = document.getElementById('toggleAuthBtn');
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const confirmPasswordDiv = document.getElementById('confirmPasswordDiv');
+    const eventFormContainer = document.getElementById('eventFormContainer');
+    const formTitle = document.getElementById('formTitle');
+    const closeFormBtn = document.getElementById('closeFormBtn');
+    const addEventBtn = document.getElementById('addEventBtn');
+    const eventsList = document.getElementById('eventsList');
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const totalEvents = document.getElementById('totalEvents');
+    const totalBudget = document.getElementById('totalBudget');
+    const avgSpent = document.getElementById('avgSpent');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const closeToast = document.getElementById('closeToast');
+    const imageUpload = document.getElementById('imageUpload');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const imageUrl = document.getElementById('imageUrl');
 
-    authForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      if (loginBtn.textContent.includes('دخول')) {
-        auth.signInWithEmailAndPassword(email, password).catch(err => alert(err.message));
-      } else {
-        auth.createUserWithEmailAndPassword(email, password).catch(err => alert(err.message));
-      }
-    });
-
-    registerBtn.addEventListener('click', () => {
-      loginBtn.textContent = 'إنشاء حساب';
-      authForm.querySelector('h1').textContent = 'إنشاء حساب';
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      auth.signOut();
-    });
-
-    // Auth state listener
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        loginScreen.classList.add('hidden');
-        appScreen.classList.remove('hidden');
-        loadEvents();
-      } else {
-        loginScreen.classList.remove('hidden');
-        appScreen.classList.add('hidden');
-      }
-    });
-
-    // Event form
+    // Event Form Elements
     const eventForm = document.getElementById('eventForm');
     const eventId = document.getElementById('eventId');
     const title = document.getElementById('title');
     const date = document.getElementById('date');
     const location = document.getElementById('location');
-    const imageUrl = document.getElementById('imageUrl');
+    const status = document.getElementById('status');
     const description = document.getElementById('description');
     const budget = document.getElementById('budget');
     const spent = document.getElementById('spent');
 
-    eventForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const data = {
-        title: title.value,
-        date: date.value,
-        location: location.value,
-        imageUrl: imageUrl.value,
-        description: description.value,
-        budget: parseFloat(budget.value),
-        spent: parseFloat(spent.value),
-        uid: auth.currentUser.uid
-      };
+    // Pagination
+    let currentPage = 1;
+    const eventsPerPage = 5;
+    let filteredEvents = [];
 
-      if (eventId.value) {
-        db.ref('events/' + eventId.value).update(data);
-      } else {
-        const newEventRef = db.ref('events').push();
-        newEventRef.set(data);
-      }
+    // Initialize the app
+    function init() {
+      setupEventListeners();
+      checkAuthState();
+    }
 
-      eventForm.reset();
-      eventId.value = '';
-    });
+    // Setup all event listeners
+    function setupEventListeners() {
+      // Auth Form
+      authForm.addEventListener('submit', handleAuth);
+      toggleAuthBtn.addEventListener('click', toggleAuthMode);
+      resetPasswordBtn.addEventListener('click', handleResetPassword);
+      
+      // Event Form
+      closeFormBtn.addEventListener('click', () => eventFormContainer.classList.add('hidden'));
+      addEventBtn.addEventListener('click', showAddEventForm);
+      eventForm.addEventListener('submit', handleEventSubmit);
+      
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+      
+      // Image Upload
+      uploadBtn.addEventListener('click', () => imageUpload.click());
+      imageUpload.addEventListener('change', handleImageUpload);
+      imageUrl.addEventListener('change', updateImagePreview);
+      
+      // Filters
+      statusFilter.addEventListener('change', filterEvents);
+      searchInput.addEventListener('input', filterEvents);
+      
+      // Pagination
+      document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderEvents();
+        }
+      });
+      
+      document.getElementById('nextPage').addEventListener('click', () => {
+        if (currentPage * eventsPerPage < filteredEvents.length) {
+          currentPage++;
+          renderEvents();
+        }
+      });
+      
+      // Toast
+      closeToast.addEventListener('click', () => toast.classList.add('hidden'));
+    }
 
-    function loadEvents() {
-      db.ref('events').on('value', snapshot => {
-        eventsList.innerHTML = '';
-        const data = snapshot.val() || {};
-        for (const key in data) {
-          const event = data[key];
-          if (event.uid !== auth.currentUser.uid) continue;
-
-          const li = document.createElement('li');
-          li.className = 'border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow';
-
-          const progress = Math.min(100, (event.spent / event.budget) * 100);
-
-          li.innerHTML = `
-            ${event.imageUrl ? `<img src="${event.imageUrl}" alt="${event.title}" class="w-full h-40 object-cover rounded mb-3">` : ''}
-            <h3 class="text-lg font-bold text-gray-800">${event.title}</h3>
-            <p class="text-sm text-gray-600">📅 ${event.date}</p>
-            <p class="text-sm text-gray-600">📍 ${event.location}</p>
-            <p class="text-sm mt-2 text-gray-700">${event.description}</p>
-
-            <div class="mt-3">
-              <label class="block text-xs text-gray-600">الميزانية: ${event.budget} ريال</label>
-              <label class="block text-xs text-gray-600">المصروف: ${event.spent} ريال</label>
-              <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
-                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${progress}%"></div>
-              </div>
-            </div>
-
-            <div class="mt-3 flex gap-2">
-              <button onclick='editEvent("${key}", ${JSON.stringify(event).replace(/"/g, '&quot;')})'
-                class="text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">تعديل</button>
-              <button onclick='deleteEvent("${key}")'
-                class="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">حذف</button>
-              <button onclick='copyLink("${key}")'
-                class="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">نسخ الرابط</button>
-            </div>
-          `;
-          eventsList.appendChild(li);
+    // Check auth state
+    function checkAuthState() {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          loginScreen.classList.add('hidden');
+          appScreen.classList.remove('hidden');
+          loadEvents();
+        } else {
+          loginScreen.classList.remove('hidden');
+          appScreen.classList.add('hidden');
         }
       });
     }
 
-    window.editEvent = function(id, event) {
-      eventId.value = id;
-      title.value = event.title;
-      date.value = event.date;
-      location.value = event.location;
-      imageUrl.value = event.imageUrl;
-      description.value = event.description;
-      budget.value = event.budget;
-      spent.value = event.spent;
+    // Handle authentication
+    function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (authBtn.textContent.includes('إنشاء')) {
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (password !== confirmPassword) {
+          showToast('كلمة المرور غير متطابقة', 'error');
+          return;
+        }
+        
+        auth.createUserWithEmailAndPassword(email, password)
+          .then(() => {
+            showToast('تم إنشاء الحساب بنجاح', 'success');
+            // Send email verification
+            auth.currentUser.sendEmailVerification();
+          })
+          .catch(err => showToast(err.message, 'error'));
+      } else {
+        auth.signInWithEmailAndPassword(email, password)
+          .catch(err => showToast(err.message, 'error'));
+      }
+    }
+
+    // Toggle between login and register
+    function toggleAuthMode() {
+      if (authBtn.textContent.includes('دخول')) {
+        authBtn.textContent = 'إنشاء حساب';
+        authTitle.textContent = 'إنشاء حساب';
+        toggleAuthBtn.innerHTML = 'لديك حساب؟ <span class="font-semibold">تسجيل الدخول</span>';
+        confirmPasswordDiv.classList.remove('hidden');
+        document.getElementById('confirmPassword').required = true;
+      } else {
+        authBtn.textContent = 'دخول';
+        authTitle.textContent = 'تسجيل الدخول';
+        toggleAuthBtn.innerHTML = 'ليس لديك حساب؟ <span class="font-semibold">إنشاء حساب</span>';
+        confirmPasswordDiv.classList.add('hidden');
+      }
+    }
+
+    // Handle password reset
+    function handleResetPassword() {
+      const email = document.getElementById('email').value;
+      
+      if (!email) {
+        showToast('الرجاء إدخال البريد الإلكتروني', 'error');
+        return;
+      }
+      
+      auth.sendPasswordResetEmail(email)
+        .then(() => showToast('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك', 'success'))
+        .catch(err => showToast(err.message, 'error'));
+    }
+
+    // Show add event form
+    function showAddEventForm() {
+      eventForm.reset();
+      eventId.value = '';
+      formTitle.textContent = 'إضافة حفلة جديدة';
+      imagePreview.classList.add('hidden');
+      eventFormContainer.classList.remove('hidden');
+    }
+
+    // Handle event form submission
+    function handleEventSubmit(e) {
+      e.preventDefault();
+      
+      const data = {
+        title: title.value,
+        date: date.value,
+        location: location.value,
+        status: status.value,
+        imageUrl: imageUrl.value,
+        description: description.value,
+        budget: parseFloat(budget.value) || 0,
+        spent: parseFloat(spent.value) || 0,
+        uid: auth.currentUser.uid,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      };
+      
+      if (eventId.value) {
+        db.ref('events/' + eventId.value).update(data)
+          .then(() => showToast('تم تحديث الحفلة بنجاح', 'success'))
+          .catch(err => showToast(err.message, 'error'));
+      } else {
+        db.ref('events').push(data)
+          .then(() => {
+            showToast('تم إضافة الحفلة بنجاح', 'success');
+            eventForm.reset();
+            eventFormContainer.classList.add('hidden');
+          })
+          .catch(err => showToast(err.message, 'error'));
+      }
+    }
+
+    // Handle image upload
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const storageRef = storage.ref(`event_images/${file.name}`);
+      const uploadTask = storageRef.put(file);
+      
+      uploadTask.on('state_changed', 
+        null, 
+        (error) => showToast('حدث خطأ أثناء رفع الصورة', 'error'),
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            imageUrl.value = downloadURL;
+            previewImage.src = downloadURL;
+            imagePreview.classList.remove('hidden');
+            showToast('تم رفع الصورة بنجاح', 'success');
+          });
+        }
+      );
+    }
+
+    // Update image preview
+    function updateImagePreview() {
+      if (imageUrl.value) {
+        previewImage.src = imageUrl.value;
+        imagePreview.classList.remove('hidden');
+      } else {
+        imagePreview.classList.add('hidden');
+      }
+    }
+
+    // Load events from Firebase
+    function loadEvents() {
+      db.ref('events').orderByChild('uid').equalTo(auth.currentUser.uid).on('value', snapshot => {
+        const events = [];
+        snapshot.forEach(childSnapshot => {
+          events.push({
+            id: childSnapshot.key,
+            ...childSnapshot.val()
+          });
+        });
+        
+        filteredEvents = events;
+        renderEvents();
+        updateStats(events);
+      });
+    }
+
+    // Filter events based on status and search
+    function filterEvents() {
+      const statusValue = statusFilter.value;
+      const searchValue = searchInput.value.toLowerCase();
+      
+      db.ref('events').orderByChild('uid').equalTo(auth.currentUser.uid).once('value', snapshot => {
+        const events = [];
+        snapshot.forEach(childSnapshot => {
+          const event = {
+            id: childSnapshot.key,
+            ...childSnapshot.val()
+          };
+          
+          // Filter by status
+          if (statusValue !== 'all' && event.status !== statusValue) {
+            return;
+          }
+          
+          // Filter by search
+          if (searchValue && !event.title.toLowerCase().includes(searchValue) && 
+              !event.location.toLowerCase().includes(searchValue)) {
+            return;
+          }
+          
+          events.push(event);
+        });
+        
+        filteredEvents = events;
+        currentPage = 1;
+        renderEvents();
+        updateStats(events);
+      });
+    }
+
+    // Render events to the table
+    function renderEvents() {
+      eventsList.innerHTML = '';
+      
+      if (filteredEvents.length === 0) {
+        eventsList.innerHTML = `
+          <tr>
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">لا توجد حفلات متاحة</td>
+          </tr>
+        `;
+        updatePaginationInfo();
+        return;
+      }
+      
+      const startIndex = (currentPage - 1) * eventsPerPage;
+      const endIndex = Math.min(startIndex + eventsPerPage, filteredEvents.length);
+      const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+      
+      paginatedEvents.forEach(event => {
+        const progress = Math.min(100, (event.spent / event.budget) * 100);
+        const statusClass = getStatusClass(event.status);
+        const statusText = getStatusText(event.status);
+        
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50';
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              ${event.imageUrl ? `
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img class="h-10 w-10 rounded-full object-cover" src="${event.imageUrl}" alt="${event.title}">
+                </div>
+              ` : ''}
+              <div class="mr-4">
+                <div class="text-sm font-medium text-gray-900">${event.title}</div>
+                <div class="text-sm text-gray-500">${event.location}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${formatDate(event.date)}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+              ${statusText}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${event.budget.toLocaleString()} ريال
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${event.spent.toLocaleString()} ريال
+            <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+              <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${progress}%"></div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button onclick='editEvent("${event.id}")' class="text-indigo-600 hover:text-indigo-900 mr-3">تعديل</button>
+            <button onclick='deleteEvent("${event.id}")' class="text-red-600 hover:text-red-900">حذف</button>
+          </td>
+        `;
+        eventsList.appendChild(tr);
+      });
+      
+      updatePaginationInfo();
+    }
+
+    // Update pagination info
+    function updatePaginationInfo() {
+      const startItem = (currentPage - 1) * eventsPerPage + 1;
+      const endItem = Math.min(currentPage * eventsPerPage, filteredEvents.length);
+      
+      document.getElementById('paginationInfo').textContent = 
+        `عرض ${startItem} إلى ${endItem} من ${filteredEvents.length} عناصر`;
+      
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage * eventsPerPage >= filteredEvents.length;
+    }
+
+    // Update statistics
+    function updateStats(events) {
+      totalEvents.textContent = events.length;
+      
+      const totalBudgetValue = events.reduce((sum, event) => sum + (event.budget || 0), 0);
+      totalBudget.textContent = totalBudgetValue.toLocaleString() + ' ريال';
+      
+      const totalSpent = events.reduce((sum, event) => sum + (event.spent || 0), 0);
+      const avgSpentValue = events.length > 0 ? totalSpent / events.length : 0;
+      avgSpent.textContent = avgSpentValue.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' ريال';
+    }
+
+    // Edit event
+    window.editEvent = function(id) {
+      db.ref('events/' + id).once('value', snapshot => {
+        const event = snapshot.val();
+        
+        eventId.value = id;
+        title.value = event.title || '';
+        date.value = event.date || '';
+        location.value = event.location || '';
+        status.value = event.status || 'planned';
+        imageUrl.value = event.imageUrl || '';
+        description.value = event.description || '';
+        budget.value = event.budget || '';
+        spent.value = event.spent || '';
+        
+        formTitle.textContent = 'تعديل الحفلة';
+        eventFormContainer.classList.remove('hidden');
+        updateImagePreview();
+      });
     };
 
+    // Delete event
     window.deleteEvent = function(id) {
-      if (confirm("هل أنت متأكد من الحذف؟")) {
-        db.ref('events/' + id).remove();
+      if (confirm("هل أنت متأكد من حذف هذه الحفلة؟")) {
+        db.ref('events/' + id).remove()
+          .then(() => showToast('تم حذف الحفلة بنجاح', 'success'))
+          .catch(err => showToast(err.message, 'error'));
       }
     };
 
-    window.copyLink = function(id) {
-      navigator.clipboard.writeText(`${window.location.origin}/?event=${id}`);
-      alert("تم نسخ الرابط!");
-    };
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg animate__animated animate__fadeInUp ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+      toastMessage.textContent = message;
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 5000);
+    }
+
+    // Helper functions
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('ar-EG', options);
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'planned': return 'bg-blue-100 text-blue-800';
+        case 'in_progress': return 'bg-yellow-100 text-yellow-800';
+        case 'completed': return 'bg-green-100 text-green-800';
+        case 'cancelled': return 'bg-red-100 text-red-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    }
+
+    function getStatusText(status) {
+      switch (status) {
+        case 'planned': return 'مخطط';
+        case 'in_progress': return 'قيد التنفيذ';
+        case 'completed': return 'منتهي';
+        case 'cancelled': return 'ملغى';
+        default: return 'غير محدد';
+      }
+    }
+
+    // Initialize the app
+    init();
   </script>
 </body>
 </html>
