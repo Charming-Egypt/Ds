@@ -298,7 +298,7 @@ const tripManager = {
     
     const valueInput = document.createElement('input');
     valueInput.type = 'number';
-    valueInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
+    valueInput.className = 'col-span-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     valueInput.placeholder = 'Price';
     valueInput.value = value || '';
     
