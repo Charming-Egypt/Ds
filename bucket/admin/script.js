@@ -178,39 +178,38 @@ function savePayoutMethod() {
 }
 
 
+
+
+
+
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", function() {
-    // Get form elements
-    const form = document.getElementById('payoutForm');
-    const payoutMethod = document.getElementById('payoutMethod');
+    // 1. Get all elements - make sure IDs match exactly
+    const payoutMethod = document.getElementById('payoutMethod'); // Must match HTML
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
 
-    // Toggle bank fields visibility and requirement
+    // 2. Toggle function
     function toggleBankFields() {
-        const showBankFields = payoutMethod.value === 'bankAccount';
+        // Check the current value
+        const isBankAccount = payoutMethod.value === 'bankAccount';
         
-        bankFields.style.display = showBankFields ? 'block' : 'none';
-        bankName.required = showBankFields;
-        branchName.required = showBankFields;
+        // Toggle visibility
+        bankFields.style.display = isBankAccount ? 'block' : 'none';
+        
+        // Toggle required fields
+        bankName.required = isBankAccount;
+        branchName.required = isBankAccount;
     }
 
-    // Initialize on load
+    // 3. Initialize immediately
     toggleBankFields();
-    
-    // Handle method change
-    payoutMethod.addEventListener('change', toggleBankFields);
 
-    // Form submission
-    form.addEventListener('submit', function(e) {
-        if (!form.checkValidity()) {
-            e.preventDefault();
-            // Add visual feedback for invalid fields
-            form.classList.add('was-validated');
-        } else {
-            // Proceed with form submission
-            console.log('Form submitted with method:', payoutMethod.value);
-            // Add AJAX submission or other logic here
-        }
-    });
+    // 4. Add event listener
+    payoutMethod.addEventListener('change', toggleBankFields);
 });
