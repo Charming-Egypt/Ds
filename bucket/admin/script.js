@@ -138,36 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-function savePayoutMethod() {
-    const userId = getCookie('userId'); // Replace with actual user ID retrieval logic
-    const payoutMethod = document.querySelector('input[name="payoutMethod"]:checked').value;
-    const name = document.getElementById("name").value;
-    const accountNumber = document.getElementById("accountNumber").value;
-    const bankName = document.getElementById("bankName").value;
-    const branchName = document.getElementById("branchName").value;
-
-    const payoutData = {
-        method: payoutMethod,
-        name,
-        accountNumber,
-        bankName,
-        branchName,
-        updatedAt: Date.now()
-    };
-
-    firebase.database().ref(`egy_user/${userId}/payout_method`).set(payoutData)
-        .then(() => {
-            alert("Payout method updated successfully.");
-        })
-        .catch((error) => {
-            console.error("Error updating payout method:", error);
-            alert("Failed to update payout method.");
-        });
-}
-
-
-
-
 
 
 
@@ -200,10 +170,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // Form submission
     payoutForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+        const userId = getCookie('userId');
         try {
             // Validate user
-            if (!CurrentuserId) {
+            if (!userId) {
                 throw new Error("User not authenticated");
             }
 
@@ -241,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             // Save to Firebase
-            await firebase.database().ref(`egy_user/${CurrentuserId}/payout_method`).set(payoutData);
+            await firebase.database().ref(`egy_user/${userId}/payout_method`).set(payoutData);
             
             // Show success
             showAlert("Payout method saved successfully!", "success");
