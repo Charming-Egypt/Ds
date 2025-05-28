@@ -860,48 +860,47 @@
         <div class="card-header">
             <h2 class="card-title">Payout Method</h2>
             <div class="card-actions">
-                <button type="submit" class="save-btn"><i class="fa-regular fa-floppy-disk"></i></button>
+                
             </div>
         </div>
         <div class="card-body">
             <form id="payoutForm">
-                <!-- Payout Method Selection -->
-                <div class="form-group">
-                    <label>Payout Method</label>
-                    <div>
-                        <select id="paymentMethod" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                            <option value="wallet">Wallet</option>
-                            <option value="bankAccount">Bank Account</option>
-                        </select>
-                    </div>
-                </div>
+    <!-- Payout Method Selection -->
+    <div class="form-group">
+        <label for="payoutMethod">Payout Method</label>  <!-- Fixed: Added 'for' attribute -->
+        <div>
+            <select id="payoutMethod" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" required>
+                <option value="" disabled selected>Select payout method</option>
+                <option value="wallet">Wallet</option>
+                <option value="bankAccount">Bank Account</option>
+            </select>
+        </div>
+    </div>
 
-                <!-- Always Visible Fields -->
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" placeholder="Enter your name" required>
-                </div>
-                <div class="form-group">
-                    <label for="accountNumber">Account Number</label>
-                    <input type="text" id="accountNumber" placeholder="Enter your account number" required>
-                </div>
+    <!-- Always Visible Fields -->
+    <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" class="w-full p-3 input-field" placeholder="Enter your full name" required>
+    </div>
+    <div class="form-group">
+        <label for="accountNumber">Account Number</label>
+        <input type="text" id="accountNumber" class="w-full p-3 input-field" placeholder="Enter account number" required>
+    </div>
 
-                <!-- Conditional Fields (Bank Account Only) -->
-                <div id="bankFields" style="display: none;">
-                    <div class="form-group">
-                        <label for="bankName">Bank Name</label>
-                        <input type="text" id="bankName" placeholder="Enter bank name (e.g., Banque Misr)">
-                    </div>
-                    <div class="form-group">
-                        <label for="branchName">Branch Name</label>
-                        <input type="text" id="branchName" placeholder="Enter branch name (e.g., Sharm El-Sheikh)">
-                    </div>
+    <!-- Conditional Fields (Bank Account Only) -->
+    <div id="bankFields" style="display: none;">
+        <div class="form-group">
+            <label for="bankName">Bank Name</label>
+            <input type="text" id="bankName" class="w-full p-3 input-field" placeholder="e.g., Banque Misr">
+        </div>
+        <div class="form-group">
+            <label for="branchName">Branch Name</label>
+            <input type="text" id="branchName" class="w-full p-3 input-field" placeholder="e.g., Sharm El-Sheikh">
+        </div>
+    </div>
 
-                  
-                </div>
-
-              
-            </form>
+    <button type="submit" class="btn-primary save-btn"><i class="fa-regular fa-floppy-disk"></i></button>
+</form>
         </div>
     </div>
 
