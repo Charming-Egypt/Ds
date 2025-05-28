@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        const userId = getCookie('userId');
+        const userId = getCookie('uid');
         if (!userId) {
             showAlert("User not authenticated. Please login again.", "error");
             return;
