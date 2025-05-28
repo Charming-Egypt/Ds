@@ -198,16 +198,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
 
-    // Debug initialization
-    console.log('Payout System Initializing...');
-    console.log('Elements:', {
-        form: !!payoutForm,
-        methodSelect: !!payoutMethod,
-        bankFields: !!bankFields,
-        bankName: !!bankName,
-        branchName: !!branchName
-    });
-
+    
     // Enhanced toggle function with validation
     function toggleBankFields() {
         if (!payoutMethod || !bankFields) {
@@ -216,8 +207,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         const isBankAccount = payoutMethod.value === 'bankAccount';
-        console.log(`Toggling bank fields (${isBankAccount ? 'show' : 'hide'})`);
-
+        
         bankFields.style.display = isBankAccount ? 'block' : 'none';
         
         if (bankName && branchName) {
@@ -294,20 +284,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
         try {
             // Firebase save operation
-            console.log("Saving to Firebase:", payoutData);
-            await firebase.database().ref(`egy_user/${userId}/payout_method`).set(payoutData);
+           await firebase.database().ref(`egy_user/${userId}/payout_method`).set(payoutData);
             
             // Success handling
             showAlert("Payout method saved successfully!", "success");
-            console.log("Save successful");
             
-            // Optional: Reset form after successful save
-            // payoutForm.reset();
-            // toggleBankFields();
+            
 
         } catch (error) {
-            console.error("Firebase save error:", error);
-            showAlert(`Save failed: ${error.message}`, "error");
+             showAlert(`Save failed: ${error.message}`, "error");
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -322,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.custom-alert').forEach(el => el.remove());
         
         const alertDiv = document.createElement('div');
-        alertDiv.className = `custom-alert fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+        alertDiv.className = `custom-alert fixed bottom-4 right-4 p-4 rounded-md shadow-lg ${
             type === 'success' ? 'bg-green-500' : 'bg-red-500'
         } text-white z-50 transform transition-all duration-300`;
         
