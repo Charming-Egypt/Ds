@@ -138,12 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-      }
+
     
       const isUserLoggedIn = getCookie('username');
 
@@ -188,6 +183,7 @@ const profilePhoto2 = document.querySelector('.profile-photo2');
 
 
 
+
 document.addEventListener("DOMContentLoaded", function() {
     // Form elements
     const payoutForm = document.getElementById('payoutForm');
@@ -195,95 +191,161 @@ document.addEventListener("DOMContentLoaded", function() {
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
-    
 
+    // Debug initialization
+    console.log('Payout System Initializing...');
+    console.log('Elements:', {
+        form: !!payoutForm,
+        methodSelect: !!payoutMethod,
+        bankFields: !!bankFields,
+        bankName: !!bankName,
+        branchName: !!branchName
+    });
 
-  
-    // Toggle bank fields visibility
+    // Enhanced toggle function with validation
     function toggleBankFields() {
-        const showBankFields = payoutMethod.value === 'bankAccount';
-        bankFields.style.display = showBankFields ? 'block' : 'none';
-        bankName.required = showBankFields;
-        branchName.required = showBankFields;
+        if (!payoutMethod || !bankFields) {
+            console.error('Essential elements missing for toggle');
+            return;
+        }
+
+        const isBankAccount = payoutMethod.value === 'bankAccount';
+        console.log(`Toggling bank fields (${isBankAccount ? 'show' : 'hide'})`);
+
+        bankFields.style.display = isBankAccount ? 'block' : 'none';
+        
+        if (bankName && branchName) {
+            bankName.required = isBankAccount;
+            branchName.required = isBankAccount;
+        }
     }
 
-    // Initialize on load
+    // Initialize form state
     toggleBankFields();
-    
-    // Handle method change
     payoutMethod.addEventListener('change', toggleBankFields);
 
-    // Form submission
+    // Firebase form submission
     payoutForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // Validate Firebase availability
+        if (typeof firebase === 'undefined' || !firebase.database) {
+            showAlert("Firebase not loaded. Please refresh the page.", "error");
+            return;
+        }
+
         const userId = getCookie('userId');
-        try {
-            // Validate user
-            if (!userId) {
-                throw new Error("User not authenticated");
+        if (!userId) {
+            showAlert("User not authenticated. Please login again.", "error");
+            return;
+        }
+
+        // Get form elements safely
+        const nameEl = document.getElementById("name");
+        const accountEl = document.getElementById("accountNumber");
+        
+        if (!nameEl || !accountEl) {
+            showAlert("Form elements missing. Please refresh the page.", "error");
+            return;
+        }
+
+        // Prepare data with validation
+        const payoutData = {
+            method: payoutMethod.value,
+            name: nameEl.value.trim(),
+            accountNumber: accountEl.value.trim(),
+            updatedAt: Date.now()
+        };
+
+        // Validate required fields
+        if (!payoutData.name || !payoutData.accountNumber) {
+            showAlert("Name and account number are required", "error");
+            return;
+        }
+
+        // Add bank details if applicable
+        if (payoutData.method === "bankAccount") {
+            if (!bankName || !branchName) {
+                showAlert("Bank fields not found", "error");
+                return;
             }
 
-            // Get form values
-            const method = payoutMethod.value;
-            const name = document.getElementById("name").value.trim();
-            const accountNumber = document.getElementById("accountNumber").value.trim();
-
-            // Validate required fields
-            if (!name || !accountNumber) {
-                throw new Error("Name and account number are required");
+            payoutData.bankName = bankName.value.trim();
+            payoutData.branchName = branchName.value.trim();
+            
+            if (!payoutData.bankName || !payoutData.branchName) {
+                showAlert("Bank name and branch are required", "error");
+                return;
             }
+        }
 
-            // Prepare data object
-            const payoutData = {
-                method,
-                name,
-                accountNumber,
-                updatedAt: Date.now()
-            };
-
-            // Add bank details if method is bankAccount
-            if (method === "bankAccount") {
-                payoutData.bankName = bankName.value.trim();
-                payoutData.branchName = branchName.value.trim();
-                
-                if (!payoutData.bankName || !payoutData.branchName) {
-                    throw new Error("Bank name and branch are required for bank transfers");
-                }
-            }
-
-            // Disable button during submission
-            const submitBtn = payoutForm.querySelector('.save-btn');
+        // UI feedback
+        const submitBtn = payoutForm.querySelector('.save-btn');
+        if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+        }
 
-            // Save to Firebase
+        try {
+            // Firebase save operation
+            console.log("Saving to Firebase:", payoutData);
             await firebase.database().ref(`egy_user/${userId}/payout_method`).set(payoutData);
             
-            // Show success
+            // Success handling
             showAlert("Payout method saved successfully!", "success");
+            console.log("Save successful");
             
+            // Optional: Reset form after successful save
+            // payoutForm.reset();
+            // toggleBankFields();
+
         } catch (error) {
-            console.error("Save error:", error);
-            showAlert(error.message || "Failed to save payout method", "error");
+            console.error("Firebase save error:", error);
+            showAlert(`Save failed: ${error.message}`, "error");
         } finally {
-            // Re-enable button
-            const submitBtn = payoutForm.querySelector('.save-btn');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Save';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Save';
+            }
         }
     });
 
-    // Custom alert function
+    // Enhanced alert function
     function showAlert(message, type = "success") {
+        // Remove existing alerts first
+        document.querySelectorAll('.custom-alert').forEach(el => el.remove());
+        
         const alertDiv = document.createElement('div');
-        alertDiv.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+        alertDiv.className = `custom-alert fixed top-4 right-4 p-4 rounded-md shadow-lg ${
             type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        } text-white`;
-        alertDiv.textContent = message;
+        } text-white z-50 transform transition-all duration-300`;
+        
+        alertDiv.innerHTML = `
+            <div class="flex items-center">
+                <i class="bx ${type === 'success' ? 'bx-check-circle' : 'bx-error'} mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
         document.body.appendChild(alertDiv);
         
+        // Animate in
         setTimeout(() => {
-            alertDiv.remove();
+            alertDiv.classList.remove('opacity-0', 'translate-y-4');
+        }, 10);
+        
+        // Auto-dismiss
+        setTimeout(() => {
+            alertDiv.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => alertDiv.remove(), 300);
         }, 5000);
+    }
+
+    // Cookie helper function
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
     }
 });
