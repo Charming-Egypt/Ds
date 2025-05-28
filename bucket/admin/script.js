@@ -138,6 +138,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      }
+    
+      const isUserLoggedIn = getCookie('username');
+
+      
+
+      if (isUserLoggedIn) {
+        document.getElementById('userName').value = isUserLoggedIn;
+        document.getElementById('userEmail').value = getCookie('email');
+        document.getElementById('userPhone').value = getCookie('phone');
+        const backgroundImageUrl = getCookie('photo');
+        
+        // Set default profile photo if none exists
+        const profilePhoto = document.querySelector('.profile-photo');
+        profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        profilePhoto.onerror = function() {
+          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        };
+
+
+const profilePhoto2 = document.querySelector('.profile-photo2');
+        profilePhoto2.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        profilePhoto2.onerror = function() {
+          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        };
+        
+
+      } else {
+        
+      } 
+
+
+
+
+
+
+
+
 
 
 
@@ -152,7 +195,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
+    const userId = getCookie('userId');
 
+
+  
     // Toggle bank fields visibility
     function toggleBankFields() {
         const showBankFields = payoutMethod.value === 'bankAccount';
@@ -170,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Form submission
     payoutForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const userId = getCookie('userId');
+        
         try {
             // Validate user
             if (!userId) {
