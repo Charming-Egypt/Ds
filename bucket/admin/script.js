@@ -135,19 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-document.getElementById("editPayoutMethod").addEventListener("click", function () {
-    const form = document.getElementById("payoutForm");
-    if (form.classList.contains("disabled")) {
-        form.classList.remove("disabled");
-        this.textContent = "Save Changes";
-    } else {
-        form.classList.add("disabled");
-        this.textContent = "Edit Payout Method";
 
-        // Save changes to Firebase
-        savePayoutMethod();
-    }
-});
 
 
 function savePayoutMethod() {
