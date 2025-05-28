@@ -127,21 +127,21 @@ const utils = {
   },
 
   showLoading: () => {
-    elements.spinner.classList.remove('hidden');
+    if (elements.spinner) elements.spinner.classList.remove('hidden');
     if (elements.saveBtn) elements.saveBtn.disabled = true;
   },
 
   hideLoading: () => {
-    elements.spinner.classList.add('hidden');
+    if (elements.spinner) elements.spinner.classList.add('hidden');
     if (elements.saveBtn) elements.saveBtn.disabled = false;
   },
 
   sanitizeInput: (input) => {
     return input.trim()
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .replace(/'/g, '');
   },
 
   validateTripData: (data) => {
@@ -204,49 +204,91 @@ const utils = {
 // Trip Management Functions
 const tripManager = {
   resetForm: () => {
-    elements.tripForm.reset();
-    elements.tripId.value = '';
-    elements.ownerId.value = '';
-    elements.bookingLink.value = '';
-    elements.editorTitle.textContent = 'Create New Trip';
-    elements.deleteBtn.classList.add('hidden');
+    if (elements.tripForm) elements.tripForm.reset();
+    if (elements.tripId) elements.tripId.value = '';
+    if (elements.ownerId) elements.ownerId.value = '';
+    if (elements.bookingLink) elements.bookingLink.value = '';
+    if (elements.editorTitle) elements.editorTitle.textContent = 'Create New Trip';
+    if (elements.deleteBtn) elements.deleteBtn.classList.add('hidden');
     
-    elements.imageList.innerHTML = '';
-    elements.videoList.innerHTML = '';
-    elements.includedList.innerHTML = '';
-    elements.notIncludedList.innerHTML = '';
-    elements.timelineList.innerHTML = '';
-    elements.whatToBringList.innerHTML = '';
-    elements.tourTypeList.innerHTML = '';
+    if (elements.imageList) elements.imageList.innerHTML = '';
+    if (elements.videoList) elements.videoList.innerHTML = '';
+    if (elements.includedList) elements.includedList.innerHTML = '';
+    if (elements.notIncludedList) elements.notIncludedList.innerHTML = '';
+    if (elements.timelineList) elements.timelineList.innerHTML = '';
+    if (elements.whatToBringList) elements.whatToBringList.innerHTML = '';
+    if (elements.tourTypeList) elements.tourTypeList.innerHTML = '';
   },
 
   showListSection: () => {
-    elements.tripListSection.classList.remove('hidden');
-    elements.tripEditorSection.classList.add('hidden');
-    elements.dashboardSection.classList.add('hidden');
-    elements.tripListTab.classList.add('tab-active');
-    elements.tripEditorTab.classList.remove('tab-active');
-    elements.dashboardTab.classList.remove('tab-active');
+    if (elements.tripListSection) {
+      elements.tripListSection.classList.remove('hidden');
+    } else {
+      console.warn('tripListSection element not found');
+    }
+    if (elements.tripEditorSection) {
+      elements.tripEditorSection.classList.add('hidden');
+    }
+    if (elements.dashboardSection) {
+      elements.dashboardSection.classList.add('hidden');
+    }
+    if (elements.tripListTab) {
+      elements.tripListTab.classList.add('tab-active');
+    }
+    if (elements.tripEditorTab) {
+      elements.tripEditorTab.classList.remove('tab-active');
+    }
+    if (elements.dashboardTab) {
+      elements.dashboardTab.classList.remove('tab-active');
+    }
     localStorage.setItem('activeSection', 'tripList');
   },
 
   showEditorSection: () => {
-    elements.tripListSection.classList.add('hidden');
-    elements.tripEditorSection.classList.remove('hidden');
-    elements.dashboardSection.classList.add('hidden');
-    elements.tripListTab.classList.remove('tab-active');
-    elements.tripEditorTab.classList.add('tab-active');
-    elements.dashboardTab.classList.remove('tab-active');
+    if (elements.tripListSection) {
+      elements.tripListSection.classList.add('hidden');
+    }
+    if (elements.tripEditorSection) {
+      elements.tripEditorSection.classList.remove('hidden');
+    } else {
+      console.warn('tripEditorSection element not found');
+    }
+    if (elements.dashboardSection) {
+      elements.dashboardSection.classList.add('hidden');
+    }
+    if (elements.tripListTab) {
+      elements.tripListTab.classList.remove('tab-active');
+    }
+    if (elements.tripEditorTab) {
+      elements.tripEditorTab.classList.add('tab-active');
+    }
+    if (elements.dashboardTab) {
+      elements.dashboardTab.classList.remove('tab-active');
+    }
     localStorage.setItem('activeSection', 'tripEditor');
   },
 
   showDashboardSection: () => {
-    elements.tripListSection.classList.add('hidden');
-    elements.tripEditorSection.classList.add('hidden');
-    elements.dashboardSection.classList.remove('hidden');
-    elements.tripListTab.classList.remove('tab-active');
-    elements.tripEditorTab.classList.remove('tab-active');
-    elements.dashboardTab.classList.add('tab-active');
+    if (elements.tripListSection) {
+      elements.tripListSection.classList.add('hidden');
+    }
+    if (elements.tripEditorSection) {
+      elements.tripEditorSection.classList.add('hidden');
+    }
+    if (elements.dashboardSection) {
+      elements.dashboardSection.classList.remove('hidden');
+    } else {
+      console.warn('dashboardSection element not found');
+    }
+    if (elements.tripListTab) {
+      elements.tripListTab.classList.remove('tab-active');
+    }
+    if (elements.tripEditorTab) {
+      elements.tripEditorTab.classList.remove('tab-active');
+    }
+    if (elements.dashboardTab) {
+      elements.dashboardTab.classList.add('tab-active');
+    }
     localStorage.setItem('activeSection', 'dashboard');
   },
 
@@ -345,8 +387,8 @@ const tripManager = {
     const approvedTrips = trips.filter(t => t.approved === true || t.approved === 'true');
     const pendingTrips = trips.filter(t => !t.approved || t.approved === 'false');
     
-    elements.totalTrips.textContent = approvedTrips.length;
-    elements.pendingTrips.textContent = pendingTrips.length;
+    if (elements.totalTrips) elements.totalTrips.textContent = approvedTrips.length;
+    if (elements.pendingTrips) elements.pendingTrips.textContent = pendingTrips.length;
   },
 
   canEditTrips: () => {
@@ -361,12 +403,14 @@ const tripManager = {
     return database.ref('egy_user/' + userId).once('value').then(snapshot => {
       const userData = snapshot.val();
       state.currentUserRole = userData?.role || 'user';
-      elements.userRole.textContent = state.currentUserRole;
-      elements.userRole.className = 'role-badge ' + (
-        state.currentUserRole === 'admin' ? 'role-admin' : 
-        state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
-      );
-      elements.userEmail.textContent = state.currentUser.email;
+      if (elements.userRole) {
+        elements.userRole.textContent = state.currentUserRole;
+        elements.userRole.className = 'role-badge ' + (
+          state.currentUserRole === 'admin' ? 'role-admin' : 
+          state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+        );
+      }
+      if (elements.userEmail) elements.userEmail.textContent = state.currentUser.email;
       if (elements.userName) {
         elements.userName.textContent = userData?.name || state.currentUser.email.split('@')[0];
       }
@@ -431,7 +475,6 @@ const tripManager = {
       
       if (tripsArray.length === 0 && elements.emptyState) {
         elements.emptyState.classList.remove('hidden');
-        return;
       } else if (elements.emptyState) {
         elements.emptyState.classList.add('hidden');
       }
@@ -730,7 +773,7 @@ const tripManager = {
           return;
         }
         
-        if (!tripManager.canEditTrip(existingTrip.owner)) {
+        if (!tripManager.canEditTrip(tripId)) {
           utils.showToast('You do not have permission to edit this trip', 'error');
           utils.hideLoading();
           return;
@@ -834,14 +877,14 @@ const dashboardManager = {
       statusChart = new Chart(statusCtx, {
         type: 'doughnut',
         data: {
-          labels: ['Confirmed', 'New', 'Cancelled', 'No Show'],
+          labels: ['Confirmed', 'New', ' PSU', 'No Show'],
           datasets: [{
             data: [0, 0, 0, 0],
             backgroundColor: [
               'rgba(76, 175, 80, 0.7)',
               'rgba(33, 150, 243, 0.7)',
               'rgba(244, 67, 54, 0.7)',
-              'rgba(255, 152, 0, 0.7)'
+              'rgba说什么呢？(255, 152, 0, 0.7)'
             ],
             borderColor: [
               'rgba(76, 175, 80, 1)',
@@ -869,7 +912,7 @@ const dashboardManager = {
             },
             tooltip: {
               backgroundColor: '#222',
-              titleColor: '#ffc107',
+              titleColor: '#fff',
               borderColor: '#666',
               borderWidth: 1,
               callbacks: {
@@ -887,9 +930,8 @@ const dashboardManager = {
       });
     }
 
-    const trendCtx = document.getElementById('trendChart')?.getContext('2d');
-    if (trendCtx) {
-      trendChart = new Chart(trendCtx, {
+ if (trendChart) {
+      trendChart = new Chart(trendChart, {
         type: 'line',
         data: {
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -916,7 +958,7 @@ const dashboardManager = {
             },
             tooltip: {
               backgroundColor: '#222',
-              titleColor: '#ffc107',
+              titleColor: '#fff',
               borderColor: '#666',
               borderWidth: 1,
               mode: 'index',
@@ -942,9 +984,9 @@ const dashboardManager = {
       });
     }
 
-    const guestCtx = document.getElementById('guestChart')?.getContext('2d');
-    if (guestCtx) {
-      guestChart = new Chart(guestCtx, {
+    const guestChart = document.getElementById('guestChart')?.getContext('2d');
+    if (guestChart) {
+      guestChart = new Chart(guestChart, {
         type: 'doughnut',
         data: {
           labels: ['Adults', 'Children', 'Infants'],
@@ -982,7 +1024,7 @@ const dashboardManager = {
             },
             tooltip: {
               backgroundColor: '#222',
-              titleColor: '#ffc107',
+              titleColor: '#fff',
               borderColor: '#666',
               borderWidth: 1,
               callbacks: {
@@ -1000,9 +1042,9 @@ const dashboardManager = {
       });
     }
 
-    const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-    if (tourPerformanceDom) {
-      tourPerformanceChart = echarts.init(tourPerformanceDom);
+    const tourPerformanceChart = document.getElementById('tourPerformanceChart');
+    if (tourPerformanceChart) {
+      tourPerformanceChart = echarts.init(tourPerformanceChart);
       
       window.addEventListener('resize', function() {
         tourPerformanceChart.resize();
@@ -1012,14 +1054,13 @@ const dashboardManager = {
 
   processBookingData: (data) => {
     try {
-      bookingData = Object.values(data || {});
+      bookingData = Object.values(data || []);
       filteredBookingData = [...bookingData];
       
       dashboardManager.updateStatsCards();
-      dashboardManager.updateStatusChart();
-      dashboardManager.updateTrendChart();
+      dashboardManager.updateChart();
       dashboardManager.updateGuestChart();
-      dashboardManager.updateTourPerformanceChart();
+      dashboardManager.updateTourPerformance();
     } catch (error) {
       console.error("Error processing booking data:", error);
     }
@@ -1030,9 +1071,9 @@ const dashboardManager = {
       const start = new Date(startDate);
       const end = new Date(endDate);
       
-      filteredBookingData = bookingData.filter(booking => {
-        if (!booking.tripDate) return false;
-        const bookingDate = new Date(booking.tripDate);
+      filteredBookingData = bookingData.filter(t => {
+        if (!t.tripDate) return false;
+        const bookingDate = new Date(t.tripDate);
         return bookingDate >= start && bookingDate <= end;
       });
       
@@ -1076,7 +1117,7 @@ const dashboardManager = {
       
       const totalGuests = confirmedBookings.reduce((total, booking) => {
         return total + 
-          (parseInt(booking.adults) || 0) + 
+          (parseInt(booking.elements) || 0) + 
           (parseInt(booking.childrenUnder12) || 0) + 
           (parseInt(booking.infants) || 0);
       }, 0);
@@ -1156,7 +1197,7 @@ const dashboardManager = {
       
       if (elements.trendUpdated) elements.trendUpdated.textContent = currentYear;
     } catch (error) {
-      console.error("Error updating trend chart:", error);
+      console.error("Error updating trendChart:", error);
     }
   },
 
@@ -1193,19 +1234,8 @@ const dashboardManager = {
 
   updateTourPerformanceChart: () => {
     try {
-      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-      if (!tourPerformanceDom) return;
+      if (!tourPerformanceChart) return;
       
-      if (!tourPerformanceChart || typeof tourPerformanceChart.setOption !== 'function') {
-        tourPerformanceChart = echarts.init(tourPerformanceDom);
-        
-        window.addEventListener('resize', function() {
-          if (tourPerformanceChart && typeof tourPerformanceChart.resize === 'function') {
-            tourPerformanceChart.resize();
-          }
-        });
-      }
-
       const tourData = {};
       filteredBookingData.forEach(booking => {
         if (booking.resStatus?.toLowerCase() === 'confirmed') {
@@ -1232,7 +1262,7 @@ const dashboardManager = {
           : parseFloat(item[1].revenue.toFixed(2));
       });
 
-      const tourPerformanceOption = {
+      const option = {
         backgroundColor: 'transparent',
         tooltip: {
           trigger: 'axis',
@@ -1242,8 +1272,8 @@ const dashboardManager = {
           formatter: function(params) {
             const data = params[0];
             return tourPerformanceMetric === 'bookings'
-              ? `${data.name}<br/>Bookings: ${data.value}`
-              : `${data.name}<br/>Revenue: EGP ${data.value.toFixed(2)}`;
+              ? `${data.name}<br />${tourPerformanceMetric}: ${data.value}`
+              : `${data.name}<br />Revenue: EGP ${data.value.toFixed(2)}`;
           }
         },
         grid: {
@@ -1290,18 +1320,9 @@ const dashboardManager = {
         }]
       };
 
-      if (tourPerformanceChart && typeof tourPerformanceChart.dispose === 'function') {
-        tourPerformanceChart.dispose();
-      }
-      
-      tourPerformanceChart = echarts.init(tourPerformanceDom);
-      tourPerformanceChart.setOption(tourPerformanceOption);
+      tourPerformanceChart.setOption(option);
     } catch (error) {
       console.error("Error updating tour performance chart:", error);
-      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-      if (tourPerformanceDom) {
-        tourPerformanceChart = echarts.init(tourPerformanceDom);
-      }
     }
   },
 
@@ -1421,8 +1442,8 @@ const dashboardManager = {
         tour: '',
         tripDate: '',
         adults: confirmedBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
-        childrenUnder12: confirmedBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
-        infants: confirmedBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
+        childrenUnder12: confirmedBookings.reduce((sum, c) => sum + (parseInt(c.childrenUnder12) || 0), 0),
+        infants: confirmedBookings.reduce((sum, i) => sum + (parseInt(i.infants) || 0), 0),
         phone: '',
         email: '',
         paymentStatus: ''
@@ -1484,10 +1505,10 @@ const dashboardManager = {
         }, 100);
       }).catch(error => {
         console.error('Error generating Excel file:', error);
-        utils.showToast('Error generating Excel file: ' + error.message, 'error');
+        utils.showToast('Error generating Excel: ' + error.message, 'error');
       });
     } catch (error) {
-      console.error('Error in exportToExcel:', error);
+      console.error('Error exporting to Excel:', error);
       utils.showToast('Error exporting data: ' + error.message, 'error');
     }
   },
@@ -1510,13 +1531,12 @@ const dashboardManager = {
         case 'tourPerformanceChart':
           if (tourPerformanceChart) {
             filename = `tour-performance-${new Date().toISOString().slice(0,10)}.png`;
-            tourPerformanceChart.getDataURL({
+            const url = tourPerformanceChart.getDataURL({
               type: 'png',
               pixelRatio: 2,
               backgroundColor: '#333'
-            }).then(url => {
-              utils.downloadImage(url, filename);
             });
+            utils.downloadImage(url, filename);
           }
           break;
       }
@@ -1535,9 +1555,8 @@ const dashboardManager = {
   },
 
   initDateRangePicker: () => {
-    const pickerElement = document.getElementById('dateRangePicker');
-    if (pickerElement) {
-      dateRangePicker = flatpickr(pickerElement, {
+    if (elements.dateRangePicker) {
+      dateRangePicker = flatpickr(elements.dateRangePicker, {
         mode: "range",
         dateFormat: "Y-m-d",
         onClose: function(selectedDates) {
@@ -1557,7 +1576,7 @@ const dashboardManager = {
     try {
       if (!state.currentUser) return;
       
-      const bookingsRef = database.ref("trip-bookings")
+      const bookingsRef = database.ref("trip_bookings")
         .orderByChild("owner")
         .equalTo(state.currentUser.uid);
       
@@ -1656,15 +1675,14 @@ const payoutManager = {
       console.log("Saving to Firebase:", payoutData);
       await firebase.database().ref(`egy_user/${state.currentUser.uid}/payout_method`).set(payoutData);
       
-      utils.showToast("Payout method saved successfully!", "success");
-      console.log("Save successful");
+      utils.showToast('Payout method saved successfully!', 'success');
     } catch (error) {
-      console.error("Firebase save error:", error);
-      utils.showToast(`Save failed: ${error.message}`, "error");
+      console.error('Error saving payout data:', error);
+      utils.showToast(`Save failed: ${error.message}`, 'error');
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Save';
+        submitBtn.innerHTML = 'Save';
       }
     }
   }
@@ -1672,13 +1690,13 @@ const payoutManager = {
 
 // Sidebar and Navigation Functions
 const navigationManager = {
-  handleSidebarMenu: () => {
-    const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+  handleSidebarNavigation: () => {
+    const allSideMenu = document.querySelectorAll('#sidebar .side-menu li a');
     
     allSideMenu.forEach(item => {
       const li = item.parentElement;
       
-      item.addEventListener('click', function (e) {
+      item.addEventListener('click', function(e) {
         e.preventDefault();
         allSideMenu.forEach(i => {
           i.parentElement.classList.remove('active');
@@ -1753,6 +1771,8 @@ const navigationManager = {
     if (activeSection) {
       activeSection.classList.remove('hidden');
       activeSection.classList.add('active');
+    } else {
+      console.warn(`Section ${sectionId}-section not found`);
     }
     
     const sideMenuItems = document.querySelectorAll('#sidebar .side-menu li[data-section]');
@@ -1773,6 +1793,30 @@ const navigationManager = {
       tripManager.showEditorSection();
     }
   }
+};
+
+// New Functions for HTML Event Handlers
+const switchTab = (tabId) => {
+  navigationManager.showSection(tabId);
+};
+
+const applyFilters = () => {
+  if (currentPeriod === 'custom' && dateRangePicker && dateRangePicker.selectedDates.length === 2) {
+    dashboardManager.filterDataByDateRange(dateRangePicker.selectedDates[0], dateRangePicker.selectedDates[1]);
+  } else {
+    filteredBookingData = dashboardManager.applyPeriodFilter();
+  }
+  dashboardManager.updateAllCharts();
+  utils.showToast('Filters applied successfully!', 'success');
+};
+
+const refreshBookings = () => {
+  dashboardManager.loadBookingData();
+  utils.showToast('Bookings refreshed!', 'success');
+};
+
+const exportToExcel = () => {
+  dashboardManager.exportToExcel();
 };
 
 // Event Listeners
@@ -1880,38 +1924,10 @@ const setupEventListeners = () => {
     }
   }
 
-  navigationManager.handleSidebarMenu();
+  navigationManager.handleSidebarNavigation();
   navigationManager.handleSidebarToggle();
   navigationManager.handleSearchForm();
 };
 
 // Initialize App
-const initApp = () => {
-  firebase.database().ref('.info/connected').on('value', (snapshot) => {
-    if (snapshot.val() === false) {
-      utils.showToast('Working offline - changes will sync when connection resumes', 'warning');
-    }
-  });
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      state.currentUser = user;
-      tripManager.loadUserRole(user.uid).then(() => {
-        tripManager.loadTripList();
-        dashboardManager.initCharts();
-        dashboardManager.initDateRangePicker();
-        dashboardManager.loadBookingData();
-        setupEventListeners();
-        
-        const savedSection = localStorage.getItem('activeSection');
-        const defaultSection = 'dashboard';
-        navigationManager.showSection(savedSection || defaultSection);
-      });
-    } else {
-      window.location.href = 'https://www.discover-sharm.com/p/login.html';
-    }
-  });
-};
-
-// Start the app
-initApp();
+const initApp
