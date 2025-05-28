@@ -870,8 +870,8 @@
                     <label>Payout Method</label>
                     <div>
                         <select class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                            <option for="bankAccount" id="bankAccount" name="payoutMethod" value="bank_account" checked>Bank Account</option>
-                            <option for="wallet" id="wallet" name="payoutMethod" value="wallet">Wallet</option>
+                            <option value="wallet">Wallet</option>
+                            <option value="bankAccount">Bank Account</option>
                         </select>
                     </div>
                 </div>
@@ -887,7 +887,7 @@
                 </div>
 
                 <!-- Conditional Fields (Bank Account Only) -->
-                <div id="bankFields" class="conditional-fields">
+                <div id="bankFields" style="display: none;">
                     <div class="form-group">
                         <label for="bankName">Bank Name</label>
                         <input type="text" id="bankName" placeholder="Enter bank name (e.g., Banque Misr)">
