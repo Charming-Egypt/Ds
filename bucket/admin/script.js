@@ -176,28 +176,98 @@ function savePayoutMethod() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Get all elements - make sure IDs match exactly
-    const payoutMethod = document.getElementById('payoutMethod'); // Must match HTML
+    // Form elements
+    const payoutForm = document.getElementById('payoutForm');
+    const payoutMethod = document.getElementById('payoutMethod');
     const bankFields = document.getElementById('bankFields');
     const bankName = document.getElementById('bankName');
     const branchName = document.getElementById('branchName');
 
-    // 2. Toggle function
+    // Toggle bank fields visibility
     function toggleBankFields() {
-        // Check the current value
-        const isBankAccount = payoutMethod.value === 'bankAccount';
-        
-        // Toggle visibility
-        bankFields.style.display = isBankAccount ? 'block' : 'none';
-        
-        // Toggle required fields
-        bankName.required = isBankAccount;
-        branchName.required = isBankAccount;
+        const showBankFields = payoutMethod.value === 'bankAccount';
+        bankFields.style.display = showBankFields ? 'block' : 'none';
+        bankName.required = showBankFields;
+        branchName.required = showBankFields;
     }
 
-    // 3. Initialize immediately
+    // Initialize on load
     toggleBankFields();
-
-    // 4. Add event listener
+    
+    // Handle method change
     payoutMethod.addEventListener('change', toggleBankFields);
+
+    // Form submission
+    payoutForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+            // Validate user
+            if (!CurrentuserId) {
+                throw new Error("User not authenticated");
+            }
+
+            // Get form values
+            const method = payoutMethod.value;
+            const name = document.getElementById("name").value.trim();
+            const accountNumber = document.getElementById("accountNumber").value.trim();
+
+            // Validate required fields
+            if (!name || !accountNumber) {
+                throw new Error("Name and account number are required");
+            }
+
+            // Prepare data object
+            const payoutData = {
+                method,
+                name,
+                accountNumber,
+                updatedAt: Date.now()
+            };
+
+            // Add bank details if method is bankAccount
+            if (method === "bankAccount") {
+                payoutData.bankName = bankName.value.trim();
+                payoutData.branchName = branchName.value.trim();
+                
+                if (!payoutData.bankName || !payoutData.branchName) {
+                    throw new Error("Bank name and branch are required for bank transfers");
+                }
+            }
+
+            // Disable button during submission
+            const submitBtn = payoutForm.querySelector('.save-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+            // Save to Firebase
+            await firebase.database().ref(`egy_user/${CurrentuserId}/payout_method`).set(payoutData);
+            
+            // Show success
+            showAlert("Payout method saved successfully!", "success");
+            
+        } catch (error) {
+            console.error("Save error:", error);
+            showAlert(error.message || "Failed to save payout method", "error");
+        } finally {
+            // Re-enable button
+            const submitBtn = payoutForm.querySelector('.save-btn');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Save';
+        }
+    });
+
+    // Custom alert function
+    function showAlert(message, type = "success") {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`;
+        alertDiv.textContent = message;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
 });
