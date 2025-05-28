@@ -158,7 +158,18 @@
                 <div class="head-title">
                     <div class="left">
                         <h1>Dashboard</h1>
-   
+                 <!-- Filter Bar -->
+                    <div class="grid grid-cols-2 gap-2 w-[90%]">
+
+            <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
+            <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
+            <button class="filter-btn whitespace-nowrap" data-period="year">Year</button>
+            <button class="filter-btn active whitespace-nowrap" data-period="all">All</button>
+            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap col-span-2" placeholder="Select date range" />
+                    
+                    
+                    </div>
+
                     </div>
                 </div>
 
@@ -578,18 +589,7 @@
                 <i class="fas fa-file-excel mr-2"></i>Export
             </button>
 
-          <!-- Filter Bar -->
-                    <div class="grid grid-cols-2 gap-2 w-[90%]">
-
-            <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
-            <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
-            <button class="filter-btn whitespace-nowrap" data-period="year">Year</button>
-            <button class="filter-btn active whitespace-nowrap" data-period="all">All</button>
-            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap col-span-2" placeholder="Select date range" />
-                    
-                    
-                    </div>
-
+          
                 </div>
 
                 <div class="container w-[90%]">
