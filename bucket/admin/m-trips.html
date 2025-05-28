@@ -381,25 +381,25 @@
             <div class="lg:col-span-2 space-y-4">
               <!-- Basic Info Card -->
               <div class="glass-card p-5 rounded-xl">
-                <h3 class="font-medium text-slate-700 mb-4 flex items-center">
+                <h3 class="font-medium text-amber-500 mb-4 flex items-center">
                   <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
                 </h3>
                 
                 <div class="space-y-4">
                   <div>
-                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Trip Name*</label>
+                    <label for="name" class="block text-sm font-medium  mb-1">Trip Name*</label>
                     <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                   </div>
                   
                   <div>
-                    <label for="bookingLink" class="block text-sm font-medium text-slate-700 mb-1">Booking Link ID*</label>
+                    <label for="bookingLink" class="block text-sm font-medium  mb-1">Booking Link ID*</label>
                     <div class="flex">
                       <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 text-slate-500 text-sm">
                         ID 
                       </span>
                       <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
                     </div>
-                    <p class="text-xs text-slate-500 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
+                    <p class="text-xs text-slate-300 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
                   </div>
                   
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -415,14 +415,14 @@
                       </div>
                     </div>
                     <div>
-                      <label for="duration" class="block text-sm font-medium text-slate-700 mb-1">Duration*</label>
+                      <label for="duration" class="block text-sm font-medium mb-1">Duration*</label>
                       <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
                     </div>
                   </div>
                   
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label for="category" class="block text-sm font-medium text-slate-700 mb-1">Category*</label>
+                      <label for="category" class="block text-sm font-medium mb-1">Category*</label>
                       <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                         <option value="">Select Category</option>
                         <option value="Adventure">Adventure</option>
@@ -434,7 +434,7 @@
                   </div>
                   
                   <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700 mb-1">Short Description*</label>
+                    <label for="description" class="block text-sm font-medium mb-1">Short Description*</label>
                     <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
                   </div>
                 </div>
@@ -443,7 +443,7 @@
               <!-- Media Card -->
               <div class="glass-card p-5 rounded-xl">
                 <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-medium text-slate-700 flex items-center">
+                  <h3 class="font-medium flex items-center">
                     <i class="fas fa-images text-amber-500 mr-2"></i> Media
                   </h3>
                   <div class="flex space-x-2" id="mediaButtons">
@@ -458,7 +458,7 @@
                 
                 <div class="space-y-3">
                   <div>
-                    <label for="mainImage" class="block text-sm font-medium text-slate-700 mb-1">Main Image URL*</label>
+                    <label for="mainImage" class="block text-sm font-medium mb-1">Main Image URL*</label>
                     <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                   </div>
                   
@@ -495,7 +495,7 @@
                 <div class="grid grid-cols-1 gap-4">
                   <div>
                     <div class="flex justify-between items-center mb-3">
-                      <h3 class="font-medium text-slate-700 flex items-center">
+                      <h3 class="font-medium flex items-center">
                         <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
                       </h3>
                       <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
@@ -509,7 +509,7 @@
                   
                   <div>
                     <div class="flex justify-between items-center mb-3">
-                      <h3 class="font-medium text-slate-700 flex items-center">
+                      <h3 class="font-medium flex items-center">
                         <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
                       </h3>
                       <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
@@ -526,7 +526,7 @@
               <!-- What to Bring Card -->
               <div class="glass-card p-5 rounded-xl">
                 <div class="flex justify-between items-center mb-3">
-                  <h3 class="font-medium text-slate-700 flex items-center">
+                  <h3 class="font-medium flex items-center">
                     <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
                   </h3>
                   <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
@@ -541,7 +541,7 @@
               <!-- Extra Services Card -->
               <div class="glass-card p-5 rounded-xl">
                 <div class="flex justify-between items-center mb-3">
-                  <h3 class="font-medium text-slate-700 flex items-center">
+                  <h3 class="font-medium flex items-center">
                     <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
                   </h3>
                   <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
