@@ -853,7 +853,7 @@ async function submitForm() {
     };
 
     // Generate payment hash
-    const response = await fetch('https://api.discover-sharm.com/.netlify/functions/generate-hash', {
+    const response = await fetch('https://api.discover-sharm.com/hash', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
