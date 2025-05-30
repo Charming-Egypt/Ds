@@ -317,7 +317,7 @@ async function initializeApp() {
       currentUserRole = await getUserRole(user.uid);
     }
 
-    const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/payment-webhook', {
+    const response = await fetch('https://www.discover-sharm.com/p-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ merchantOrderId })
