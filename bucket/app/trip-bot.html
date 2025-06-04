@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Discover Sharm - مساعد الرحلات الذكي</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -103,11 +103,24 @@
       font-weight: 500;
     }
     #send-button:hover { background-color: #2980b9; }
+    #send-button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
     .typing-indicator {
       display: none;
       padding: 10px;
       color: #777;
       font-style: italic;
+    }
+    .typing-indicator::after {
+      content: ' ...';
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { content: ' .'; }
+      33% { content: ' ..'; }
+      66% { content: ' ...'; }
     }
     .trip-card {
       background: white;
@@ -124,7 +137,7 @@
       margin: 10px 0;
     }
     .price { font-weight: bold; color: var(--accent); }
-    .features ul { list-style: none; }
+    .features ul { list-style: none; padding: 0; }
     .features li {
       padding: 5px 0;
       padding-right: 20px;
@@ -154,100 +167,114 @@
       <div class="logo">Discover <span>Sharm</span></div>
       <div class="subtitle">مساعد الرحلات الذكي - اكتشف أفضل الرحلات في شرم الشيخ</div>
     </div>
-  </header>  <div class="container">
+  </header>
+  <div class="container">
     <div class="chat-container">
       <div class="chat-header">مساعد Discover Sharm - كيف يمكنني مساعدتك اليوم؟</div>
       <div class="chat-messages" id="chat-messages"></div>
-      <div class="typing-indicator" id="typing-indicator">جاري الكتابة...</div>
+      <div class="typing-indicator" id="typing-indicator">جاري الكتابة</div>
       <div class="chat-input">
         <input type="text" id="message-input" placeholder="اكتب استفسارك عن الرحلات هنا...">
         <button id="send-button">إرسال</button>
       </div>
     </div>
-  </div>  <script>
+  </div>
+  <script>
     const chatMessages = document.getElementById('chat-messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
-    const typingIndicator = document.getElementById('typing-indicator');
+    const typingIndicator = document.getElementById('typing-indicator');addBotMessage('مرحباً بك في Discover Sharm! 🏝️ كيف يمكنني مساعدتك في حجز رحلتك اليوم؟ يمكنك السؤال عن أي رحلة أو طلب التفاصيل عن عروضنا الخاصة.');
 
-    addBotMessage('مرحباً بك في Discover Sharm! 🏝️ كيف يمكنني مساعدتك في حجز رحلتك اليوم؟ يمكنك السؤال عن أي رحلة أو طلب التفاصيل عن عروضنا الخاصة.');
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
 
-    sendButton.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message) return;
 
-    function sendMessage() {
-      const message = messageInput.value.trim();
-      if (!message) return;
+  addUserMessage(message);
+  messageInput.value = '';
+  typingIndicator.style.display = 'block';
+  sendButton.disabled = true;
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
 
-      addUserMessage(message);
-      messageInput.value = '';
-      typingIndicator.style.display = 'block';
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+  fetch('https://ds-trip-bot.gm-093.workers.dev/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Language': 'ar'
+    },
+    body: JSON.stringify({ message })
+  })
+  .then(res => res.ok ? res.text() : Promise.reject())
+  .then(text => {
+    typingIndicator.style.display = 'none';
+    sendButton.disabled = false;
+    addBotMessage(text);
+  })
+  .catch(() => {
+    typingIndicator.style.display = 'none';
+    sendButton.disabled = false;
+    addBotMessage('عذرًا، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى لاحقًا.');
+  });
+}
 
-      fetch('https://ds-trip-bot.gm-093.workers.dev/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept-Language': 'ar'
-        },
-        body: JSON.stringify({ message })
-      })
-      .then(res => res.ok ? res.text() : Promise.reject())
-      .then(text => {
-        typingIndicator.style.display = 'none';
-        addBotMessage(text);
-      })
-      .catch(() => {
-        typingIndicator.style.display = 'none';
-        addBotMessage('عذرًا، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى لاحقًا.');
-      });
-    }
+function addUserMessage(message) {
+  const div = document.createElement('div');
+  div.className = 'message user-message';
+  div.textContent = message;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+}
 
-    function addUserMessage(message) {
-      const div = document.createElement('div');
-      div.className = 'message user-message';
-      div.textContent = message;
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+function addBotMessage(message) {
+  const div = document.createElement('div');
+  div.className = 'message bot-message';
 
-    function addBotMessage(message) {
-      const div = document.createElement('div');
-      div.className = 'message bot-message';
+  if (message.includes('اسم الرحلة:') || message.includes('Trip Name:')) {
+    div.innerHTML = formatTripData(message);
+  } else if (message.includes('<img')) {
+    div.innerHTML = message;
+  } else {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const safeMessage = message.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
+    div.innerHTML = safeMessage;
+  }
 
-      if (message.includes('اسم الرحلة:') || message.includes('Trip Name:')) {
-        div.innerHTML = formatTripData(message);
-      } else {
-        div.textContent = message;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+}
+
+function formatTripData(text) {
+  const trips = text.split('\n\n');
+  return trips.map(trip => {
+    const lines = trip.trim().split('\n');
+    let html = '<div class="trip-card">';
+    let features = [];
+
+    lines.forEach(line => {
+      if (line.startsWith('اسم الرحلة:')) html += `<h3>${line.replace('اسم الرحلة:', '').trim()}</h3>`;
+      else if (line.startsWith('السعر:')) html += `<p class="price">${line}</p>`;
+      else if (line.startsWith('يشمل:')) {
+        html += '<div class="features"><ul>';
+        features = line.replace('يشمل:', '').split(',').map(f => `<li>${f.trim()}</li>`).join('');
+        html += features + '</ul></div>';
       }
+      else if (line.startsWith('لا يشمل:')) {
+        html += '<div class="features not-included"><ul>';
+        features = line.replace('لا يشمل:', '').split(',').map(f => `<li>${f.trim()}</li>`).join('');
+        html += features + '</ul></div>';
+      }
+      else if (line.includes('http') && line.endsWith('.jpg')) {
+        html += `<img src="${line.trim()}" class="trip-image" loading="lazy">`;
+      }
+    });
 
-      chatMessages.appendChild(div);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    html += '</div>';
+    return html;
+  }).join('');
+}
 
-    function formatTripData(text) {
-      const trips = text.split('\n\n');
-      return trips.map(trip => {
-        const lines = trip.trim().split('\n');
-        let html = '<div class="trip-card">';
-
-        lines.forEach(line => {
-          if (line.includes('اسم الرحلة:')) {
-            html += `<h3>${line.replace('اسم الرحلة:', '').trim()}</h3>`;
-          } else if (line.includes('السعر:')) {
-            html += `<p class="price">${line.replace('السعر:', '').trim()}</p>`;
-          } else if (line.startsWith('✓')) {
-            html += '<div class="features"><ul>';
-            html += `<li>${line.replace('✓', '').trim()}</li>`;
-            html += '</ul></div>';
-          } else {
-            html += `<p>${line}</p>`;
-          }
-        });
-
-        html += '</div>';
-        return html;
-      }).join('');
-    }
-  </script></body>
+  </script>
+</body>
 </html>
