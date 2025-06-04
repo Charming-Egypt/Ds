@@ -285,7 +285,7 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 
                 // Send message to Cloudflare Worker
-                fetch('https://your-worker-url.workers.dev', {
+                fetch('https://ds-trip-bot.gm-093.workers.dev/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
