@@ -1,408 +1,253 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discover Sharm - مساعد الرحلات الذكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .logo span {
-            color: var(--accent);
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 70vh;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-top: 30px;
-        }
-        
-        .chat-header {
-            background-color: var(--secondary);
-            color: white;
-            padding: 15px 20px;
-            font-weight: 500;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #f9f9f9;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            max-width: 80%;
-            padding: 12px 15px;
-            border-radius: 10px;
-            line-height: 1.5;
-            position: relative;
-        }
-        
-        .user-message {
-            background-color: var(--light);
-            margin-left: auto;
-            border-bottom-right-radius: 0;
-            text-align: left;
-        }
-        
-        .bot-message {
-            background-color: var(--secondary);
-            color: white;
-            margin-right: auto;
-            border-bottom-left-radius: 0;
-        }
-        
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            background-color: white;
-            border-top: 1px solid #eee;
-        }
-        
-        #message-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: border 0.3s;
-        }
-        
-        #message-input:focus {
-            border-color: var(--secondary);
-        }
-        
-        #send-button {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 0 20px;
-            margin-right: 10px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-        
-        #send-button:hover {
-            background-color: #2980b9;
-        }
-        
-        .typing-indicator {
-            display: none;
-            padding: 10px;
-            color: #777;
-            font-style: italic;
-        }
-        
-        .trip-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin: 15px 0;
-            padding: 15px;
-            border-left: 4px solid var(--secondary);
-        }
-        
-        .trip-card h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .trip-image {
-            max-width: 100%;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        
-        .price {
-            font-weight: bold;
-            color: var(--accent);
-        }
-        
-        .features {
-            margin: 10px 0;
-        }
-        
-        .features ul {
-            list-style-type: none;
-        }
-        
-        .features li {
-            padding: 5px 0;
-            position: relative;
-            padding-right: 20px;
-        }
-        
-        .features li:before {
-            content: "•";
-            color: var(--success);
-            position: absolute;
-            right: 0;
-        }
-        
-        .not-included li:before {
-            color: var(--accent);
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .message {
-                max-width: 90%;
-            }
-            
-            .chat-container {
-                height: 65vh;
-            }
-        }
-        
-        /* Animation for messages */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .message {
-            animation: fadeIn 0.3s ease-out;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Sharm - مساعد الرحلات الذكي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #2ecc71;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .logo { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+    .logo span { color: var(--accent); }
+    .subtitle { font-size: 1.1rem; opacity: 0.9; }
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 70vh;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-top: 30px;
+    }
+    .chat-header {
+      background-color: var(--secondary);
+      color: white;
+      padding: 15px 20px;
+      font-weight: 500;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 15px;
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 10px;
+      line-height: 1.5;
+      position: relative;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .user-message {
+      background-color: var(--light);
+      margin-left: auto;
+      border-bottom-right-radius: 0;
+      text-align: left;
+    }
+    .bot-message {
+      background-color: var(--secondary);
+      color: white;
+      margin-right: auto;
+      border-bottom-left-radius: 0;
+    }
+    .chat-input {
+      display: flex;
+      padding: 15px;
+      background-color: white;
+      border-top: 1px solid #eee;
+    }
+    #message-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+    }
+    #send-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    #send-button:hover { background-color: #2980b9; }
+    .typing-indicator {
+      display: none;
+      padding: 10px;
+      color: #777;
+      font-style: italic;
+    }
+    .trip-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin: 15px 0;
+      padding: 15px;
+      border-left: 4px solid var(--secondary);
+    }
+    .trip-card h3 { color: var(--primary); margin-bottom: 10px; }
+    .trip-image {
+      max-width: 100%;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    .price { font-weight: bold; color: var(--accent); }
+    .features ul { list-style: none; }
+    .features li {
+      padding: 5px 0;
+      padding-right: 20px;
+      position: relative;
+    }
+    .features li:before {
+      content: "\2022";
+      color: var(--success);
+      position: absolute;
+      right: 0;
+    }
+    .not-included li:before { color: var(--accent); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 10px; }
+      .message { max-width: 90%; }
+      .chat-container { height: 65vh; }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">Discover <span>Sharm</span></div>
-            <div class="subtitle">مساعد الرحلات الذكي - اكتشف أفضل الرحلات في شرم الشيخ</div>
-        </div>
-    </header>
-    
+  <header>
     <div class="container">
-        <div class="chat-container">
-            <div class="chat-header">
-                مساعد Discover Sharm - كيف يمكنني مساعدتك اليوم؟
-            </div>
-            <div class="chat-messages" id="chat-messages">
-                <!-- Messages will appear here -->
-            </div>
-            <div class="typing-indicator" id="typing-indicator">
-                جاري الكتابة...
-            </div>
-            <div class="chat-input">
-                <input type="text" id="message-input" placeholder="اكتب استفسارك عن الرحلات هنا..." autofocus>
-                <button id="send-button">إرسال</button>
-            </div>
-        </div>
+      <div class="logo">Discover <span>Sharm</span></div>
+      <div class="subtitle">مساعد الرحلات الذكي - اكتشف أفضل الرحلات في شرم الشيخ</div>
     </div>
+  </header>  <div class="container">
+    <div class="chat-container">
+      <div class="chat-header">مساعد Discover Sharm - كيف يمكنني مساعدتك اليوم؟</div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="typing-indicator" id="typing-indicator">جاري الكتابة...</div>
+      <div class="chat-input">
+        <input type="text" id="message-input" placeholder="اكتب استفسارك عن الرحلات هنا...">
+        <button id="send-button">إرسال</button>
+      </div>
+    </div>
+  </div>  <script>
+    const chatMessages = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const typingIndicator = document.getElementById('typing-indicator');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatMessages = document.getElementById('chat-messages');
-            const messageInput = document.getElementById('message-input');
-            const sendButton = document.getElementById('send-button');
-            const typingIndicator = document.getElementById('typing-indicator');
-            
-            // Add welcome message
-            addBotMessage('مرحباً بك في Discover Sharm! 🏝️ كيف يمكنني مساعدتك في حجز رحلتك اليوم؟ يمكنك السؤال عن أي رحلة أو طلب التفاصيل عن عروضنا الخاصة.');
-            
-            // Send message when button is clicked
-            sendButton.addEventListener('click', sendMessage);
-            
-            // Send message when Enter is pressed
-            messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            function sendMessage() {
-                const message = messageInput.value.trim();
-                if (message === '') return;
-                
-                // Add user message to chat
-                addUserMessage(message);
-                messageInput.value = '';
-                
-                // Show typing indicator
-                typingIndicator.style.display = 'block';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Send message to Cloudflare Worker
-                fetch('https://ds-trip-bot.gm-093.workers.dev/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept-Language': 'ar' // Default to Arabic
-                    },
-                    body: JSON.stringify({ message: message })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(text => {
-                    // Hide typing indicator
-                    typingIndicator.style.display = 'none';
-                    
-                    // Process and display bot response
-                    const response = formatBotResponse(text);
-                    addBotMessage(response);
-                })
-                .catch(error => {
-                    typingIndicator.style.display = 'none';
-                    addBotMessage('عذرًا، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى لاحقًا.');
-                    console.error('Error:', error);
-                });
-            }
-            
-            function addUserMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message user-message';
-                messageDiv.textContent = message;
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-            
-            function addBotMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message bot-message';
-                
-                // Check if message contains trip data to format it
-                if (message.includes('اسم الرحلة:') || message.includes('Trip Name:')) {
-                    messageDiv.innerHTML = formatTripData(message);
-                } else {
-                    messageDiv.textContent = message;
-                }
-                
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-            
-            function formatBotResponse(text) {
-                // Here you can add any formatting for the bot response
-                return text;
-            }
-            
-            function formatTripData(text) {
-                // Split by double newlines to separate trips
-                const trips = text.split('\n\n');
-                let html = '';
-                
-                trips.forEach(trip => {
-                    if (!trip.trim()) return;
-                    
-                    const lines = trip.split('\n');
-                    let tripHtml = '<div class="trip-card">';
-                    
-                    lines.forEach(line => {
-                        if (line.includes('اسم الرحلة:')) {
-                            const name = line.replace('اسم الرحلة:', '').trim();
-                            tripHtml += `<h3>${name}</h3>`;
-                        } 
-                        else if (line.includes('Trip Name:')) {
-                            const name = line.replace('Trip Name:', '').trim();
-                            tripHtml += `<h3>${name}</h3>`;
-                        }
-                        else if (line.includes('الصورة:') || line.includes('Image:')) {
-                            const imageUrl = line.replace(/الصورة:|Image:/, '').trim();
-                            if (imageUrl) {
-                                tripHtml += `<img src="${imageUrl}" class="trip-image" alt="صورة الرحلة">`;
-                            }
-                        }
-                        else if (line.includes('المدة:') || line.includes('Duration:')) {
-                            const duration = line.replace(/المدة:|Duration:/, '').trim();
-                            tripHtml += `<p><strong>المدة:</strong> ${duration}</p>`;
-                        }
-                        else if (line.includes('الوصف:') || line.includes('Description:')) {
-                            const desc = line.replace(/الوصف:|Description:/, '').trim();
-                            tripHtml += `<p>${desc}</p>`;
-                        }
-                        else if (line.includes('سعر البالغين:') || line.includes('Adult Price:')) {
-                            const price = line.replace(/سعر البالغين:|Adult Price:/, '').trim();
-                            tripHtml += `<p class="price">سعر البالغين: ${price}</p>`;
-                        }
-                        else if (line.includes('سعر الأطفال:') || line.includes('Child Price:')) {
-                            const price = line.replace(/سعر الأطفال:|Child Price:/, '').trim();
-                            tripHtml += `<p class="price">سعر الأطفال: ${price}</p>`;
-                        }
-                        else if (line.includes('تشمل:') || line.includes('Included:')) {
-                            tripHtml += `<div class="features"><h4>تشمل:</h4><ul>`;
-                        }
-                        else if (line.includes('لا تشمل:') || line.includes('Not Included:')) {
-                            tripHtml += `</ul><h4>لا تشمل:</h4><ul class="not-included">`;
-                        }
-                        else if (line.trim().startsWith('-')) {
-                            const item = line.replace('-', '').trim();
-                            tripHtml += `<li>${item}</li>`;
-                        }
-                    });
-                    
-                    tripHtml += '</ul></div></div>';
-                    html += tripHtml;
-                });
-                
-                return html;
-            }
+    addBotMessage('مرحباً بك في Discover Sharm! 🏝️ كيف يمكنني مساعدتك في حجز رحلتك اليوم؟ يمكنك السؤال عن أي رحلة أو طلب التفاصيل عن عروضنا الخاصة.');
+
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+    function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      addUserMessage(message);
+      messageInput.value = '';
+      typingIndicator.style.display = 'block';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      fetch('https://ds-trip-bot.gm-093.workers.dev/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': 'ar'
+        },
+        body: JSON.stringify({ message })
+      })
+      .then(res => res.ok ? res.text() : Promise.reject())
+      .then(text => {
+        typingIndicator.style.display = 'none';
+        addBotMessage(text);
+      })
+      .catch(() => {
+        typingIndicator.style.display = 'none';
+        addBotMessage('عذرًا، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى لاحقًا.');
+      });
+    }
+
+    function addUserMessage(message) {
+      const div = document.createElement('div');
+      div.className = 'message user-message';
+      div.textContent = message;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addBotMessage(message) {
+      const div = document.createElement('div');
+      div.className = 'message bot-message';
+
+      if (message.includes('اسم الرحلة:') || message.includes('Trip Name:')) {
+        div.innerHTML = formatTripData(message);
+      } else {
+        div.textContent = message;
+      }
+
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function formatTripData(text) {
+      const trips = text.split('\n\n');
+      return trips.map(trip => {
+        const lines = trip.trim().split('\n');
+        let html = '<div class="trip-card">';
+
+        lines.forEach(line => {
+          if (line.includes('اسم الرحلة:')) {
+            html += `<h3>${line.replace('اسم الرحلة:', '').trim()}</h3>`;
+          } else if (line.includes('السعر:')) {
+            html += `<p class="price">${line.replace('السعر:', '').trim()}</p>`;
+          } else if (line.startsWith('✓')) {
+            html += '<div class="features"><ul>';
+            html += `<li>${line.replace('✓', '').trim()}</li>`;
+            html += '</ul></div>';
+          } else {
+            html += `<p>${line}</p>`;
+          }
         });
-    </script>
-</body>
+
+        html += '</div>';
+        return html;
+      }).join('');
+    }
+  </script></body>
 </html>
