@@ -342,10 +342,10 @@ const tripManager = {
         state.currentUserRole === 'admin' ? 'role-admin' : 
         state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
       );
-      elements.userEmail.textContent = state.currentUser.email;
-      if (elements.userName) {
-        elements.userName.textContent = userData?.name || state.currentUser.email.split('@')[0];
-      }
+      elements.userEmail.textContent = userData.email;
+      elements.userPhone.textContent = userData.phone:
+      elements.userName.textContent = userData.name ;
+  
       
       // Show/hide new trip button based on role
       if (tripManager.canEditTrips()) {
