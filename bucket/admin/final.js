@@ -82,10 +82,13 @@ const elements = {
   tourPerformanceMetric: document.getElementById('tourPerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
-  dashboardSection: document.getElementById('dashboardSection')
+  dashboardSection: document.getElementById('dashboardSection'),
 
-
-
+   payoutMethodSelect: document.getElementById("payoutMethod"),
+   payoutNameInput: document.getElementById("payoutName"),
+   accountNumberInput: document.getElementById("accountNumber"),
+   bankNameInput : document.getElementById("bankName"),
+   branchNameInput: document.getElementById("branchName")
   
 
   
@@ -375,6 +378,45 @@ const tripManager = {
       }
     });
   },
+
+
+
+loadpayout: (userId) => {
+  return database.ref('egy_user/' + userId + '/payoutMethod').once('value').then(snapshot => {
+    const payoutData = snapshot.val();
+
+    if (!payoutData) return; // إذا لا توجد بيانات، لا تكمل
+
+    if (payoutData.method) {
+      elements.payoutMethod.value = payoutData.method;
+    }
+
+    if (payoutData.name) {
+      elements.payoutName.value = payoutData.name;
+    }
+
+    if (payoutData.accountNumber) {
+      elements.accountNumber.value = payoutData.accountNumber;
+    }
+
+    if (payoutData.bankName) {
+      elements.bankName.value = payoutData.bankName;
+    }
+
+    if (payoutData.branchName) {
+      elements.branchName.value = payoutData.branchName;
+    }
+  }).catch(error => {
+    console.error("Error loading payout method:", error);
+    showToast("Failed to load payout information", "error");
+  });
+}
+
+
+
+
+
+  
 
   loadTripList: (forceRefresh = false) => {
     // Check cache first if not forcing refresh
@@ -1607,10 +1649,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const accountNumberInput = document.getElementById("accountNumber");
   const bankNameInput = document.getElementById("bankName");
   const branchNameInput = document.getElementById("branchName");
-
+  const payoutMethodSelect = document.getElementById("payoutMethod");
+ 
   // payout Management Functions
   savePayoutBtn.addEventListener('click', function() {
-    const payoutMethodSelect = document.getElementById("payoutMethod");
     const userId = auth.currentUser.uid;
     const method = payoutMethodSelect.value;
     const name = payoutNameInput.value.trim();
