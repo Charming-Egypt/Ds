@@ -201,9 +201,7 @@
                 <div class="head-title">
                     <div class="left">
                         <h1>Dashboard</h1>
-                      <button id="exportData" class="btn-download text-white">
-                        <i class="fas fa-file-excel mr-2"></i>Export
-                      </button>
+
                         <div class="grid grid-cols-2 gap-2 w-full">
                             <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
                             <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
@@ -259,81 +257,7 @@
                     </div>
                     
                     <!-- Main Charts Grid -->
-                    <div class="charts-grid">
-                        <!-- Booking Status Distribution -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Booking Status</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-new" id="statusUpdated">Today</div>
-                                    <button class="export-btn" data-chart="statusChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="statusChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Monthly Booking Trends -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Monthly Trends</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-confirmed" id="trendUpdated">2023</div>
-                                    <button class="export-btn" data-chart="trendChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="trendChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="charts-grid">
-                        <!-- Tour Performance -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Tour trend</h2>
-                                <div class="card-actions">
-                                    <select id="tourPerformanceMetric" class="filter-btn">
-                                        <option value="bookings">By Bookings</option>
-                                        <option value="revenue">By Revenue</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <div id="tourPerformanceChart" style="width:100%; height:100%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Guest Composition -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Guest Composition</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-confirmed" id="guestUpdated">Current</div>
-                                    <button class="export-btn" data-chart="guestChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="half-pie-container">
-                                    <canvas id="guestChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </section>
 
@@ -671,12 +595,89 @@
                             </li>
                         </ul>
                     </div>
-                    
+                      <button id="exportData" class="btn-download text-white">
+                        <i class="fas fa-file-excel mr-2"></i>Export
+                      </button>
                     
                 </div>
 
                 <div class="container">
                     <!-- Charts will be rendered here -->
+                                        <div class="charts-grid">
+                        <!-- Booking Status Distribution -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Booking Status</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-new" id="statusUpdated">Today</div>
+                                    <button class="export-btn" data-chart="statusChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Monthly Booking Trends -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Monthly Trends</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-confirmed" id="trendUpdated">2023</div>
+                                    <button class="export-btn" data-chart="trendChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-grid">
+                        <!-- Tour Performance -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Tour trend</h2>
+                                <div class="card-actions">
+                                    <select id="tourPerformanceMetric" class="filter-btn">
+                                        <option value="bookings">By Bookings</option>
+                                        <option value="revenue">By Revenue</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <div id="tourPerformanceChart" style="width:100%; height:100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Guest Composition -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Guest Composition</h2>
+                                <div class="card-actions">
+                                    <div class="badge badge-confirmed" id="guestUpdated">Current</div>
+                                    <button class="export-btn" data-chart="guestChart" title="Download Chart">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="half-pie-container">
+                                    <canvas id="guestChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
