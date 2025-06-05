@@ -58,7 +58,9 @@ const elements = {
   totalTrips: document.getElementById('totalTrips'),
   pendingTrips: document.getElementById('pendingTrips'),
   userRole: document.getElementById('userRole'),
+  userName: document.getElementById('userName'),
   userEmail: document.getElementById('userEmail'),
+  userPhone: document.getElementById('userPhone'),
   addImageBtn: document.getElementById('addImageBtn'),
   addVideoBtn: document.getElementById('addVideoBtn'),
   addIncludedBtn: document.getElementById('addIncludedBtn'),
@@ -80,8 +82,8 @@ const elements = {
   tourPerformanceMetric: document.getElementById('tourPerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
-  dashboardSection: document.getElementById('dashboardSection'),
-  userName: document.getElementById('userName')
+  dashboardSection: document.getElementById('dashboardSection')
+  
 };
 
 // App State
@@ -342,10 +344,10 @@ const tripManager = {
         state.currentUserRole === 'admin' ? 'role-admin' : 
         state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
       );
-      elements.userEmail.textContent = userData.email;
-      elements.userPhone.textContent = userData.phone:
-      elements.userName.textContent = userData.name ;
-  
+      elements.userEmail.value = userData.email;
+      elements.userPhone.value = userData.phone:
+      elements.userName.value = userData.name ;
+      photoPreview.src = userData.photo;
       
       // Show/hide new trip button based on role
       if (tripManager.canEditTrips()) {
