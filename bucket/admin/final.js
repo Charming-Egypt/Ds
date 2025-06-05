@@ -82,7 +82,17 @@ const elements = {
   tourPerformanceMetric: document.getElementById('tourPerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
-  dashboardSection: document.getElementById('dashboardSection')
+  dashboardSection: document.getElementById('dashboardSection'),
+
+
+
+  payoutMethodSelect: document.getElementById('payoutMethod'),
+  payoutNameInput: document.getElementById('payoutName'),
+  accountNumberInput: document.getElementById('accountNumber'),
+  bankNameInput: document.getElementById('bankName'),
+  branchNameInput: document.getElementById('branchName'),
+  savePayoutBtn: document.getElementById('savePayoutBtn')
+
   
 };
 
