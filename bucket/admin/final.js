@@ -1853,7 +1853,7 @@ const initApp = () => {
         dashboardManager.initCharts();
         dashboardManager.initDateRangePicker();
         dashboardManager.loadBookingData();
-        loadpayout();
+        tripManager.loadpayout(user.uid);
         setupEventListeners();
       });
     } else {
