@@ -347,11 +347,13 @@ const tripManager = {
       elements.userEmail.value = userData.email;
       elements.userPhone.value = userData.phone;
       elements.userName.value = userData.username ;
-      
+      const photoPreviews = document.getElementById('profile-pic-s');
       const photoPreview = document.getElementById('profile-pic-preview');
       if (userData.photo) {
         photoPreview.src = userData.photo;
+        photoPreviews.src = userData.photo;
       } else {
+        photoPreviews.src = 'https://via.placeholder.com/150';
         photoPreview.src = 'https://via.placeholder.com/150';
       }
       
