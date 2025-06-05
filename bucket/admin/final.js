@@ -1607,6 +1607,7 @@ const dashboardManager = {
 
 // payout Management Functions
 savePayoutBtn.addEventListener('click', function() {
+  const payoutMethodSelect = document.getElementById("payoutMethod");
     const userId = auth.currentUser.uid;
     const method = payoutMethodSelect.value;
     const name = payoutNameInput.value.trim();
