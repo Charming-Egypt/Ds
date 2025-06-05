@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-  <meta http-equiv="origin-trial" content="your-firebase-origin-trial-token-if-any">
+    <meta http-equiv="origin-trial" content="your-firebase-origin-trial-token-if-any">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard || Discover Sharm</title>
     
     <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://www.discover-sharm.com/admin/style.css' rel='stylesheet'>
     <!-- Font Awesome -->
-      <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -22,57 +23,106 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
   
-  
-  <!-- Date Range Picker -->
+    <!-- Date Range Picker -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    
     
     <!-- Firebase JS -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
-    
-    
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-
-     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#ffc107',
-                            light: '#ffd54f',
-                            dark: '#ffa000'
-                        },
-                        secondary: '#ff9800',
-                        accent: '#ff5722',
-                        dark: '#333',
-                        darker: '#222',
-                        darkest: '#111',
-                        light: '#f5f5f5',
-                        gray: {
-                            DEFAULT: '#666',
-                            light: '#444',
-                            lighter: '#555'
-                        },
-                        success: '#4caf50',
-                        warning: '#ff9800',
-                        danger: '#f44336',
-                        info: '#2196f3'
-                    },
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif']
-                    }
-                }
-            }
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #f5f5f5;
         }
-    </script>
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-field {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: #f5f5f5;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        .toast-success {
+            background-color: #4caf50;
+        }
+        
+        .toast-error {
+            background-color: #f44336;
+        }
+        
+        .toast-warning {
+            background-color: #ff9800;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .role-admin {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .role-moderator {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .role-user {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        
+        .tab-active {
+            color: #ffc107;
+            border-bottom: 2px solid #ffc107;
+        }
+        
+        .filter-btn.active {
+            background-color: #ffc107;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <!-- SIDEBAR -->
@@ -81,7 +131,7 @@
             <div class="logo-container">
                 <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjGLYfehf5gTkhli-onh8WqHg2Ve_BEw1GHxqS5E0pUMywRV9LXj0M45PfhXXgiEwCcR3t8EzzoBUAbhLjIlbAmttq5Jf1Quhxke9PBW5GFu1fwSIjtAzPwRhjUTAk_vV1kpZzApx6V-nYEfRpPMeBI7QUDp7yUTk_0pwLbC3lXPnwQzvZPfuDSigaHziw=s1600" alt="Discover Sharm Logo" class="app-logo">
             </div>
-            <span  class="text">Discover Sharm</span>
+            <span class="text">Discover Sharm</span>
         </a>
         <ul class="side-menu top">
             <li class="active" data-section="dashboard">
@@ -145,8 +195,6 @@
             </form>
             <input type="checkbox" id="switch-mode" hidden>
             <label for="switch-mode" class="switch-mode"></label>
-
-            
         </nav>
         <!-- NAVBAR -->
 
@@ -157,23 +205,17 @@
                 <div class="head-title">
                     <div class="left">
                         <h1>Dashboard</h1>
-                 <!-- Filter Bar -->
-                    <div class="grid grid-cols-2 gap-2 w-full">
-
-            <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
-            <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
-            <button class="filter-btn whitespace-nowrap" data-period="year">Year</button>
-            <button class="filter-btn active whitespace-nowrap" data-period="all">All</button>
-            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap col-span-2" placeholder="Select date range" />
-                    
-                    
-                    </div>
-
+                        <div class="grid grid-cols-2 gap-2 w-full">
+                            <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
+                            <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
+                            <button class="filter-btn whitespace-nowrap" data-period="year">Year</button>
+                            <button class="filter-btn active whitespace-nowrap" data-period="all">All</button>
+                            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap col-span-2" placeholder="Select date range" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="container">
-                    
                     <!-- Stats Summary -->
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -217,389 +259,7 @@
                         </div>
                     </div>
                     
-        
-                </div>
-            </section>
-
-
-
-
-
-
-            <!-- trips Section -->
-            <section id="trips-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>My trips</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                 <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">trips</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a href="#" id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
-                        <i class='bx bxs-plus-circle'></i>
-                        <span class="text">Add trip</span>
-                    </a>
-                </div>
-
-                <div class="container">
-                      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <div class="glass-card p-4 rounded-xl stat-card">
-        <div class="flex items-center justify-between w-full">
-          <div>
-            <p class="text-sm">Active</p>
-            <h3 class="text-2xl font-bold" id="totalTrips">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-amber-100 text-amber-600">
-            <i class="fas fa-suitcase-rolling"></i>
-          </div>
-        </div>
-      </div>
-      
-      
-      
-      <div class="glass-card p-4 rounded-xl stat-card">
-        <div class="flex items-center justify-between w-full">
-          <div>
-            <p class="text-sm">Pending</p>
-            <h3 class="text-2xl font-bold" id="pendingTrips">0</h3>
-          </div>
-          <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-            <i class="fas fa-clock"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
-      <button id="tripListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
-        <i class="fas fa-list mr-2"></i>Trip List
-      </button>
-      <button id="tripEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
-        <i class="fas fa-edit mr-2"></i>Trip Editor
-      </button>
-    </div>
-
-    <!-- Trip List Section -->
-              <div id="tripListSection">
-      <div class="flex justify-between gap-4 items-center mb-4">
-    
-        
-      </div>
-      
-      <!-- Filters -->
-<div class="flex flex-wrap gap-2 mb-4">
-  
-</div>
-      
-      
- 
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
-        <!-- Skeleton loading -->
-        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse">
-          <div class="h-40 bg-slate-200"></div>
-          <div class="p-4">
-            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-          </div>
-        </div>
-        
-        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
-          <div class="h-40 bg-slate-200"></div>
-          <div class="p-4">
-            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-          </div>
-        </div>
-        
-        <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
-          <div class="h-40 bg-slate-200"></div>
-          <div class="p-4">
-            <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-            <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-            <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-            <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Empty state -->
-      <div id="emptyState" class="hidden text-center py-12">
-        <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-          <i class="fas fa-suitcase text-amber-500 text-3xl"></i>
-        </div>
-        <h3 class="text-lg font-medium mb-2">No trips found</h3>
-        <p class=" mb-4">Create your first trip to get started</p>
-        <button id="emptyStateNewTripBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
-          <i class="fas fa-plus mr-2"></i> Create New Trip
-        </button>
-      </div>
-    </div>
-
-    <!-- Trip Editor Section -->
-    <div id="tripEditorSection" class="hidden">
-      <form id="tripForm">
-        <input type="hidden" id="tripId">
-        <input type="hidden" id="ownerId">
-        
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold " id="editorTitle">Create New Trip</h2>
-            <div class="flex space-x-2">
-              <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white shadow-sm transition">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-
-<!-- Add this delete button -->
-  <button type="button" id="deleteBtn" style="display:none" class="hidden px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}  >
-    <i class="fas fa-trash"></i>
-  </button>
-              
-              <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition flex items-center">
-                <i class="fa-regular fa-floppy-disk"></i>
-                <span id="spinner" class="ml-1 hidden">
-                  <i class="fas fa-spinner fa-spin"></i>
-                </span>
-              </button>
-            </div>
-          </div>
-          
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column -->
-            <div class="lg:col-span-2 space-y-4">
-              <!-- Basic Info Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <h3 class="font-medium text-amber-500 mb-4 flex items-center">
-                  <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
-                </h3>
-                
-                <div class="space-y-4">
-                  <div>
-                    <label for="name" class="block text-sm font-medium  mb-1">Trip Name*</label>
-                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                  </div>
-                  
-                  <div>
-                    <label for="bookingLink" class="block text-sm font-medium  mb-1">Booking Link ID*</label>
-                    <div class="flex">
-                      <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800  text-slate-50 text-sm">
-                        ID 
-                      </span>
-                      <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
-                    </div>
-                    <p class="text-xs text-slate-300 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
-                  </div>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label for="price" class="block text-sm font-medium  mb-1">Price (EGP)*</label>
-                      <div class="flex">
-                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
-                        EGP 
-                      </span>
-                        
-                        <input type="number" id="price" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500"">
-                        
-                      </div>
-                    </div>
-                    <div>
-                      <label for="duration" class="block text-sm font-medium mb-1">Duration*</label>
-                      <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
-                    </div>
-                  </div>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label for="category" class="block text-sm font-medium mb-1">Category*</label>
-                      <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                        <option value="">Select Category</option>
-                        <option value="Adventure">Adventure</option>
-                        <option value="Cultural">Cultural</option>
-                        <option value="Nature">Nature</option>
-                      </select>
-                    </div>
-                    
-                  </div>
-                  
-                  <div>
-                    <label for="description" class="block text-sm font-medium mb-1">Short Description*</label>
-                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Media Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-medium flex items-center">
-                    <i class="fas fa-images text-amber-500 mr-2"></i> Media
-                  </h3>
-                  <div class="flex space-x-2" id="mediaButtons">
-                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                     Add <i class="fas fa-image mr-1"></i>
-                    </button>
-                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                     Add <i class="fas fa-video mr-1"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <div class="space-y-3">
-                  <div>
-                    <label for="mainImage" class="block text-sm font-medium mb-1">Main Image URL*</label>
-                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                  </div>
-                  
-                  <div id="imageList">
-                    <!-- Image URLs will be added here -->
-                  </div>
-                  <div id="videoList">
-                    <!-- Video entries will be added here -->
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Timeline Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-medium  flex items-center">
-                    <i class="fas fa-clock text-amber-500 mr-2"></i> Timeline
-                  </h3>
-                  <button type="button" id="addTimelineBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                    <i class="fas fa-plus mr-1"></i> Add 
-                  </button>
-                </div>
-                
-                <div id="timelineList" class="space-y-3">
-                  <!-- Timeline items will be added here -->
-                </div>
-              </div>
-            </div>
-            
-            <!-- Right Column -->
-            <div class="space-y-4">
-              <!-- Included/Not Included Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <div class="grid grid-cols-1 gap-4">
-                  <div>
-                    <div class="flex justify-between items-center mb-3">
-                      <h3 class="font-medium flex items-center">
-                        <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
-                      </h3>
-                      <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                        <i class="fas fa-plus mr-1"></i> Add 
-                      </button>
-                    </div>
-                    <div id="includedList" class="space-y-2">
-                      <!-- Included items will be added here -->
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div class="flex justify-between items-center mb-3">
-                      <h3 class="font-medium flex items-center">
-                        <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
-                      </h3>
-                      <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                        <i class="fas fa-plus mr-1"></i> Add 
-                      </button>
-                    </div>
-                    <div id="notIncludedList" class="space-y-2">
-                      <!-- Not included items will be added here -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- What to Bring Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <div class="flex justify-between items-center mb-3">
-                  <h3 class="font-medium flex items-center">
-                    <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
-                  </h3>
-                  <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                    <i class="fas fa-plus mr-1"></i> Add 
-                  </button>
-                </div>
-                <div id="whatToBringList" class="space-y-2">
-                  <!-- What to bring items will be added here -->
-                </div>
-              </div>
-              
-              <!-- Extra Services Card -->
-              <div class="glass-card p-5 rounded-xl">
-                <div class="flex justify-between items-center mb-3">
-                  <h3 class="font-medium flex items-center">
-                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
-                  </h3>
-                  <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                    <i class="fas fa-plus mr-1"></i> Add 
-                  </button>
-                </div>
-                <div id="tourTypeList" class="space-y-2">
-                  <!-- Tour types will be added here -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-                </div>
-            </section>
-
-
-
-
-
-
-
-
-
-
-            <!-- Analytics Section -->
-            <section id="analytics-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Analytics</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Analytics</a>
-                            </li>
-                        </ul>
-                    </div>
-                    
-            <button id="exportData" class="btn-download text-white">
-                <i class="fas fa-file-excel mr-2"></i>Export
-            </button>
-
-          
-                </div>
-
-                <div class="container">
-                    
-                        
-                        
-                        
-                    
-
-
-         <!-- Main Charts Grid -->
+                    <!-- Main Charts Grid -->
                     <div class="charts-grid">
                         <!-- Booking Status Distribution -->
                         <div class="card">
@@ -617,7 +277,7 @@
                                     <canvas id="statusChart"></canvas>
                                 </div>
                             </div>
-                      </div>
+                        </div>
                         
                         <!-- Monthly Booking Trends -->
                         <div class="card">
@@ -636,10 +296,9 @@
                                 </div>
                             </div>
                         </div>
-                                                </div>
-                        
-                        
-                   <div class="charts-grid">
+                    </div>
+                    
+                    <div class="charts-grid">
                         <!-- Tour Performance -->
                         <div class="card">
                             <div class="card-header">
@@ -676,267 +335,560 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
+                </div>
+            </section>
 
+            <!-- trips Section -->
+            <section id="trips-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>My trips</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">trips</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <a href="#" id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
+                        <i class='bx bxs-plus-circle'></i>
+                        <span class="text">Add trip</span>
+                    </a>
+                </div>
+
+                <div class="container">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="glass-card p-4 rounded-xl stat-card">
+                            <div class="flex items-center justify-between w-full">
+                                <div>
+                                    <p class="text-sm">Active</p>
+                                    <h3 class="text-2xl font-bold" id="totalTrips">0</h3>
+                                </div>
+                                <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+                                    <i class="fas fa-suitcase-rolling"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-4 rounded-xl stat-card">
+                            <div class="flex items-center justify-between w-full">
+                                <div>
+                                    <p class="text-sm">Pending</p>
+                                    <h3 class="text-2xl font-bold" id="pendingTrips">0</h3>
+                                </div>
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
+                        <button id="tripListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
+                            <i class="fas fa-list mr-2"></i>Trip List
+                        </button>
+                        <button id="tripEditorTab" class="px-1 py-2 font-medium text-slate-500 whitespace-nowrap text-sm sm:text-base">
+                            <i class="fas fa-edit mr-2"></i>Trip Editor
+                        </button>
+                    </div>
+
+                    <!-- Trip List Section -->
+                    <div id="tripListSection">
+                        <div class="flex justify-between gap-4 items-center mb-4"></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
+                            <!-- Skeleton loading -->
+                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse">
+                                <div class="h-40 bg-slate-200"></div>
+                                <div class="p-4">
+                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
+                                <div class="h-40 bg-slate-200"></div>
+                                <div class="p-4">
+                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
+                                <div class="h-40 bg-slate-200"></div>
+                                <div class="p-4">
+                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
+                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
+                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Empty state -->
+                        <div id="emptyState" class="hidden text-center py-12">
+                            <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-suitcase text-amber-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-medium mb-2">No trips found</h3>
+                            <p class="mb-4">Create your first trip to get started</p>
+                            <button id="emptyStateNewTripBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
+                                <i class="fas fa-plus mr-2"></i> Create New Trip
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trip Editor Section -->
+                    <div id="tripEditorSection" class="hidden">
+                        <form id="tripForm">
+                            <input type="hidden" id="tripId">
+                            <input type="hidden" id="ownerId">
+                            
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-semibold" id="editorTitle">Create New Trip</h2>
+                                    <div class="flex space-x-2">
+                                        <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white shadow-sm transition">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+
+                                        <button type="button" id="deleteBtn" style="display:none" class="hidden px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        
+                                        <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition flex items-center">
+                                            <i class="fa-regular fa-floppy-disk"></i>
+                                            <span id="spinner" class="ml-1 hidden">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <!-- Left Column -->
+                                    <div class="lg:col-span-2 space-y-4">
+                                        <!-- Basic Info Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <h3 class="font-medium text-amber-500 mb-4 flex items-center">
+                                                <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
+                                            </h3>
+                                            
+                                            <div class="space-y-4">
+                                                <div>
+                                                    <label for="name" class="block text-sm font-medium mb-1">Trip Name*</label>
+                                                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                                </div>
+                                                
+                                                <div>
+                                                    <label for="bookingLink" class="block text-sm font-medium mb-1">Booking Link ID*</label>
+                                                    <div class="flex">
+                                                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
+                                                            ID 
+                                                        </span>
+                                                        <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
+                                                    </div>
+                                                    <p class="text-xs text-slate-300 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
+                                                </div>
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="price" class="block text-sm font-medium mb-1">Price (EGP)*</label>
+                                                        <div class="flex">
+                                                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
+                                                                EGP 
+                                                            </span>
+                                                            
+                                                            <input type="number" id="price" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label for="duration" class="block text-sm font-medium mb-1">Duration*</label>
+                                                        <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="category" class="block text-sm font-medium mb-1">Category*</label>
+                                                        <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                                            <option value="">Select Category</option>
+                                                            <option value="Adventure">Adventure</option>
+                                                            <option value="Cultural">Cultural</option>
+                                                            <option value="Nature">Nature</option>
+                                                        </select>
+                                                    </div>
+                                                    
+                                                </div>
+                                                
+                                                <div>
+                                                    <label for="description" class="block text-sm font-medium mb-1">Short Description*</label>
+                                                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Media Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h3 class="font-medium flex items-center">
+                                                    <i class="fas fa-images text-amber-500 mr-2"></i> Media
+                                                </h3>
+                                                <div class="flex space-x-2" id="mediaButtons">
+                                                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                        Add <i class="fas fa-image mr-1"></i>
+                                                    </button>
+                                                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                        Add <i class="fas fa-video mr-1"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="space-y-3">
+                                                <div>
+                                                    <label for="mainImage" class="block text-sm font-medium mb-1">Main Image URL*</label>
+                                                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                                </div>
+                                                
+                                                <div id="imageList">
+                                                    <!-- Image URLs will be added here -->
+                                                </div>
+                                                <div id="videoList">
+                                                    <!-- Video entries will be added here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Timeline Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h3 class="font-medium flex items-center">
+                                                    <i class="fas fa-clock text-amber-500 mr-2"></i> Timeline
+                                                </h3>
+                                                <button type="button" id="addTimelineBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                    <i class="fas fa-plus mr-1"></i> Add 
+                                                </button>
+                                            </div>
+                                            
+                                            <div id="timelineList" class="space-y-3">
+                                                <!-- Timeline items will be added here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right Column -->
+                                    <div class="space-y-4">
+                                        <!-- Included/Not Included Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <div class="grid grid-cols-1 gap-4">
+                                                <div>
+                                                    <div class="flex justify-between items-center mb-3">
+                                                        <h3 class="font-medium flex items-center">
+                                                            <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
+                                                        </h3>
+                                                        <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                            <i class="fas fa-plus mr-1"></i> Add 
+                                                        </button>
+                                                    </div>
+                                                    <div id="includedList" class="space-y-2">
+                                                        <!-- Included items will be added here -->
+                                                    </div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <div class="flex justify-between items-center mb-3">
+                                                        <h3 class="font-medium flex items-center">
+                                                            <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
+                                                        </h3>
+                                                        <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                            <i class="fas fa-plus mr-1"></i> Add 
+                                                        </button>
+                                                    </div>
+                                                    <div id="notIncludedList" class="space-y-2">
+                                                        <!-- Not included items will be added here -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- What to Bring Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <div class="flex justify-between items-center mb-3">
+                                                <h3 class="font-medium flex items-center">
+                                                    <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
+                                                </h3>
+                                                <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                    <i class="fas fa-plus mr-1"></i> Add 
+                                                </button>
+                                            </div>
+                                            <div id="whatToBringList" class="space-y-2">
+                                                <!-- What to bring items will be added here -->
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Extra Services Card -->
+                                        <div class="glass-card p-5 rounded-xl">
+                                            <div class="flex justify-between items-center mb-3">
+                                                <h3 class="font-medium flex items-center">
+                                                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
+                                                </h3>
+                                                <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
+                                                    <i class="fas fa-plus mr-1"></i> Add 
+                                                </button>
+                                            </div>
+                                            <div id="tourTypeList" class="space-y-2">
+                                                <!-- Tour types will be added here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Analytics</h1>
+                        <ul class="breadcrumb">
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li>
+                                <a class="active" href="#">Analytics</a>
+                            </li>
+                        </ul>
+                    </div>
                     
-                              </div>
+                    <button id="exportData" class="btn-download text-white">
+                        <i class="fas fa-file-excel mr-2"></i>Export
+                    </button>
+                </div>
+
+                <div class="container">
+                    <!-- Charts will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Reservations Section -->
+            <section id="reservation-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Reservations</h1>
+                        <ul class="breadcrumb">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li><a class="active" href="#">Reservations</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="container full-width">
+                    <!-- Search and Filter Bar -->
+                    <div class="glass-card mb-3 sm:mb-4 p-2 sm:p-3 md:p-4">
+                        <div class="grid grid-colns-1 flex-row gap-3">
+                            <div class="w-full">
+                                <input type="text" id="searchInput" placeholder="Search bookings..." 
+                                    class="w-full px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
+                            </div>
+                            <div class="flex justify-between items-center w-full">
+                                <select id="statusFilter" class="px-2 py-1 sm:px-3 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
+                                    <option value="all">All Statuses</option>
+                                    <option value="new">New</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="No Show">No Show</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                                <button onclick="applyFilters()" class="px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-sm sm:text-base">
+                                    <i class="fas fa-filter mr-1"></i> <span class="hidden sm:inline">Filter</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs for New and Confirmed Bookings -->
+                    <div class="flex mb-3 sm:mb-4 space-x-1 sm:space-x-2 overflow-x-auto pb-1">
+                        <button id="allBookingsTab" class="tab-button active" onclick="switchTab('all')">
+                            <i class="fas fa-list mr-1 sm:mr-2"></i> <span class="hidden sm:inline">All</span>
+                        </button>
+                        <button id="newBookingsTab" class="tab-button" onclick="switchTab('new')">
+                            <i class="fas fa-clock mr-1 sm:mr-2"></i> <span class="hidden sm:inline">New</span>
+                        </button>
+                        <button id="confirmedBookingsTab" class="tab-button" onclick="switchTab('confirmed')">
+                            <i class="fas fa-check-circle mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Confirmed</span>
+                        </button>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
+                        <!-- Bookings Table -->
+                        <div id="bookingsSection" class="glass-card p-5">
+                            <div class="filter-bar2 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-3 gap-1 sm:gap-2">
+                                <h2 class="text-lg sm:text-xl font-semibold" id="bookingsTableTitle">All Bookings</h2>
+                                <div class="flex space-x-1 sm:space-x-2">
+                                    <div class="relative">
+                                        <input type="text" id="dateFilter" placeholder="Date" 
+                                            class="w-24 sm:w-32 px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500" readonly>
+                                        <button onclick="clearDateFilter()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                                            <i class="fas fa-times text-xs"></i>
+                                        </button>
+                                    </div>
+                                    <button onclick="exportToExcel()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-green-600 hover:bg-green-700">
+                                        <i class="fas fa-file-excel mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Export</span>
+                                    </button>
+                                    <button onclick="refreshBookings()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-amber-600 hover:bg-amber-700">
+                                        <i class="fas fa-sync-alt mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Refresh</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="responsive-table">
+                                <table class="text-center min-w-full divide-y divide-gray-700">
+                                    <thead>
+                                        <tr class="text-white rounded-xl">
+                                            <th class="table-cell text-center text-xs font-medium uppercase tracking-wider">Ref #</th>
+                                            <th class="table-cell text-xs font-medium uppercase tracking-wider">Tour</th>
+                                            <th class="table-cell text-xs font-medium uppercase tracking-wider mobile-hidden">Date</th>
+                                            <th class="table-cell text-xs font-medium uppercase tracking-wider">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookingsTableBody" class="divide-y divide-gray-700 text-center">
+                                        <tr>
+                                            <td colspan="7" class="table-cell text-center text-gray-500">Loading bookings...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="flex flex-col sm:flex-row justify-between items-center mt-2 sm:mt-3 px-2 sm:px-4 py-1 sm:py-2">
+                                <div class="text-xs sm:text-sm text-gray-400 mb-1 sm:mb-0">
+                                    Showing <span id="startItem">0</span> to <span id="endItem">0</span> of <span id="totalItems">0</span> bookings
+                                </div>
+                                <div class="flex space-x-1 sm:space-x-2">
+                                    <button id="prevPage" onclick="prevPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <div class="flex items-center space-x-1 text-xs sm:text-sm">
+                                        <span id="currentPage">1</span>
+                                        <span>of</span>
+                                        <span id="totalPages">1</span>
+                                    </div>
+                                    <button id="nextPage" onclick="nextPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Details Modal -->
+                    <div id="bookingDetailsModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+                        <div class="glass-card p-4 sm:p-6 rounded-lg modal-content overflow-y-auto">
+                            <div class="flex justify-between items-center mb-3 sm:mb-4">
+                                <h3 class="text-lg sm:text-xl font-bold" id="modalTitle">Booking Details</h3>
+                                <button onclick="closeModal()" class="text-gray-400 hover:text-white">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div id="bookingDetailsContent" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
+                                <!-- Content will be loaded here -->
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-
-
-
-
-
-
-
-<!-- Reservations Section -->
-<section id="reservation-section" class="content-section">
-  <div class="head-title">
-    <div class="left">
-      <h1>Reservations</h1>
-      <ul class="breadcrumb">
-        <li><a href="#">Dashboard</a></li>
-        <li><i class='bx bx-chevron-right'></i></li>
-        <li><a class="active" href="#">Reservations</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="container full-width">
-     <!-- Search and Filter Bar -->
-        <div class="glass-card mb-3 sm:mb-4 p-2 sm:p-3 md:p-4">
-            <div class="grid grid-colns-1 flex-row gap-3">
-                <div class="w-full">
-                    <input type="text" id="searchInput" placeholder="Search bookings..." 
-                           class="w-full px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
+            <!-- Payout Section -->
+            <section id="withdraw-section" class="content-section">
+                <div class="head-title">
+                    <div class="left">
+                        <h1>Payout Method</h1>
+                        <ul class="breadcrumb">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><i class='bx bx-chevron-right'></i></li>
+                            <li><a class="active" href="#">Payout Method</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center w-full">
-                    <select id="statusFilter" class="px-2 py-1 sm:px-3 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
-                        <option value="all">All Statuses</option>
-                        <option value="new">New</option>
-                        <option value="confirmed">Confirmed</option>
-                      <option value="No Show">No Show</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                    <button onclick="applyFilters()" class="px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-sm sm:text-base">
-                        <i class="fas fa-filter mr-1"></i> <span class="hidden sm:inline">Filter</span>
-                    </button>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tabs for New and Confirmed Bookings -->
-        <div class="flex mb-3 sm:mb-4 space-x-1 sm:space-x-2 overflow-x-auto pb-1">
-            <button id="allBookingsTab" class="tab-button active" onclick="switchTab('all')">
-                <i class="fas fa-list mr-1 sm:mr-2"></i> <span class="hidden sm:inline">All</span>
-            </button>
-            <button id="newBookingsTab" class="tab-button" onclick="switchTab('new')">
-                <i class="fas fa-clock mr-1 sm:mr-2"></i> <span class="hidden sm:inline">New</span>
-            </button>
-            <button id="confirmedBookingsTab" class="tab-button" onclick="switchTab('confirmed')">
-                <i class="fas fa-check-circle mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Confirmed</span>
-            </button>
-        </div>
-
-        <!-- Main Content -->
-        <div class="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-            <!-- Bookings Table -->
-            <div id="bookingsSection" class="glass-card p-5">
-                <div class="filter-bar2 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-3 gap-1 sm:gap-2">
-                    <h2 class="text-lg sm:text-xl font-semibold" id="bookingsTableTitle">All Bookings</h2>
-                    <div class="flex space-x-1 sm:space-x-2">
-                        <div class="relative">
-                            <input type="text" id="dateFilter" placeholder="Date" 
-                                   class="w-24 sm:w-32 px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500" readonly>
-                            <button onclick="clearDateFilter()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
-                                <i class="fas fa-times text-xs"></i>
-                            </button>
+                <div class="container">
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <h2 class="card-title">Payout Method</h2>
+                            <div class="card-actions"></div>
                         </div>
-                        <button onclick="exportToExcel()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-green-600 hover:bg-green-700">
-                            <i class="fas fa-file-excel mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Export</span>
-                        </button>
-                        <button onclick="refreshBookings()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-amber-600 hover:bg-amber-700">
-                            <i class="fas fa-sync-alt mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Refresh</span>
-                        </button>
-                    </div>
-                </div>
-                
-     <div class="responsive-table">
-  <table class="text-center min-w-full divide-y divide-gray-700">
-                        <thead>
-<tr class=" text-white rounded-xl">
-                                <th class="table-cell text-center text-xs font-medium uppercase tracking-wider">Ref #</th>
-                                <th class="table-cell text-xs font-medium  uppercase tracking-wider ">Tour</th>
-                                <th class="table-cell text-xs font-medium uppercase tracking-wider mobile-hidden">Date</th>
-                                
-                                <th class="table-cell text-xs font-medium uppercase tracking-wider">Status</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody id="bookingsTableBody" class="divide-y divide-gray-700 text-center">
-                            <tr>
-                                <td colspan="7" class="table-cell text-center text-gray-500">Loading bookings...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="flex flex-col sm:flex-row justify-between items-center mt-2 sm:mt-3 px-2 sm:px-4 py-1 sm:py-2">
-                    <div class="text-xs sm:text-sm text-gray-400 mb-1 sm:mb-0">
-                        Showing <span id="startItem">0</span> to <span id="endItem">0</span> of <span id="totalItems">0</span> bookings
-                    </div>
-                    <div class="flex space-x-1 sm:space-x-2">
-                        <button id="prevPage" onclick="prevPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="flex items-center space-x-1 text-xs sm:text-sm">
-                            <span id="currentPage">1</span>
-                            <span>of</span>
-                            <span id="totalPages">1</span>
+                        <div class="card-body">
+                            <form id="payoutForm">
+                                <!-- Payout Method Selection -->
+                                <div class="form-group">
+                                    <label for="payoutMethod">Payout Method</label>
+                                    <div>
+                                        <select id="payoutMethod" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                            <option value="wallet">Wallet</option>
+                                            <option value="bankAccount">Bank Account</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Always Visible Fields -->
+                                <div class="form-group">
+                                    <label for="payoutName">Full Name</label>
+                                    <input type="text" id="payoutName" class="w-full p-3 input-field" placeholder="Enter your full name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountNumber">Account Number</label>
+                                    <input type="text" id="accountNumber" class="w-full p-3 input-field" placeholder="Enter account number" required>
+                                </div>
+
+                                <!-- Conditional Fields (Bank Account Only) -->
+                                <div id="bankFields" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="bankName">Bank Name</label>
+                                        <input type="text" id="bankName" class="w-full p-3 input-field" placeholder="e.g., Banque Misr">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="branchName">Branch Name</label>
+                                        <input type="text" id="branchName" class="w-full p-3 input-field" placeholder="e.g., Sharm El-Sheikh">
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="savePayoutBtn" class="btn-primary save-btn">
+                                    <i class="fa-regular fa-floppy-disk"></i> Save
+                                </button>
+                            </form>
                         </div>
-                        <button id="nextPage" onclick="nextPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                    </div>
+
+                    <!-- Events Section -->
+                    <div class="card full-width mt-6">
+                        <div class="card-header">
+                            <h2 class="card-title">Events</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="event-list">
+                                <div class="event-item">
+                                    <span class="event-date"></span>
+                                    <span class="event-description"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    
-
-    <!-- Booking Details Modal -->
-    <div id="bookingDetailsModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-        <div class="glass-card p-4 sm:p-6 rounded-lg modal-content overflow-y-auto">
-            <div class="flex justify-between items-center mb-3 sm:mb-4">
-                <h3 class="text-lg sm:text-xl font-bold" id="modalTitle">Booking Details</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="bookingDetailsContent" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
-                <!-- Content will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-  
-  
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
-<!-- Inside #withdraw-section -->
-<section id="withdraw-section" class="content-section">
-  <div class="head-title">
-    <div class="left">
-      <h1>Payout Method</h1>
-      <ul class="breadcrumb">
-        <li><a href="#">Dashboard</a></li>
-        <li><i class='bx bx-chevron-right'></i></li>
-        <li><a class="active" href="#">Payout Method</a></li>
-      </ul>
-    </div>
-  </div>
-
-<!-- Inside #withdraw-section -->
-<div class="container">
-    <div class="card full-width">
-        <div class="card-header">
-            <h2 class="card-title">Payout Method</h2>
-            <div class="card-actions">
-                
-            </div>
-        </div>
-        <div class="card-body">
-            <form id="payoutForm">
-    <!-- Payout Method Selection -->
-    <div class="form-group">
-        <label for="payoutMethod">Payout Method</label>
-        <div>
-            <select id="payoutMethod" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                <option value="wallet">Wallet</option>
-                <option value="bankAccount">Bank Account</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Always Visible Fields -->
-    <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" class="w-full p-3 input-field" placeholder="Enter your full name" required>
-    </div>
-    <div class="form-group">
-        <label for="accountNumber">Account Number</label>
-        <input type="text" id="accountNumber" class="w-full p-3 input-field" placeholder="Enter account number" required>
-    </div>
-
-    <!-- Conditional Fields (Bank Account Only) -->
-    <div id="bankFields" style="display: none;">
-        <div class="form-group">
-            <label for="bankName">Bank Name</label>
-            <input type="text" id="bankName" class="w-full p-3 input-field" placeholder="e.g., Banque Misr">
-        </div>
-        <div class="form-group">
-            <label for="branchName">Branch Name</label>
-            <input type="text" id="branchName" class="w-full p-3 input-field" placeholder="e.g., Sharm El-Sheikh">
-        </div>
-    </div>
-
-    
-            <button type="submit" id="savePayoutBtn" class="btn-primary save-btn">
-  <i class="fa-regular fa-floppy-disk"></i> Save
-</button>
-            
-            </form>
-        </div>
-    </div>
-
-    <!-- Events Section -->
-    <div class="card full-width mt-6">
-        <div class="card-header">
-            <h2 class="card-title">Events</h2>
-        </div>
-        <div class="card-body">
-            <div class="event-list">
-                <div class="event-item">
-                    <span class="event-date"></span>
-                    <span class="event-description"></span>
-                </div>
-                <!-- More events can be added dynamically -->
-            </div>
-        </div>
-    </div>
-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-
-
-
-
-
-
-
+            </section>
 
             <!-- Settings Section -->
             <section id="settings-section" class="content-section">
@@ -955,12 +907,11 @@
                     </div>
                 </div>
 
-    
                 <div class="container">
                     <div class="card full-width">
                         <div class="card-header">
                             <h2 class="card-title">Account Details</h2>
-                             <span  id="userRole" class="text"></span>
+                            <span id="userRole" class="text"></span>
                         </div>
                         <div class="card-body">
                             <form class="settings-form">
@@ -980,35 +931,20 @@
                                     <input class="text-sm" type="email" id="userEmail" value="" readonly>
                                 </div>
 
-                              <div class="form-group">
+                                <div class="form-group">
                                     <label for="phone">Phone</label>
                                     <input class="text-sm" type="phone" id="userPhone" value="" readonly>
                                 </div>
-
-                                
-
-                                
-
-                                
-
-                                
                             </form>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
-        <!-- MAIN CONTENT SECTIONS -->
 
         <!-- Toast Notification -->
         <div id="toast" class="toast"></div>
     </section>
-    <!-- CONTENT -->
-<script src="script.js"></script>
-<script src="final.js"></script>
-    
-     
-  
-  
-</body>
-</html>
+
+    <script src="https://www.discover-sharm.com/admin/script.js"></script>
+        <script src="https://www.discover-sharm.com/admin/final.js"></script>
