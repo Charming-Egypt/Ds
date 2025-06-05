@@ -383,28 +383,38 @@ const tripManager = {
 loadpayout: (userId) => {
   return database.ref('egy_user/' + userId + '/payoutMethod').once('value').then(snapshot => {
     const payoutData = snapshot.val();
+    if (!payoutData) return;
 
-    if (!payoutData) return; // Exit if no payout data exists
-
-    // Safely set values only if elements exist
+    // Set basic values
     if (elements.payoutMethod && payoutData.method) {
       elements.payoutMethod.value = payoutData.method;
+      
+      // Show/hide bank fields based on method
+      const bankFields = document.getElementById('bankFields');
+      if (bankFields) {
+        bankFields.style.display = payoutData.method === 'bankAccount' ? 'block' : 'none';
+      }
     }
+
     if (elements.payoutName && payoutData.name) {
       elements.payoutName.value = payoutData.name;
     }
     if (elements.accountNumber && payoutData.accountNumber) {
       elements.accountNumber.value = payoutData.accountNumber;
     }
-    if (elements.bankName && payoutData.bankName) {
-      elements.bankName.value = payoutData.bankName;
-    }
-    if (elements.branchName && payoutData.branchName) {
-      elements.branchName.value = payoutData.branchName;
+    
+    // Only set bank fields if method is bankAccount
+    if (payoutData.method === 'bankAccount') {
+      if (elements.bankName && payoutData.bankName) {
+        elements.bankName.value = payoutData.bankName;
+      }
+      if (elements.branchName && payoutData.branchName) {
+        elements.branchName.value = payoutData.branchName;
+      }
     }
   }).catch(error => {
     console.error("Error loading payout method:", error);
-    utils.showToast("Failed to load payout information", "error"); // Fixed: using utils.showToast
+    utils.showToast("Failed to load payout information", "error");
   });
 },
 
