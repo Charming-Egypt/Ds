@@ -410,7 +410,7 @@ loadpayout: (userId) => {
     console.error("Error loading payout method:", error);
     showToast("Failed to load payout information", "error");
   });
-}
+},
 
 
 
