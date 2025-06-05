@@ -61,7 +61,6 @@ const elements = {
   userName: document.getElementById('userName'),
   userEmail: document.getElementById('userEmail'),
   userPhone: document.getElementById('userPhone'),
-  photoPreview: document.getElementById('profile-pic-preview'),
   addImageBtn: document.getElementById('addImageBtn'),
   addVideoBtn: document.getElementById('addVideoBtn'),
   addIncludedBtn: document.getElementById('addIncludedBtn'),
@@ -348,7 +347,13 @@ const tripManager = {
       elements.userEmail.value = userData.email;
       elements.userPhone.value = userData.phone;
       elements.userName.value = userData.name ;
-      photoPreview.src = userData.photo;
+      
+      const photoPreview = document.getElementById('profile-pic-preview');
+      if (userData.photo) {
+        photoPreview.src = userData.photo;
+      } else {
+        photoPreview.src = 'https://via.placeholder.com/150';
+      }
       
       // Show/hide new trip button based on role
       if (tripManager.canEditTrips()) {
