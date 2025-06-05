@@ -82,16 +82,11 @@ const elements = {
   tourPerformanceMetric: document.getElementById('tourPerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
-  dashboardSection: document.getElementById('dashboardSection'),
+  dashboardSection: document.getElementById('dashboardSection')
 
 
 
-  payoutMethodSelect: document.getElementById('payoutMethod'),
-  payoutNameInput: document.getElementById('payoutName'),
-  accountNumberInput: document.getElementById('accountNumber'),
-  bankNameInput: document.getElementById('bankName'),
-  branchNameInput: document.getElementById('branchName'),
-  savePayoutBtn: document.getElementById('savePayoutBtn')
+  
 
   
 };
@@ -1605,74 +1600,86 @@ const dashboardManager = {
 
 
 
-// payout Management Functions
-savePayoutBtn.addEventListener('click', function() {
-  const payoutMethodSelect = document.getElementById("payoutMethod");
+
+document.addEventListener("DOMContentLoaded", function () {
+  const savePayoutBtn = document.getElementById("savePayoutBtn");
+  const payoutNameInput = document.getElementById("payoutName");
+  const accountNumberInput = document.getElementById("accountNumber");
+  const bankNameInput = document.getElementById("bankName");
+  const branchNameInput = document.getElementById("branchName");
+
+  // payout Management Functions
+  savePayoutBtn.addEventListener('click', function() {
+    const payoutMethodSelect = document.getElementById("payoutMethod");
     const userId = auth.currentUser.uid;
     const method = payoutMethodSelect.value;
     const name = payoutNameInput.value.trim();
     const accountNumber = accountNumberInput.value.trim();
     const bankName = bankNameInput.value.trim();
     const branchName = branchNameInput.value.trim();
-    
+
     // Validate required fields
     if (!name || !accountNumber) {
-        showToast('Please fill all required fields', 'error');
-        return;
+      showToast('Please fill all required fields', 'error');
+      return;
     }
-    
+
     // Additional validation for bank account
     if (method === 'bankAccount' && (!bankName || !branchName)) {
-        showToast('Please fill all bank details', 'error');
-        return;
+      showToast('Please fill all bank details', 'error');
+      return;
     }
-    
+
     // Prepare data to save
     const payoutData = {
-        method: method,
-        name: name,
-        accountNumber: accountNumber,
-        updatedAt: firebase.database.ServerValue.TIMESTAMP
+      method: method,
+      name: name,
+      accountNumber: accountNumber,
+      updatedAt: firebase.database.ServerValue.TIMESTAMP
     };
-    
+
     // Add bank details if method is bank account
     if (method === 'bankAccount') {
-        payoutData.bankName = bankName;
-        payoutData.branchName = branchName;
+      payoutData.bankName = bankName;
+      payoutData.branchName = branchName;
     } else {
-        payoutData.bankName = '';
-        payoutData.branchName = '';
+      payoutData.bankName = '';
+      payoutData.branchName = '';
     }
-    
+
     // Show loading state
     savePayoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     savePayoutBtn.disabled = true;
-    
+
     // Save to Firebase
     database.ref('egy_user/' + userId + '/payoutMethod').update(payoutData)
-        .then(() => {
-            showToast('Payout method saved successfully', 'success');
-            
-            // Reset edit buttons
-            document.querySelectorAll('#payoutForm .edit-btn').forEach(btn => {
-                btn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
-            });
-            
-            // Make inputs readonly
-            payoutNameInput.readOnly = true;
-            accountNumberInput.readOnly = true;
-            bankNameInput.readOnly = true;
-            branchNameInput.readOnly = true;
-        })
-        .catch((error) => {
-            showToast('Failed to save payout method', 'error');
-            console.error('Error saving payout method:', error);
-        })
-        .finally(() => {
-            savePayoutBtn.innerHTML = '<i class="fas fa-save"></i> Save Payout Method';
-            savePayoutBtn.disabled = false;
+      .then(() => {
+        showToast('Payout method saved successfully', 'success');
+
+        // Reset edit buttons
+        document.querySelectorAll('#payoutForm .edit-btn').forEach(btn => {
+          btn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
         });
+
+        // Make inputs readonly
+        payoutNameInput.readOnly = true;
+        accountNumberInput.readOnly = true;
+        bankNameInput.readOnly = true;
+        branchNameInput.readOnly = true;
+      })
+      .catch((error) => {
+        showToast('Failed to save payout method', 'error');
+        console.error('Error saving payout method:', error);
+      })
+      .finally(() => {
+        savePayoutBtn.innerHTML = '<i class="fas fa-save"></i> Save Payout Method';
+        savePayoutBtn.disabled = false;
+      });
+  });
 });
+
+
+
 
 
 
