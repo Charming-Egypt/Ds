@@ -84,12 +84,11 @@ const elements = {
   dashboardTab: document.getElementById('dashboardTab'),
   dashboardSection: document.getElementById('dashboardSection'),
 
-   payoutMethodSelect: document.getElementById("payoutMethod"),
-   payoutNameInput: document.getElementById("payoutName"),
-   accountNumberInput: document.getElementById("accountNumber"),
-   bankNameInput : document.getElementById("bankName"),
-   branchNameInput: document.getElementById("branchName")
-  
+  payoutMethod: document.getElementById("payoutMethod"),
+  payoutName: document.getElementById("payoutName"),
+  accountNumber: document.getElementById("accountNumber"),
+  bankName: document.getElementById("bankName"),
+  branchName: document.getElementById("branchName")
 
   
 };
@@ -385,30 +384,27 @@ loadpayout: (userId) => {
   return database.ref('egy_user/' + userId + '/payoutMethod').once('value').then(snapshot => {
     const payoutData = snapshot.val();
 
-    if (!payoutData) return; // إذا لا توجد بيانات، لا تكمل
+    if (!payoutData) return; // Exit if no payout data exists
 
-    if (payoutData.method) {
+    // Safely set values only if elements exist
+    if (elements.payoutMethod && payoutData.method) {
       elements.payoutMethod.value = payoutData.method;
     }
-
-    if (payoutData.name) {
+    if (elements.payoutName && payoutData.name) {
       elements.payoutName.value = payoutData.name;
     }
-
-    if (payoutData.accountNumber) {
+    if (elements.accountNumber && payoutData.accountNumber) {
       elements.accountNumber.value = payoutData.accountNumber;
     }
-
-    if (payoutData.bankName) {
+    if (elements.bankName && payoutData.bankName) {
       elements.bankName.value = payoutData.bankName;
     }
-
-    if (payoutData.branchName) {
+    if (elements.branchName && payoutData.branchName) {
       elements.branchName.value = payoutData.branchName;
     }
   }).catch(error => {
     console.error("Error loading payout method:", error);
-    showToast("Failed to load payout information", "error");
+    utils.showToast("Failed to load payout information", "error"); // Fixed: using utils.showToast
   });
 },
 
