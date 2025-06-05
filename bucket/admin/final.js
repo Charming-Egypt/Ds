@@ -346,7 +346,7 @@ const tripManager = {
       );
       elements.userEmail.value = userData.email;
       elements.userPhone.value = userData.phone;
-      elements.userName.value = userData.name ;
+      elements.userName.value = userData.username ;
       
       const photoPreview = document.getElementById('profile-pic-preview');
       if (userData.photo) {
