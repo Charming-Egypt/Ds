@@ -61,6 +61,7 @@ const elements = {
   userName: document.getElementById('userName'),
   userEmail: document.getElementById('userEmail'),
   userPhone: document.getElementById('userPhone'),
+  photoPreview: document.getElementById('profile-pic-preview'),
   addImageBtn: document.getElementById('addImageBtn'),
   addVideoBtn: document.getElementById('addVideoBtn'),
   addIncludedBtn: document.getElementById('addIncludedBtn'),
