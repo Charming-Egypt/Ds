@@ -1620,13 +1620,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Validate required fields
     if (!name || !accountNumber) {
-      showToast('Please fill all required fields', 'error');
+      utils.showToast('Please fill all required fields', 'error');
       return;
     }
 
     // Additional validation for bank account
     if (method === 'bankAccount' && (!bankName || !branchName)) {
-      showToast('Please fill all bank details', 'error');
+      utils.showToast('Please fill all bank details', 'error');
       return;
     }
 
@@ -1654,7 +1654,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Save to Firebase
     database.ref('egy_user/' + userId + '/payoutMethod').update(payoutData)
       .then(() => {
-        showToast('Payout method saved successfully', 'success');
+        utils.showToast('Payout method saved successfully', 'success');
 
         // Reset edit buttons
         document.querySelectorAll('#payoutForm .edit-btn').forEach(btn => {
@@ -1668,11 +1668,11 @@ document.addEventListener("DOMContentLoaded", function () {
         branchNameInput.readOnly = true;
       })
       .catch((error) => {
-        showToast('Failed to save payout method', 'error');
+        utils.showToast('Failed to save payout method', 'error');
         console.error('Error saving payout method:', error);
       })
       .finally(() => {
-        savePayoutBtn.innerHTML = '<i class="fas fa-save"></i> Save Payout Method';
+        savePayoutBtn.innerHTML = '<i class="fas fa-save"></i> Payout Method Saved';
         savePayoutBtn.disabled = false;
       });
   });
