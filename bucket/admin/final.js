@@ -346,7 +346,7 @@ const tripManager = {
         state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
       );
       elements.userEmail.value = userData.email;
-      elements.userPhone.value = userData.phone:
+      elements.userPhone.value = userData.phone;
       elements.userName.value = userData.name ;
       photoPreview.src = userData.photo;
       
