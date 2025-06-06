@@ -686,10 +686,11 @@ function showBookingDetails(refNumber) {
     document.body.style.overflow = 'hidden';
 }
 
+
+
 function closeModal() {
     const modal = document.getElementById('bookingDetailsModal');
     modal.classList.remove('show');
-    
     setTimeout(() => {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
@@ -712,7 +713,7 @@ function printBookingDetails(refNumber) {
     showBookingDetails(refNumber);
 }
 
-
+  
 
 
 
