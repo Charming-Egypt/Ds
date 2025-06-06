@@ -700,7 +700,7 @@ function closeModal() {
 }
 
 function printBookingDetails(refNumber) {
-    const booking = allBookings.find(b => b.refNumber === refNumber);
+    const booking = allBookings.find(b => b.refNumber === ${refNumber});
     if (!booking) {
         showToast('Booking not found', 'error');
         return;
