@@ -792,7 +792,7 @@
                     <!-- Booking Details Modal -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="handleModalClose()"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="closeModal()"></div>
     
     <!-- Modal Container -->
     <div class="relative w-full max-w-3xl max-h-[90vh]">
@@ -814,10 +814,10 @@
             <!-- Modal Footer -->
             <div class="p-4 bg-gray-900/50 border-t border-gray-700 sticky bottom-0">
                 <div class="flex justify-end gap-3">
-                    <button id="modalCloseButton2" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                    <button onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
                         Close
                     </button>
-                    <button id="printBookingButton" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors flex items-center">
+                    <button onclick="printBookingDetails()" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors flex items-center">
                         <i class="fas fa-print mr-2"></i> Print
                     </button>
                 </div>
@@ -827,6 +827,10 @@
 </div>
             </section>
 
+
+
+
+          
             <!-- Payout Section -->
             <section id="withdraw-section" class="content-section">
                 <div class="head-title">
