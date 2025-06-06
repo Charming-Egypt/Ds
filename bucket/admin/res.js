@@ -513,26 +513,27 @@ function updateBookingsTable() {
 
     // Update pagination controls
     function updatePagination() {
-        const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
-        
-        totalPagesSpan.textContent = totalPages;
-        currentPageSpan.textContent = currentPage;
-        totalItemsSpan.textContent = filteredBookings.length;
-        
-        const startItem = ((currentPage - 1) * itemsPerPage) + 1;
-        const endItem = Math.min(currentPage * itemsPerPage, filteredBookings.length);
-        
-        startItemSpan.textContent = startItem;
-        endItemSpan.textContent = endItem;
-        
-        // Disable/enable pagination buttons
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
-        
-        // Update button styles based on disabled state
-        prevPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === 1 ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
-        nextPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === totalPages ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
-    }
+    const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+    
+    // Use elements object to access DOM elements
+    elements.totalPagesSpan.textContent = totalPages;
+    elements.currentPageSpan.textContent = currentPage;
+    elements.totalItemsSpan.textContent = filteredBookings.length;
+    
+    const startItem = ((currentPage - 1) * itemsPerPage) + 1;
+    const endItem = Math.min(currentPage * itemsPerPage, filteredBookings.length);
+    
+    elements.startItemSpan.textContent = startItem;
+    elements.endItemSpan.textContent = endItem;
+    
+    // Disable/enable pagination buttons
+    elements.prevPageBtn.disabled = currentPage === 1;
+    elements.nextPageBtn.disabled = currentPage === totalPages;
+    
+    // Update button styles
+    elements.prevPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === 1 ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
+    elements.nextPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === totalPages ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
+}
 
     // Go to previous page
     function prevPage() {
