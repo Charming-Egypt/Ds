@@ -103,14 +103,13 @@ const elements = {
     bookingDetailsContent : document.getElementById('bookingDetailsContent'),
     
     // Pagination Elements
-    prevPageBtn : document.getElementById('prevPage'),
-    nextPageBtn : document.getElementById('nextPage'),
-    currentPageSpan : document.getElementById('currentPage'),
-    totalPagesSpan : document.getElementById('totalPages'),
-    startItemSpan : document.getElementById('startItem'),
-    endItemSpan : document.getElementById('endItem'),
-    totalItemsSpan : document.getElementById('totalItems')
-    
+    prevPageBtn: document.getElementById('prevPage'),
+  nextPageBtn: document.getElementById('nextPage'),
+  currentPageSpan: document.getElementById('currentPage'),
+  totalPagesSpan: document.getElementById('totalPages'),
+  startItemSpan: document.getElementById('startItem'),
+  endItemSpan: document.getElementById('endItem'),
+  totalItemsSpan: document.getElementById('totalItems')
   
   
   
