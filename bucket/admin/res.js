@@ -639,6 +639,90 @@ function showBookingDetails(refNumber) {
                     </div>
                 </div>
                 
+function showBookingDetails(refNumber) {
+    const booking = allBookings.find(b => b.refNumber === refNumber);
+    if (!booking) {
+        showToast('Booking not found', 'error');
+        return;
+    }
+    
+    const statusClass = getStatusClass(booking.resStatus);
+    const escapedRefNumber = escapeHtml(refNumber);
+    const escapedTour = escapeHtml(booking.tour || 'Unknown Tour');
+    const escapedUsername = escapeHtml(booking.username || 'N/A');
+    const escapedPhone = escapeHtml(booking.phone || '');
+    const escapedHotel = escapeHtml(booking.hotelName || 'N/A');
+    const escapedRoom = escapeHtml(booking.roomNumber || 'N/A');
+    const escapedRequests = escapeHtml(booking.tripType || '');
+    const tripDate = formatTripDate(booking.tripDate);
+    
+    // WhatsApp button HTML - only shown if phone number exists
+    const whatsappButton = escapedPhone ? `
+        <button onclick="contactViaWhatsApp('${escapedPhone}', '${escapedRefNumber}', '${escapedTour}')" 
+                class="whatsapp-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+            <i class="fab fa-whatsapp mr-2"></i> Contact via WhatsApp
+        </button>
+    ` : `
+        <div class="text-gray-400 text-sm">No phone number provided</div>
+    `;
+    
+    const detailsHTML = `
+        <div class="space-y-4">
+            <!-- Booking Summary -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Reference</div>
+                    <div class="font-mono text-amber-400">${escapedRefNumber}</div>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Status</div>
+                    <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
+                </div>
+                <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Total</div>
+                    <div class="font-bold">${formatCurrency(booking.netTotal || 0)}</div>
+                </div>
+            </div>
+            
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Trip Details -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
+                    <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-4 rounded-lg border border-gray-700">
+                            <div class="text-gray-400 text-sm">Tour</div>
+                            <div class="font-medium">${escapedTour}</div>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-700">
+                            <div class="text-gray-400 text-sm">Date</div>
+                            <div class="font-medium">${tripDate}</div>
+                        </div>
+                   </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Adults</div>
+                                <div class="font-medium text-center">${booking.adults || 0}</div>
+                            </div>
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Children</div>
+                                <div class="font-medium text-center">${booking.childrenUnder12 || 0}</div>
+                            </div>
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Infants</div>
+                                <div class="font-medium text-center">${booking.infants || 0}</div>
+                            </div>
+                        </div>
+                        ${booking.pickupLocation ? `
+                        <div>
+                            <div class="text-gray-400 text-sm">Pickup Location</div>
+                            <div class="font-medium">${escapeHtml(booking.pickupLocation)}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
                 <!-- Customer Details -->
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Information</h4>
@@ -649,7 +733,7 @@ function showBookingDetails(refNumber) {
                         </div>
                         <div>
                             <div class="text-gray-400 text-sm">Phone</div>
-                            <div class="font-medium">${escapedPhone}</div>
+                            <div class="font-medium">${escapedPhone || 'N/A'}</div>
                         </div>
                         <div>
                             <div class="text-gray-400 text-sm">Email</div>
@@ -674,6 +758,14 @@ function showBookingDetails(refNumber) {
                 <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
             </div>
             ` : ''}
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-3">
+                ${whatsappButton}
+                <button onclick="closeModal()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                    Close
+                </button>
+            </div>
         </div>
     `;
     
@@ -699,19 +791,29 @@ function closeModal() {
     }, 300);
 }
 
-function printBookingDetails(refNumber) {
-    const printContent = bookingDetailsContent.innerHTML;
-    const originalContent = document.body.innerHTML;
-document.body.innerHTML = `
-        <div class="p-4" style="background: white; color: black;">
-            <h2 class="text-2xl font-bold mb-4">Booking Details - ${refNumber}</h2>
-            ${printContent}
-        </div>
-    `;
+function contactViaWhatsApp(phoneNumber, refNumber, tourName) {
+    // Clean the phone number (remove any non-digit characters)
+    const cleanedNumber = phoneNumber.replace(/\D/g, '');
     
-    window.print();
-    document.body.innerHTML = originalContent;
-    showBookingDetails(refNumber);
+    // Create a default message with booking info
+    const defaultMessage = `Hello, I'm contacting you about your booking ${refNumber} for ${tourName}.`;
+    
+    // Encode the message for URL
+    const encodedMessage = encodeURIComponent(defaultMessage);
+    
+    // Create WhatsApp URL
+    let whatsappUrl;
+    
+    // Check if number starts with country code
+    if (cleanedNumber.startsWith('00') || cleanedNumber.startsWith('+')) {
+        whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
+    } else {
+        // Assume it's a local number (Egypt in this case)
+        whatsappUrl = `https://wa.me/20${cleanedNumber}?text=${encodedMessage}`;
+    }
+    
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
 }
   
 
