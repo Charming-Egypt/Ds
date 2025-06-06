@@ -501,6 +501,10 @@ function updateBookingsTable() {
         bookingsTableBody.appendChild(table);
     }
 }
+
+
+
+
     // Update pagination controls
     function updatePagination() {
         const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
@@ -559,6 +563,75 @@ function updateBookingsTable() {
         }
     }
 
+
+
+// Initialize modal event listeners once when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal handlers
+    document.getElementById('modalCloseButton').addEventListener('click', handleModalClose);
+    document.getElementById('modalCloseButton2').addEventListener('click', handleModalClose);
+    document.getElementById('printBookingButton').addEventListener('click', handlePrintBooking);
+});
+
+function handleModalClose() {
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.remove('show');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }, 300);
+}
+
+function handlePrintBooking() {
+    const printWindow = window.open('', '_blank');
+    const content = document.getElementById('bookingDetailsContent').innerHTML;
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Booking Details</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .print-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+                .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+                h1 { color: #d97706; margin: 0; }
+                .section { margin-bottom: 20px; }
+                .section-title { font-weight: bold; color: #d97706; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; }
+                .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+                .detail-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+                .label { font-weight: bold; color: #666; }
+                .value { text-align: right; }
+                .notes { margin-top: 30px; padding-top: 15px; border-top: 1px dashed #ccc; }
+                @media print {
+                    body { -webkit-print-color-adjust: exact; }
+                    .no-print { display: none !important; }
+                    .page-break { page-break-after: always; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-container">
+                ${content}
+                <div class="no-print" style="text-align: center; margin-top: 30px; font-size: 12px; color: #999;">
+                    Printed on ${new Date().toLocaleString()}
+                </div>
+            </div>
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                        window.close();
+                    }, 200);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
 function showBookingDetails(refNumber) {
     const booking = allBookings.find(b => b.refNumber === refNumber);
     if (!booking) {
@@ -577,95 +650,113 @@ function showBookingDetails(refNumber) {
     const tripDate = formatTripDate(booking.tripDate);
     
     const detailsHTML = `
-        <div class="space-y-4">
-            <!-- Booking Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Reference</div>
-                    <div class="font-mono text-amber-400">${escapedRefNumber}</div>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Status</div>
-                    <div><span class="${statusClass}">${booking.resStatus || 'new'}</span></div>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Total</div>
-                    <div class="font-bold">${formatCurrency(booking.netTotal || 0)}</div>
+        <div class="print-content">
+            <!-- Header -->
+            <div class="header no-print">
+                <h1>Booking Details</h1>
+                <p>Reference: ${escapedRefNumber}</p>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="section">
+                <div class="grid">
+                    <div>
+                        <div class="section-title">Booking Information</div>
+                        <div class="detail-row">
+                            <span class="label">Reference:</span>
+                            <span class="value">${escapedRefNumber}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Status:</span>
+                            <span class="value ${statusClass}">${booking.resStatus || 'new'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Tour:</span>
+                            <span class="value">${escapedTour}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Date:</span>
+                            <span class="value">${tripDate}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Total:</span>
+                            <span class="value">${formatCurrency(booking.netTotal || 0)}</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-title">Customer Information</div>
+                        <div class="detail-row">
+                            <span class="label">Name:</span>
+                            <span class="value">${escapedUsername}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Phone:</span>
+                            <span class="value">${escapedPhone}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Email:</span>
+                            <span class="value">${escapeHtml(booking.email || 'N/A')}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Hotel:</span>
+                            <span class="value">${escapedHotel}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Room:</span>
+                            <span class="value">${escapedRoom}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Trip Details -->
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
-                    <div class="space-y-3">
-                        <div>
-                            <div class="text-gray-400 text-sm">Tour</div>
-                            <div class="font-medium">${escapedTour}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 text-sm">Date</div>
-                            <div class="font-medium">${tripDate}</div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div>
-                                <div class="text-gray-400 text-sm">Adults</div>
-                                <div class="font-medium">${booking.adults || 0}</div>
-                            </div>
-                            <div>
-                                <div class="text-gray-400 text-sm">Children</div>
-                                <div class="font-medium">${booking.childrenUnder12 || 0}</div>
-                            </div>
-                            <div>
-                                <div class="text-gray-400 text-sm">Infants</div>
-                                <div class="font-medium">${booking.infants || 0}</div>
-                            </div>
-                        </div>
-                        ${booking.pickupLocation ? `
-                        <div>
-                            <div class="text-gray-400 text-sm">Pickup Location</div>
-                            <div class="font-medium">${escapeHtml(booking.pickupLocation)}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                <!-- Customer Details -->
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Information</h4>
-                    <div class="space-y-3">
-                        <div>
-                            <div class="text-gray-400 text-sm">Name</div>
-                            <div class="font-medium">${escapedUsername}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 text-sm">Phone</div>
-                            <div class="font-medium">${escapedPhone}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 text-sm">Email</div>
-                            <div class="font-medium">${escapeHtml(booking.email || 'N/A')}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 text-sm">Hotel</div>
-                            <div class="font-medium">${escapedHotel}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 text-sm">Room</div>
-                            <div class="font-medium">${escapedRoom}</div>
+            <!-- Guest Details -->
+            <div class="section">
+                <div class="section-title">Guest Details</div>
+                <div class="grid">
+                    <div>
+                        <div class="detail-row">
+                            <span class="label">Adults:</span>
+                            <span class="value">${booking.adults || 0}</span>
                         </div>
                     </div>
+                    <div>
+                        <div class="detail-row">
+                            <span class="label">Children (Under 12):</span>
+                            <span class="value">${booking.childrenUnder12 || 0}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-row">
+                            <span class="label">Infants:</span>
+                            <span class="value">${booking.infants || 0}</span>
+                        </div>
+                    </div>
+                    ${booking.pickupLocation ? `
+                    <div>
+                        <div class="detail-row">
+                            <span class="label">Pickup Location:</span>
+                            <span class="value">${escapeHtml(booking.pickupLocation)}</span>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
             
             <!-- Special Requests -->
             ${booking.tripType ? `
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
-                <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
+            <div class="section notes">
+                <div class="section-title">Special Requests</div>
+                <p>${escapedRequests}</p>
             </div>
             ` : ''}
+            
+            <!-- Print Footer -->
+            <div class="no-print" style="text-align: center; margin-top: 30px;">
+                <button onclick="window.print()" class="print-button" style="padding: 8px 16px; background: #d97706; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Print This Page
+                </button>
+            </div>
         </div>
     `;
     
@@ -680,45 +771,9 @@ function showBookingDetails(refNumber) {
     document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-    const modal = document.getElementById('bookingDetailsModal');
-    modal.classList.remove('show');
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-    }, 300);
-}
 
-function closeModal() {
-    const modal = document.getElementById('bookingDetailsModal');
-    modal.classList.remove('show');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.body.style.overflow = '';
-    }, 300);
-}
 
-function printBookingDetails(refNumber) {
-    const printContent = bookingDetailsContent.innerHTML;
-    const originalContent = document.body.innerHTML;
-    
-    document.body.innerHTML = `
-        <div class="p-4" style="background: white; color: black;">
-            <h2 class="text-2xl font-bold mb-4">Booking Details - ${refNumber}</h2>
-            ${printContent}
-        </div>
-    `;
-    
-    window.print();
-    document.body.innerHTML = originalContent;
-    showBookingDetails(refNumber);
-}
 
-    // Close modal
-    function closeModal() {
-        bookingDetailsModal.classList.add('hidden');
-    }
 
     // Switch between tabs
     function switchTab(tab) {
