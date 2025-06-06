@@ -792,7 +792,7 @@
                     <!-- Booking Details Modal -->
 <div id="bookingDetailsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="closeModal()"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="handleModalClose()"></div>
     
     <!-- Modal Container -->
     <div class="relative w-full max-w-3xl max-h-[90vh]">
@@ -801,7 +801,7 @@
             <!-- Modal Header -->
             <div class="flex justify-between items-center p-4 sm:p-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-700">
                 <h3 class="text-lg sm:text-xl font-bold text-amber-400">Booking Details</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
+                <button id="modalCloseButton" class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -814,10 +814,10 @@
             <!-- Modal Footer -->
             <div class="p-4 bg-gray-900/50 border-t border-gray-700 sticky bottom-0">
                 <div class="flex justify-end gap-3">
-                    <button onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                    <button id="modalCloseButton2" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
                         Close
                     </button>
-                    <button onclick="printBookingDetails()" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors flex items-center">
+                    <button id="printBookingButton" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors flex items-center">
                         <i class="fas fa-print mr-2"></i> Print
                     </button>
                 </div>
