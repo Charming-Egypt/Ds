@@ -327,7 +327,7 @@ function getTomorrowDateString() {
 
 // Returns the default date based on active tab
 function getDefaultDateForTab(activeTab) {
-    return activeTab === 'new' ? getTomorrowDateString() : getTodayDateString();
+    return activeTab === 'new' ? getTomorrowDateString();
 }
 
     // Apply all filters
