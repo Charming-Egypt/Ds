@@ -335,46 +335,53 @@ const state = {
         filterBookings();
     }
 
-    // Filter bookings based on current filters
-    function filterBookings() {
-        let filtered = [...allBookings];
-        
-        // Apply search filter
-        if (currentFilters.search) {
+function filterBookings() {
+    let filtered = [...allBookings];
+    
+    // Apply search filter
+    if (currentFilters.search) {
+        filtered = filtered.filter(booking => 
+            (booking.refNumber && booking.refNumber.toLowerCase().includes(currentFilters.search)) ||
+            (booking.tour && booking.tour.toLowerCase().includes(currentFilters.search)) ||
+            (booking.username && booking.username.toLowerCase().includes(currentFilters.search)) ||
+            (booking.email && booking.email.toLowerCase().includes(currentFilters.search))
+        );
+    }
+    
+    // Apply status filter
+    if (currentFilters.status !== 'all') {
+        filtered = filtered.filter(booking => 
+            booking.resStatus && booking.resStatus.toLowerCase() === currentFilters.status.toLowerCase()
+        );
+    }
+    
+    // Apply date filter
+    if (currentFilters.date) {
+        if (activeTab === 'new') {
+            // For New Bookings, show bookings on or after the selected date (future bookings)
             filtered = filtered.filter(booking => 
-                (booking.refNumber && booking.refNumber.toLowerCase().includes(currentFilters.search)) ||
-                (booking.tour && booking.tour.toLowerCase().includes(currentFilters.search)) ||
-                (booking.username && booking.username.toLowerCase().includes(currentFilters.search)) ||
-                (booking.email && booking.email.toLowerCase().includes(currentFilters.search))
+                booking.tripDate && booking.tripDate >= currentFilters.date
             );
-        }
-        
-        // Apply status filter
-        if (currentFilters.status !== 'all') {
-            filtered = filtered.filter(booking => 
-                booking.resStatus && booking.resStatus.toLowerCase() === currentFilters.status.toLowerCase()
-            );
-        }
-        
-        // Apply date filter
-        if (currentFilters.date) {
+        } else {
+            // For other tabs, show bookings on the exact selected date
             filtered = filtered.filter(booking => 
                 booking.tripDate === currentFilters.date
             );
         }
-        
-        // Apply tab filter
-        if (activeTab !== 'all') {
-            filtered = filtered.filter(booking => 
-                booking.resStatus && booking.resStatus.toLowerCase() === activeTab.toLowerCase()
-            );
-        }
-        
-        filteredBookings = filtered;
-        currentPage = 1;
-        updateBookingsTable();
-        updatePagination();
     }
+    
+    // Apply tab filter
+    if (activeTab !== 'all') {
+        filtered = filtered.filter(booking => 
+            booking.resStatus && booking.resStatus.toLowerCase() === activeTab.toLowerCase()
+        );
+    }
+    
+    filteredBookings = filtered;
+    currentPage = 1;
+    updateBookingsTable();
+    updatePagination();
+}
 
 function updateBookingsTable() {
     bookingsTableBody.innerHTML = '';
@@ -723,50 +730,51 @@ function closeModal() {
 
 
 
-    // Switch between tabs
-    function switchTab(tab) {
-        activeTab = tab;
-        
-        // Update active tab styling
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.getElementById(`${tab}BookingsTab`).classList.add('active');
-        
-        // Update table title
-        const titles = {
-            'all': 'All Bookings',
-            'new': 'New Bookings',
-            'confirmed': 'Confirmed Bookings',
-        };
-        document.getElementById('bookingsTableTitle').textContent = titles[tab];
-        
-        // Set tomorrow's date filter by default for new bookings
-        if (tab === 'new') {
-            const tomorrow = getTomorrowDateString();
-            if (flatpickrInstance) {
-                flatpickrInstance.setDate(tomorrow, true);
-            }
-            currentFilters.date = tomorrow;
-        } 
-        else if (tab === 'confirmed') {
-            const ftoday = getTodayDateString();
-            if (flatpickrInstance) {
-                flatpickrInstance.setDate(ftoday, true);
-            }
-            currentFilters.date = ftoday;
-        } 
-        else {
-            // Clear date filter for other tabs
-            if (flatpickrInstance) {
-                flatpickrInstance.clear();
-            }
-            currentFilters.date = null;
+function switchTab(tab) {
+    activeTab = tab;
+    
+    // Update active tab styling
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`${tab}BookingsTab`).classList.add('active');
+    
+    // Update table title
+    const titles = {
+        'all': 'All Bookings',
+        'new': 'New Bookings',
+        'confirmed': 'Confirmed Bookings',
+    };
+    document.getElementById('bookingsTableTitle').textContent = titles[tab];
+    
+    // Clear any existing filters
+    currentFilters.search = '';
+    currentFilters.status = 'all';
+    currentFilters.date = null;
+    searchInput.value = '';
+    statusFilter.value = 'all';
+    
+    // Set date filter based on tab
+    if (tab === 'new') {
+        // For New Bookings - show future bookings (tomorrow onwards)
+        const tomorrow = getTomorrowDateString();
+        if (flatpickrInstance) {
+            flatpickrInstance.setDate(tomorrow, true);
         }
-        
-        // Reapply filters with new tab
-        applyFilters();
+        currentFilters.date = tomorrow;
+    } 
+    else if (tab === 'confirmed' || tab === 'all') {
+        // For Confirmed and All Bookings - show today's bookings
+        const today = getTodayDateString();
+        if (flatpickrInstance) {
+            flatpickrInstance.setDate(today, true);
+        }
+        currentFilters.date = today;
     }
+    
+    // Reapply filters with new tab
+    applyFilters();
+}
 
     // Load bookings from Firebase - only shows bookings where owner = current user
     function loadBookings() {
