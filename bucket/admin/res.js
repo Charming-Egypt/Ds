@@ -681,17 +681,7 @@ function showBookingDetails(refNumber) {
             </div>
             ` : ''}
             
-            <!-- Action Buttons -->
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white">
-                    Close
-                </button>
-                ${escapedPhone !== 'N/A' ? `
-                <a href="${whatsappUrl}" target="_blank" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white flex items-center">
-                    <i class="fab fa-whatsapp mr-2"></i> Contact via WhatsApp
-                </a>
-                ` : ''}
-            </div>
+            
         </div>
     `;
     
@@ -707,6 +697,23 @@ function showBookingDetails(refNumber) {
 }
 
 
+
+// Update WhatsApp button URL
+const whatsappButton = document.getElementById('whatsappButton');
+if (whatsappButton && booking.phone) {
+    const whatsappMessage = `Hello ${booking.username || 'there'},%0A%0A` +
+                          `Regarding your booking ${booking.refNumber} for ${booking.tour || 'your tour'} on ${tripDate}.%0A%0A` +
+                          `Best regards,`;
+    const whatsappUrl = `https://wa.me/${booking.phone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
+    whatsappButton.href = whatsappUrl;
+} else if (whatsappButton) {
+    whatsappButton.style.display = 'none'; // Hide button if no phone number
+}
+
+
+
+
+
 function closeModal() {
     const modal = document.getElementById('bookingDetailsModal');
     modal.classList.remove('show');
@@ -716,20 +723,7 @@ function closeModal() {
     }, 300);
 }
 
-function printBookingDetails(refNumber) {
-    const printContent = bookingDetailsContent.innerHTML;
-    const originalContent = document.body.innerHTML;
-document.body.innerHTML = `
-        <div class="p-4" style="background: white; color: black;">
-            <h2 class="text-2xl font-bold mb-4">Booking Details - ${refNumber}</h2>
-            ${printContent}
-        </div>
-    `;
-    
-    window.print();
-    document.body.innerHTML = originalContent;
-    showBookingDetails(refNumber);
-}
+
   
 
 
