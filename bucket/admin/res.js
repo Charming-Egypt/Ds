@@ -594,7 +594,7 @@ function showBookingDetails(refNumber) {
                     <div class="text-gray-400 text-sm">Status</div>
                     <div><span class="${statusClass}">${booking.resStatus || 'new'}</span></div>
                 </div>
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                <div class="sm:col-span-2 bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Total</div>
                     <div class="font-bold">${formatCurrency(booking.netTotal || 0)}</div>
                 </div>
