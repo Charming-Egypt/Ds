@@ -587,7 +587,7 @@ function showBookingDetails(refNumber) {
     if (whatsappButton) {
         if (booking.phone) {
             const whatsappMessage = `Hello ${booking.username || 'there'},%0A%0A` +
-                                  `Regarding your booking.%0A%0A `+ `${booking.refNumber}.%0A%0A` + `for ${booking.tour || 'your tour'}.%0A%0A` + ` on ${tripDate}.%0A%0A` +
+                                  `Regarding your booking.%0A%0A `+ `Ref / ${booking.refNumber}.%0A%0A` + `for ${booking.tour || 'your tour'}.%0A%0A` + ` on ${tripDate}.%0A%0A` +
                                   `Best regards,`;
             const whatsappUrl = `https://wa.me/${booking.phone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
             whatsappButton.href = whatsappUrl;
