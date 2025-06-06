@@ -312,19 +312,23 @@ const state = {
         applyFilters();
     }
 
-    // Get tomorrow's date in YYYY-MM-DD format
-    function getTomorrowDateString() {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        return tomorrow.toISOString().split('T')[0];
-    }
-  
-    // Get today's date in YYYY-MM-DD format
-    function getTodayDateString() {
-        const ftoday = new Date();
-        ftoday.setDate(ftoday.getDate());
-        return ftoday.toISOString().split('T')[0];
-    }
+    // Returns today's date in YYYY-MM-DD format
+function getTodayDateString() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+}
+
+// Returns tomorrow's date in YYYY-MM-DD format
+function getTomorrowDateString() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+}
+
+// Returns the default date based on active tab
+function getDefaultDateForTab(activeTab) {
+    return activeTab === 'new' ? getTomorrowDateString() : getTodayDateString();
+}
 
     // Apply all filters
     function applyFilters() {
@@ -334,45 +338,39 @@ const state = {
         filterBookings();
     }
 
+// Main filtering function with date handling
 function filterBookings() {
     let filtered = [...allBookings];
     
-    // Apply search filter
-    if (currentFilters.search) {
+    // Apply search filter if exists
+    if (currentFilters.search?.trim()) {
+        const searchTerm = currentFilters.search.toLowerCase().trim();
         filtered = filtered.filter(booking => 
-            (booking.refNumber && booking.refNumber.toLowerCase().includes(currentFilters.search)) ||
-            (booking.tour && booking.tour.toLowerCase().includes(currentFilters.search)) ||
-            (booking.username && booking.username.toLowerCase().includes(currentFilters.search)) ||
-            (booking.email && booking.email.toLowerCase().includes(currentFilters.search))
+            (booking.refNumber?.toLowerCase().includes(searchTerm)) ||
+            (booking.tour?.toLowerCase().includes(searchTerm)) ||
+            (booking.username?.toLowerCase().includes(searchTerm)) ||
+            (booking.email?.toLowerCase().includes(searchTerm))
         );
     }
     
-    // Apply status filter
-    if (currentFilters.status !== 'all') {
+    // Apply status filter if not 'all'
+    if (currentFilters.status && currentFilters.status !== 'all') {
+        const statusTerm = currentFilters.status.toLowerCase();
         filtered = filtered.filter(booking => 
-            booking.resStatus && booking.resStatus.toLowerCase() === currentFilters.status.toLowerCase()
+            booking.resStatus?.toLowerCase() === statusTerm
         );
     }
     
-    // Apply date filter
+    // Apply date filter with tab-specific logic
     if (currentFilters.date) {
-        if (activeTab === 'new') {
-            // For New Bookings, show bookings on or after the selected date (future bookings)
-            filtered = filtered.filter(booking => 
-                booking.tripDate && booking.tripDate >= currentFilters.date
-            );
-        } else {
-            // For other tabs, show bookings on the exact selected date
-            filtered = filtered.filter(booking => 
-                booking.tripDate === currentFilters.date
-            );
-        }
+        filtered = filterByDate(filtered, currentFilters.date, activeTab);
     }
     
-    // Apply tab filter
+    // Apply tab-specific status filter
     if (activeTab !== 'all') {
+        const tabStatus = activeTab.toLowerCase();
         filtered = filtered.filter(booking => 
-            booking.resStatus && booking.resStatus.toLowerCase() === activeTab.toLowerCase()
+            booking.resStatus?.toLowerCase() === tabStatus
         );
     }
     
@@ -381,6 +379,50 @@ function filterBookings() {
     updateBookingsTable();
     updatePagination();
 }
+
+// Handles date-specific filtering logic
+function filterByDate(bookings, date, activeTab) {
+    if (activeTab === 'new') {
+        // For New tab: future bookings (including selected date)
+        return bookings.filter(booking => 
+            booking.tripDate && booking.tripDate >= date
+        );
+    }
+    // For other tabs: exact date match
+    return bookings.filter(booking => 
+        booking.tripDate === date
+    );
+}
+
+
+
+// Initialize the booking system
+function initBookingSystem() {
+    // Load bookings data first
+    loadBookings().then(() => {
+        // Then initialize date filter with proper defaults
+        initDateFilter();
+        
+        // Set up tab switching
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tab = this.dataset.tab;
+                switchTab(tab);
+            });
+        });
+        
+        // Initialize with default tab
+        switchTab('all');
+    });
+}
+
+
+
+
+
+
+
+
 
 function updateBookingsTable() {
     bookingsTableBody.innerHTML = '';
@@ -730,51 +772,35 @@ function closeModal() {
 
 
 
+// Handles tab switching and sets appropriate default date
 function switchTab(tab) {
     activeTab = tab;
     
-    // Update active tab styling
+    // Update UI for active tab
     document.querySelectorAll('.tab-button').forEach(btn => {
         btn.classList.remove('active');
     });
     document.getElementById(`${tab}BookingsTab`).classList.add('active');
     
-    // Update table title
-    const titles = {
-        'all': 'All Bookings',
-        'new': 'New Bookings',
-        'confirmed': 'Confirmed Bookings',
-    };
-    document.getElementById('bookingsTableTitle').textContent = titles[tab];
+    // Set default date for the tab
+    const defaultDate = getDefaultDateForTab(tab);
+    currentFilters.date = defaultDate;
     
-    // Clear any existing filters
-    currentFilters.search = '';
-    currentFilters.status = 'all';
-    currentFilters.date = null;
-    searchInput.value = '';
-    statusFilter.value = 'all';
-    
-    // Set date filter based on tab
-    if (tab === 'new') {
-        // For New Bookings - show future bookings (tomorrow onwards)
-        const tomorrow = getTomorrowDateString();
-        if (flatpickrInstance) {
-            flatpickrInstance.setDate(tomorrow, true);
-        }
-        currentFilters.date = tomorrow;
-    } 
-    else if (tab === 'confirmed' || tab === 'all') {
-        // For Confirmed and All Bookings - show today's bookings
-        const today = getTodayDateString();
-        if (flatpickrInstance) {
-            flatpickrInstance.setDate(today, true);
-        }
-        currentFilters.date = today;
+    // Update Flatpickr if initialized
+    if (flatpickrInstance) {
+        flatpickrInstance.setDate(defaultDate, true);
     }
     
-    // Reapply filters with new tab
+    // Reset other filters
+    currentFilters.search = '';
+    currentFilters.status = 'all';
+    if (elements.searchInput) elements.searchInput.value = '';
+    if (elements.statusFilter) elements.statusFilter.value = 'all';
+    
     applyFilters();
 }
+
+
 
     // Load bookings from Firebase - only shows bookings where owner = current user
     function loadBookings() {
