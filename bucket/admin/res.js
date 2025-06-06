@@ -2,7 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
   authDomain: "egypt-travels.firebaseapp.com",
-  databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+  databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", 
   projectId: "egypt-travels",
   storageBucket: "egypt-travels.appspot.com",
   messagingSenderId: "477485386557",
@@ -22,7 +22,6 @@ class AppError extends Error {
     this.details = details;
     this.timestamp = new Date().toISOString();
   }
-
   log() {
     console.error(`[${this.timestamp}] ${this.type.toUpperCase()}: ${this.message}`);
     if (this.details) console.error('Details:', this.details);
@@ -34,27 +33,24 @@ const securityUtils = {
   sanitizeInput: (input) => {
     if (typeof input !== 'string') return input;
     return input.trim()
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
       .replace(/\n/g, '<br>');
   },
-
   validateEmail: (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   },
-
   validatePhone: (phone) => {
     return /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/.test(phone);
   },
-
   escapeHtml: (unsafe) => {
     if (!unsafe) return '';
     return unsafe.toString()
       .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
+      .replace(/</g, "<")
+      .replace(/>/g, ">")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
@@ -73,7 +69,6 @@ const performanceUtils = {
       timeout = setTimeout(later, wait);
     };
   },
-
   throttle: (func, limit) => {
     let inThrottle;
     return function() {
@@ -86,7 +81,6 @@ const performanceUtils = {
       }
     };
   },
-
   memoize: (func) => {
     const cache = new Map();
     return function(...args) {
@@ -117,7 +111,6 @@ const uiUtils = {
       </div>
     `;
     document.body.appendChild(toast);
-    
     setTimeout(() => {
       toast.style.animation = 'fadeIn 0.3s reverse';
       setTimeout(() => {
@@ -125,7 +118,6 @@ const uiUtils = {
       }, 300);
     }, duration);
   },
-
   showLoading: (elementId = 'spinner') => {
     const spinner = document.getElementById(elementId);
     if (spinner) {
@@ -133,7 +125,6 @@ const uiUtils = {
       spinner.setAttribute('aria-busy', 'true');
     }
   },
-
   hideLoading: (elementId = 'spinner') => {
     const spinner = document.getElementById(elementId);
     if (spinner) {
@@ -141,7 +132,6 @@ const uiUtils = {
       spinner.setAttribute('aria-busy', 'false');
     }
   },
-
   disableForm: (formId) => {
     const form = document.getElementById(formId);
     if (form) {
@@ -151,7 +141,6 @@ const uiUtils = {
       }
     }
   },
-
   enableForm: (formId) => {
     const form = document.getElementById(formId);
     if (form) {
@@ -161,7 +150,6 @@ const uiUtils = {
       }
     }
   },
-
   formatCurrency: (num, currency = 'EGP') => {
     const numberValue = typeof num === 'string' ? parseFloat(num) || 0 : num || 0;
     return new Intl.NumberFormat('en-US', {
@@ -171,19 +159,16 @@ const uiUtils = {
       maximumFractionDigits: 2
     }).format(numberValue);
   },
-
   formatDate: (dateString, options = {}) => {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Invalid Date';
-      
       const defaultOptions = {
         year: 'numeric',
         month: 'short',
         day: 'numeric'
       };
-      
       return date.toLocaleDateString('en-US', {...defaultOptions, ...options});
     } catch (e) {
       console.error('Error formatting date:', dateString, e);
@@ -203,7 +188,6 @@ const validationUtils = {
     if (!data.image) errors.push('Main image is required');
     return errors.length ? errors : null;
   },
-
   validateBookingData: (data) => {
     const errors = [];
     if (!data.refNumber) errors.push('Reference number is required');
@@ -213,7 +197,6 @@ const validationUtils = {
     if (!data.phone || !securityUtils.validatePhone(data.phone)) errors.push('Valid phone number is required');
     return errors.length ? errors : null;
   },
-
   validatePayoutData: (data) => {
     const errors = [];
     if (!data.method) errors.push('Payout method is required');
@@ -276,7 +259,6 @@ class DomManager {
       addWhatToBringBtn: document.getElementById('addWhatToBringBtn'),
       addTourTypeBtn: document.getElementById('addTourTypeBtn'),
       emptyState: document.getElementById('emptyState'),
-      
       // Dashboard Elements
       totalBookings: document.getElementById('totalBookings'),
       totalGuests: document.getElementById('totalGuests'),
@@ -290,7 +272,6 @@ class DomManager {
       exportData: document.getElementById('exportData'),
       dashboardTab: document.getElementById('dashboardTab'),
       dashboardSection: document.getElementById('dashboardSection'),
-
       // Payout Elements
       payoutMethod: document.getElementById("payoutMethod"),
       payoutName: document.getElementById("payoutName"),
@@ -298,7 +279,6 @@ class DomManager {
       bankName: document.getElementById("bankName"),
       branchName: document.getElementById("branchName"),
       savePayoutBtn: document.getElementById("savePayoutBtn"),
-
       // Bookings Elements
       bookingsTableBody: document.getElementById('bookingsTableBody'),
       toast: document.getElementById('toast'),
@@ -453,7 +433,6 @@ class StateManager {
       // Remove existing listener if any
       database.ref(ref).off(event, this.state.realTimeListeners[listenerKey]);
     }
-    
     const listener = database.ref(ref).on(event, callback);
     this.state.realTimeListeners[listenerKey] = listener;
   }
@@ -484,7 +463,6 @@ class TripManager {
     if (this.dom.getElement('tripForm')) {
       this.dom.addEventListener('tripForm', 'submit', (e) => this.saveTrip(e));
     }
-
     // Add buttons for dynamic fields
     this.dom.addEventListener('addImageBtn', 'click', () => this.createArrayInput('imageList', 'Image URL'));
     this.dom.addEventListener('addVideoBtn', 'click', () => this.createVideoInput());
@@ -493,7 +471,6 @@ class TripManager {
     this.dom.addEventListener('addTimelineBtn', 'click', () => this.createTimelineInput());
     this.dom.addEventListener('addWhatToBringBtn', 'click', () => this.createArrayInput('whatToBringList', 'What to bring item'));
     this.dom.addEventListener('addTourTypeBtn', 'click', () => this.createTourTypeInput());
-
     // Navigation buttons
     this.dom.addEventListener('newTripBtn', 'click', () => this.showNewTripForm());
     this.dom.addEventListener('emptyStateNewTripBtn', 'click', () => this.showNewTripForm());
@@ -506,13 +483,11 @@ class TripManager {
   resetForm() {
     const form = this.dom.getElement('tripForm');
     if (form) form.reset();
-    
     this.dom.setInputValue('tripId', '');
     this.dom.setInputValue('ownerId', '');
     this.dom.setInputValue('bookingLink', '');
     this.dom.setElementText('editorTitle', 'Create New Trip');
     this.dom.hideElement('deleteBtn');
-    
     // Clear all dynamic lists
     this.dom.setElementHTML('imageList', '');
     this.dom.setElementHTML('videoList', '');
@@ -545,57 +520,47 @@ class TripManager {
   createArrayInput(containerId, placeholder, value = '') {
     const container = this.dom.getElement(containerId);
     if (!container) return null;
-
     const div = document.createElement('div');
     div.className = 'array-item flex items-center gap-2 mb-2';
-    
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     input.placeholder = placeholder;
     input.value = value;
     input.setAttribute('aria-label', placeholder);
-    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded';
     removeBtn.innerHTML = '<i class="fas fa-times"></i>';
     removeBtn.setAttribute('aria-label', 'Remove item');
     removeBtn.addEventListener('click', () => div.remove());
-    
     div.appendChild(input);
     div.appendChild(removeBtn);
     container.appendChild(div);
-    
     return input;
   }
 
   createVideoInput() {
     const container = this.dom.getElement('videoList');
     if (!container) return null;
-
     const videoDiv = document.createElement('div');
     videoDiv.className = 'array-item mb-4 p-2 border border-gray-600 rounded';
-    
     const thumbnailInput = document.createElement('input');
     thumbnailInput.type = 'text';
     thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     thumbnailInput.placeholder = 'Thumbnail URL';
     thumbnailInput.setAttribute('aria-label', 'Video thumbnail URL');
-    
     const videoUrlInput = document.createElement('input');
     videoUrlInput.type = 'text';
     videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     videoUrlInput.placeholder = 'Video URL';
     videoUrlInput.setAttribute('aria-label', 'Video URL');
-    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded mt-2';
     removeBtn.innerHTML = '<i class="fas fa-times mr-1"></i> Remove Video';
     removeBtn.setAttribute('aria-label', 'Remove video');
     removeBtn.addEventListener('click', () => videoDiv.remove());
-    
     videoDiv.appendChild(thumbnailInput);
     videoDiv.appendChild(videoUrlInput);
     videoDiv.appendChild(removeBtn);
@@ -605,80 +570,68 @@ class TripManager {
   createTimelineInput(timelineItem = { time: '', title: '', description: '' }) {
     const container = this.dom.getElement('timelineList');
     if (!container) return null;
-
     const div = document.createElement('div');
     div.className = 'array-item mb-4 p-3 border border-gray-600 rounded';
-    
     const timeInput = document.createElement('input');
     timeInput.type = 'text';
     timeInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     timeInput.placeholder = 'Time (e.g., 09:00 AM)';
     timeInput.value = timelineItem.time || '';
     timeInput.setAttribute('aria-label', 'Timeline time');
-    
     const titleInput = document.createElement('input');
     titleInput.type = 'text';
     titleInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     titleInput.placeholder = 'Title';
     titleInput.value = timelineItem.title || '';
     titleInput.setAttribute('aria-label', 'Timeline title');
-    
     const descInput = document.createElement('textarea');
     descInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     descInput.placeholder = 'Description';
     descInput.value = timelineItem.description || '';
     descInput.setAttribute('aria-label', 'Timeline description');
     descInput.rows = 2;
-    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded mt-2';
     removeBtn.innerHTML = '<i class="fas fa-times mr-1"></i> Remove Timeline Item';
     removeBtn.setAttribute('aria-label', 'Remove timeline item');
     removeBtn.addEventListener('click', () => div.remove());
-    
     div.appendChild(timeInput);
     div.appendChild(titleInput);
     div.appendChild(descInput);
+    removeBtn.addEventListener('click', () => div.remove());
     div.appendChild(removeBtn);
     container.appendChild(div);
-    
     return { timeInput, titleInput, descInput };
   }
 
   createTourTypeInput(key = '', value = '') {
     const container = this.dom.getElement('tourTypeList');
     if (!container) return null;
-
     const div = document.createElement('div');
     div.className = 'array-item grid grid-cols-5 gap-2 items-center mb-2 p-2 border border-gray-600 rounded';
-    
     const keyInput = document.createElement('input');
     keyInput.type = 'text';
     keyInput.className = 'col-span-3 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     keyInput.placeholder = 'Service Name';
     keyInput.value = key || '';
     keyInput.setAttribute('aria-label', 'Tour type name');
-    
     const valueInput = document.createElement('input');
     valueInput.type = 'number';
     valueInput.className = 'col-span-1 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
     valueInput.placeholder = 'Price';
     valueInput.value = value || '';
     valueInput.setAttribute('aria-label', 'Tour type price');
-    
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
     removeBtn.className = 'remove-item col-span-1 bg-red-500 hover:bg-red-600 text-white p-2 rounded';
     removeBtn.innerHTML = '<i class="fas fa-times"></i>';
     removeBtn.setAttribute('aria-label', 'Remove tour type');
     removeBtn.addEventListener('click', () => div.remove());
-    
     div.appendChild(keyInput);
     div.appendChild(valueInput);
     div.appendChild(removeBtn);
     container.appendChild(div);
-    
     return { keyInput, valueInput };
   }
 
@@ -686,7 +639,6 @@ class TripManager {
     const trips = Object.values(this.state.getState().allTrips).filter(t => t.owner === this.state.getState().currentUser?.uid);
     const approvedTrips = trips.filter(t => t.approved === true || t.approved === 'true');
     const pendingTrips = trips.filter(t => !t.approved || t.approved === 'false');
-    
     this.dom.setElementText('totalTrips', approvedTrips.length);
     this.dom.setElementText('pendingTrips', pendingTrips.length);
   }
@@ -698,7 +650,7 @@ class TripManager {
 
   canEditTrip(tripOwnerId) {
     const state = this.state.getState();
-    return state.currentUserRole === 'admin' || 
+    return state.currentUserRole === 'admin' ||
            (state.currentUserRole === 'moderator' && tripOwnerId === state.currentUser?.uid);
   }
 
@@ -706,34 +658,28 @@ class TripManager {
     try {
       const snapshot = await database.ref('egy_user/' + userId).once('value');
       const userData = snapshot.val();
-      
       if (!userData) {
         throw new AppError('User data not found', 'error');
       }
-      
       this.state.updateUserRole(userData?.role || 'user');
-      
       // Update UI with user data
       this.dom.setElementText('userRole', this.state.getState().currentUserRole);
       this.dom.addClass('userRole', 'role-badge ' + (
-        this.state.getState().currentUserRole === 'admin' ? 'role-admin' : 
+        this.state.getState().currentUserRole === 'admin' ? 'role-admin' :
         this.state.getState().currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
       ));
-      
       this.dom.setInputValue('userEmail', userData.email || '');
       this.dom.setInputValue('userPhone', userData.phone || '');
       this.dom.setInputValue('userName', userData.username || '');
-      
       const photoS = this.dom.getElement('profile-s');
       const photoPreview = this.dom.getElement('profile-pic-preview');
       if (userData.photo) {
         photoPreview.src = userData.photo;
         photoS.src = userData.photo;
       } else {
-        photoPreview.src = 'https://via.placeholder.com/150';
-        photoS.src = 'https://via.placeholder.com/150';
+        photoPreview.src = 'https://via.placeholder.com/150'; 
+        photoS.src = 'https://via.placeholder.com/150'; 
       }
-      
       // Show/hide new trip button based on role
       if (this.canEditTrips()) {
         this.dom.showElement('newTripBtn');
@@ -742,7 +688,6 @@ class TripManager {
         this.dom.hideElement('newTripBtn');
         this.dom.hideElement('emptyStateNewTripBtn');
       }
-      
       return userData;
     } catch (error) {
       error.log();
@@ -755,29 +700,23 @@ class TripManager {
     try {
       const snapshot = await database.ref('egy_user/' + userId + '/payoutMethod').once('value');
       const payoutData = snapshot.val();
-      
       if (!payoutData) {
         return null;
       }
-
       // Set basic values
       this.dom.setInputValue('payoutMethod', payoutData.method || '');
-      
       // Show/hide bank fields based on method
       const bankFields = this.dom.getElement('bankFields');
       if (bankFields) {
         bankFields.style.display = payoutData.method === 'bankAccount' ? 'block' : 'none';
       }
-
       this.dom.setInputValue('payoutName', payoutData.name || '');
       this.dom.setInputValue('accountNumber', payoutData.accountNumber || '');
-      
       // Only set bank fields if method is bankAccount
       if (payoutData.method === 'bankAccount') {
         this.dom.setInputValue('bankName', payoutData.bankName || '');
         this.dom.setInputValue('branchName', payoutData.branchName || '');
       }
-      
       return payoutData;
     } catch (error) {
       const appError = new AppError("Error loading payout method", 'error', error);
@@ -790,38 +729,30 @@ class TripManager {
   async loadTripList(forceRefresh = false) {
     try {
       const state = this.state.getState();
-      
       // Check cache first if not forcing refresh
       if (!forceRefresh && state.tripsCache && Date.now() - state.lastTripsFetchTime < 300000) {
         this.renderTrips(state.tripsCache);
         return;
       }
-
       uiUtils.showLoading();
-      
       const snapshot = await database.ref('trips').once('value');
       const tripsData = snapshot.val() || {};
-      
       this.state.updateTrips(tripsData);
       this.state.setState({
         tripsCache: Object.values(tripsData),
         lastTripsFetchTime: Date.now()
       });
-      
       // Filter trips to only show those owned by current moderator
       let tripsArray = Object.entries(tripsData)
         .filter(([_, trip]) => trip.owner === state.currentUser?.uid)
         .map(([id, trip]) => ({ id, ...trip }));
-      
       if (tripsArray.length === 0) {
         this.dom.showElement('emptyState');
       } else {
         this.dom.hideElement('emptyState');
       }
-      
       this.renderTrips(tripsArray);
       this.updateDashboardStats();
-      
     } catch (error) {
       const appError = new AppError('Failed to load trips', 'error', error);
       appError.log();
@@ -834,15 +765,12 @@ class TripManager {
   renderTrips(trips) {
     const tripList = this.dom.getElement('tripList');
     if (!tripList) return;
-    
     tripList.innerHTML = '';
-    
     trips.forEach(({ id, ...trip }) => {
       const canEdit = this.canEditTrip(trip.owner);
       const card = document.createElement('div');
       card.className = `trip-card glass-card rounded-xl overflow-hidden ${!canEdit ? 'opacity-80' : ''}`;
       card.setAttribute('aria-labelledby', `trip-title-${id}`);
-      
       // Action buttons (only for users who can edit trips)
       const actionButtons = this.canEditTrips() ? `
         <div class="flex justify-end mt-4 space-x-2">
@@ -858,7 +786,6 @@ class TripManager {
           </button>
         </div>
       ` : '';
-      
       card.innerHTML = `
         <div class="h-48 bg-slate-200 relative overflow-hidden">
           ${trip.image ? `<img class="h-full w-full object-cover" src="${trip.image}" alt="${securityUtils.escapeHtml(trip.name)}" loading="lazy">` : ''}
@@ -876,7 +803,6 @@ class TripManager {
               ${securityUtils.escapeHtml(trip.category)}
             </span>
           </div>
-          
           <div class="mt-2 flex items-center justify-between">
             <div class="text-lg font-bold text-slate-100">${uiUtils.formatCurrency(trip.price)}</div>
             ${trip.owner === this.state.getState().currentUser?.uid ? `
@@ -887,16 +813,13 @@ class TripManager {
               </span>
             ` : ''}
           </div>
-          
           ${actionButtons}
         </div>
       `;
-      
       // Add event listeners for edit/delete if user can edit trips
       if (this.canEditTrips()) {
         const editBtn = card.querySelector('.edit-btn');
         const deleteBtn = card.querySelector('.delete-btn');
-        
         if (editBtn && !editBtn.disabled) {
           editBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -904,7 +827,6 @@ class TripManager {
             this.showEditorSection();
           });
         }
-        
         if (deleteBtn && !deleteBtn.disabled) {
           deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -914,7 +836,6 @@ class TripManager {
           });
         }
       }
-      
       tripList.appendChild(card);
     });
   }
@@ -922,12 +843,10 @@ class TripManager {
   async loadTripForEditing(tripId, tripData) {
     try {
       this.resetForm();
-      
       // Check if user can edit this trip
       if (!this.canEditTrip(tripData.owner)) {
         throw new AppError('You do not have permission to edit this trip', 'error');
       }
-      
       // Set basic info
       this.dom.setInputValue('tripId', tripId);
       this.dom.setInputValue('ownerId', tripData.owner || this.state.getState().currentUser.uid);
@@ -940,81 +859,69 @@ class TripManager {
       this.dom.setInputValue('description', tripData.description || '');
       this.dom.setElementText('editorTitle', `Edit ${securityUtils.escapeHtml(tripData.name)}`);
       this.dom.showElement('deleteBtn');
-      
       // Load media
       if (tripData.media?.images) {
         tripData.media.images.forEach(imageUrl => {
           this.createArrayInput('imageList', 'Image URL', imageUrl);
         });
       }
-      
       if (tripData.media?.videos) {
         tripData.media.videos.forEach(video => {
           const videoDiv = document.createElement('div');
           videoDiv.className = 'array-item mb-4 p-2 border border-gray-600 rounded';
-          
           const thumbnailInput = document.createElement('input');
           thumbnailInput.type = 'text';
           thumbnailInput.className = 'w-full mb-2 p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
           thumbnailInput.placeholder = 'Thumbnail URL';
           thumbnailInput.value = video.thumbnail || '';
           thumbnailInput.setAttribute('aria-label', 'Video thumbnail URL');
-          
           const videoUrlInput = document.createElement('input');
           videoUrlInput.type = 'text';
           videoUrlInput.className = 'w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500';
           videoUrlInput.placeholder = 'Video URL';
           videoUrlInput.value = video.videoUrl || '';
           videoUrlInput.setAttribute('aria-label', 'Video URL');
-          
           const removeBtn = document.createElement('button');
           removeBtn.type = 'button';
           removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded mt-2';
           removeBtn.innerHTML = '<i class="fas fa-times mr-1"></i> Remove Video';
           removeBtn.setAttribute('aria-label', 'Remove video');
           removeBtn.addEventListener('click', () => videoDiv.remove());
-          
           videoDiv.appendChild(thumbnailInput);
           videoDiv.appendChild(videoUrlInput);
           videoDiv.appendChild(removeBtn);
           this.dom.getElement('videoList').appendChild(videoDiv);
         });
       }
-      
       // Load included/not included
       if (tripData.included) {
         tripData.included.forEach(item => {
           this.createArrayInput('includedList', 'Included item', item);
         });
       }
-      
       if (tripData.notIncluded) {
         tripData.notIncluded.forEach(item => {
           this.createArrayInput('notIncludedList', 'Not included item', item);
         });
       }
-      
       // Load timeline
       if (tripData.timeline) {
         tripData.timeline.forEach(item => {
           this.createTimelineInput(item);
         });
       }
-      
       // Load what to bring
       if (tripData.whatToBring) {
         tripData.whatToBring.forEach(item => {
           this.createArrayInput('whatToBringList', 'What to bring item', item);
         });
       }
-      
       // Load tour types
       if (tripData.tourtype) {
         Object.entries(tripData.tourtype).forEach(([key, value]) => {
           this.createTourTypeInput(key, value);
         });
       }
-      
     } catch (error) {
       error.log();
       uiUtils.showToast(error.message, 'error');
@@ -1024,16 +931,13 @@ class TripManager {
 
   async saveTrip(e) {
     e.preventDefault();
-    
     try {
       // Check if user can edit trips
       if (!this.canEditTrips()) {
         throw new AppError('You do not have permission to create or edit trips', 'error');
       }
-      
       uiUtils.showLoading();
       this.dom.disableElement('saveBtn');
-      
       // Sanitize inputs
       const sanitizedData = {
         name: securityUtils.sanitizeInput(this.dom.getInputValue('name')),
@@ -1044,13 +948,11 @@ class TripManager {
         image: securityUtils.sanitizeInput(this.dom.getInputValue('mainImage')),
         description: securityUtils.sanitizeInput(this.dom.getInputValue('description'))
       };
-      
       // Validate data
       const validationErrors = validationUtils.validateTripData(sanitizedData);
       if (validationErrors) {
         throw new AppError(validationErrors.join(', '), 'error');
       }
-      
       const tripId = sanitizedData.bookingLink.trim().toLowerCase().replace(/\s+/g, '-');
       const tripData = {
         approved: 'false',
@@ -1067,7 +969,6 @@ class TripManager {
         whatToBring: [],
         tourtype: {}
       };
-      
       // Get image URLs
       const imageInputs = this.dom.getElement('imageList').querySelectorAll('input');
       imageInputs.forEach(input => {
@@ -1075,13 +976,11 @@ class TripManager {
           tripData.media.images.push(securityUtils.sanitizeInput(input.value));
         }
       });
-      
       // Get video data
       const videoDivs = this.dom.getElement('videoList').querySelectorAll('.array-item');
       videoDivs.forEach(div => {
         const thumbnail = securityUtils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
         const videoUrl = securityUtils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
-        
         if (thumbnail && videoUrl) {
           tripData.media.videos.push({
             thumbnail,
@@ -1089,7 +988,6 @@ class TripManager {
           });
         }
       });
-      
       // Get included items
       const includedInputs = this.dom.getElement('includedList').querySelectorAll('input');
       includedInputs.forEach(input => {
@@ -1097,7 +995,6 @@ class TripManager {
           tripData.included.push(securityUtils.sanitizeInput(input.value));
         }
       });
-      
       // Get not included items
       const notIncludedInputs = this.dom.getElement('notIncludedList').querySelectorAll('input');
       notIncludedInputs.forEach(input => {
@@ -1105,14 +1002,12 @@ class TripManager {
           tripData.notIncluded.push(securityUtils.sanitizeInput(input.value));
         }
       });
-      
       // Get timeline items
       const timelineDivs = this.dom.getElement('timelineList').querySelectorAll('.array-item');
       timelineDivs.forEach(div => {
         const time = securityUtils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
         const title = securityUtils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
         const description = securityUtils.sanitizeInput(div.querySelector('textarea').value);
-        
         if (time && title && description) {
           tripData.timeline.push({
             time,
@@ -1121,7 +1016,6 @@ class TripManager {
           });
         }
       });
-      
       // Get what to bring items
       const whatToBringInputs = this.dom.getElement('whatToBringList').querySelectorAll('input');
       whatToBringInputs.forEach(input => {
@@ -1129,34 +1023,27 @@ class TripManager {
           tripData.whatToBring.push(securityUtils.sanitizeInput(input.value));
         }
       });
-      
       // Get tour types
       const tourTypeDivs = this.dom.getElement('tourTypeList').querySelectorAll('.array-item');
       tourTypeDivs.forEach(div => {
         const key = securityUtils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
         const value = parseFloat(securityUtils.sanitizeInput(div.querySelector('input:nth-child(2)').value));
-        
         if (key && !isNaN(value)) {
           tripData.tourtype[key] = value;
         }
       });
-      
       // Check if this is an existing trip
       const isExistingTrip = this.dom.getInputValue('tripId') && this.dom.getInputValue('tripId') !== '';
-      
       if (isExistingTrip) {
         // For existing trips, we need to verify ownership before updating
         const snapshot = await database.ref('trips/' + tripId).once('value');
         const existingTrip = snapshot.val();
-        
         if (!existingTrip) {
           throw new AppError('Trip not found', 'error');
         }
-        
         if (!this.canEditTrip(existingTrip.owner)) {
           throw new AppError('You do not have permission to edit this trip', 'error');
         }
-        
         // Only update changed fields to minimize write operations
         const updates = {};
         Object.keys(tripData).forEach(key => {
@@ -1164,29 +1051,23 @@ class TripManager {
             updates[key] = tripData[key];
           }
         });
-        
         if (Object.keys(updates).length === 0) {
           throw new AppError('No changes detected', 'warning');
         }
-        
         // Add lastUpdated to updates
         updates.lastUpdated = Date.now();
-        
         // Perform the update
         await database.ref('trips/' + tripId).update(updates);
         uiUtils.showToast('Trip updated successfully!');
-        
       } else {
         // For new trips, just create them
         await database.ref('trips/' + tripId).set(tripData);
         uiUtils.showToast('Trip created successfully!');
       }
-      
       // Refresh data and UI
       await this.loadTripList(true);
       this.resetForm();
       this.showListSection();
-      
     } catch (error) {
       error.log();
       uiUtils.showToast(error.message, error.type || 'error');
@@ -1198,40 +1079,31 @@ class TripManager {
 
   async deleteTrip(tripId) {
     if (!tripId) return;
-    
     try {
       // Check if user can edit trips
       if (!this.canEditTrips()) {
         throw new AppError('You do not have permission to delete trips', 'error');
       }
-      
       uiUtils.showLoading();
-      
       // First verify ownership
       const snapshot = await database.ref('trips/' + tripId).once('value');
       const tripData = snapshot.val();
-      
       if (!tripData) {
         throw new AppError('Trip not found', 'error');
       }
-      
       if (!this.canEditTrip(tripData.owner)) {
         throw new AppError('You do not have permission to delete this trip', 'error');
       }
-      
       // Delete the trip
       await database.ref('trips/' + tripId).remove();
       uiUtils.showToast('Trip deleted successfully!');
-      
       // Refresh data
       await this.loadTripList(true);
-      
       // Reset form if we were editing this trip
       if (this.dom.getInputValue('tripId') === tripId) {
         this.resetForm();
         this.showListSection();
       }
-      
     } catch (error) {
       error.log();
       uiUtils.showToast(error.message, 'error');
@@ -1242,7 +1114,7 @@ class TripManager {
 
   logout() {
     auth.signOut().then(() => {
-      window.location.href = 'https://www.discover-sharm.com/p/login.html';
+      window.location.href = 'https://www.discover-sharm.com/p/login.html'; 
     }).catch(error => {
       const appError = new AppError('Failed to logout', 'error', error);
       appError.log();
@@ -1257,30 +1129,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const domManager = new DomManager();
     const stateManager = new StateManager();
     const tripManager = new TripManager(domManager, stateManager);
-    
     // Check auth state
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         stateManager.updateCurrentUser(user);
-        
         try {
           // Load user data and initialize the app
           await tripManager.loadUserRole(user.uid);
           await tripManager.loadTripList();
           await tripManager.loadPayoutMethod(user.uid);
-          
           // Initialize other managers here (BookingManager, DashboardManager, etc.)
-          
         } catch (error) {
           error.log();
           uiUtils.showToast(error.message || 'Failed to initialize application', 'error');
         }
-        
       } else {
         window.location.href = "/p/login.html";
       }
     });
-    
   } catch (error) {
     const appError = new AppError('Application initialization failed', 'error', error);
     appError.log();
