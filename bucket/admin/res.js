@@ -607,11 +607,11 @@ function showBookingDetails(refNumber) {
                     <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
                     <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
+                        <div class="p-4 rounded-lg border border-gray-700">
                             <div class="text-gray-400 text-sm">Tour</div>
                             <div class="font-medium">${escapedTour}</div>
                         </div>
-                        <div>
+                        <div class="p-4 rounded-lg border border-gray-700">
                             <div class="text-gray-400 text-sm">Date</div>
                             <div class="font-medium">${tripDate}</div>
                         </div>
