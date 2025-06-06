@@ -582,6 +582,12 @@ function showBookingDetails(refNumber) {
     const escapedRequests = escapeHtml(booking.tripType || '');
     const tripDate = formatTripDate(booking.tripDate);
     
+    // Create WhatsApp message template
+    const whatsappMessage = `Hello ${escapedUsername},%0A%0A` +
+                            `Regarding your booking ${escapedRefNumber} for ${escapedTour} on ${tripDate}.%0A%0A` +
+                            `Best regards,`;
+    const whatsappUrl = `https://wa.me/${escapedPhone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
+    
     const detailsHTML = `
         <div class="space-y-4">
             <!-- Booking Summary -->
@@ -674,6 +680,18 @@ function showBookingDetails(refNumber) {
                 <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
             </div>
             ` : ''}
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white">
+                    Close
+                </button>
+                ${escapedPhone !== 'N/A' ? `
+                <a href="${whatsappUrl}" target="_blank" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white flex items-center">
+                    <i class="fab fa-whatsapp mr-2"></i> Contact via WhatsApp
+                </a>
+                ` : ''}
+            </div>
         </div>
     `;
     
@@ -687,7 +705,6 @@ function showBookingDetails(refNumber) {
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
-
 
 
 function closeModal() {
