@@ -606,6 +606,7 @@ function showBookingDetails(refNumber) {
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
                     <div class="space-y-3">
+                    <div class="grid grid-cols-3 gap-2">
                         <div>
                             <div class="text-gray-400 text-sm">Tour</div>
                             <div class="font-medium">${escapedTour}</div>
@@ -614,17 +615,18 @@ function showBookingDetails(refNumber) {
                             <div class="text-gray-400 text-sm">Date</div>
                             <div class="font-medium">${tripDate}</div>
                         </div>
+                   </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div>
-                                <div class="text-gray-400 text-sm">Adults</div>
+                                <div class="text-gray-400 text-sm text-center">Adults</div>
                                 <div class="font-medium text-center">${booking.adults || 0}</div>
                             </div>
                             <div>
-                                <div class="text-gray-400 text-sm">Children</div>
+                                <div class="text-gray-400 text-sm text-center">Children</div>
                                 <div class="font-medium text-center">${booking.childrenUnder12 || 0}</div>
                             </div>
                             <div>
-                                <div class="text-gray-400 text-sm">Infants</div>
+                                <div class="text-gray-400 text-sm text-center">Infants</div>
                                 <div class="font-medium text-center">${booking.infants || 0}</div>
                             </div>
                         </div>
