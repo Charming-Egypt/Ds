@@ -420,7 +420,7 @@ function updateBookingsTable() {
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="font-bold text-amber-400 text-sm">${escapedRefNumber}</h3>
-                    <span class="status-badge ${statusClass} text-xs">${resStatus}</span>
+                    <span class="status-badge ${statusClass} text-center text-xs">${resStatus}</span>
                 </div>
                 
                 <div class="mb-2">
@@ -490,7 +490,7 @@ function updateBookingsTable() {
                 <td class="p-3">${tour}</td>
                 <td class="p-3 whitespace-nowrap">${tripDate}</td>
                 <td class="p-3 whitespace-nowrap">
-                    <span class="status-badge ${statusClass}">${resStatus}</span>
+                    <span class="status-badge ${statusClass} text-center">${resStatus}</span>
                 </td>
                 <td class="p-3 whitespace-nowrap text-center">${guestCount}</td>
             `;
@@ -592,7 +592,7 @@ function showBookingDetails(refNumber) {
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Status</div>
-                    <div><span class="status-badge ${statusClass}">${booking.resStatus || 'new'}</span></div>
+                    <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
                 </div>
                 <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Total</div>
