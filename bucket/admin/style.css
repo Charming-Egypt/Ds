@@ -1288,3 +1288,14 @@ input:checked + .slider:before {
 #bookingDetailsContent::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.1);
 }
+
+
+
+#bookingsFilterBar .relative.hidden {
+    display: none;
+}
+
+/* Adjust the spacing when date filter is hidden */
+#bookingsFilterBar .hidden + button {
+    margin-left: 0;
+}
