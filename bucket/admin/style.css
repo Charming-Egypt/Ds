@@ -1262,16 +1262,4 @@ input:checked + .slider:before {
     }
 }
 
-/* Scrollbar styling */
-#bookingDetailsModal ::-webkit-scrollbar {
-    width: 8px;
-}
 
-#bookingDetailsModal ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 193, 7, 0.5);
-    border-radius: 4px;
-}
-
-#bookingDetailsModal ::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.2);
-}
