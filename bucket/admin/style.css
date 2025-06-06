@@ -1231,43 +1231,60 @@ input:checked + .slider:before {
     }
 }
 
-/* Modal Animation */
-#bookingDetailsModal {
 
+
+
+
+/* Modal Positioning */
+#bookingDetailsModal {
+    display: flex;
     align-items: center;
     justify-content: center;
-    
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
+#bookingDetailsModal.show {
+    opacity: 1;
+    pointer-events: auto;
+}
 
 #bookingDetailsModal .glass-card {
     transform: translateY(20px);
     transition: transform 0.3s ease;
+    width: 100%;
 }
 
 #bookingDetailsModal.show .glass-card {
     transform: translateY(0);
 }
 
-/* Responsive sizing */
+/* Responsive Sizing */
 @media (max-width: 640px) {
+    #bookingDetailsModal {
+        padding: 1rem;
+    }
+    
     #bookingDetailsModal .glass-card {
-        margin: 1rem;
-        width: calc(100% - 2rem);
+        max-height: 85vh;
+    }
+    
+    #bookingDetailsContent {
+        max-height: 65vh;
     }
 }
 
-
-/* Scrollbar styling */
-#bookingDetailsModal ::-webkit-scrollbar {
-    width: 8px;
+/* Scrollbar Styling */
+#bookingDetailsContent::-webkit-scrollbar {
+    width: 6px;
 }
 
-#bookingDetailsModal ::-webkit-scrollbar-thumb {
+#bookingDetailsContent::-webkit-scrollbar-thumb {
     background-color: rgba(255, 193, 7, 0.5);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
-#bookingDetailsModal ::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.2);
+#bookingDetailsContent::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
 }
