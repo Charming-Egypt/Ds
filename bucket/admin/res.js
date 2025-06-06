@@ -376,56 +376,131 @@ const state = {
         updatePagination();
     }
 
-    // Update the bookings table with pagination
-    function updateBookingsTable() {
-        bookingsTableBody.innerHTML = '';
-        
-        if (filteredBookings.length === 0) {
-            bookingsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="table-cell text-center text-gray-500">
-                        No bookings found matching the current filters
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-        
-        // Calculate pagination
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, filteredBookings.length);
-        const paginatedBookings = filteredBookings.slice(startIndex, endIndex);
-        
+function updateBookingsTable() {
+    bookingsTableBody.innerHTML = '';
+    
+    if (filteredBookings.length === 0) {
+        bookingsTableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4 text-gray-500">
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="fas fa-calendar-times text-3xl text-amber-500 mb-2"></i>
+                        <span>No bookings found matching the current filters</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Calculate pagination
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredBookings.length);
+    const paginatedBookings = filteredBookings.slice(startIndex, endIndex);
+    
+    // Check if mobile view
+    const isMobile = window.innerWidth < 768;
+    
+    if (isMobile) {
+        // Mobile card view
         paginatedBookings.forEach(booking => {
             if (!booking.refNumber) return;
             
             const statusClass = getStatusClass(booking.resStatus);
             const escapedRefNumber = escapeHtml(booking.refNumber);
+            const tour = escapeHtml(booking.tour || 'Unknown Tour');
+            const tripDate = formatTripDate(booking.tripDate || '');
+            const resStatus = escapeHtml(booking.resStatus || 'new');
+            const guestCount = (parseInt(booking.adults) || 0) + 
+                             (parseInt(booking.childrenUnder12) || 0) + 
+                             (parseInt(booking.infants) || 0);
+            
+            const card = document.createElement('div');
+            card.className = 'booking-card bg-gray-800 rounded-lg p-4 mb-3 shadow-md';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-amber-400 text-sm">${escapedRefNumber}</h3>
+                    <span class="status-badge ${statusClass} text-xs">${resStatus}</span>
+                </div>
+                
+                <div class="mb-2">
+                    <h4 class="font-semibold text-white text-base">${tour}</h4>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-sm text-gray-300 mb-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-day mr-2 text-amber-500"></i>
+                        <span>${tripDate}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-users mr-2 text-amber-500"></i>
+                        <span>${guestCount} ${guestCount === 1 ? 'Guest' : 'Guests'}</span>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button onclick="showBookingDetails('${escapedRefNumber}')" 
+                            class="view-details-btn text-xs px-3 py-1.5 rounded-full">
+                        View Details <i class="fas fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            `;
+            
+            bookingsTableBody.appendChild(card);
+        });
+    } else {
+        // Desktop table view
+        const table = document.createElement('table');
+        table.className = 'w-full';
+        
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr class="bg-gray-800 text-gray-300 text-left">
+                <th class="p-3 text-sm font-medium">Ref #</th>
+                <th class="p-3 text-sm font-medium">Tour</th>
+                <th class="p-3 text-sm font-medium">Date</th>
+                <th class="p-3 text-sm font-medium">Status</th>
+                <th class="p-3 text-sm font-medium">Guests</th>
+            </tr>
+        `;
+        table.appendChild(thead);
+        
+        const tbody = document.createElement('tbody');
+        paginatedBookings.forEach(booking => {
+            if (!booking.refNumber) return;
+            
+            const statusClass = getStatusClass(booking.resStatus);
+            const escapedRefNumber = escapeHtml(booking.refNumber);
+            const tour = escapeHtml(booking.tour || 'Unknown Tour');
+            const tripDate = formatTripDate(booking.tripDate || '');
+            const resStatus = escapeHtml(booking.resStatus || 'new');
+            const guestCount = (parseInt(booking.adults) || 0) + 
+                             (parseInt(booking.childrenUnder12) || 0) + 
+                             (parseInt(booking.infants) || 0);
             
             const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-800/50 transition-colors';
-            
-            const tour = escapeHtml(booking.tour || 'Unknown Tour');
-            const tripDate = escapeHtml(booking.tripDate || '');
-            const resStatus = escapeHtml(booking.resStatus || 'new');
-            
+            row.className = 'hover:bg-gray-800/50 transition-colors border-b border-gray-700';
             row.innerHTML = `
-                <td class="table-cell whitespace-nowrap font-mono">
-                    <button onclick="showBookingDetails('${escapedRefNumber}')" class="text-amber-400 hover:text-indigo-300">
+                <td class="p-3 whitespace-nowrap">
+                    <button onclick="showBookingDetails('${escapedRefNumber}')" 
+                            class="text-amber-400 hover:text-amber-300 font-mono text-sm">
                         ${escapedRefNumber}
                     </button>
                 </td>
-                <td class="table-cell whitespace-nowrap">${tour}</td>
-                <td class="table-cell whitespace-nowrap mobile-hidden">${tripDate}</td>
-                <td class="table-cell whitespace-nowrap">
+                <td class="p-3">${tour}</td>
+                <td class="p-3 whitespace-nowrap">${tripDate}</td>
+                <td class="p-3 whitespace-nowrap">
                     <span class="status-badge ${statusClass}">${resStatus}</span>
                 </td>
-                <td class="table-cell whitespace-nowrap"></td>
+                <td class="p-3 whitespace-nowrap text-center">${guestCount}</td>
             `;
-            bookingsTableBody.appendChild(row);
+            tbody.appendChild(row);
         });
+        
+        table.appendChild(tbody);
+        bookingsTableBody.appendChild(table);
     }
-
+}
     // Update pagination controls
     function updatePagination() {
         const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
