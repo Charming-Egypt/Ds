@@ -547,21 +547,7 @@ function updateBookingsTable() {
         }
     }
 
-    // Get CSS class for status badge
-    function getStatusClass(status) {
-        if (!status) return 'status-new';
-        
-        switch(status.toLowerCase()) {
-            case 'confirmed':
-                return 'status-confirmed';
-            case 'new':
-                return 'status-new';
-            case 'cancelled':
-                return 'status-cancelled';
-            default:
-                return 'status-noshow';
-        }
-    }
+    
 
 
 
@@ -592,7 +578,7 @@ function showBookingDetails(refNumber) {
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Status</div>
-                    <div><span class="class="status-badge status-${statusClass}">${booking.resStatus || 'new'}</span></div>
+                    <div><span class="class="status-badge ${statusClass}">${booking.resStatus || 'new'}</span></div>
                 </div>
                 <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Total</div>
