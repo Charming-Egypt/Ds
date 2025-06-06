@@ -690,7 +690,7 @@ class TripManager {
       }
       return userData;
     } catch (error) {
-      error.log();
+      
       uiUtils.showToast(error.message || 'Failed to load user data', 'error');
       throw error;
     }
@@ -923,7 +923,7 @@ class TripManager {
         });
       }
     } catch (error) {
-      error.log();
+      
       uiUtils.showToast(error.message, 'error');
       this.showListSection();
     }
@@ -1069,7 +1069,7 @@ class TripManager {
       this.resetForm();
       this.showListSection();
     } catch (error) {
-      error.log();
+      
       uiUtils.showToast(error.message, error.type || 'error');
     } finally {
       uiUtils.hideLoading();
@@ -1105,7 +1105,7 @@ class TripManager {
         this.showListSection();
       }
     } catch (error) {
-      error.log();
+      
       uiUtils.showToast(error.message, 'error');
     } finally {
       uiUtils.hideLoading();
@@ -1140,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await tripManager.loadPayoutMethod(user.uid);
           // Initialize other managers here (BookingManager, DashboardManager, etc.)
         } catch (error) {
-          error.log();
+          
           uiUtils.showToast(error.message || 'Failed to initialize application', 'error');
         }
       } else {
