@@ -1165,82 +1165,68 @@ input:checked + .slider:before {
 
 
 
-/* Add to your CSS */
-@media (max-width: 768px) {
-  .table-container {
-    overflow-x: auto;
-  }
-  
-  .bookings-table {
-    min-width: 600px; /* Ensures table doesn't get too narrow */
-  }
-  
-  .table-cell {
-    padding: 8px 4px;
-    font-size: 14px;
-  }
-  
-  .status-badge {
-    font-size: 12px;
-    padding: 2px 6px;
-  }
+/* Booking Cards - Mobile */
+.booking-card {
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 193, 7, 0.1);
 }
 
-
-
-
-@media (max-width: 640px) {
-  .booking-details-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-  
-  .booking-details-section {
-    padding: 12px !important;
-  }
-  
-  .booking-header h4 {
-    font-size: 16px !important;
-  }
+.booking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.view-details-btn {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
 
-    @media (max-width: 640px) {
-  .pagination-controls {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .pagination-info {
-    order: -1;
-    margin-bottom: 8px;
-  }
+.view-details-btn:hover {
+    background: rgba(255, 193, 7, 0.2);
+}
+
+/* Status Badges */
+.status-badge {
+    @apply inline-block px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.status-badge.status-confirmed {
+    @apply bg-green-900/30 text-green-400 border border-green-600/30;
+}
+
+.status-badge.status-new {
+    @apply bg-blue-900/30 text-blue-400 border border-blue-600/30;
+}
+
+.status-badge.status-cancelled {
+    @apply bg-red-900/30 text-red-400 border border-red-600/30;
+}
+
+.status-badge.status-noshow {
+    @apply bg-amber-900/30 text-amber-400 border border-amber-600/30;
+}
+
+/* Responsive Table Container */
+@media (max-width: 767px) {
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
-
-
-@media (max-width: 640px) {
-  .action-buttons {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .action-buttons button {
-    width: 100%;
-  }
+    
+    .booking-card {
+        min-width: 0;
+    }
 }
 
-
-@media (max-width: 768px) {
-  .filter-bar {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .filter-control {
-    width: 100%;
-  }
-  
-  .search-input {
-    width: 100%;
-  }
+/* Print Styles */
+@media print {
+    .booking-card {
+        break-inside: avoid;
+        border: 1px solid #ddd;
+    }
+    
+    .view-details-btn {
+        display: none;
+    }
 }
