@@ -96,7 +96,7 @@ const elements = {
   // DOM Elements
     bookingsTableBody: document.getElementById('bookingsTableBody'),
     toast : document.getElementById('toast'),
-    searchInput : document.getElementById('searchInput'),
+    searchInput : document.getElementById('searchInput,
     statusFilter : document.getElementById('statusFilter'),
     dateFilter : document.getElementById('dateFilter'),
     bookingDetailsModal : document.getElementById('bookingDetailsModal'),
@@ -178,15 +178,7 @@ const state = {
         loadBookings();
     }
 
-    // Set up event listeners
-    function setupEventListeners() {
-        // Search input event
-        searchInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                applyFilters();
-            }
-        });
-    }
+
 
             // Initialize Flatpickr for date filter
         function initDateFilter() {
@@ -2674,6 +2666,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Event Listeners
 const setupEventListeners = () => {
+            // Search input event
+        searchInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    
+    
+    
   // Form submission (only if user can edit)
   if (tripManager.canEditTrips() && elements.tripForm) {
     elements.tripForm.addEventListener('submit', tripManager.saveTrip);
