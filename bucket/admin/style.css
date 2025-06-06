@@ -1162,3 +1162,85 @@ input:checked + .slider:before {
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
+
+
+
+/* Add to your CSS */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .bookings-table {
+    min-width: 600px; /* Ensures table doesn't get too narrow */
+  }
+  
+  .table-cell {
+    padding: 8px 4px;
+    font-size: 14px;
+  }
+  
+  .status-badge {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+}
+
+
+
+
+@media (max-width: 640px) {
+  .booking-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .booking-details-section {
+    padding: 12px !important;
+  }
+  
+  .booking-header h4 {
+    font-size: 16px !important;
+  }
+}
+
+
+    @media (max-width: 640px) {
+  .pagination-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pagination-info {
+    order: -1;
+    margin-bottom: 8px;
+  }
+    }
+
+
+@media (max-width: 640px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .action-buttons button {
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filter-control {
+    width: 100%;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
