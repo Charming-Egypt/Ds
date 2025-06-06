@@ -96,7 +96,7 @@ const elements = {
   // DOM Elements
     bookingsTableBody: document.getElementById('bookingsTableBody'),
     toast : document.getElementById('toast'),
-    searchInput : document.getElementById('searchInput,
+    searchInput : document.getElementById('searchInput'),
     statusFilter : document.getElementById('statusFilter'),
     dateFilter : document.getElementById('dateFilter'),
     bookingDetailsModal : document.getElementById('bookingDetailsModal'),
