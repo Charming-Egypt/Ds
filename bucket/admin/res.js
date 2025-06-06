@@ -1150,3 +1150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uiUtils.showToast(appError.message, 'error');
   }
 });
+
+
+// Start the app
+initApp();
