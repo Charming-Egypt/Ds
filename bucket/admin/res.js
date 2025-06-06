@@ -571,125 +571,123 @@ function showBookingDetails(refNumber) {
         showToast('Booking not found', 'error');
         return;
     }
-
-    // Format booking data
+    
     const statusClass = getStatusClass(booking.resStatus);
-    const formattedPrice = formatCurrency(booking.netTotal || 0);
-    const guestCount = (parseInt(booking.adults) || 0) + 
-                      (parseInt(booking.childrenUnder12) || 0) + 
-                      (parseInt(booking.infants) || 0);
+    const escapedRefNumber = escapeHtml(refNumber);
+    const escapedTour = escapeHtml(booking.tour || 'Unknown Tour');
+    const escapedUsername = escapeHtml(booking.username || 'N/A');
+    const escapedPhone = escapeHtml(booking.phone || 'N/A');
+    const escapedHotel = escapeHtml(booking.hotelName || 'N/A');
+    const escapedRoom = escapeHtml(booking.roomNumber || 'N/A');
+    const escapedRequests = escapeHtml(booking.tripType || '');
     const tripDate = formatTripDate(booking.tripDate);
-
-    // Create WhatsApp button if phone exists
-    const whatsappButton = booking.phone ? `
-        <button class="whatsapp-btn flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-2 rounded-lg transition-colors"
-                data-phone="${escapeHtml(booking.phone)}" 
-                data-ref="${escapeHtml(refNumber)}" 
-                data-tour="${escapeHtml(booking.tour || 'Unknown Tour')}">
-            <i class="fab fa-whatsapp text-lg"></i>
-            <span>Contact Guest</span>
-        </button>
-    ` : `
-        <div class="text-gray-400 text-sm px-4 py-2">No contact number available</div>
-    `;
-
-    // Create booking details HTML
+    
     const detailsHTML = `
-        <div class="space-y-6">
-            <!-- Header Section -->
-            <div class="flex justify-between items-start border-b border-gray-700 pb-4">
-                <div>
-                    <h2 class="text-xl font-bold text-amber-400">${escapeHtml(booking.tour || 'Unknown Tour')}</h2>
-                    <div class="text-sm text-gray-400">Ref: ${escapeHtml(refNumber)}</div>
-                </div>
-                <span class="status-badge ${statusClass} px-3 py-1 rounded-full text-sm">
-                    ${escapeHtml(booking.resStatus || 'new')}
-                </span>
-            </div>
-
-            <!-- Booking Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="space-y-4">
+            <!-- Booking Summary -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Trip Date</div>
-                    <div class="font-medium text-lg">${tripDate}</div>
+                    <div class="text-gray-400 text-sm">Reference</div>
+                    <div class="font-mono text-amber-400">${escapedRefNumber}</div>
                 </div>
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Total Guests</div>
-                    <div class="font-medium text-lg">${guestCount}</div>
+                    <div class="text-gray-400 text-sm">Status</div>
+                    <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
                 </div>
+                <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Total</div>
+                    <div class="font-bold">${formatCurrency(booking.netTotal || 0)}</div>
+                </div>
+            </div>
+            
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Trip Details -->
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <div class="text-gray-400 text-sm">Total Amount</div>
-                    <div class="font-medium text-lg">${formattedPrice}</div>
-                </div>
-            </div>
-
-            <!-- Customer Details -->
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h3 class="font-medium text-lg text-amber-400 mb-3 border-b border-gray-700 pb-2">Customer Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div class="text-gray-400 text-sm">Name</div>
-                        <div class="font-medium">${escapeHtml(booking.username || 'N/A')}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-400 text-sm">Phone</div>
-                        <div class="font-medium">${escapeHtml(booking.phone || 'N/A')}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-400 text-sm">Email</div>
-                        <div class="font-medium">${escapeHtml(booking.email || 'N/A')}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-400 text-sm">Hotel</div>
-                        <div class="font-medium">${escapeHtml(booking.hotelName || 'N/A')}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Guest Breakdown -->
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h3 class="font-medium text-lg text-amber-400 mb-3 border-b border-gray-700 pb-2">Guest Details</h3>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="text-center">
-                        <div class="text-gray-400 text-sm">Adults</div>
-                        <div class="font-medium text-xl">${booking.adults || 0}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-gray-400 text-sm">Children</div>
-                        <div class="font-medium text-xl">${booking.childrenUnder12 || 0}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-gray-400 text-sm">Infants</div>
-                        <div class="font-medium text-xl">${booking.infants || 0}</div>
+                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
+                    <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="p-4 rounded-lg border border-gray-700">
+                            <div class="text-gray-400 text-sm">Tour</div>
+                            <div class="font-medium">${escapedTour}</div>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-700">
+                            <div class="text-gray-400 text-sm">Date</div>
+                            <div class="font-medium">${tripDate}</div>
+                        </div>
+                   </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Adults</div>
+                                <div class="font-medium text-center">${booking.adults || 0}</div>
+                            </div>
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Children</div>
+                                <div class="font-medium text-center">${booking.childrenUnder12 || 0}</div>
+                            </div>
+                            <div class="p-4 rounded-lg border border-gray-700">
+                                <div class="text-gray-400 text-sm text-center">Infants</div>
+                                <div class="font-medium text-center">${booking.infants || 0}</div>
+                            </div>
+                        </div>
+                        ${booking.pickupLocation ? `
+                        <div>
+                            <div class="text-gray-400 text-sm">Pickup Location</div>
+                            <div class="font-medium">${escapeHtml(booking.pickupLocation)}</div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
+                
+                <!-- Customer Details -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Information</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="text-gray-400 text-sm">Name</div>
+                            <div class="font-medium">${escapedUsername}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400 text-sm">Phone</div>
+                            <div class="font-medium">${escapedPhone}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400 text-sm">Email</div>
+                            <div class="font-medium">${escapeHtml(booking.email || 'N/A')}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400 text-sm">Hotel</div>
+                            <div class="font-medium">${escapedHotel}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400 text-sm">Room</div>
+                            <div class="font-medium">${escapedRoom}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
+            
             <!-- Special Requests -->
             ${booking.tripType ? `
             <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h3 class="font-medium text-lg text-amber-400 mb-2">Special Requests</h3>
-                <p class="text-gray-300 whitespace-pre-line">${escapeHtml(booking.tripType)}</p>
+                <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+                <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
             </div>
             ` : ''}
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-                ${whatsappButton}
-                <button class="close-btn bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors">
-                    Close
-                </button>
-            </div>
         </div>
     `;
-
-    // Insert into modal and show
+    
     bookingDetailsContent.innerHTML = detailsHTML;
-    document.getElementById('bookingDetailsModal').classList.remove('hidden');
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.remove('hidden');
+    
+    // Force reflow to enable animation
+    void modal.offsetWidth;
+    
+    modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
-    
-                            
+
 
 
 function closeModal() {
@@ -701,29 +699,19 @@ function closeModal() {
     }, 300);
 }
 
-function contactViaWhatsApp(phoneNumber, refNumber, tourName) {
-    // Clean the phone number (remove any non-digit characters)
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
+function printBookingDetails(refNumber) {
+    const printContent = bookingDetailsContent.innerHTML;
+    const originalContent = document.body.innerHTML;
+document.body.innerHTML = `
+        <div class="p-4" style="background: white; color: black;">
+            <h2 class="text-2xl font-bold mb-4">Booking Details - ${refNumber}</h2>
+            ${printContent}
+        </div>
+    `;
     
-    // Create a default message with booking info
-    const defaultMessage = `Hello, I'm contacting you about your booking ${refNumber} for ${tourName}.`;
-    
-    // Encode the message for URL
-    const encodedMessage = encodeURIComponent(defaultMessage);
-    
-    // Create WhatsApp URL
-    let whatsappUrl;
-    
-    // Check if number starts with country code
-    if (cleanedNumber.startsWith('00') || cleanedNumber.startsWith('+')) {
-        whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
-    } else {
-        // Assume it's a local number (Egypt in this case)
-        whatsappUrl = `https://wa.me/20${cleanedNumber}?text=${encodedMessage}`;
-    }
-    
-    // Open WhatsApp in a new tab
-    window.open(whatsappUrl, '_blank');
+    window.print();
+    document.body.innerHTML = originalContent;
+    showBookingDetails(refNumber);
 }
   
 
@@ -2816,31 +2804,7 @@ const setupEventListeners = () => {
             }
         });
     
-
-  
-// Add this to your setupEventListeners function or similar initialization code
-document.addEventListener('click', function(e) {
-    // Handle WhatsApp button click
-    if (e.target.closest('.whatsapp-btn')) {
-        const btn = e.target.closest('.whatsapp-btn');
-        const phone = btn.dataset.phone;
-        const refNumber = btn.dataset.ref;
-        const tourName = btn.dataset.tour;
-        contactViaWhatsApp(phone, refNumber, tourName);
-    }
     
-    // Handle close modal button click
-    if (e.target.closest('.close-modal-btn')) {
-        closeModal();
-    }
-});
-
-
-
-
-
-  
-
     
   // Form submission (only if user can edit)
   if (tripManager.canEditTrips() && elements.tripForm) {
