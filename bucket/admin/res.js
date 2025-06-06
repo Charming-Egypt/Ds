@@ -617,15 +617,15 @@ function showBookingDetails(refNumber) {
                         <div class="grid grid-cols-3 gap-2">
                             <div>
                                 <div class="text-gray-400 text-sm">Adults</div>
-                                <div class="font-medium">${booking.adults || 0}</div>
+                                <div class="font-medium content-center">${booking.adults || 0}</div>
                             </div>
                             <div>
                                 <div class="text-gray-400 text-sm">Children</div>
-                                <div class="font-medium">${booking.childrenUnder12 || 0}</div>
+                                <div class="font-medium content-center">${booking.childrenUnder12 || 0}</div>
                             </div>
                             <div>
                                 <div class="text-gray-400 text-sm">Infants</div>
-                                <div class="font-medium">${booking.infants || 0}</div>
+                                <div class="font-medium content-center">${booking.infants || 0}</div>
                             </div>
                         </div>
                         ${booking.pickupLocation ? `
