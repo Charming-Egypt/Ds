@@ -2809,8 +2809,3 @@ const initApp = () => {
 
 // Start the app
 initApp();
-.
-.
-In this code the reservations
-Not responsive ui
-.
