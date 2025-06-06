@@ -577,46 +577,55 @@ function showBookingDetails(refNumber) {
     const tripDate = formatTripDate(booking.tripDate);
     
     const detailsHTML = `
-        <div class="grid grid-cols-1 gap-4">
-            <!-- Header Section -->
-            <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div>
-                        <h4 class="text-lg font-semibold text-amber-400">${escapedTour}</h4>
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="text-xs text-gray-400 font-mono">Ref #: ${escapedRefNumber}</span>
-                            <span class="status-badge ${statusClass}">${booking.resStatus || 'new'}</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-amber-500 font-medium">${tripDate}</div>
-                        <div class="text-sm text-gray-400">${formatCurrency(booking.netTotal || 0)}</div>
-                    </div>
+        <div class="space-y-4">
+            <!-- Booking Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Reference</div>
+                    <div class="font-mono text-amber-400">${escapedRefNumber}</div>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Status</div>
+                    <div><span class="${statusClass}">${booking.resStatus || 'new'}</span></div>
+                </div>
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <div class="text-gray-400 text-sm">Total</div>
+                    <div class="font-bold">${formatCurrency(booking.netTotal || 0)}</div>
                 </div>
             </div>
-
-            <!-- Grid Sections -->
+            
+            <!-- Main Content Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Trip Details -->
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h5 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Details</h5>
+                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Trip Information</h4>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Adults:</span>
-                            <span class="font-medium">${booking.adults || 0}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Tour</div>
+                            <div class="font-medium">${escapedTour}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Children (Under 12):</span>
-                            <span class="font-medium">${booking.childrenUnder12 || 0}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Date</div>
+                            <div class="font-medium">${tripDate}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Infants:</span>
-                            <span class="font-medium">${booking.infants || 0}</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <div class="text-gray-400 text-sm">Adults</div>
+                                <div class="font-medium">${booking.adults || 0}</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-400 text-sm">Children</div>
+                                <div class="font-medium">${booking.childrenUnder12 || 0}</div>
+                            </div>
+                            <div>
+                                <div class="text-gray-400 text-sm">Infants</div>
+                                <div class="font-medium">${booking.infants || 0}</div>
+                            </div>
                         </div>
                         ${booking.pickupLocation ? `
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Pickup Location:</span>
-                            <span class="font-medium">${escapeHtml(booking.pickupLocation)}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Pickup Location</div>
+                            <div class="font-medium">${escapeHtml(booking.pickupLocation)}</div>
                         </div>
                         ` : ''}
                     </div>
@@ -624,27 +633,27 @@ function showBookingDetails(refNumber) {
                 
                 <!-- Customer Details -->
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h5 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Details</h5>
+                    <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Information</h4>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Name:</span>
-                            <span class="font-medium">${escapedUsername}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Name</div>
+                            <div class="font-medium">${escapedUsername}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Phone:</span>
-                            <span class="font-medium">${escapedPhone}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Phone</div>
+                            <div class="font-medium">${escapedPhone}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Email:</span>
-                            <span class="font-medium">${escapeHtml(booking.email || 'N/A')}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Email</div>
+                            <div class="font-medium">${escapeHtml(booking.email || 'N/A')}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Hotel:</span>
-                            <span class="font-medium">${escapedHotel}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Hotel</div>
+                            <div class="font-medium">${escapedHotel}</div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Room:</span>
-                            <span class="font-medium">${escapedRoom}</span>
+                        <div>
+                            <div class="text-gray-400 text-sm">Room</div>
+                            <div class="font-medium">${escapedRoom}</div>
                         </div>
                     </div>
                 </div>
@@ -653,34 +662,32 @@ function showBookingDetails(refNumber) {
             <!-- Special Requests -->
             ${booking.tripType ? `
             <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h5 class="font-medium mb-2 text-amber-400">Special Requests</h5>
-                <p class="text-gray-300">${escapedRequests}</p>
+                <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+                <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
             </div>
             ` : ''}
-            
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row justify-end gap-2 pt-2">
-                <button onclick="closeModal()" 
-                        class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
-                    Close
-                </button>
-                <button onclick="printBookingDetails('${escapedRefNumber}')" 
-                        class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors">
-                    <i class="fas fa-print mr-2"></i> Print
-                </button>
-            </div>
         </div>
     `;
     
     bookingDetailsContent.innerHTML = detailsHTML;
     const modal = document.getElementById('bookingDetailsModal');
     modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.add('show');
-    }, 10);
     
-    // Lock body scroll when modal is open
+    // Force reflow to enable animation
+    void modal.offsetWidth;
+    
+    modal.classList.add('show');
     document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('bookingDetailsModal');
+    modal.classList.remove('show');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }, 300);
 }
 
 function closeModal() {
