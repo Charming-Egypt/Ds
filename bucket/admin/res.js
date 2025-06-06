@@ -582,12 +582,21 @@ function showBookingDetails(refNumber) {
     const escapedRequests = escapeHtml(booking.tripType || '');
     const tripDate = formatTripDate(booking.tripDate);
     
-    // Create WhatsApp message template
-    const whatsappMessage = `Hello ${escapedUsername},%0A%0A` +
-                            `Regarding your booking ${escapedRefNumber} for ${escapedTour} on ${tripDate}.%0A%0A` +
-                            `Best regards,`;
-    const whatsappUrl = `https://wa.me/${escapedPhone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
-    
+    // Prepare WhatsApp URL if phone exists
+    const whatsappButton = document.getElementById('whatsappButton');
+    if (whatsappButton) {
+        if (booking.phone) {
+            const whatsappMessage = `Hello ${booking.username || 'there'},%0A%0A` +
+                                  `Regarding your booking ${booking.refNumber} for ${booking.tour || 'your tour'} on ${tripDate}.%0A%0A` +
+                                  `Best regards,`;
+            const whatsappUrl = `https://wa.me/${booking.phone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
+            whatsappButton.href = whatsappUrl;
+            whatsappButton.style.display = 'flex'; // Show button
+        } else {
+            whatsappButton.style.display = 'none'; // Hide button if no phone
+        }
+    }
+
     const detailsHTML = `
         <div class="space-y-4">
             <!-- Booking Summary -->
@@ -680,8 +689,6 @@ function showBookingDetails(refNumber) {
                 <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
             </div>
             ` : ''}
-            
-            
         </div>
     `;
     
@@ -694,20 +701,6 @@ function showBookingDetails(refNumber) {
     
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
-}
-
-
-
-// Update WhatsApp button URL
-const whatsappButton = document.getElementById('whatsappButton');
-if (whatsappButton && booking.phone) {
-    const whatsappMessage = `Hello ${booking.username || 'there'},%0A%0A` +
-                          `Regarding your booking ${booking.refNumber} for ${booking.tour || 'your tour'} on ${tripDate}.%0A%0A` +
-                          `Best regards,`;
-    const whatsappUrl = `https://wa.me/${booking.phone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
-    whatsappButton.href = whatsappUrl;
-} else if (whatsappButton) {
-    whatsappButton.style.display = 'none'; // Hide button if no phone number
 }
 
 
