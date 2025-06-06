@@ -1233,14 +1233,10 @@ input:checked + .slider:before {
 
 /* Modal Animation */
 #bookingDetailsModal {
-    display: flex;
+
     align-items: center;
     justify-content: center;
     
-}
-
-#bookingDetailsModal.show {
-    opacity: 1;
 }
 
 
