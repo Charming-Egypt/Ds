@@ -390,18 +390,41 @@ function filterBookings() {
     updatePagination();
 }
 
-// Handles date-specific filtering logic
 function filterByDate(bookings, date, activeTab) {
-    if (activeTab === 'new') {
-        // For New tab: future bookings (including selected date)
-        return bookings.filter(booking => 
-            booking.tripDate && booking.tripDate >= date
-        );
+    if (!date) return bookings; // Return all if no date filter
+    
+    try {
+        // Format the filter date to match our storage format (YYYY-MM-D)
+        const [year, month, day] = date.split('-');
+        const formattedFilterDate = `${year}-${month.padStart(2, '0')}-${parseInt(day, 10)}`;
+        
+        return bookings.filter(booking => {
+            if (!booking.tripDate) return false;
+            
+            // Format the booking date for comparison (remove leading zero from day)
+            const [bYear, bMonth, bDay] = booking.tripDate.split('-');
+            const formattedBookingDate = `${bYear}-${bMonth}-${parseInt(bDay, 10)}`;
+            
+            switch(activeTab) {
+                case 'new':
+                    // For new bookings, show future dates (including selected date)
+                    return formattedBookingDate >= formattedFilterDate && 
+                           booking.resStatus?.toLowerCase() === 'new';
+                
+                case 'confirmed':
+                    // For confirmed bookings, show only exact date matches
+                    return formattedBookingDate === formattedFilterDate && 
+                           booking.resStatus?.toLowerCase() === 'confirmed';
+                
+                default:
+                    // For all other tabs, show exact date matches regardless of status
+                    return formattedBookingDate === formattedFilterDate;
+            }
+        });
+    } catch (error) {
+        console.error('Error filtering by date:', error);
+        return bookings; // Return unfiltered if error occurs
     }
-    // For other tabs: exact date match
-    return bookings.filter(booking => 
-        booking.tripDate === date
-    );
 }
 
 
