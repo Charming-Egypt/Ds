@@ -205,7 +205,7 @@ const state = {
                 currentFilters.date = dateStr;
                 applyFilters();
             }
-            });
+            };
           
           // Inject CSS for date picker
   const style = document.createElement('style');
