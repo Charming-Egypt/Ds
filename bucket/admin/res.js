@@ -1190,26 +1190,26 @@ function filterByDate(bookings, date, activeTab) {
     }
     
     function formatTripDate(dateString) {
-        if (!dateString) return 'N/A';
+    if (!dateString) return 'N/A';
+    
+    try {
+        const [year, month, day] = dateString.split('-');
+        const date = new Date(year, month - 1, day);
         
-        try {
-            const [year, month, day] = dateString.split('-');
-            const date = new Date(year, month - 1, day);
-            
-            if (isNaN(date.getTime())) {
-                return 'Invalid Date';
-            }
-            
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        } catch (e) {
-            console.error('Error formatting tripDate:', dateString, e);
+        if (isNaN(date.getTime())) {
             return 'Invalid Date';
         }
+        
+        // Remove leading zeros from month and day
+        const formattedMonth = parseInt(month, 10).toString();
+        const formattedDay = parseInt(day, 10).toString();
+        
+        return `${year}-${formattedMonth}-${formattedDay}`;
+    } catch (e) {
+        console.error('Error formatting tripDate:', dateString, e);
+        return 'Invalid Date';
     }
+}
 
     function showLoading() {
         bookingsTableBody.innerHTML = `
