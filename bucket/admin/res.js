@@ -199,13 +199,14 @@ const state = {
         ];
         elements.forEach(el => el?.setAttribute('translate', 'no'));
     },
-                onChange: function(selectedDates, dateStr)  {
+                onChange: function(selectedDates, dateStr) {
             // Only update filter if not in new/confirmed tabs
             if (activeTab !== 'new' && activeTab !== 'confirmed') {
                 currentFilters.date = dateStr;
                 applyFilters();
             }
-            };
+        }
+    });
           
           // Inject CSS for date picker
   const style = document.createElement('style');
