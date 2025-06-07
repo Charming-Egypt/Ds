@@ -188,7 +188,7 @@ const state = {
             const availableDates = [...new Set(allBookings.map(b => b.tripDate).filter(Boolean))]; 
             
             flatpickrInstance = flatpickr("#dateFilter", {
-                dateFormat: "Y-m-d",
+                dateFormat: "Y-m-j",
                 allowInput: true,
                 enable: availableDates,
                 onReady: function(selectedDates, dateStr, instance) {
