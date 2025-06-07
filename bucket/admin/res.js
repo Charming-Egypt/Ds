@@ -196,7 +196,7 @@ function formatDateNoLeadingZeros(dateString) {
             const availableDates = [...new Set(allBookings.map(b => b.tripDate).filter(Boolean))]; 
             
             flatpickrInstance = flatpickr("#dateFilter", {
-                dateFormat: "Y-m-j",
+                dateFormat: "Y-m-d",
                 allowInput: true,
                 enable: availableDates,
                 onReady: function(selectedDates, dateStr, instance) {
@@ -1188,28 +1188,55 @@ function filterByDate(bookings, date, activeTab) {
         }
         return numberValue.toFixed(2);
     }
-    
+
+
+
+
+
     function formatTripDate(dateString) {
     if (!dateString) return 'N/A';
     
     try {
-        const [year, month, day] = dateString.split('-');
-        const date = new Date(year, month - 1, day);
+        // Split the date string into parts
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return dateString;
         
-        if (isNaN(date.getTime())) {
-            return 'Invalid Date';
-        }
+        const year = parts[0];
+        let month = parts[1];
+        let day = parts[2];
         
-        // Remove leading zeros from month and day
-        const formattedMonth = parseInt(month, 10).toString();
-        const formattedDay = parseInt(day, 10).toString();
+        // Ensure month has leading zero if needed
+        month = month.padStart(2, '0');
         
-        return `${year}-${formattedMonth}-${formattedDay}`;
-    } catch (e) {
-        console.error('Error formatting tripDate:', dateString, e);
-        return 'Invalid Date';
+        // Remove leading zero from day
+        day = parseInt(day, 10).toString();
+        
+        // Validate components
+        if (!/^\d{4}$/.test(year)) return dateString;
+        if (!/^\d{2}$/.test(month)) return dateString;
+        if (!/^\d{1,2}$/.test(day)) return dateString;
+        
+        // Validate date ranges
+        const monthNum = parseInt(month, 10);
+        const dayNum = parseInt(day, 10);
+        
+        if (monthNum < 1 || monthNum > 12) return dateString;
+        if (dayNum < 1 || dayNum > 31) return dateString;
+        
+        return `${year}-${month}-${day}`;
+    } catch (error) {
+        console.error('Error formatting date:', dateString, error);
+        return dateString;
     }
 }
+
+
+
+
+
+
+
+
 
     function showLoading() {
         bookingsTableBody.innerHTML = `
