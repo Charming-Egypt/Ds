@@ -199,10 +199,12 @@ const state = {
         ];
         elements.forEach(el => el?.setAttribute('translate', 'no'));
     },
-                onChange: function(selectedDates, dateStr) {
-                    currentFilters.date = dateStr;
-                    applyFilters();
-                }
+                onChange: function(selectedDates, dateStr)  {
+            // Only update filter if not in new/confirmed tabs
+            if (activeTab !== 'new' && activeTab !== 'confirmed') {
+                currentFilters.date = dateStr;
+                applyFilters();
+            }
             });
           
           // Inject CSS for date picker
@@ -325,10 +327,7 @@ function getTomorrowDateString() {
     return tomorrow.toISOString().split('T')[0];
 }
 
-// Returns the default date based on active tab
-function getDefaultDateForTab(activeTab) {
-    return activeTab === 'new' ? getTomorrowDateString();
-}
+
 
     // Apply all filters
     function applyFilters() {
@@ -772,7 +771,6 @@ function closeModal() {
 
 
 
-// Handles tab switching and sets appropriate default date
 function switchTab(tab) {
     activeTab = tab;
     
@@ -782,8 +780,27 @@ function switchTab(tab) {
     });
     document.getElementById(`${tab}BookingsTab`).classList.add('active');
     
+    // Hide/show date filter based on tab
+    const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative'); // Target the date filter container
+    if (tab === 'new' || tab === 'confirmed') {
+        dateFilterContainer.classList.add('hidden');
+    } else {
+        dateFilterContainer.classList.remove('hidden');
+    }
+    
     // Set default date for the tab
-    const defaultDate = getDefaultDateForTab(tab);
+    let defaultDate;
+    if (tab === 'new') {
+        defaultDate = getTomorrowDateString();
+        document.getElementById('bookingsTableTitle').textContent = 'New Bookings (Tomorrow)';
+    } else if (tab === 'confirmed') {
+        defaultDate = getTodayDateString();
+        document.getElementById('bookingsTableTitle').textContent = 'Confirmed Bookings (Today)';
+    } else {
+        defaultDate = getDefaultDateForTab(tab);
+        document.getElementById('bookingsTableTitle').textContent = 'All Bookings';
+    }
+    
     currentFilters.date = defaultDate;
     
     // Update Flatpickr if initialized
@@ -798,6 +815,22 @@ function switchTab(tab) {
     if (elements.statusFilter) elements.statusFilter.value = 'all';
     
     applyFilters();
+}
+
+// Update filterByDate function as shown in previous answer
+function filterByDate(bookings, date, activeTab) {
+    if (activeTab === 'new') {
+        return bookings.filter(booking => 
+            booking.tripDate === date && booking.resStatus?.toLowerCase() === 'new'
+        );
+    } else if (activeTab === 'confirmed') {
+        return bookings.filter(booking => 
+            booking.tripDate === date && booking.resStatus?.toLowerCase() === 'confirmed'
+        );
+    }
+    return bookings.filter(booking => 
+        !date || booking.tripDate === date
+    );
 }
 
 
