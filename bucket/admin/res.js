@@ -178,6 +178,14 @@ const state = {
     }
 
 
+function formatDateNoLeadingZeros(dateString) {
+    if (!dateString) return '';
+    return dateString.replace(/-0(\d)-0?(\d)/, '-$1-$2');
+}
+
+
+
+
 
             // Initialize Flatpickr for date filter
         function initDateFilter() {
@@ -315,17 +323,19 @@ const state = {
         applyFilters();
     }
 
-    // Returns today's date in YYYY-MM-DD format
-function getTodayDateString() {
+    function getTodayDateString() {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    return `${today.getFullYear()}-${month}-${day}`;
 }
 
-// Returns tomorrow's date in YYYY-MM-DD format
 function getTomorrowDateString() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    const month = tomorrow.getMonth() + 1;
+    const day = tomorrow.getDate();
+    return `${tomorrow.getFullYear()}-${month}-${day}`;
 }
 
 
