@@ -325,16 +325,16 @@ function formatDateNoLeadingZeros(dateString) {
 
     function getTodayDateString() {
     const today = new Date();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = today.getDate(); // No leading zero
     return `${today.getFullYear()}-${month}-${day}`;
 }
 
 function getTomorrowDateString() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const month = tomorrow.getMonth() + 1;
-    const day = tomorrow.getDate();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = tomorrow.getDate(); // No leading zero
     return `${tomorrow.getFullYear()}-${month}-${day}`;
 }
 
@@ -792,7 +792,7 @@ function switchTab(tab) {
     document.getElementById(`${tab}BookingsTab`).classList.add('active');
     
     // Hide/show date filter based on tab
-    const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative'); // Target the date filter container
+    const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative');
     if (tab === 'new' || tab === 'confirmed') {
         dateFilterContainer.classList.add('hidden');
     } else {
@@ -801,32 +801,47 @@ function switchTab(tab) {
     
     // Set default date for the tab
     let defaultDate;
-    if (tab === 'new') {
-        defaultDate = getTomorrowDateString();
-        document.getElementById('bookingsTableTitle').textContent = 'New Bookings (Tomorrow)';
-    } else if (tab === 'confirmed') {
-        defaultDate = getTodayDateString();
-        document.getElementById('bookingsTableTitle').textContent = 'Confirmed Bookings (Today)';
-    } else {
-        defaultDate = getDefaultDateForTab(tab);
-        document.getElementById('bookingsTableTitle').textContent = 'All Bookings';
+    switch(tab) {
+        case 'new':
+            defaultDate = getTomorrowDateString();
+            document.getElementById('bookingsTableTitle').textContent = 'New Bookings (Tomorrow)';
+            break;
+        case 'confirmed':
+            defaultDate = getTodayDateString();
+            document.getElementById('bookingsTableTitle').textContent = 'Confirmed Bookings (Today)';
+            break;
+        default:
+            defaultDate = null;
+            document.getElementById('bookingsTableTitle').textContent = 'All Bookings';
     }
     
-    currentFilters.date = defaultDate;
+    // Update current filters
+    currentFilters = {
+        search: '',
+        status: tab === 'all' ? 'all' : tab,
+        date: defaultDate
+    };
+    
+    // Update UI elements
+    elements.searchInput.value = '';
+    elements.statusFilter.value = tab === 'all' ? 'all' : tab;
     
     // Update Flatpickr if initialized
     if (flatpickrInstance) {
-        flatpickrInstance.setDate(defaultDate, true);
+        if (defaultDate) {
+            flatpickrInstance.setDate(defaultDate, true);
+        } else {
+            flatpickrInstance.clear();
+        }
     }
     
-    // Reset other filters
-    currentFilters.search = '';
-    currentFilters.status = 'all';
-    if (elements.searchInput) elements.searchInput.value = '';
-    if (elements.statusFilter) elements.statusFilter.value = 'all';
-    
+    // Apply filters
     applyFilters();
 }
+
+
+
+
 
 // Update filterByDate function as shown in previous answer
 function filterByDate(bookings, date, activeTab) {
