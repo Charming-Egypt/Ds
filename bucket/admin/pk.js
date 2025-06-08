@@ -469,8 +469,8 @@ const packageManager = {
     
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-full text-sm';
-    removeBtn.innerHTML = '<i class="fas fa-trash mr-1"></i>';
+    removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded';
+    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
     removeBtn.addEventListener('click', () => div.remove());
     
     div.appendChild(titleInput);
