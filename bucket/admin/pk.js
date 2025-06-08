@@ -177,7 +177,7 @@ const utils = {
     const errors = [];
     if (!data.name || data.name.length < 5) errors.push('Name must be at least 5 characters');
     if (isNaN(data.basePrice) || data.basePrice <= 0) errors.push('Base price must be a positive number');
-    if (!data.duration || isNaN(data.duration) errors.push('Duration is required and must be a number');
+    if (!data.duration || isNaN(data.duration)) errors.push('Duration is required and must be a number');
     if (!data.nights || isNaN(data.nights)) errors.push('Nights is required and must be a number');
     if (!data.category) errors.push('Category is required');
     if (!data.destinations) errors.push('Destinations are required');
