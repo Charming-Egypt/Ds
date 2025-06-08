@@ -718,7 +718,7 @@ const packageManager = {
     
     // Check if user can edit this package
     if (!packageManager.canEditPackage(packageData.owner)) {
-      utils.showToast('You do not have permission to edit this package', 'error');
+      utils.showToast('this package id not available', 'error');
       packageManager.showListSection();
       return;
     }
