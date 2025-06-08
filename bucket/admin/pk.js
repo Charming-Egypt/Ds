@@ -2236,12 +2236,16 @@ const bookingManager = {
             <div class="font-mono text-amber-400">${escapedRefNumber}</div>
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <div class="text-gray-400 text-sm">Status</div>
-            <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
+            <div class="text-gray-400 text-sm">Payment Status</div>
+            <div><span class="status-badge ${statusClass} text-center">${booking.paymentStatus || 'new'}</span></div>
           </div>
           <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <div class="text-gray-400 text-sm">Total</div>
+            <div class="text-gray-400 text-sm">Total price</div>
             <div class="font-bold">${utils.formatCurrency(booking.netTotal || 0)}</div>
+          </div>
+          <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <div class="text-gray-400 text-sm">Commission</div>
+            <div class="font-bold">${utils.formatCurrency(booking.commission || 0)}</div>
           </div>
         </div>
         
@@ -2299,14 +2303,6 @@ const bookingManager = {
               <div>
                 <div class="text-gray-400 text-sm">Email</div>
                 <div class="font-medium">${utils.sanitizeInput(booking.email || 'N/A')}</div>
-              </div>
-              <div>
-                <div class="text-gray-400 text-sm">Hotel</div>
-                <div class="font-medium">${escapedHotel}</div>
-              </div>
-              <div>
-                <div class="text-gray-400 text-sm">Room</div>
-                <div class="font-medium">${escapedRoom}</div>
               </div>
             </div>
           </div>
