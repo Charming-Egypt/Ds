@@ -2236,8 +2236,8 @@ const bookingManager = {
             <div class="font-mono text-amber-400">${escapedRefNumber}</div>
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <div class="text-gray-400 text-sm">Payment Status</div>
-            <div><span class="status-badge ${statusClass} text-center">${booking.paymentStatus || 'new'}</span></div>
+            <div class="text-gray-400 text-sm">Status</div>
+            <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Total price</div>
