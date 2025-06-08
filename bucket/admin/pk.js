@@ -1863,7 +1863,7 @@ const dashboardManager = {
     try {
       if (!state.currentUser) return;
       
-      const bookingsRef = database.ref("trip-bookings")
+      const bookingsRef = database.ref("pkg-bookings")
         .orderByChild("owner")
         .equalTo(state.currentUser.uid);
       
@@ -2412,10 +2412,10 @@ const bookingManager = {
     utils.showLoading();
     
     if (realTimeListener) {
-      database.ref("trip-bookings").orderByChild("owner").equalTo(currentUserId).off('value', realTimeListener);
+      database.ref("pkg-bookings").orderByChild("owner").equalTo(currentUserId).off('value', realTimeListener);
     }
     
-    realTimeListener = database.ref("trip-bookings")
+    realTimeListener = database.ref("pkg-bookings")
       .orderByChild("owner")
       .equalTo(currentUserId)
       .on('value', (snapshot) => {
