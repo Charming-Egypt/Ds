@@ -2230,7 +2230,7 @@ const bookingManager = {
     const detailsHTML = `
       <div class="space-y-4">
         <!-- Booking Summary -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Reference</div>
             <div class="font-mono text-amber-400">${escapedRefNumber}</div>
