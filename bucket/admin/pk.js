@@ -33,7 +33,7 @@ const elements = {
   ownerId: document.getElementById('ownerId'),
   name: document.getElementById('name'),
   bookingLink: document.getElementById('bookingLink'),
-  basePrice: document.getElementById('basePrice'),
+  price: document.getElementById('price'),
   duration: document.getElementById('duration'),
   nights: document.getElementById('nights'),
   category: document.getElementById('category'),
@@ -42,8 +42,8 @@ const elements = {
   description: document.getElementById('description'),
   imageList: document.getElementById('imageList'),
   videoList: document.getElementById('videoList'),
-  includedList: document.getElementById('includedList'),
-  notIncludedList: document.getElementById('notIncludedList'),
+  includesList: document.getElementById('includesList'),
+  notincludesList: document.getElementById('notincludesList'),
   whatToBringList: document.getElementById('whatToBringList'),
   accommodationOptionsList: document.getElementById('accommodationOptionsList'),
   mealPlanOptionsList: document.getElementById('mealPlanOptionsList'),
@@ -68,8 +68,8 @@ const elements = {
   userPhone: document.getElementById('userPhone'),
   addImageBtn: document.getElementById('addImageBtn'),
   addVideoBtn: document.getElementById('addVideoBtn'),
-  addIncludedBtn: document.getElementById('addIncludedBtn'),
-  addNotIncludedBtn: document.getElementById('addNotIncludedBtn'),
+  addincludesBtn: document.getElementById('addincludesBtn'),
+  addNotincludesBtn: document.getElementById('addNotincludesBtn'),
   addWhatToBringBtn: document.getElementById('addWhatToBringBtn'),
   addAccommodationBtn: document.getElementById('addAccommodationBtn'),
   addMealPlanBtn: document.getElementById('addMealPlanBtn'),
@@ -178,7 +178,7 @@ const utils = {
   validatePackageData: (data) => {
     const errors = [];
     if (!data.name || data.name.length < 5) errors.push('Name must be at least 5 characters');
-    if (isNaN(data.basePrice) || data.basePrice <= 0) errors.push('Base price must be a positive number');
+    if (isNaN(data.price) || data.price <= 0) errors.push('Base price must be a positive number');
     if (!data.duration || isNaN(data.duration)) errors.push('Duration is required and must be a number');
     if (!data.nights || isNaN(data.nights)) errors.push('Nights is required and must be a number');
     if (!data.category) errors.push('Category is required');
@@ -260,8 +260,8 @@ const packageManager = {
     // Clear all dynamic lists
     if (elements.imageList) elements.imageList.innerHTML = '';
     if (elements.videoList) elements.videoList.innerHTML = '';
-    if (elements.includedList) elements.includedList.innerHTML = '';
-    if (elements.notIncludedList) elements.notIncludedList.innerHTML = '';
+    if (elements.includesList) elements.includesList.innerHTML = '';
+    if (elements.notincludesList) elements.notincludesList.innerHTML = '';
     if (elements.whatToBringList) elements.whatToBringList.innerHTML = '';
     if (elements.accommodationOptionsList) elements.accommodationOptionsList.innerHTML = '';
     if (elements.mealPlanOptionsList) elements.mealPlanOptionsList.innerHTML = '';
@@ -659,7 +659,7 @@ const packageManager = {
               <span class="duration-badge text-xs px-2 py-1 rounded-full mr-2">
                 ${pkg.duration} days / ${pkg.nights} nights
               </span>
-              <span class="text-xs text-white">${utils.formatCurrency(pkg.basePrice)}</span>
+              <span class="text-xs text-white">${utils.formatCurrency(pkg.price)}</span>
             </div>
           </div>
         </div>
@@ -728,7 +728,7 @@ const packageManager = {
     if (elements.ownerId) elements.ownerId.value = packageData.owner || state.currentUser?.uid || '';
     if (elements.name) elements.name.value = packageData.name || '';
     if (elements.bookingLink) elements.bookingLink.value = packageId || '';
-    if (elements.basePrice) elements.basePrice.value = packageData.basePrice || '';
+    if (elements.price) elements.price.value = packageData.price || '';
     if (elements.duration) elements.duration.value = packageData.duration || '';
     if (elements.nights) elements.nights.value = packageData.nights || '';
     if (elements.category) elements.category.value = packageData.category || '';
@@ -775,16 +775,16 @@ const packageManager = {
       });
     }
     
-    // Load included/not included
-    if (packageData.included && elements.includedList) {
-      packageData.included.forEach(item => {
-        packageManager.createArrayInput(elements.includedList, 'Included item', item);
+    // Load includes/not includes
+    if (packageData.includes && elements.includesList) {
+      packageData.includes.forEach(item => {
+        packageManager.createArrayInput(elements.includesList, 'includes item', item);
       });
     }
     
-    if (packageData.notIncluded && elements.notIncludedList) {
-      packageData.notIncluded.forEach(item => {
-        packageManager.createArrayInput(elements.notIncludedList, 'Not included item', item);
+    if (packageData.notincludes && elements.notincludesList) {
+      packageData.notincludes.forEach(item => {
+        packageManager.createArrayInput(elements.notincludesList, 'Not includes item', item);
       });
     }
     
@@ -839,7 +839,7 @@ const packageManager = {
     const sanitizedData = {
       name: utils.sanitizeInput(elements.name?.value || ''),
       bookingLink: utils.sanitizeInput(elements.bookingLink?.value || ''),
-      basePrice: parseFloat(utils.sanitizeInput(elements.basePrice?.value || '0')),
+      price: parseFloat(utils.sanitizeInput(elements.price?.value || '0')),
       duration: utils.sanitizeInput(elements.duration?.value || ''),
       nights: utils.sanitizeInput(elements.nights?.value || ''),
       category: utils.sanitizeInput(elements.category?.value || ''),
@@ -866,8 +866,8 @@ const packageManager = {
         images: [],
         videos: []
       },
-      included: [],
-      notIncluded: [],
+      includes: [],
+      notincludes: [],
       whatToBring: [],
       accommodationOptions: [],
       mealPlanOptions: [],
@@ -901,22 +901,22 @@ const packageManager = {
       });
     }
     
-    // Get included items
-    if (elements.includedList) {
-      const includedInputs = elements.includedList.querySelectorAll('input');
-      includedInputs.forEach(input => {
+    // Get includes items
+    if (elements.includesList) {
+      const includesInputs = elements.includesList.querySelectorAll('input');
+      includesInputs.forEach(input => {
         if (input.value.trim()) {
-          packageData.included.push(utils.sanitizeInput(input.value));
+          packageData.includes.push(utils.sanitizeInput(input.value));
         }
       });
     }
     
-    // Get not included items
-    if (elements.notIncludedList) {
-      const notIncludedInputs = elements.notIncludedList.querySelectorAll('input');
-      notIncludedInputs.forEach(input => {
+    // Get not includes items
+    if (elements.notincludesList) {
+      const notincludesInputs = elements.notincludesList.querySelectorAll('input');
+      notincludesInputs.forEach(input => {
         if (input.value.trim()) {
-          packageData.notIncluded.push(utils.sanitizeInput(input.value));
+          packageData.notincludes.push(utils.sanitizeInput(input.value));
         }
       });
     }
@@ -2759,8 +2759,8 @@ const setupEventListeners = () => {
       if (elements.videoList) elements.videoList.appendChild(videoDiv);
     });
     
-    if (elements.addIncludedBtn) elements.addIncludedBtn.addEventListener('click', () => packageManager.createArrayInput(elements.includedList, 'Included item'));
-    if (elements.addNotIncludedBtn) elements.addNotIncludedBtn.addEventListener('click', () => packageManager.createArrayInput(elements.notIncludedList, 'Not included item'));
+    if (elements.addincludesBtn) elements.addincludesBtn.addEventListener('click', () => packageManager.createArrayInput(elements.includesList, 'includes item'));
+    if (elements.addNotincludesBtn) elements.addNotincludesBtn.addEventListener('click', () => packageManager.createArrayInput(elements.notincludesList, 'Not includes item'));
     if (elements.addWhatToBringBtn) elements.addWhatToBringBtn.addEventListener('click', () => packageManager.createArrayInput(elements.whatToBringList, 'What to bring item'));
     if (elements.addAccommodationBtn) elements.addAccommodationBtn.addEventListener('click', () => packageManager.createAccommodationInput(elements.accommodationOptionsList));
     if (elements.addMealPlanBtn) elements.addMealPlanBtn.addEventListener('click', () => packageManager.createMealPlanInput(elements.mealPlanOptionsList));
