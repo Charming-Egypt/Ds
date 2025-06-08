@@ -13,6 +13,7 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
+const storage = firebase.storage();
 
 // Chart Variables
 let statusChart, trendChart, guestChart, packagePerformanceChart;
@@ -156,17 +157,18 @@ const utils = {
   },
 
   showLoading: () => {
-    elements.spinner.classList.remove('hidden');
+    if (elements.spinner) elements.spinner.classList.remove('hidden');
     if (elements.saveBtn) elements.saveBtn.disabled = true;
   },
 
   hideLoading: () => {
-    elements.spinner.classList.add('hidden');
+    if (elements.spinner) elements.spinner.classList.add('hidden');
     if (elements.saveBtn) elements.saveBtn.disabled = false;
   },
 
   sanitizeInput: (input) => {
-    return input.trim()
+    if (!input) return '';
+    return input.toString().trim()
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
@@ -248,26 +250,29 @@ const utils = {
 // Package Management Functions
 const packageManager = {
   resetForm: () => {
-    elements.packageForm.reset();
-    elements.packageId.value = '';
-    elements.ownerId.value = '';
-    elements.bookingLink.value = '';
-    elements.editorTitle.textContent = 'Create New Package';
-    elements.deleteBtn.classList.add('hidden');
+    if (elements.packageForm) elements.packageForm.reset();
+    if (elements.packageId) elements.packageId.value = '';
+    if (elements.ownerId) elements.ownerId.value = '';
+    if (elements.bookingLink) elements.bookingLink.value = '';
+    if (elements.editorTitle) elements.editorTitle.textContent = 'Create New Package';
+    if (elements.deleteBtn) elements.deleteBtn.classList.add('hidden');
     
     // Clear all dynamic lists
-    elements.imageList.innerHTML = '';
-    elements.videoList.innerHTML = '';
-    elements.includedList.innerHTML = '';
-    elements.notIncludedList.innerHTML = '';
-    elements.whatToBringList.innerHTML = '';
-    elements.accommodationOptionsList.innerHTML = '';
-    elements.mealPlanOptionsList.innerHTML = '';
-    elements.transportationOptionsList.innerHTML = '';
-    elements.itineraryList.innerHTML = '';
+    if (elements.imageList) elements.imageList.innerHTML = '';
+    if (elements.videoList) elements.videoList.innerHTML = '';
+    if (elements.includedList) elements.includedList.innerHTML = '';
+    if (elements.notIncludedList) elements.notIncludedList.innerHTML = '';
+    if (elements.whatToBringList) elements.whatToBringList.innerHTML = '';
+    if (elements.accommodationOptionsList) elements.accommodationOptionsList.innerHTML = '';
+    if (elements.mealPlanOptionsList) elements.mealPlanOptionsList.innerHTML = '';
+    if (elements.transportationOptionsList) elements.transportationOptionsList.innerHTML = '';
+    if (elements.itineraryList) elements.itineraryList.innerHTML = '';
   },
 
   showListSection: () => {
+    if (!elements.packageListSection || !elements.packageEditorSection || 
+        !elements.packageListTab || !elements.packageEditorTab) return;
+        
     elements.packageListSection.classList.remove('hidden');
     elements.packageEditorSection.classList.add('hidden');
     elements.packageListTab.classList.add('tab-active');
@@ -275,6 +280,9 @@ const packageManager = {
   },
 
   showEditorSection: () => {
+    if (!elements.packageListSection || !elements.packageEditorSection || 
+        !elements.packageListTab || !elements.packageEditorTab) return;
+        
     elements.packageListSection.classList.add('hidden');
     elements.packageEditorSection.classList.remove('hidden');
     elements.packageListTab.classList.remove('tab-active');
@@ -282,8 +290,10 @@ const packageManager = {
   },
 
   createArrayInput: (container, placeholder, value = '') => {
+    if (!container) return null;
+    
     const div = document.createElement('div');
-    div.className = 'array-item';
+    div.className = 'array-item flex items-center gap-2 mb-2';
     
     const input = document.createElement('input');
     input.type = 'text';
@@ -293,7 +303,7 @@ const packageManager = {
     
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
-    removeBtn.className = 'remove-item';
+    removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded';
     removeBtn.innerHTML = '<i class="fas fa-times"></i>';
     removeBtn.addEventListener('click', () => div.remove());
     
@@ -305,6 +315,8 @@ const packageManager = {
   },
 
   createAccommodationInput: (container, accommodation = { name: '', description: '', price: '' }) => {
+    if (!container) return null;
+    
     const div = document.createElement('div');
     div.className = 'array-item grid grid-cols-1 md:grid-cols-3 gap-2 mb-3';
     
@@ -342,6 +354,8 @@ const packageManager = {
   },
 
   createMealPlanInput: (container, mealPlan = { name: '', description: '', price: '' }) => {
+    if (!container) return null;
+    
     const div = document.createElement('div');
     div.className = 'array-item grid grid-cols-1 md:grid-cols-3 gap-2 mb-3';
     
@@ -379,6 +393,8 @@ const packageManager = {
   },
 
   createTransportationInput: (container, transportation = { type: '', description: '', price: '' }) => {
+    if (!container) return null;
+    
     const div = document.createElement('div');
     div.className = 'array-item grid grid-cols-1 md:grid-cols-3 gap-2 mb-3';
     
@@ -416,6 +432,8 @@ const packageManager = {
   },
 
   createDayInput: (container, day = { title: '', description: '', activities: [] }) => {
+    if (!container) return null;
+    
     const div = document.createElement('div');
     div.className = 'day-item glass-card p-4 rounded-lg mb-4';
     
@@ -437,7 +455,7 @@ const packageManager = {
     // Add existing activities
     if (day.activities && day.activities.length > 0) {
       day.activities.forEach(activity => {
-        const activityInput = packageManager.createArrayInput(activitiesDiv, 'Activity', activity);
+        packageManager.createArrayInput(activitiesDiv, 'Activity', activity);
       });
     }
     
@@ -466,6 +484,8 @@ const packageManager = {
   },
 
   updateDashboardStats: () => {
+    if (!state.currentUser || !elements.totalPackages || !elements.pendingPackages) return;
+    
     const packages = Object.values(state.allPackages).filter(p => p.owner === state.currentUser?.uid);
     const approvedPackages = packages.filter(p => p.approved === true || p.approved === 'true');
     const pendingPackages = packages.filter(p => !p.approved || p.approved === 'false');
@@ -479,29 +499,37 @@ const packageManager = {
   },
 
   canEditPackage: (packageOwnerId) => {
-    return state.currentUserRole === 'admin' || (state.currentUserRole === 'moderator' && packageOwnerId === state.currentUser.uid);
+    return state.currentUserRole === 'admin' || 
+           (state.currentUserRole === 'moderator' && packageOwnerId === state.currentUser?.uid);
   },
 
   loadUserRole: (userId) => {
+    if (!userId || !elements.userRole) return Promise.resolve();
+    
     return database.ref('egy_user/' + userId).once('value').then(snapshot => {
       const userData = snapshot.val();
       state.currentUserRole = userData?.role || 'user';
-      elements.userRole.textContent = state.currentUserRole;
-      elements.userRole.className = 'role-badge ' + (
-        state.currentUserRole === 'admin' ? 'role-admin' : 
-        state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
-      );
-      elements.userEmail.value = userData.email || '';
-      elements.userPhone.value = userData.phone || '';
-      elements.userName.value = userData.username || '';
+      
+      if (elements.userRole) {
+        elements.userRole.textContent = state.currentUserRole;
+        elements.userRole.className = 'role-badge ' + (
+          state.currentUserRole === 'admin' ? 'role-admin' : 
+          state.currentUserRole === 'moderator' ? 'role-moderator' : 'role-user'
+        );
+      }
+      
+      if (elements.userEmail) elements.userEmail.value = userData?.email || '';
+      if (elements.userPhone) elements.userPhone.value = userData?.phone || '';
+      if (elements.userName) elements.userName.value = userData?.username || '';
+      
       const photoS = document.getElementById('profile-s');
       const photoPreview = document.getElementById('profile-pic-preview');
-      if (userData.photo) {
-        photoPreview.src = userData.photo;
-        photoS.src = userData.photo;
+      if (userData?.photo) {
+        if (photoPreview) photoPreview.src = userData.photo;
+        if (photoS) photoS.src = userData.photo;
       } else {
-        photoPreview.src = 'https://via.placeholder.com/150';
-        photoS.src = 'https://via.placeholder.com/150';
+        if (photoPreview) photoPreview.src = 'https://via.placeholder.com/150';
+        if (photoS) photoS.src = 'https://via.placeholder.com/150';
       }
       
       // Show/hide new package button based on role
@@ -509,10 +537,14 @@ const packageManager = {
         if (elements.newPackageBtn) elements.newPackageBtn.classList.remove('hidden');
         if (elements.emptyStateNewPackageBtn) elements.emptyStateNewPackageBtn.classList.remove('hidden');
       }
+    }).catch(error => {
+      console.error("Error loading user role:", error);
     });
   },
 
   loadPayout: (userId) => {
+    if (!userId) return Promise.resolve();
+    
     return database.ref('egy_user/' + userId + '/payoutMethod').once('value').then(snapshot => {
       const payoutData = snapshot.val();
       if (!payoutData) return;
@@ -551,13 +583,15 @@ const packageManager = {
   },
 
   loadPackageList: (forceRefresh = false) => {
+    if (!database) return Promise.resolve();
+    
     // Check cache first if not forcing refresh
     if (!forceRefresh && state.packagesCache && Date.now() - state.lastFetchTime < 300000) {
       packageManager.renderPackages(state.packagesCache);
-      return;
+      return Promise.resolve();
     }
 
-    database.ref('packages').once('value').then(snapshot => {
+    return database.ref('packages').once('value').then(snapshot => {
       state.allPackages = snapshot.val() || {};
       state.packagesCache = Object.values(state.allPackages);
       state.lastFetchTime = Date.now();
@@ -569,7 +603,6 @@ const packageManager = {
       
       if (packagesArray.length === 0 && elements.emptyState) {
         elements.emptyState.classList.remove('hidden');
-        return;
       } else if (elements.emptyState) {
         elements.emptyState.classList.add('hidden');
       }
@@ -577,6 +610,7 @@ const packageManager = {
       packageManager.renderPackages(packagesArray);
       packageManager.updateDashboardStats();
     }).catch(error => {
+      console.error("Error loading packages:", error);
       utils.showToast('Failed to load packages: ' + error.message, 'error');
     });
   },
@@ -585,6 +619,11 @@ const packageManager = {
     if (!elements.packageList) return;
     
     elements.packageList.innerHTML = '';
+    
+    if (!packages || packages.length === 0) {
+      if (elements.emptyState) elements.emptyState.classList.remove('hidden');
+      return;
+    }
     
     packages.forEach(({ id, ...pkg }) => {
       const canEdit = packageManager.canEditPackage(pkg.owner);
@@ -673,6 +712,8 @@ const packageManager = {
   },
 
   loadPackageForEditing: (packageId, packageData) => {
+    if (!packageId || !packageData || !elements.packageForm) return;
+    
     packageManager.resetForm();
     
     // Check if user can edit this package
@@ -683,28 +724,28 @@ const packageManager = {
     }
     
     // Set basic info
-    elements.packageId.value = packageId;
-    elements.ownerId.value = packageData.owner || state.currentUser.uid;
-    elements.name.value = packageData.name || '';
-    elements.bookingLink.value = packageId || '';
-    elements.basePrice.value = packageData.basePrice || '';
-    elements.duration.value = packageData.duration || '';
-    elements.nights.value = packageData.nights || '';
-    elements.category.value = packageData.category || '';
-    elements.destinations.value = packageData.destinations || '';
-    elements.mainImage.value = packageData.image || '';
-    elements.description.value = packageData.description || '';
-    elements.editorTitle.textContent = `Edit ${packageData.name}`;
-    elements.deleteBtn.classList.remove('hidden');
+    if (elements.packageId) elements.packageId.value = packageId;
+    if (elements.ownerId) elements.ownerId.value = packageData.owner || state.currentUser?.uid || '';
+    if (elements.name) elements.name.value = packageData.name || '';
+    if (elements.bookingLink) elements.bookingLink.value = packageId || '';
+    if (elements.basePrice) elements.basePrice.value = packageData.basePrice || '';
+    if (elements.duration) elements.duration.value = packageData.duration || '';
+    if (elements.nights) elements.nights.value = packageData.nights || '';
+    if (elements.category) elements.category.value = packageData.category || '';
+    if (elements.destinations) elements.destinations.value = packageData.destinations || '';
+    if (elements.mainImage) elements.mainImage.value = packageData.image || '';
+    if (elements.description) elements.description.value = packageData.description || '';
+    if (elements.editorTitle) elements.editorTitle.textContent = `Edit ${packageData.name}`;
+    if (elements.deleteBtn) elements.deleteBtn.classList.remove('hidden');
     
     // Load media
-    if (packageData.media?.images) {
+    if (packageData.media?.images && elements.imageList) {
       packageData.media.images.forEach(imageUrl => {
         packageManager.createArrayInput(elements.imageList, 'Image URL', imageUrl);
       });
     }
     
-    if (packageData.media?.videos) {
+    if (packageData.media?.videos && elements.videoList) {
       packageData.media.videos.forEach(video => {
         const videoDiv = document.createElement('div');
         videoDiv.className = 'array-item';
@@ -735,48 +776,48 @@ const packageManager = {
     }
     
     // Load included/not included
-    if (packageData.included) {
+    if (packageData.included && elements.includedList) {
       packageData.included.forEach(item => {
         packageManager.createArrayInput(elements.includedList, 'Included item', item);
       });
     }
     
-    if (packageData.notIncluded) {
+    if (packageData.notIncluded && elements.notIncludedList) {
       packageData.notIncluded.forEach(item => {
         packageManager.createArrayInput(elements.notIncludedList, 'Not included item', item);
       });
     }
     
     // Load what to bring
-    if (packageData.whatToBring) {
+    if (packageData.whatToBring && elements.whatToBringList) {
       packageData.whatToBring.forEach(item => {
         packageManager.createArrayInput(elements.whatToBringList, 'What to bring item', item);
       });
     }
     
     // Load accommodation options
-    if (packageData.accommodationOptions) {
+    if (packageData.accommodationOptions && elements.accommodationOptionsList) {
       packageData.accommodationOptions.forEach(option => {
         packageManager.createAccommodationInput(elements.accommodationOptionsList, option);
       });
     }
     
     // Load meal plan options
-    if (packageData.mealPlanOptions) {
+    if (packageData.mealPlanOptions && elements.mealPlanOptionsList) {
       packageData.mealPlanOptions.forEach(option => {
         packageManager.createMealPlanInput(elements.mealPlanOptionsList, option);
       });
     }
     
     // Load transportation options
-    if (packageData.transportationOptions) {
+    if (packageData.transportationOptions && elements.transportationOptionsList) {
       packageData.transportationOptions.forEach(option => {
         packageManager.createTransportationInput(elements.transportationOptionsList, option);
       });
     }
     
     // Load itinerary
-    if (packageData.itinerary) {
+    if (packageData.itinerary && elements.itineraryList) {
       packageData.itinerary.forEach(day => {
         packageManager.createDayInput(elements.itineraryList, day);
       });
@@ -784,7 +825,7 @@ const packageManager = {
   },
 
   savePackage: (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     
     // Check if user can edit packages
     if (!packageManager.canEditPackages()) {
@@ -796,15 +837,15 @@ const packageManager = {
     
     // Sanitize inputs
     const sanitizedData = {
-      name: utils.sanitizeInput(elements.name.value),
-      bookingLink: utils.sanitizeInput(elements.bookingLink.value),
-      basePrice: parseFloat(utils.sanitizeInput(elements.basePrice.value)),
-      duration: utils.sanitizeInput(elements.duration.value),
-      nights: utils.sanitizeInput(elements.nights.value),
-      category: utils.sanitizeInput(elements.category.value),
-      destinations: utils.sanitizeInput(elements.destinations.value),
-      image: utils.sanitizeInput(elements.mainImage.value),
-      description: utils.sanitizeInput(elements.description.value)
+      name: utils.sanitizeInput(elements.name?.value || ''),
+      bookingLink: utils.sanitizeInput(elements.bookingLink?.value || ''),
+      basePrice: parseFloat(utils.sanitizeInput(elements.basePrice?.value || '0')),
+      duration: utils.sanitizeInput(elements.duration?.value || ''),
+      nights: utils.sanitizeInput(elements.nights?.value || ''),
+      category: utils.sanitizeInput(elements.category?.value || ''),
+      destinations: utils.sanitizeInput(elements.destinations?.value || ''),
+      image: utils.sanitizeInput(elements.mainImage?.value || ''),
+      description: utils.sanitizeInput(elements.description?.value || '')
     };
     
     // Validate data
@@ -819,7 +860,7 @@ const packageManager = {
     const packageData = {
       approved: 'false',
       ...sanitizedData,
-      owner: elements.ownerId.value || state.currentUser.uid,
+      owner: elements.ownerId?.value || state.currentUser?.uid || '',
       lastUpdated: Date.now(),
       media: {
         images: [],
@@ -835,107 +876,125 @@ const packageManager = {
     };
     
     // Get image URLs
-    const imageInputs = elements.imageList.querySelectorAll('input');
-    imageInputs.forEach(input => {
-      if (input.value.trim()) {
-        packageData.media.images.push(utils.sanitizeInput(input.value));
-      }
-    });
-    
-    // Get video data
-    const videoDivs = elements.videoList.querySelectorAll('.array-item');
-    videoDivs.forEach(div => {
-      const thumbnail = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const videoUrl = utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
-      
-      if (thumbnail && videoUrl) {
-        packageData.media.videos.push({
-          thumbnail,
-          videoUrl
-        });
-      }
-    });
-    
-    // Get included items
-    const includedInputs = elements.includedList.querySelectorAll('input');
-    includedInputs.forEach(input => {
-      if (input.value.trim()) {
-        packageData.included.push(utils.sanitizeInput(input.value));
-      }
-    });
-    
-    // Get not included items
-    const notIncludedInputs = elements.notIncludedList.querySelectorAll('input');
-    notIncludedInputs.forEach(input => {
-      if (input.value.trim()) {
-        packageData.notIncluded.push(utils.sanitizeInput(input.value));
-      }
-    });
-    
-    // Get what to bring items
-    const whatToBringInputs = elements.whatToBringList.querySelectorAll('input');
-    whatToBringInputs.forEach(input => {
-      if (input.value.trim()) {
-        packageData.whatToBring.push(utils.sanitizeInput(input.value));
-      }
-    });
-    
-    // Get accommodation options
-    const accommodationDivs = elements.accommodationOptionsList.querySelectorAll('.array-item');
-    accommodationDivs.forEach(div => {
-      const name = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
-      const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)').value));
-      
-      if (name && !isNaN(price)) {
-        packageData.accommodationOptions.push({ name, description, price });
-      }
-    });
-    
-    // Get meal plan options
-    const mealPlanDivs = elements.mealPlanOptionsList.querySelectorAll('.array-item');
-    mealPlanDivs.forEach(div => {
-      const name = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
-      const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)').value));
-      
-      if (name && !isNaN(price)) {
-        packageData.mealPlanOptions.push({ name, description, price });
-      }
-    });
-    
-    // Get transportation options
-    const transportationDivs = elements.transportationOptionsList.querySelectorAll('.array-item');
-    transportationDivs.forEach(div => {
-      const type = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)').value);
-      const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)').value));
-      
-      if (type && !isNaN(price)) {
-        packageData.transportationOptions.push({ type, description, price });
-      }
-    });
-    
-    // Get itinerary days
-    const dayDivs = elements.itineraryList.querySelectorAll('.day-item');
-    dayDivs.forEach(div => {
-      const title = utils.sanitizeInput(div.querySelector('input:nth-child(1)').value);
-      const description = utils.sanitizeInput(div.querySelector('textarea:nth-child(2)').value);
-      const activities = [];
-      
-      div.querySelectorAll('.array-item input').forEach(activityInput => {
-        if (activityInput.value.trim()) {
-          activities.push(utils.sanitizeInput(activityInput.value));
+    if (elements.imageList) {
+      const imageInputs = elements.imageList.querySelectorAll('input');
+      imageInputs.forEach(input => {
+        if (input.value.trim()) {
+          packageData.media.images.push(utils.sanitizeInput(input.value));
         }
       });
-      
-      if (title) {
-        packageData.itinerary.push({ title, description, activities });
-      }
-    });
+    }
+    
+    // Get video data
+    if (elements.videoList) {
+      const videoDivs = elements.videoList.querySelectorAll('.array-item');
+      videoDivs.forEach(div => {
+        const thumbnail = utils.sanitizeInput(div.querySelector('input:nth-child(1)')?.value || '');
+        const videoUrl = utils.sanitizeInput(div.querySelector('input:nth-child(2)')?.value || '');
+        
+        if (thumbnail && videoUrl) {
+          packageData.media.videos.push({
+            thumbnail,
+            videoUrl
+          });
+        }
+      });
+    }
+    
+    // Get included items
+    if (elements.includedList) {
+      const includedInputs = elements.includedList.querySelectorAll('input');
+      includedInputs.forEach(input => {
+        if (input.value.trim()) {
+          packageData.included.push(utils.sanitizeInput(input.value));
+        }
+      });
+    }
+    
+    // Get not included items
+    if (elements.notIncludedList) {
+      const notIncludedInputs = elements.notIncludedList.querySelectorAll('input');
+      notIncludedInputs.forEach(input => {
+        if (input.value.trim()) {
+          packageData.notIncluded.push(utils.sanitizeInput(input.value));
+        }
+      });
+    }
+    
+    // Get what to bring items
+    if (elements.whatToBringList) {
+      const whatToBringInputs = elements.whatToBringList.querySelectorAll('input');
+      whatToBringInputs.forEach(input => {
+        if (input.value.trim()) {
+          packageData.whatToBring.push(utils.sanitizeInput(input.value));
+        }
+      });
+    }
+    
+    // Get accommodation options
+    if (elements.accommodationOptionsList) {
+      const accommodationDivs = elements.accommodationOptionsList.querySelectorAll('.array-item');
+      accommodationDivs.forEach(div => {
+        const name = utils.sanitizeInput(div.querySelector('input:nth-child(1)')?.value || '');
+        const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)')?.value || '');
+        const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)')?.value || '0'));
+        
+        if (name && !isNaN(price)) {
+          packageData.accommodationOptions.push({ name, description, price });
+        }
+      });
+    }
+    
+    // Get meal plan options
+    if (elements.mealPlanOptionsList) {
+      const mealPlanDivs = elements.mealPlanOptionsList.querySelectorAll('.array-item');
+      mealPlanDivs.forEach(div => {
+        const name = utils.sanitizeInput(div.querySelector('input:nth-child(1)')?.value || '');
+        const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)')?.value || '');
+        const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)')?.value || '0'));
+        
+        if (name && !isNaN(price)) {
+          packageData.mealPlanOptions.push({ name, description, price });
+        }
+      });
+    }
+    
+    // Get transportation options
+    if (elements.transportationOptionsList) {
+      const transportationDivs = elements.transportationOptionsList.querySelectorAll('.array-item');
+      transportationDivs.forEach(div => {
+        const type = utils.sanitizeInput(div.querySelector('input:nth-child(1)')?.value || '');
+        const description = utils.sanitizeInput(div.querySelector('input:nth-child(2)')?.value || '');
+        const price = parseFloat(utils.sanitizeInput(div.querySelector('input:nth-child(3)')?.value || '0'));
+        
+        if (type && !isNaN(price)) {
+          packageData.transportationOptions.push({ type, description, price });
+        }
+      });
+    }
+    
+    // Get itinerary days
+    if (elements.itineraryList) {
+      const dayDivs = elements.itineraryList.querySelectorAll('.day-item');
+      dayDivs.forEach(div => {
+        const title = utils.sanitizeInput(div.querySelector('input:nth-child(1)')?.value || '');
+        const description = utils.sanitizeInput(div.querySelector('textarea:nth-child(2)')?.value || '');
+        const activities = [];
+        
+        div.querySelectorAll('.array-item input').forEach(activityInput => {
+          if (activityInput.value.trim()) {
+            activities.push(utils.sanitizeInput(activityInput.value));
+          }
+        });
+        
+        if (title) {
+          packageData.itinerary.push({ title, description, activities });
+        }
+      });
+    }
     
     // Check if this is an existing package
-    const isExistingPackage = elements.packageId.value && elements.packageId.value !== '';
+    const isExistingPackage = elements.packageId?.value && elements.packageId.value !== '';
     
     if (isExistingPackage) {
       // For existing packages, we need to verify ownership before updating
@@ -1036,7 +1095,7 @@ const packageManager = {
         .then(() => {
           utils.showToast('Package deleted successfully!');
           packageManager.loadPackageList(true); // Force refresh
-          if (elements.packageId.value === packageId) {
+          if (elements.packageId?.value === packageId) {
             packageManager.resetForm();
             packageManager.showListSection();
           }
@@ -1851,7 +1910,7 @@ const bookingManager = {
       onChange: function(selectedDates, dateStr) {
         if (activeTab !== 'new' && activeTab !== 'confirmed') {
           currentFilters.date = dateStr;
-          applyFilters();
+          bookingManager.applyFilters();
         }
       }
     });
@@ -1862,13 +1921,13 @@ const bookingManager = {
       flatpickrInstance.clear();
     }
     currentFilters.date = null;
-    applyFilters();
+    bookingManager.applyFilters();
   },
 
   applyFilters: () => {
-    currentFilters.search = elements.searchInput.value.toLowerCase();
-    currentFilters.status = elements.statusFilter.value;
-    filterBookings();
+    currentFilters.search = elements.searchInput?.value?.toLowerCase() || '';
+    currentFilters.status = elements.statusFilter?.value || 'all';
+    bookingManager.filterBookings();
   },
 
   filterBookings: () => {
@@ -1895,7 +1954,7 @@ const bookingManager = {
     
     // Apply date filter with tab-specific logic
     if (currentFilters.date) {
-      filtered = filterByDate(filtered, currentFilters.date, activeTab);
+      filtered = bookingManager.filterByDate(filtered, currentFilters.date, activeTab);
     }
     
     // Apply tab-specific status filter
@@ -1908,8 +1967,8 @@ const bookingManager = {
     
     filteredBookings = filtered;
     currentPage = 1;
-    updateBookingsTable();
-    updatePagination();
+    bookingManager.updateBookingsTable();
+    bookingManager.updatePagination();
   },
 
   filterByDate: (bookings, date, activeTab) => {
@@ -1950,6 +2009,8 @@ const bookingManager = {
   },
 
   updateBookingsTable: () => {
+    if (!elements.bookingsTableBody) return;
+    
     elements.bookingsTableBody.innerHTML = '';
     
     if (filteredBookings.length === 0) {
@@ -1979,7 +2040,7 @@ const bookingManager = {
       paginatedBookings.forEach(booking => {
         if (!booking.refNumber) return;
         
-        const statusClass = getStatusClass(booking.resStatus);
+        const statusClass = bookingManager.getStatusClass(booking.resStatus);
         const escapedRefNumber = utils.sanitizeInput(booking.refNumber);
         const tour = utils.sanitizeInput(booking.tour || 'Unknown Package');
         const tripDate = utils.formatTripDate(booking.tripDate || '');
@@ -2042,7 +2103,7 @@ const bookingManager = {
       paginatedBookings.forEach(booking => {
         if (!booking.refNumber) return;
         
-        const statusClass = getStatusClass(booking.resStatus);
+        const statusClass = bookingManager.getStatusClass(booking.resStatus);
         const escapedRefNumber = utils.sanitizeInput(booking.refNumber);
         const tour = utils.sanitizeInput(booking.tour || 'Unknown Package');
         const tripDate = utils.formatTripDate(booking.tripDate || '');
@@ -2076,6 +2137,11 @@ const bookingManager = {
   },
 
   updatePagination: () => {
+    if (!elements.totalPagesSpan || !elements.currentPageSpan || 
+        !elements.totalItemsSpan || !elements.startItemSpan || 
+        !elements.endItemSpan || !elements.prevPageBtn || 
+        !elements.nextPageBtn) return;
+    
     const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
     
     elements.totalPagesSpan.textContent = totalPages;
@@ -2100,8 +2166,8 @@ const bookingManager = {
   prevPage: () => {
     if (currentPage > 1) {
       currentPage--;
-      updateBookingsTable();
-      updatePagination();
+      bookingManager.updateBookingsTable();
+      bookingManager.updatePagination();
     }
   },
 
@@ -2109,8 +2175,8 @@ const bookingManager = {
     const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
     if (currentPage < totalPages) {
       currentPage++;
-      updateBookingsTable();
-      updatePagination();
+      bookingManager.updateBookingsTable();
+      bookingManager.updatePagination();
     }
   },
 
@@ -2256,24 +2322,31 @@ const bookingManager = {
       </div>
     `;
     
-    elements.bookingDetailsContent.innerHTML = detailsHTML;
+    if (elements.bookingDetailsContent) {
+      elements.bookingDetailsContent.innerHTML = detailsHTML;
+    }
+    
     const modal = document.getElementById('bookingDetailsModal');
-    modal.classList.remove('hidden');
-    
-    // Force reflow to enable animation
-    void modal.offsetWidth;
-    
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
+    if (modal) {
+      modal.classList.remove('hidden');
+      
+      // Force reflow to enable animation
+      void modal.offsetWidth;
+      
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
   },
 
   closeModal: () => {
     const modal = document.getElementById('bookingDetailsModal');
-    modal.classList.remove('show');
-    setTimeout(() => {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    }, 300);
+    if (modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
   },
 
   switchTab: (tab) => {
@@ -2283,14 +2356,16 @@ const bookingManager = {
     document.querySelectorAll('.tab-button').forEach(btn => {
       btn.classList.remove('active');
     });
-    document.getElementById(`${tab}BookingsTab`).classList.add('active');
+    document.getElementById(`${tab}BookingsTab`)?.classList.add('active');
     
     // Hide/show date filter based on tab
     const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative');
-    if (tab === 'new' || tab === 'confirmed') {
-      dateFilterContainer.classList.add('hidden');
-    } else {
-      dateFilterContainer.classList.remove('hidden');
+    if (dateFilterContainer) {
+      if (tab === 'new' || tab === 'confirmed') {
+        dateFilterContainer.classList.add('hidden');
+      } else {
+        dateFilterContainer.classList.remove('hidden');
+      }
     }
     
     // Set default date for the tab
@@ -2317,8 +2392,8 @@ const bookingManager = {
     };
     
     // Update UI elements
-    elements.searchInput.value = '';
-    elements.statusFilter.value = tab === 'all' ? 'all' : tab;
+    if (elements.searchInput) elements.searchInput.value = '';
+    if (elements.statusFilter) elements.statusFilter.value = tab === 'all' ? 'all' : tab;
     
     // Update Flatpickr if initialized
     if (flatpickrInstance) {
@@ -2330,11 +2405,11 @@ const bookingManager = {
     }
     
     // Apply filters
-    applyFilters();
+    bookingManager.applyFilters();
   },
 
   loadBookings: () => {
-    showLoading();
+    utils.showLoading();
     
     if (realTimeListener) {
       database.ref("trip-bookings").orderByChild("owner").equalTo(currentUserId).off('value', realTimeListener);
@@ -2363,17 +2438,17 @@ const bookingManager = {
           // Apply current filters
           bookingManager.applyFilters();
           bookingManager.updateDashboard();
-          hideLoading();
+          utils.hideLoading();
         } else {
           utils.showToast("No bookings found for your account", 'warning');
           allBookings = [];
           bookingManager.applyFilters();
           bookingManager.updateDashboard();
-          hideLoading();
+          utils.hideLoading();
         }
       }, (error) => {
         utils.showToast("Error loading data: " + error.message, 'error');
-        hideLoading();
+        utils.hideLoading();
       });
   },
 
@@ -2644,11 +2719,13 @@ function getTomorrowDateString() {
 // Event Listeners
 const setupEventListeners = () => {
   // Search input event
-  elements.searchInput.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-      bookingManager.applyFilters();
-    }
-  });
+  if (elements.searchInput) {
+    elements.searchInput.addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        bookingManager.applyFilters();
+      }
+    });
+  }
 
   // Form submission (only if user can edit)
   if (packageManager.canEditPackages() && elements.packageForm) {
@@ -2672,14 +2749,14 @@ const setupEventListeners = () => {
       
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.className = 'remove-item';
+      removeBtn.className = 'remove-item bg-red-500 hover:bg-red-600 text-white p-2 rounded';
       removeBtn.innerHTML = '<i class="fas fa-times"></i>';
       removeBtn.addEventListener('click', () => videoDiv.remove());
       
       videoDiv.appendChild(thumbnailInput);
       videoDiv.appendChild(videoUrlInput);
       videoDiv.appendChild(removeBtn);
-      elements.videoList.appendChild(videoDiv);
+      if (elements.videoList) elements.videoList.appendChild(videoDiv);
     });
     
     if (elements.addIncludedBtn) elements.addIncludedBtn.addEventListener('click', () => packageManager.createArrayInput(elements.includedList, 'Included item'));
@@ -2709,6 +2786,8 @@ const setupEventListeners = () => {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
     });
   });
+  
+
   
   // Tab switching
   if (elements.packageListTab) elements.packageListTab.addEventListener('click', packageManager.showListSection);
