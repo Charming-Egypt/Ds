@@ -1,8 +1,3 @@
-# Complete Package Management System JavaScript Code
-
-Here's the full, working JavaScript code for your package management system, adapted from your trip management system with all necessary changes:
-
-```javascript
 // Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
