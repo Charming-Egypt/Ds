@@ -42,8 +42,8 @@ const elements = {
   description: document.getElementById('description'),
   imageList: document.getElementById('imageList'),
   videoList: document.getElementById('videoList'),
-  includesList: document.getElementById('includesList'),
-  notincludesList: document.getElementById('notincludesList'),
+  includedList: document.getElementById('includedList'),
+  notIncludedList: document.getElementById('notIncludedList'),
   whatToBringList: document.getElementById('whatToBringList'),
   accommodationOptionsList: document.getElementById('accommodationOptionsList'),
   mealPlanOptionsList: document.getElementById('mealPlanOptionsList'),
@@ -68,8 +68,8 @@ const elements = {
   userPhone: document.getElementById('userPhone'),
   addImageBtn: document.getElementById('addImageBtn'),
   addVideoBtn: document.getElementById('addVideoBtn'),
-  addincludesBtn: document.getElementById('addincludesBtn'),
-  addNotincludesBtn: document.getElementById('addNotincludesBtn'),
+  addIncludedBtn: document.getElementById('addIncludedBtn'),
+  addNotIncludedBtn: document.getElementById('addNotIncludedBtn'),
   addWhatToBringBtn: document.getElementById('addWhatToBringBtn'),
   addAccommodationBtn: document.getElementById('addAccommodationBtn'),
   addMealPlanBtn: document.getElementById('addMealPlanBtn'),
@@ -260,8 +260,8 @@ const packageManager = {
     // Clear all dynamic lists
     if (elements.imageList) elements.imageList.innerHTML = '';
     if (elements.videoList) elements.videoList.innerHTML = '';
-    if (elements.includesList) elements.includesList.innerHTML = '';
-    if (elements.notincludesList) elements.notincludesList.innerHTML = '';
+    if (elements.includedList) elements.includedList.innerHTML = '';
+    if (elements.notIncludedList) elements.notIncludedList.innerHTML = '';
     if (elements.whatToBringList) elements.whatToBringList.innerHTML = '';
     if (elements.accommodationOptionsList) elements.accommodationOptionsList.innerHTML = '';
     if (elements.mealPlanOptionsList) elements.mealPlanOptionsList.innerHTML = '';
@@ -775,16 +775,16 @@ const packageManager = {
       });
     }
     
-    // Load includes/not includes
-    if (packageData.includes && elements.includesList) {
+    // Load included/not included
+    if (packageData.included && elements.includedList) {
       packageData.includes.forEach(item => {
-        packageManager.createArrayInput(elements.includesList, 'includes item', item);
+        packageManager.createArrayInput(elements.includedList, 'Included item', item);
       });
     }
     
-    if (packageData.notincludes && elements.notincludesList) {
-      packageData.notincludes.forEach(item => {
-        packageManager.createArrayInput(elements.notincludesList, 'Not includes item', item);
+    if (packageData.notIncluded && elements.notIncludedList) {
+      packageData.notIncluded.forEach(item => {
+        packageManager.createArrayInput(elements.notIncludedList, 'Not included item', item);
       });
     }
     
@@ -867,7 +867,7 @@ const packageManager = {
         videos: []
       },
       includes: [],
-      notincludes: [],
+      notIncluded: [],
       whatToBring: [],
       accommodationOptions: [],
       mealPlanOptions: [],
@@ -901,22 +901,22 @@ const packageManager = {
       });
     }
     
-    // Get includes items
-    if (elements.includesList) {
-      const includesInputs = elements.includesList.querySelectorAll('input');
-      includesInputs.forEach(input => {
+    // Get included items
+    if (elements.includedList) {
+      const includedInputs = elements.includedList.querySelectorAll('input');
+      includedInputs.forEach(input => {
         if (input.value.trim()) {
           packageData.includes.push(utils.sanitizeInput(input.value));
         }
       });
     }
     
-    // Get not includes items
-    if (elements.notincludesList) {
-      const notincludesInputs = elements.notincludesList.querySelectorAll('input');
-      notincludesInputs.forEach(input => {
+    // Get not included items
+    if (elements.notIncludedList) {
+      const notIncludedInputs = elements.notIncludedList.querySelectorAll('input');
+      notIncludedInputs.forEach(input => {
         if (input.value.trim()) {
-          packageData.notincludes.push(utils.sanitizeInput(input.value));
+          packageData.notIncluded.push(utils.sanitizeInput(input.value));
         }
       });
     }
@@ -2759,8 +2759,8 @@ const setupEventListeners = () => {
       if (elements.videoList) elements.videoList.appendChild(videoDiv);
     });
     
-    if (elements.addincludesBtn) elements.addincludesBtn.addEventListener('click', () => packageManager.createArrayInput(elements.includesList, 'includes item'));
-    if (elements.addNotincludesBtn) elements.addNotincludesBtn.addEventListener('click', () => packageManager.createArrayInput(elements.notincludesList, 'Not includes item'));
+    if (elements.addIncludedBtn) elements.addIncludedBtn.addEventListener('click', () => packageManager.createArrayInput(elements.includedList, 'Included item'));
+    if (elements.addNotIncludedBtn) elements.addNotIncludedBtn.addEventListener('click', () => packageManager.createArrayInput(elements.notIncludedList, 'Not included item'));
     if (elements.addWhatToBringBtn) elements.addWhatToBringBtn.addEventListener('click', () => packageManager.createArrayInput(elements.whatToBringList, 'What to bring item'));
     if (elements.addAccommodationBtn) elements.addAccommodationBtn.addEventListener('click', () => packageManager.createAccommodationInput(elements.accommodationOptionsList));
     if (elements.addMealPlanBtn) elements.addMealPlanBtn.addEventListener('click', () => packageManager.createMealPlanInput(elements.mealPlanOptionsList));
