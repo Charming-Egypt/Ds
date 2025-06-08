@@ -777,7 +777,7 @@ const packageManager = {
     
     // Load included/not included
     if (packageData.included && elements.includedList) {
-      packageData.includes.forEach(item => {
+      packageData.included.forEach(item => {
         packageManager.createArrayInput(elements.includedList, 'Included item', item);
       });
     }
@@ -866,7 +866,7 @@ const packageManager = {
         images: [],
         videos: []
       },
-      includes: [],
+      included: [],
       notIncluded: [],
       whatToBring: [],
       accommodationOptions: [],
@@ -906,7 +906,7 @@ const packageManager = {
       const includedInputs = elements.includedList.querySelectorAll('input');
       includedInputs.forEach(input => {
         if (input.value.trim()) {
-          packageData.includes.push(utils.sanitizeInput(input.value));
+          packageData.included.push(utils.sanitizeInput(input.value));
         }
       });
     }
@@ -1937,10 +1937,10 @@ const bookingManager = {
     if (currentFilters.search?.trim()) {
       const searchTerm = currentFilters.search.toLowerCase().trim();
       filtered = filtered.filter(booking => 
-        (booking.refNumber?.toLowerCase().includes(searchTerm)) ||
-        (booking.tour?.toLowerCase().includes(searchTerm)) ||
-        (booking.username?.toLowerCase().includes(searchTerm)) ||
-        (booking.email?.toLowerCase().includes(searchTerm))
+        (booking.refNumber?.toLowerCase().included(searchTerm)) ||
+        (booking.tour?.toLowerCase().included(searchTerm)) ||
+        (booking.username?.toLowerCase().included(searchTerm)) ||
+        (booking.email?.toLowerCase().included(searchTerm))
       );
     }
     
