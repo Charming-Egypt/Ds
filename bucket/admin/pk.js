@@ -33,7 +33,7 @@ const elements = {
   ownerId: document.getElementById('ownerId'),
   name: document.getElementById('name'),
   bookingLink: document.getElementById('bookingLink'),
-  price: document.getElementById('price'),
+  price: document.getElementById('basePrice'),
   duration: document.getElementById('duration'),
   nights: document.getElementById('nights'),
   category: document.getElementById('category'),
