@@ -3183,3 +3183,4 @@ window.switchTab = bookingManager.switchTab;
 window.exportToExcel = bookingManager.exportToExcel;
 window.refreshBookings = bookingManager.refreshBookings;
 window.applyFilters = bookingManager.applyFilters;
+window.exportPayoutEventsToExcel = exportPayoutEventsToExcel;
