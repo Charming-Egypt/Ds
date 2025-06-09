@@ -1591,10 +1591,10 @@ dashboardManager.updatePopularPackagesChart = () => {
         return total + (parseFloat(booking.netTotal) || 0);
       }, 0);
 
-      const Rev_Com = totalRevenue * (10 / 100);
+      const commission = totalRevenue * (10 / 100);
       
       if (elements.totalRevenue) elements.totalRevenue.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + Rev_Com.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + (totalRevenue - commission).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
