@@ -1592,9 +1592,10 @@ dashboardManager.updatePopularPackagesChart = () => {
       }, 0);
 
       const commission = totalRevenue * (10 / 100);
+      const rev = 'EGP ' + (totalRevenue - commission).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
       
-      if (elements.totalRevenue) elements.totalRevenue.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + (totalRevenue - commission).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      if (elements.totalRevenue) elements.totalRevenue.textContent = rev ;
+      if (elements.avpayout) elements.avpayout.textContent = rev ;
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
