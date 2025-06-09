@@ -1230,63 +1230,87 @@ const dashboardManager = {
     }
 
     // Guest Composition Chart (Half Doughnut)
-    const guestCtx = document.getElementById('guestChart')?.getContext('2d');
-    if (guestCtx) {
-      guestChart = new Chart(guestCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Adults', 'Children', 'Infants'],
-          datasets: [{
-            data: [0, 0, 0],
-            backgroundColor: [
-              'rgba(255, 193, 7, 0.7)',
-              'rgba(255, 152, 0, 0.7)',
-              'rgba(255, 87, 34, 0.7)'
-            ],
-            borderColor: [
-              'rgba(255, 193, 7, 1)',
-              'rgba(255, 152, 0, 1)',
-              'rgba(255, 87, 34, 1)'
-            ],
-            borderWidth: 1
-          }]
+    const guestChartDom = document.getElementById('guestChart');
+if (guestChartDom) {
+  const guestChart = echarts.init(guestChartDom);
+
+  const guestOption = {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} ({d}%)'
+    },
+    series: [
+      {
+        name: 'Guest Composition',
+        type: 'pie',
+        radius: ['50%', '70%'],
+        center: ['50%', '75%'], // Adjust for half-circle
+        startAngle: 180, // Start from the bottom
+        endAngle: 0, // End at the top
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          circumference: 180,
-          rotation: -90,
-          cutout: '70%',
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                usePointStyle: true,
-                padding: 20,
-                font: {
-                  family: 'Poppins'
-                }
-              }
-            },
-            tooltip: {
-              backgroundColor: '#222',
-              titleColor: '#ffc107',
-              borderColor: '#666',
-              borderWidth: 1,
-              callbacks: {
-                label: function(context) {
-                  const label = context.label || '';
-                  const value = context.raw || 0;
-                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                  const percentage = Math.round((value / total) * 100);
-                  return `${label}: ${value} (${percentage}%)`;
-                }
-              }
-            }
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 16,
+            fontWeight: 'bold'
           }
+        },
+        data: [
+          { value: 0, name: 'Adults', itemStyle: { color: 'rgba(255, 193, 7, 0.7)' } },
+          { value: 0, name: 'Children', itemStyle: { color: 'rgba(255, 152, 0, 0.7)' } },
+          { value: 0, name: 'Infants', itemStyle: { color: 'rgba(255, 87, 34, 0.7)' } }
+        ]
+      }
+    ]
+  };
+
+  // Update chart data dynamically
+  dashboardManager.updateGuestChart = () => {
+    try {
+      if (!guestChart) return;
+      const guestCounts = {
+        adults: 0,
+        children: 0,
+        infants: 0
+      };
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed') {
+          guestCounts.adults += parseInt(booking.adults) || 0;
+          guestCounts.children += parseInt(booking.childrenUnder12) || 0;
+          guestCounts.infants += parseInt(booking.infants) || 0;
         }
       });
+
+      guestChart.setOption({
+        series: [
+          {
+            data: [
+              { value: guestCounts.adults, name: 'Adults' },
+              { value: guestCounts.children, name: 'Children' },
+              { value: guestCounts.infants, name: 'Infants' }
+            ]
+          }
+        ]
+      });
+      if (elements.guestUpdated) elements.guestUpdated.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    } catch (error) {
+      console.error("Error updating guest chart:", error);
     }
+  };
+
+  // Initialize the chart
+  guestChart.setOption(guestOption);
+}
 
     // Initialize Package Performance Chart
     const packagePerformanceDom = document.getElementById('packagePerformanceChart');
