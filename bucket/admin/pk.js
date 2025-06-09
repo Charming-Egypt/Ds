@@ -15,6 +15,131 @@ const database = firebase.database();
 const auth = firebase.auth();
 const storage = firebase.storage();
 
+
+
+
+
+// Ensure you have already initialized Firebase as shown earlier
+
+async function exportPayoutEventsToExcel() {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.log("No user is signed in.");
+    return;
+  }
+
+  const userId = user.uid;
+  const eventsRef = firebase.database().ref(`egy_user/${userId}/events`);
+
+  try {
+    const snapshot = await eventsRef.once('value');
+    if (!snapshot.exists()) {
+      alert("No payout events found.");
+      return;
+    }
+
+    const events = snapshot.val();
+
+    // Convert object to array and sort by date (newest first)
+    const sortedEvents = Object.entries(events)
+      .map(([date, data]) => ({ date, ...data }))
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Create Excel workbook
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Payout Events");
+
+    // Define columns
+    ws.columns = [
+      { header: "Date", key: "date", width: 15 },
+      { header: "Amount (EGP)", key: "amount", width: 15 },
+      { header: "Account", key: "account", width: 25 }
+    ];
+
+    // Style header row
+    const headerRow = ws.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD700' } // Gold background
+      };
+      cell.font = {
+        bold: true,
+        color: { argb: '000000' }, // Black text
+      };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+
+    // Add data rows
+    sortedEvents.forEach(event => {
+      const amount = parseInt(event.Amount).toLocaleString();
+      const account = event.Account;
+
+      const row = ws.addRow({
+        date: event.date,
+        amount: amount,
+        account: account
+      });
+
+      row.eachCell((cell) => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFFFFF' } // White background
+        };
+      });
+    });
+
+    // Auto-size columns
+    ws.columns.forEach(column => {
+      let maxLength = 0;
+      column.eachCell({ includeEmpty: true }, cell => {
+        const columnLength = cell.value ? cell.value.toString().length : 10;
+        if (columnLength > maxLength) maxLength = columnLength;
+      });
+      column.width = maxLength < 15 ? 15 : maxLength > 50 ? 50 : maxLength;
+    });
+
+    // Generate Excel file
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+    const fileName = `Payout_Events_${userId}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    saveAs(blob, fileName);
+
+    alert("Payout events exported successfully!");
+
+  } catch (error) {
+    console.error("Error exporting payout events:", error);
+    alert("Failed to export payout events: " + error.message);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 // Chart Variables
 let statusChart, trendChart, guestChart, packagePerformanceChart;
 let currentPeriod = 'week';
