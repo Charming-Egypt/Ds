@@ -2241,11 +2241,11 @@ const bookingManager = {
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Total price</div>
-            <div class="font-bold">${utils.formatCurrency(booking.netTotal + booking.commission || 0)}</div>
+            <div class="font-bold">${utils.formatCurrency(booking.netTotal || 0)}</div>
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Commission</div>
-            <div class="font-bold">${utils.formatCurrency(booking.commission || 0)}</div>
+            <div class="font-bold">${utils.formatCurrency(booking.netTotal * 10 / 100 || 0)}</div>
           </div>
         </div>
         
