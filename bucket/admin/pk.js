@@ -2217,9 +2217,13 @@ const bookingManager = {
     const whatsappButton = document.getElementById('whatsappButton');
     if (whatsappButton) {
       if (booking.phone) {
-        const whatsappMessage = `Hello ${booking.username || 'there'},%0A%0A` +
-                              `Regarding your booking.%0A%0A `+ `Ref / ${booking.refNumber}.%0A%0A` + `for ${booking.tour || 'your package'}.%0A%0A` + ` on ${tripDate}.%0A%0A` +
-                              `Best regards,`;
+        const whatsappMessage = `Dear ${booking.username || 'Guest'},%0A` +
+                        `We are reaching out regarding your recent booking with Discover Sharm.%0A%0A` +
+                        `• Reference Number: ${booking.refNumber}%0A` +
+                        `• Package/Tour: ${booking.tour || 'selected package'}%0A` +
+                        `• Scheduled Date: ${tripDate}%0A%0A` +
+                        `Should you require any further information or assistance, please do not hesitate to contact us.%0A%0A` +
+                        `Kind regards,%0ADiscover Sharm Reservations Team`;
         const whatsappUrl = `https://wa.me/${booking.phone.replace(/[^0-9]/g, '')}?text=${whatsappMessage}`;
         whatsappButton.href = whatsappUrl;
         whatsappButton.style.display = 'flex';
