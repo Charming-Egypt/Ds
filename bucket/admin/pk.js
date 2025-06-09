@@ -1358,85 +1358,11 @@ const initPackagePerformanceChart = () => {
   });
 };
 
-// Update the chart with new data
-dashboardManager.updatePackagePerformanceChart = () => {
-  try {
-    // Initialize the chart if it doesn't exist
-    if (!packagePerformanceChart) initPackagePerformanceChart();
-    if (!packagePerformanceChart) return;
-
-    // Ensure filteredBookingData is valid
-    if (!Array.isArray(filteredBookingData)) {
-      console.error("Invalid or missing booking data.");
-      return;
-    }
-
-    // Aggregate data by package name
-    const packageData = {};
-    filteredBookingData.forEach(booking => {
-      if (booking.resStatus?.toLowerCase() === 'confirmed') {
-        const packageName = booking.tour || 'Other';
-        if (!packageData[packageName]) {
-          packageData[packageName] = {
-            bookings: 0,
-            revenue: 0
-          };
-        }
-        packageData[packageName].bookings++;
-        const com = booking.netTotal * 0.10; // 10% commission
-        packageData[packageName].revenue += parseFloat(booking.netTotal - com) || 0;
-      }
-    });
-
-    // Sort and get top 5 packages
-    const sortedPackages = Object.entries(packageData)
-      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
-      .slice(0, 5);
-
-    // Prepare chart data
-    const packageNames = sortedPackages.map(item => item[0]);
-    const packageValues = sortedPackages.map(item => {
-      return packagePerformanceMetric === 'bookings'
-        ? item[1].bookings
-        : parseFloat(item[1].revenue.toFixed(2));
-    });
-
-    // Generate dynamic colors for each bar
-    const generateColor = (index) => {
-      const colors = [
-        'rgba(255, 193, 7, 0.7)',
-        'rgba(255, 152, 0, 0.7)',
-        'rgba(255, 87, 34, 0.7)',
-        'rgba(76, 175, 80, 0.7)',
-        'rgba(33, 150, 243, 0.7)'
-      ];
-      return colors[index % colors.length];
-    };
-
-    const backgroundColors = packageNames.map((_, index) => generateColor(index));
-    const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
-
-    // Update chart data
-    packagePerformanceChart.data.labels = packageNames; // Package names on x-axis
-    packagePerformanceChart.data.datasets[0].data = packageValues;
-    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
-    packagePerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
-    packagePerformanceChart.data.datasets[0].borderColor = borderColors;
-
-    // Render the updated chart
-    packagePerformanceChart.update();
-  } catch (error) {
-    console.error("Error updating package performance chart:", error);
-  }
-};
-  },
 
 
-
-
-    
 // Initialize Popular Packages Chart
 let popularPackagesChart;
+    
 const initPopularPackagesChart = () => {
   const ctx = document.getElementById('popularPackagesChart');
   if (!ctx) return;
@@ -1522,6 +1448,89 @@ const initPopularPackagesChart = () => {
   });
 };
 
+    
+
+    
+
+// Update the chart with new data
+dashboardManager.updatePackagePerformanceChart = () => {
+  try {
+    // Initialize the chart if it doesn't exist
+    if (!packagePerformanceChart) initPackagePerformanceChart();
+    if (!packagePerformanceChart) return;
+
+    // Ensure filteredBookingData is valid
+    if (!Array.isArray(filteredBookingData)) {
+      console.error("Invalid or missing booking data.");
+      return;
+    }
+
+    // Aggregate data by package name
+    const packageData = {};
+    filteredBookingData.forEach(booking => {
+      if (booking.resStatus?.toLowerCase() === 'confirmed') {
+        const packageName = booking.tour || 'Other';
+        if (!packageData[packageName]) {
+          packageData[packageName] = {
+            bookings: 0,
+            revenue: 0
+          };
+        }
+        packageData[packageName].bookings++;
+        const com = booking.netTotal * 0.10; // 10% commission
+        packageData[packageName].revenue += parseFloat(booking.netTotal - com) || 0;
+      }
+    });
+
+    // Sort and get top 5 packages
+    const sortedPackages = Object.entries(packageData)
+      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
+      .slice(0, 5);
+
+    // Prepare chart data
+    const packageNames = sortedPackages.map(item => item[0]);
+    const packageValues = sortedPackages.map(item => {
+      return packagePerformanceMetric === 'bookings'
+        ? item[1].bookings
+        : parseFloat(item[1].revenue.toFixed(2));
+    });
+
+    // Generate dynamic colors for each bar
+    const generateColor = (index) => {
+      const colors = [
+        'rgba(255, 193, 7, 0.7)',
+        'rgba(255, 152, 0, 0.7)',
+        'rgba(255, 87, 34, 0.7)',
+        'rgba(76, 175, 80, 0.7)',
+        'rgba(33, 150, 243, 0.7)'
+      ];
+      return colors[index % colors.length];
+    };
+
+    const backgroundColors = packageNames.map((_, index) => generateColor(index));
+    const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+
+    // Update chart data
+    packagePerformanceChart.data.labels = packageNames; // Package names on x-axis
+    packagePerformanceChart.data.datasets[0].data = packageValues;
+    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
+    packagePerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
+    packagePerformanceChart.data.datasets[0].borderColor = borderColors;
+
+    // Render the updated chart
+    packagePerformanceChart.update();
+  } catch (error) {
+    console.error("Error updating package performance chart:", error);
+  }
+};
+  
+
+
+
+
+    
+
+
 // Update the Popular Packages Chart with new data
 dashboardManager.updatePopularPackagesChart = () => {
   try {
@@ -1554,7 +1563,11 @@ dashboardManager.updatePopularPackagesChart = () => {
     console.error("Error updating popular packages chart:", error);
   }
 };
-  },
+
+
+
+
+    
 
 
   processBookingData: (data) => {
