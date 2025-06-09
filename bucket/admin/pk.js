@@ -1429,7 +1429,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
     console.error("Error updating package performance chart:", error);
   }
 };
-
+  },
 
 
 
