@@ -2949,9 +2949,66 @@ const setupEventListeners = () => {
   });
 
 
+  
 
-// Ensure you have already initialized Firebase as shown earlier
 
+
+
+
+
+/**
+ * Load and display all payout events for the logged-in user
+ */
+function loadAllPayoutEvents() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    console.log("No user is signed in.");
+    return;
+  }
+
+  const userId = user.uid;
+  const eventsRef = database.ref(`egy_user/${userId}/events`);
+
+  eventsRef.once('value')
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        const outputDiv = document.getElementById("payout-output") || document.body;
+        outputDiv.innerHTML = "<p>No payout events found.</p>";
+        return;
+      }
+
+      const outputDiv = document.getElementById("payout-output") || document.body;
+      outputDiv.innerHTML = ""; // Clear previous content
+
+      const events = snapshot.val();
+
+      Object.entries(events).forEach(([date, data]) => {
+        const amount = parseInt(data.Amount).toLocaleString(); // Format with commas
+        const account = data.Account;
+
+        const item = `
+          <div class="payout-item mb-4 p-4 border rounded-lg bg-gray-50">
+            <strong>Payout transaction ✅</strong><br>
+            Date: ${date}<br>
+            ${amount} EGP to your account (${account})
+          </div>
+        `;
+
+        outputDiv.innerHTML += item;
+      });
+    })
+    .catch(error => {
+      console.error("Error retrieving payout events:", error);
+    });
+}
+
+
+
+
+
+
+  
 async function exportPayoutEventsToExcel() {
   const user = firebase.auth().currentUser;
   if (!user) {
@@ -3166,6 +3223,7 @@ const initApp = () => {
         packageManager.loadPayout(user.uid);
         bookingManager.loadBookings();
         setupEventListeners();
+        loadAllPayoutEvents();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
