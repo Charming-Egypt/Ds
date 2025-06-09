@@ -1361,7 +1361,7 @@ const initPackagePerformanceChart = () => {
 
 
 // Initialize Popular Packages Chart
-let popularPackagesChart;
+initPopularPackagesChart();
     
 const initPopularPackagesChart = () => {
   const ctx = document.getElementById('popularPackagesChart');
