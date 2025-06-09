@@ -1436,7 +1436,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
 
     
 // Initialize Popular Packages Chart
-let popularPackagesChart;
+let popularPackagesChart = null;
 
 const initPopularPackagesChart = () => {
   const ctx = document.getElementById('popularPackagesChart');
@@ -1445,15 +1445,15 @@ const initPopularPackagesChart = () => {
   popularPackagesChart = new Chart(ctx.getContext('2d'), {
     type: 'doughnut',
     data: {
-      labels: [],
+      labels: [], // Package names will go here
       datasets: [{
         data: [],
         backgroundColor: [
-          'rgba(255, 193, 7, 0.7)',
-          'rgba(255, 152, 0, 0.7)',
-          'rgba(255, 87, 34, 0.7)',
-          'rgba(76, 175, 80, 0.7)',
-          'rgba(33, 150, 243, 0.7)'
+          'rgba(255, 193, 7, 0.8)', // Yellow
+          'rgba(255, 152, 0, 0.8)', // Orange
+          'rgba(255, 87, 34, 0.8)', // Red
+          'rgba(76, 175, 80, 0.8)', // Green
+          'rgba(33, 150, 243, 0.8)' // Blue
         ],
         borderColor: [
           'rgba(255, 193, 7, 1)',
@@ -1462,31 +1462,42 @@ const initPopularPackagesChart = () => {
           'rgba(76, 175, 80, 1)',
           'rgba(33, 150, 243, 1)'
         ],
-        borderWidth: 1
+        borderWidth: 2,
+        hoverBackgroundColor: [
+          'rgba(255, 193, 7, 1)',
+          'rgba(255, 152, 0, 1)',
+          'rgba(255, 87, 34, 1)',
+          'rgba(76, 175, 80, 1)',
+          'rgba(33, 150, 243, 1)'
+        ]
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
+      cutout: '60%', // Adjusts the size of the hole in the doughnut chart
       plugins: {
         legend: {
           position: 'right',
           labels: {
-            usePointStyle: true,
-            padding: 20,
+            usePointStyle: true, // Use small circles instead of rectangles
+            padding: 15,
             font: {
-              family: 'Poppins'
-            }
+              family: 'Poppins',
+              size: 12,
+              weight: '500'
+            },
+            color: '#fff' // White text for better contrast
           }
         },
         tooltip: {
           backgroundColor: '#222',
-          titleColor: '#ffc107',
+          titleColor: '#ffc107', // Yellow title
+          bodyColor: '#fff', // White body text
           borderColor: '#666',
           borderWidth: 1,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const label = context.label || '';
               const value = context.raw || 0;
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -1495,12 +1506,24 @@ const initPopularPackagesChart = () => {
             }
           }
         }
+      },
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 20,
+          left: 20,
+          right: 20
+        }
+      },
+      animation: {
+        duration: 1000, // Smooth animation
+        easing: 'easeInOutQuad'
       }
     }
   });
 };
 
-// Update Popular Packages Chart
+// Update the Popular Packages Chart with new data
 dashboardManager.updatePopularPackagesChart = () => {
   try {
     if (!popularPackagesChart) initPopularPackagesChart();
@@ -1532,7 +1555,6 @@ dashboardManager.updatePopularPackagesChart = () => {
     console.error("Error updating popular packages chart:", error);
   }
 };
-  },
 
 
 
