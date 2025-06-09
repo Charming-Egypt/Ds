@@ -2312,21 +2312,21 @@ const bookingManager = {
         <!-- Special Requests -->
         ${booking.Accommodation ? `
         <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-          <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+          <h4 class="font-medium mb-2 text-amber-400">Accommodation</h4>
           <p class="text-gray-300 whitespace-pre-line">${escapedAccommodation}</p>
         </div>
         ` : ''}
         <!-- Special Requests -->
         ${booking.Transportation ? `
         <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-          <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+          <h4 class="font-medium mb-2 text-amber-400">Transportation</h4>
           <p class="text-gray-300 whitespace-pre-line">${escapedTransportation}</p>
         </div>
         ` : ''}
         <!-- Special Requests -->
         ${booking.MealPlan ? `
         <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-          <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+          <h4 class="font-medium mb-2 text-amber-400">Meal Plan</h4>
           <p class="text-gray-300 whitespace-pre-line">${escapedMealPlan}</p>
         </div>
         ` : ''}
