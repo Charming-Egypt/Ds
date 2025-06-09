@@ -2245,7 +2245,7 @@ const bookingManager = {
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Commission</div>
-            <div class="font-bold">${utils.formatCurrency(booking.netTotal * 10 / 100 || 0)}</div>
+            <div class="font-bold">${utils.formatCurrency(booking.netTotal * 15 / 100 || 0)}</div>
           </div>
         </div>
         
