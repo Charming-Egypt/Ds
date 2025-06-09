@@ -281,13 +281,29 @@
                     <!-- Main Charts Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                         <!-- Package Performance Chart -->
-                        <div class="glass-card p-5 rounded-xl">
-                            <h3 class="font-medium text-lg mb-4 flex items-center">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="font-medium text-lg mb-4 flex items-center">
                                 <i class="fas fa-chart-line text-amber-500 mr-2"></i> Package Performance
-                            </h3>
-                            <canvas id="packagePerformanceChart"></canvas>
+                            </h2>
+                                <div class="card-actions">
+                                    <select id="packagePerformanceMetric" class="filter-btn">
+                                        <option value="bookings">By Bookings</option>
+                                        <option value="revenue">By Revenue</option>
+                                        <option value="rating">By Rating</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="packagePerformanceChart"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        
+
+
+
+                      
                         <!-- Popular Packages Chart -->
                         <div class="glass-card p-5 rounded-xl">
                             <h3 class="font-medium text-lg mb-4 flex items-center">
