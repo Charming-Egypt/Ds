@@ -140,6 +140,11 @@
             background-color: rgba(30, 58, 138, 0.2);
             color: #3b82f6;
         }
+      .chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+                                  }
     </style>
 </head>
 <body>
@@ -309,7 +314,7 @@
                             <h3 class="font-medium text-lg mb-4 flex items-center">
                                 <i class="fas fa-trophy text-blue-500 mr-2"></i> Popular Packages
                             </h3>
-                            <div id="popularPackagesChart" style="height: 300px;"></div>
+                            <canvas id="popularPackagesChart"></canvas>
                         </div>
                     </div>
                 </div>
