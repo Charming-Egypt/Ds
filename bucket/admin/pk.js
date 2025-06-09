@@ -1300,7 +1300,7 @@ const initPackagePerformanceChart = () => {
   packagePerformanceChart = new Chart(ctx.getContext('2d'), {
     type: 'bar',
     data: {
-      labels: [],
+      labels: [], // Package names will go here
       datasets: [{
         label: 'Bookings',
         data: [],
@@ -1312,7 +1312,7 @@ const initPackagePerformanceChart = () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: 'x', // Switch to vertical bars
+      indexAxis: 'x', // Vertical bars
       plugins: {
         legend: {
           display: false
@@ -1331,6 +1331,16 @@ const initPackagePerformanceChart = () => {
       },
       scales: {
         x: {
+          grid: {
+            display: false // Hide grid lines for package names
+          },
+          ticks: {
+            autoSkip: false, // Ensure all package names are displayed
+            maxRotation: 90, // Rotate labels if they overlap
+            minRotation: 45
+          }
+        },
+        y: {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
@@ -1341,11 +1351,6 @@ const initPackagePerformanceChart = () => {
           },
           grid: {
             color: 'rgba(255, 255, 255, 0.1)'
-          }
-        },
-        y: {
-          grid: {
-            display: false
           }
         }
       }
@@ -1412,7 +1417,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
     const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
 
     // Update chart data
-    packagePerformanceChart.data.labels = packageNames;
+    packagePerformanceChart.data.labels = packageNames; // Package names on x-axis
     packagePerformanceChart.data.datasets[0].data = packageValues;
     packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
     packagePerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
@@ -1424,6 +1429,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
     console.error("Error updating package performance chart:", error);
   }
 };
+
 
 
 
