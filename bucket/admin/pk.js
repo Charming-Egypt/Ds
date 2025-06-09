@@ -1290,14 +1290,108 @@ if (guestCtx) {
 }
 
     // Initialize Package Performance Chart
-    const packagePerformanceDom = document.getElementById('packagePerformanceChart');
-    if (packagePerformanceDom) {
-      packagePerformanceChart = echarts.init(packagePerformanceDom);
-      
-      window.addEventListener('resize', function() {
-        packagePerformanceChart.resize();
-      });
+let packagePerformanceChart;
+
+const initPackagePerformanceChart = () => {
+  const ctx = document.getElementById('packagePerformanceChart');
+  if (!ctx) return;
+
+  packagePerformanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Bookings',
+        data: [],
+        backgroundColor: ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'],
+        borderColor: ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y', // Horizontal bar chart
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return packagePerformanceMetric === 'bookings'
+                ? `${label}: ${value} Bookings`
+                : `${label}: EGP ${value.toFixed(2)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return packagePerformanceMetric === 'bookings'
+                ? value
+                : `EGP ${value.toFixed(2)}`;
+            }
+          }
+        },
+        y: {
+          grid: {
+            display: false
+          }
+        }
+      }
     }
+  });
+};
+
+// Update Package Performance Chart
+dashboardManager.updatePackagePerformanceChart = () => {
+  try {
+    if (!packagePerformanceChart) return;
+
+    // Aggregate data by package name
+    const packageData = {};
+    filteredBookingData.forEach(booking => {
+      if (booking.resStatus?.toLowerCase() === 'confirmed') {
+        const packageName = booking.tour || 'Other';
+        if (!packageData[packageName]) {
+          packageData[packageName] = {
+            bookings: 0,
+            revenue: 0
+          };
+        }
+        packageData[packageName].bookings++;
+        packageData[packageName].revenue += parseFloat(booking.netTotal) || 0;
+      }
+    });
+
+    // Sort and get top 5 packages
+    const sortedPackages = Object.entries(packageData)
+      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
+      .slice(0, 5);
+
+    // Prepare chart data
+    const packageNames = sortedPackages.map(item => item[0]);
+    const packageValues = sortedPackages.map(item => {
+      return packagePerformanceMetric === 'bookings' 
+        ? item[1].bookings 
+        : parseFloat(item[1].revenue.toFixed(2));
+    });
+
+    // Update chart data
+    packagePerformanceChart.data.labels = packageNames;
+    packagePerformanceChart.data.datasets[0].data = packageValues;
+    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
+    packagePerformanceChart.update();
+  } catch (error) {
+    console.error("Error updating package performance chart:", error);
+  }
+};
   },
 
   processBookingData: (data) => {
@@ -1481,130 +1575,11 @@ if (guestCtx) {
     }
   },
 
-  updatePackagePerformanceChart: () => {
-    try {
-      const packagePerformanceDom = document.getElementById('packagePerformanceChart');
-      if (!packagePerformanceDom) return;
-      
-      // Initialize chart if not already done or if destroyed
-      if (!packagePerformanceChart || typeof packagePerformanceChart.setOption !== 'function') {
-        packagePerformanceChart = echarts.init(packagePerformanceDom);
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-          if (packagePerformanceChart && typeof packagePerformanceChart.resize === 'function') {
-            packagePerformanceChart.resize();
-          }
-        });
-      }
+  
 
-      // Aggregate data by package name
-      const packageData = {};
-      filteredBookingData.forEach(booking => {
-        if (booking.resStatus?.toLowerCase() === 'confirmed') {
-          const packageName = booking.tour || 'Other';
-          if (!packageData[packageName]) {
-            packageData[packageName] = {
-              bookings: 0,
-              revenue: 0
-            };
-          }
-          packageData[packageName].bookings++;
-          packageData[packageName].revenue += parseFloat(booking.netTotal) || 0;
-        }
-      });
 
-      // Sort and get top 5 packages
-      const sortedPackages = Object.entries(packageData)
-        .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
-        .slice(0, 5);
+  
 
-      // Prepare chart data
-      const packageNames = sortedPackages.map(item => item[0]);
-      const packageValues = sortedPackages.map(item => {
-        return packagePerformanceMetric === 'bookings' 
-          ? item[1].bookings 
-          : parseFloat(item[1].revenue.toFixed(2));
-      });
-
-      // Chart configuration
-      const packagePerformanceOption = {
-        backgroundColor: 'transparent',
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          },
-          formatter: function(params) {
-            const data = params[0];
-            return packagePerformanceMetric === 'bookings'
-              ? `${data.name}<br/>Bookings: ${data.value}`
-              : `${data.name}<br/>Revenue: EGP ${data.value.toFixed(2)}`;
-          }
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'value',
-          axisLabel: {
-            formatter: function(value) {
-              return packagePerformanceMetric === 'bookings'
-                ? value
-                : value.toFixed(2);
-            }
-          }
-        },
-        yAxis: {
-          type: 'category',
-          data: packageNames
-        },
-        series: [{
-          name: packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue',
-          type: 'bar',
-          data: packageValues,
-          itemStyle: {
-            color: function(params) {
-              const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
-              return colors[params.dataIndex % colors.length];
-            },
-            borderRadius: [0, 4, 4, 0]
-          },
-          label: {
-            show: true,
-            position: 'right',
-            formatter: function(params) {
-              return packagePerformanceMetric === 'bookings'
-                ? params.value
-                : 'EGP ' + params.value.toFixed(2);
-            },
-            fontWeight: 'bold'
-          }
-        }]
-      };
-
-      // Clear previous chart instance if it exists
-      if (packagePerformanceChart && typeof packagePerformanceChart.dispose === 'function') {
-        packagePerformanceChart.dispose();
-      }
-      
-      // Reinitialize chart
-      packagePerformanceChart = echarts.init(packagePerformanceDom);
-      packagePerformanceChart.setOption(packagePerformanceOption);
-
-    } catch (error) {
-      console.error("Error updating package performance chart:", error);
-      
-      // Attempt to reinitialize chart on error
-      const packagePerformanceDom = document.getElementById('packagePerformanceChart');
-      if (packagePerformanceDom) {
-        packagePerformanceChart = echarts.init(packagePerformanceDom);
-      }
-    }
-  },
 
   exportToExcel: () => {
     try {
