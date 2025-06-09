@@ -1429,20 +1429,19 @@ dashboardManager.updatePackagePerformanceChart = () => {
     console.error("Error updating package performance chart:", error);
   }
 };
-  }
+  },
 
 
 
 
     
 // Initialize Popular Packages Chart
-let popularPackagesChart = null;
 
 const initPopularPackagesChart = () => {
   const ctx = document.getElementById('popularPackagesChart');
   if (!ctx) return;
 
-  popularPackagesChart = new Chart(ctx.getContext('2d'), {
+ let popularPackagesChart = new Chart(ctx.getContext('2d'), {
     type: 'doughnut',
     data: {
       labels: [], // Package names will go here
