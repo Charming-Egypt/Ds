@@ -2208,9 +2208,9 @@ const bookingManager = {
     const escapedTour = utils.sanitizeInput(booking.tour || 'Unknown Package');
     const escapedUsername = utils.sanitizeInput(booking.username || 'N/A');
     const escapedPhone = utils.sanitizeInput(booking.phone || 'N/A');
-    const escapedHotel = utils.sanitizeInput(booking.hotelName || 'N/A');
-    const escapedRoom = utils.sanitizeInput(booking.roomNumber || 'N/A');
-    const escapedRequests = utils.sanitizeInput(booking.tripType || '');
+    const escapedAccommodation = utils.sanitizeInput(booking.Accommodation || 'N/A');
+    const escapedTransportation = utils.sanitizeInput(booking.Transportation || 'N/A');
+    const escapedMealPlan = utils.sanitizeInput(booking.MealPlan || '');
     const tripDate = utils.formatTripDate(booking.tripDate);
     
     // Prepare WhatsApp URL if phone exists
@@ -2310,10 +2310,24 @@ const bookingManager = {
         </div>
         
         <!-- Special Requests -->
-        ${booking.tripType ? `
+        ${booking.Accommodation ? `
         <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
           <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
-          <p class="text-gray-300 whitespace-pre-line">${escapedRequests}</p>
+          <p class="text-gray-300 whitespace-pre-line">${escapedAccommodation}</p>
+        </div>
+        ` : ''}
+        <!-- Special Requests -->
+        ${booking.Transportation ? `
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+          <p class="text-gray-300 whitespace-pre-line">${escapedTransportation}</p>
+        </div>
+        ` : ''}
+        <!-- Special Requests -->
+        ${booking.MealPlan ? `
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <h4 class="font-medium mb-2 text-amber-400">Special Requests</h4>
+          <p class="text-gray-300 whitespace-pre-line">${escapedMealPlan}</p>
         </div>
         ` : ''}
       </div>
