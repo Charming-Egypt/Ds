@@ -1564,8 +1564,7 @@ dashboardManager.updatePopularPackagesChart = () => {
   }
 };
 
-
-
+  },
 
     
 
