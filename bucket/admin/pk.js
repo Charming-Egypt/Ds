@@ -2464,15 +2464,15 @@ const bookingManager = {
       adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
       childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
       infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
-      amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) || 0), 0)
+      amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) - (b.netTotal * (10 / 100)) || 0), 0)
     };
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Bookings');
 
     worksheet.columns = [
-      { header: 'Ref #', key: 'refNumber', width: 25 },
-      { header: 'Package', key: 'tour', width: 25 },
+      { header: 'Ref #', key: 'refNumber', width: 30 },
+      { header: 'Package', key: 'tour', width: 35 },
       { header: 'Date', key: 'tripDate', width: 15 },
       { header: 'Status', key: 'resStatus', width: 15 },
       { header: 'Adults', key: 'adults', width: 10 },
@@ -2482,9 +2482,9 @@ const bookingManager = {
       { header: 'Customer', key: 'username', width: 25 },
       { header: 'Email', key: 'email', width: 30 },
       { header: 'Phone', key: 'phone', width: 20 },
-      { header: 'Transportation', key: 'Transportation', width: 30 },
-      { header: 'Accommodation', key: 'Accommodation', width: 30 },
-      { header: 'Meal Plan', key: 'MealPlan', width: 30 }
+      { header: 'Transportation', key: 'Transportation', width: 35 },
+      { header: 'Accommodation', key: 'Accommodation', width: 35 },
+      { header: 'Meal Plan', key: 'MealPlan', width: 35 }
     ];
 
     // Style header row
