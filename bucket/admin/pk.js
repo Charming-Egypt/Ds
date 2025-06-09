@@ -1555,7 +1555,7 @@ dashboardManager.updatePopularPackagesChart = () => {
     console.error("Error updating popular packages chart:", error);
   }
 };
-
+  },
 
 
   processBookingData: (data) => {
