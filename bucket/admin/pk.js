@@ -1590,9 +1590,11 @@ dashboardManager.updatePopularPackagesChart = () => {
       const totalRevenue = confirmedBookings.reduce((total, booking) => {
         return total + (parseFloat(booking.netTotal) || 0);
       }, 0);
+
+      const Rev_Com = totalRevnue * (10 / 100);
       
       if (elements.totalRevenue) elements.totalRevenue.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + Rev_Com.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
