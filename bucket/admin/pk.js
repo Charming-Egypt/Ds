@@ -145,16 +145,17 @@ const state = {
 };
 
 // Utility Functions
-const utils = {
-  showToast: (message, type = 'success') => {
+const utils.showToast = (message, type = 'success') => {
     const toast = elements.toast;
+    if (!toast) return;
+    
     toast.textContent = message;
-    toast.className = `toast toast-${type} show`;
+    toast.className = `toast toast-${type} show top-toast`;
     
     setTimeout(() => {
       toast.classList.remove('show');
     }, 3000);
-  },
+},
 
   showLoading: () => {
     if (elements.spinner) elements.spinner.classList.remove('hidden');
