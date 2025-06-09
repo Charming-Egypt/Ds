@@ -198,7 +198,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" id="logoutBtn" class="logoutBtn">
+                <a href="#" id="logoutBtn" class="logoutBtn bg-red">
                     <i class='bx bxs-log-out-circle'></i>
                     <span class="text">Logout</span>
                 </a>
@@ -964,12 +964,23 @@
                         </div>
                     </div>
 
+
+                  <div class="stat-card w-full">
+                            <div class="stat-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="totalRevenue">EGP 0</div>
+                                <div class="stat-label">Withdrawable amount</div>
+                            </div>
+                        </div>
+
                     <!-- Events Section -->
                     <div class="card full-width mt-6">
                         <div class="card-header">
                             <h2 class="card-title">Payout History</h2>
                           <button onclick="exportPayoutEventsToExcel()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-  <i class="fas fa-file-excel mr-2"></i>
+  <i class="fas fa-file-excel"></i>
 </button>
                         </div>
                         <div class="card-body">
