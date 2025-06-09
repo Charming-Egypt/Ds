@@ -21,7 +21,7 @@ let statusChart, trendChart, guestChart, packagePerformanceChart;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
-let packagePerformanceMetric = 'bookings';
+let packagePerformanceMetric = 'revenue';
 let dateRangePicker;
 
 // DOM Elements
@@ -82,7 +82,7 @@ const elements = {
   totalBookings: document.getElementById('totalBookings'),
   totalGuests: document.getElementById('totalGuests'),
   totalRevenue: document.getElementById('totalRevenue'),
-  avgRating: document.getElementById('avgRating'),
+  avpayout: document.getElementById('avpayout'),
   statusUpdated: document.getElementById('statusUpdated'),
   trendUpdated: document.getElementById('trendUpdated'),
   guestUpdated: document.getElementById('guestUpdated'),
@@ -1592,13 +1592,7 @@ dashboardManager.updatePopularPackagesChart = () => {
       }, 0);
       
       if (elements.totalRevenue) elements.totalRevenue.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      
-      const ratedBookings = confirmedBookings.filter(b => b.rating);
-      const avgRating = ratedBookings.length > 0 
-        ? (ratedBookings.reduce((sum, b) => sum + parseFloat(b.rating || 0), 0) / ratedBookings.length)
-        : 0;
-      
-      if (elements.avgRating) elements.avgRating.textContent = avgRating.toFixed(1);
+      if (elements.avpayout) elements.avpayout.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
