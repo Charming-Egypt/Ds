@@ -82,7 +82,6 @@ const elements = {
   totalBookings: document.getElementById('totalBookings'),
   totalGuests: document.getElementById('totalGuests'),
   totalRevenue: document.getElementById('totalRevenue'),
-  avpayout: document.getElementById('avpayout'),
   statusUpdated: document.getElementById('statusUpdated'),
   trendUpdated: document.getElementById('trendUpdated'),
   guestUpdated: document.getElementById('guestUpdated'),
@@ -1595,7 +1594,7 @@ dashboardManager.updatePopularPackagesChart = () => {
       const rev = 'EGP ' + (totalRevenue - commission).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
       
       if (elements.totalRevenue) elements.totalRevenue.textContent = rev ;
-      if (elements.avpayout) elements.avpayout.textContent = rev ;
+  
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
@@ -3202,10 +3201,7 @@ window.exportPayoutEventsToExcel = async function() {
 
 
 window.loadAllPayoutEvents = function() {
-    
-
   const user = auth.currentUser;
-
   if (!user) {
     console.log("No user is signed in.");
     return;
@@ -3213,37 +3209,65 @@ window.loadAllPayoutEvents = function() {
 
   const userId = user.uid;
   const eventsRef = database.ref(`egy_user/${userId}/events`);
+  const bookingsRef = database.ref("pkg-bookings").orderByChild("owner").equalTo(userId);
 
+  let totalPayouts = 0;
+  let totalRevenue = 0;
+
+  // Step 1: Load and display payout events
   eventsRef.once('value')
     .then(snapshot => {
-      if (!snapshot.exists()) {
-        const outputDiv = document.getElementById("payout-output") || document.body;
-        outputDiv.innerHTML = "<p>No payout events found.</p>";
-        return;
-      }
-
       const outputDiv = document.getElementById("payout-output") || document.body;
       outputDiv.innerHTML = ""; // Clear previous content
+
+      if (!snapshot.exists()) {
+        outputDiv.innerHTML = "<p>No payout events found.</p>";
+        totalPayouts = 0;
+        return Promise.resolve(); // Continue flow
+      }
 
       const events = snapshot.val();
 
       Object.entries(events).forEach(([date, data]) => {
-        const amount = parseInt(data.Amount).toLocaleString(); // Format with commas
-        const account = data.Account;
+        const amount = parseInt(data.Amount);
+        if (!isNaN(amount)) totalPayouts += amount;
 
         const item = `
           <div class="payout-item mb-4 p-4 border rounded-lg">
             <strong>Payout transaction ✅</strong><br>
             Date: ${date}<br>
-            ${amount} EGP to your account (${account})
+            ${amount.toLocaleString()} EGP to your account (${data.Account})
           </div>
         `;
-
         outputDiv.innerHTML += item;
       });
+
+      // Step 2: Load booking data to calculate total revenue
+      return bookingsRef.once('value');
+    })
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnapshot => {
+          const booking = childSnapshot.val();
+          if (booking.resStatus?.toLowerCase() === 'confirmed') {
+            const netTotal = parseFloat(booking.netTotal) || 0;
+            totalRevenue += netTotal;
+          }
+        });
+      }
+
+      // Step 3: Calculate deductions
+      const commission = totalRevenue * 0.10; // 10% commission
+      const netEarnings = totalRevenue - commission - totalPayouts;
+
+      // Step 4: Update DOM Element
+      const avPayoutElement = document.getElementById("avpayout");
+      if (avPayoutElement) {
+        avPayoutElement.textContent = `EGP ${netEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
     })
     .catch(error => {
-      console.error("Error retrieving payout events:", error);
+      console.error("Error retrieving payout or booking data:", error);
     });
-
-}
+};
