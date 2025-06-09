@@ -1937,11 +1937,11 @@ const bookingManager = {
     if (currentFilters.search?.trim()) {
       const searchTerm = currentFilters.search.toLowerCase().trim();
       filtered = filtered.filter(booking => 
-        (booking.refNumber?.toLowerCase().included(searchTerm)) ||
-        (booking.tour?.toLowerCase().included(searchTerm)) ||
-        (booking.username?.toLowerCase().included(searchTerm)) ||
-        (booking.email?.toLowerCase().included(searchTerm))
-      );
+  (booking.refNumber?.toLowerCase().includes(searchTerm)) ||
+  (booking.tour?.toLowerCase().includes(searchTerm)) ||
+  (booking.username?.toLowerCase().includes(searchTerm)) ||
+  (booking.email?.toLowerCase().includes(searchTerm))
+);
     }
     
     // Apply status filter if not 'all'
@@ -1971,6 +1971,7 @@ const bookingManager = {
     bookingManager.updatePagination();
   },
 
+  
   filterByDate: (bookings, date, activeTab) => {
     if (!date) return bookings;
     
