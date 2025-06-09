@@ -17,7 +17,7 @@ const storage = firebase.storage();
 
 
 // Chart Variables
-let statusChart, trendChart, guestChart, packagePerformanceChart, PopularPackagesChart;
+let statusChart, trendChart, PopularPackagesChart, guestChart, packagePerformanceChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
@@ -1289,8 +1289,7 @@ if (guestCtx) {
   });
 }
 
-    // Initialize Package Performance Chart
-let packagePerformanceChart;
+    
 
 // Initialize the chart
 const initPackagePerformanceChart = () => {
@@ -1360,8 +1359,6 @@ const initPackagePerformanceChart = () => {
 
 
 
-// Initialize Popular Packages Chart
-let PopularPackagesChart;
     
 const initPopularPackagesChart = () => {
   const ctx = document.getElementById('popularPackagesChart');
