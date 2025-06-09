@@ -2202,7 +2202,7 @@ const bookingManager = {
       return;
     }
     
-    const statusClass = bookingManager.getStatusClass(booking.resStatus);
+    const statusClass = bookingManager.getStatusClass(booking.paymentStatus);
     const escapedRefNumber = utils.sanitizeInput(refNumber);
     const escapedTour = utils.sanitizeInput(booking.tour || 'Unknown Package');
     const escapedUsername = utils.sanitizeInput(booking.username || 'N/A');
@@ -2237,7 +2237,7 @@ const bookingManager = {
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Status</div>
-            <div><span class="status-badge ${statusClass} text-center">${booking.resStatus || 'new'}</span></div>
+            <div><span class="status-badge ${statusClass} text-center">${booking.paymentStatus || 'new'}</span></div>
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Total price</div>
@@ -2245,7 +2245,7 @@ const bookingManager = {
           </div>
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="text-gray-400 text-sm">Commission</div>
-            <div class="font-bold">${utils.formatCurrency(booking.netTotal * 15 / 100 || 0)}</div>
+            <div class="font-bold">${utils.formatCurrency(booking.netTotal * 10 / 100 || 0)}</div>
           </div>
         </div>
         
