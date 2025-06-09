@@ -2941,4 +2941,7 @@ initApp();
 // Make functions available globally for HTML onclick handlers
 window.showBookingDetails = bookingManager.showBookingDetails;
 window.closeModal = bookingManager.closeModal;
-window.switchTab = bookingManager.switchTab; 
+window.switchTab = bookingManager.switchTab;
+window.exportToExcel = bookingManager.exportToExcel;
+window.refreshBookings = bookingManager.refreshBookings;
+window.applyFilters = bookingManager.applyFilters;
