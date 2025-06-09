@@ -1810,11 +1810,12 @@ dashboardManager.updatePackagePerformanceChart = () => {
   },
 
   updateAllCharts: () => {
-    dashboardManager.updateStatsCards();
-    dashboardManager.updateStatusChart();
-    dashboardManager.updateTrendChart();
-    dashboardManager.updateGuestChart();
-    dashboardManager.updatePackagePerformanceChart();
+  dashboardManager.updateStatsCards();
+  dashboardManager.updateStatusChart();
+  dashboardManager.updateTrendChart();
+  dashboardManager.updateGuestChart();
+  dashboardManager.updatePackagePerformanceChart();
+  dashboardManager.updatePopularPackagesChart();
   },
 
   initDateRangePicker: () => {
