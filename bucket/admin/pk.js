@@ -1290,9 +1290,9 @@ if (guestCtx) {
 }
 
     // Initialize Package Performance Chart
-// Initialize Package Performance Chart
 let packagePerformanceChart;
 
+// Initialize the chart
 const initPackagePerformanceChart = () => {
   const ctx = document.getElementById('packagePerformanceChart');
   if (!ctx) return;
@@ -1304,15 +1304,15 @@ const initPackagePerformanceChart = () => {
       datasets: [{
         label: 'Bookings',
         data: [],
-        backgroundColor: 'rgba(255, 193, 7, 0.7)',
-        borderColor: 'rgba(255, 193, 7, 1)',
+        backgroundColor: [],
+        borderColor: [],
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: 'y',
+      indexAxis: 'x', // Switch to vertical bars
       plugins: {
         legend: {
           display: false
@@ -1353,11 +1353,18 @@ const initPackagePerformanceChart = () => {
   });
 };
 
-// Update Package Performance Chart
+// Update the chart with new data
 dashboardManager.updatePackagePerformanceChart = () => {
   try {
+    // Initialize the chart if it doesn't exist
     if (!packagePerformanceChart) initPackagePerformanceChart();
     if (!packagePerformanceChart) return;
+
+    // Ensure filteredBookingData is valid
+    if (!Array.isArray(filteredBookingData)) {
+      console.error("Invalid or missing booking data.");
+      return;
+    }
 
     // Aggregate data by package name
     const packageData = {};
@@ -1371,7 +1378,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
           };
         }
         packageData[packageName].bookings++;
-        const com = booking.netTotal * (0.10) ;
+        const com = booking.netTotal * 0.10; // 10% commission
         packageData[packageName].revenue += parseFloat(booking.netTotal - com) || 0;
       }
     });
@@ -1384,35 +1391,44 @@ dashboardManager.updatePackagePerformanceChart = () => {
     // Prepare chart data
     const packageNames = sortedPackages.map(item => item[0]);
     const packageValues = sortedPackages.map(item => {
-      return packagePerformanceMetric === 'bookings' 
-        ? item[1].bookings 
+      return packagePerformanceMetric === 'bookings'
+        ? item[1].bookings
         : parseFloat(item[1].revenue.toFixed(2));
     });
+
+    // Generate dynamic colors for each bar
+    const generateColor = (index) => {
+      const colors = [
+        'rgba(255, 193, 7, 0.7)',
+        'rgba(255, 152, 0, 0.7)',
+        'rgba(255, 87, 34, 0.7)',
+        'rgba(76, 175, 80, 0.7)',
+        'rgba(33, 150, 243, 0.7)'
+      ];
+      return colors[index % colors.length];
+    };
+
+    const backgroundColors = packageNames.map((_, index) => generateColor(index));
+    const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
 
     // Update chart data
     packagePerformanceChart.data.labels = packageNames;
     packagePerformanceChart.data.datasets[0].data = packageValues;
     packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
-    packagePerformanceChart.data.datasets[0].backgroundColor = [
-      'rgba(255, 193, 7, 0.7)',
-      'rgba(255, 152, 0, 0.7)',
-      'rgba(255, 87, 34, 0.7)',
-      'rgba(76, 175, 80, 0.7)',
-      'rgba(33, 150, 243, 0.7)'
-    ];
-    packagePerformanceChart.data.datasets[0].borderColor = [
-      'rgba(255, 193, 7, 1)',
-      'rgba(255, 152, 0, 1)',
-      'rgba(255, 87, 34, 1)',
-      'rgba(76, 175, 80, 1)',
-      'rgba(33, 150, 243, 1)'
-    ];
+    packagePerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
+    packagePerformanceChart.data.datasets[0].borderColor = borderColors;
+
+    // Render the updated chart
     packagePerformanceChart.update();
   } catch (error) {
     console.error("Error updating package performance chart:", error);
   }
 };
 
+
+
+
+    
 // Initialize Popular Packages Chart
 let popularPackagesChart;
 
