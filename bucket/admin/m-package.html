@@ -22,6 +22,8 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   
     <!-- Date Range Picker -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -966,9 +968,9 @@
                     <div class="card full-width mt-6">
                         <div class="card-header">
                             <h2 class="card-title">Payout History</h2>
-                          <button onclick="exportPayoutEventsToExcel()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                          <button onclick="exportPayoutEventsToExcel()" class="btn btn-success">
   <i class="fas fa-file-excel mr-2"></i> Export
-                          </button>
+</button>
                         </div>
                         <div class="card-body">
                             <div class="event-list">
