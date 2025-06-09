@@ -3093,7 +3093,7 @@ window.exportToExcel = bookingManager.exportToExcel;
 window.refreshBookings = bookingManager.refreshBookings;
 window.applyFilters = bookingManager.applyFilters;
 window.exportPayoutEventsToExcel = async function() {
-                 async function exportPayoutEventsToExcel() {
+                 
   const user = firebase.auth().currentUser;
   if (!user) {
     console.log("No user is signed in.");
@@ -3198,7 +3198,7 @@ window.exportPayoutEventsToExcel = async function() {
     console.error("Error exporting payout events:", error);
     alert("Failed to export payout events: " + error.message);
   }
-}
+
 }
 
 
@@ -3206,7 +3206,7 @@ window.exportPayoutEventsToExcel = async function() {
 
 window.loadAllPayoutEvents = function() {
     
-function loadAllPayoutEvents() {
+
   const user = auth.currentUser;
 
   if (!user) {
@@ -3248,5 +3248,5 @@ function loadAllPayoutEvents() {
     .catch(error => {
       console.error("Error retrieving payout events:", error);
     });
-}
+
 }
