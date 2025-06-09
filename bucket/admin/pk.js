@@ -2956,52 +2956,7 @@ const setupEventListeners = () => {
 
 
 
-/**
- * Load and display all payout events for the logged-in user
- */
-function loadAllPayoutEvents() {
-  const user = auth.currentUser;
 
-  if (!user) {
-    console.log("No user is signed in.");
-    return;
-  }
-
-  const userId = user.uid;
-  const eventsRef = database.ref(`egy_user/${userId}/events`);
-
-  eventsRef.once('value')
-    .then(snapshot => {
-      if (!snapshot.exists()) {
-        const outputDiv = document.getElementById("payout-output") || document.body;
-        outputDiv.innerHTML = "<p>No payout events found.</p>";
-        return;
-      }
-
-      const outputDiv = document.getElementById("payout-output") || document.body;
-      outputDiv.innerHTML = ""; // Clear previous content
-
-      const events = snapshot.val();
-
-      Object.entries(events).forEach(([date, data]) => {
-        const amount = parseInt(data.Amount).toLocaleString(); // Format with commas
-        const account = data.Account;
-
-        const item = `
-          <div class="payout-item mb-4 p-4 border rounded-lg bg-gray-50">
-            <strong>Payout transaction ✅</strong><br>
-            Date: ${date}<br>
-            ${amount} EGP to your account (${account})
-          </div>
-        `;
-
-        outputDiv.innerHTML += item;
-      });
-    })
-    .catch(error => {
-      console.error("Error retrieving payout events:", error);
-    });
-}
 
 
 
@@ -3009,114 +2964,10 @@ function loadAllPayoutEvents() {
 
 
   
-async function exportPayoutEventsToExcel() {
-  const user = firebase.auth().currentUser;
-  if (!user) {
-    console.log("No user is signed in.");
-    return;
-  }
 
-  const userId = user.uid;
-  const eventsRef = firebase.database().ref(`egy_user/${userId}/events`);
 
-  try {
-    const snapshot = await eventsRef.once('value');
-    if (!snapshot.exists()) {
-      alert("No payout events found.");
-      return;
-    }
 
-    const events = snapshot.val();
 
-    // Convert object to array and sort by date (newest first)
-    const sortedEvents = Object.entries(events)
-      .map(([date, data]) => ({ date, ...data }))
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Create Excel workbook
-    const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("Payout Events");
-
-    // Define columns
-    ws.columns = [
-      { header: "Date", key: "date", width: 15 },
-      { header: "Amount (EGP)", key: "amount", width: 15 },
-      { header: "Account", key: "account", width: 25 }
-    ];
-
-    // Style header row
-    const headerRow = ws.getRow(1);
-    headerRow.eachCell((cell) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD700' } // Gold background
-      };
-      cell.font = {
-        bold: true,
-        color: { argb: '000000' }, // Black text
-      };
-      cell.alignment = { horizontal: 'center', vertical: 'middle' };
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-    });
-
-    // Add data rows
-    sortedEvents.forEach(event => {
-      const amount = parseInt(event.Amount).toLocaleString();
-      const account = event.Account;
-
-      const row = ws.addRow({
-        date: event.date,
-        amount: amount,
-        account: account
-      });
-
-      row.eachCell((cell) => {
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' }
-        };
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFFFFFF' } // White background
-        };
-      });
-    });
-
-    // Auto-size columns
-    ws.columns.forEach(column => {
-      let maxLength = 0;
-      column.eachCell({ includeEmpty: true }, cell => {
-        const columnLength = cell.value ? cell.value.toString().length : 10;
-        if (columnLength > maxLength) maxLength = columnLength;
-      });
-      column.width = maxLength < 15 ? 15 : maxLength > 50 ? 50 : maxLength;
-    });
-
-    // Generate Excel file
-    const buffer = await wb.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    });
-    const fileName = `Payout_Events_${userId}_${new Date().toISOString().slice(0,10)}.xlsx`;
-    saveAs(blob, fileName);
-
-    alert("Payout events exported successfully!");
-
-  } catch (error) {
-    console.error("Error exporting payout events:", error);
-    alert("Failed to export payout events: " + error.message);
-  }
-}
 
 
 
@@ -3241,4 +3092,161 @@ window.switchTab = bookingManager.switchTab;
 window.exportToExcel = bookingManager.exportToExcel;
 window.refreshBookings = bookingManager.refreshBookings;
 window.applyFilters = bookingManager.applyFilters;
-window.exportPayoutEventsToExcel = exportPayoutEventsToExcel;
+window.exportPayoutEventsToExcel = async function() {
+                 async function exportPayoutEventsToExcel() {
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    console.log("No user is signed in.");
+    return;
+  }
+
+  const userId = user.uid;
+  const eventsRef = firebase.database().ref(`egy_user/${userId}/events`);
+
+  try {
+    const snapshot = await eventsRef.once('value');
+    if (!snapshot.exists()) {
+      alert("No payout events found.");
+      return;
+    }
+
+    const events = snapshot.val();
+
+    // Convert object to array and sort by date (newest first)
+    const sortedEvents = Object.entries(events)
+      .map(([date, data]) => ({ date, ...data }))
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Create Excel workbook
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Payout Events");
+
+    // Define columns
+    ws.columns = [
+      { header: "Date", key: "date", width: 15 },
+      { header: "Amount (EGP)", key: "amount", width: 15 },
+      { header: "Account", key: "account", width: 25 }
+    ];
+  // Style header row
+    const headerRow = ws.getRow(1);
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFD700' } // Gold background
+      };
+      cell.font = {
+        bold: true,
+        color: { argb: '000000' }, // Black text
+      };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+
+    // Add data rows
+    sortedEvents.forEach(event => {
+      const amount = parseInt(event.Amount).toLocaleString();
+      const account = event.Account;
+
+      const row = ws.addRow({
+        date: event.date,
+        amount: amount,
+        account: account
+      });
+
+      row.eachCell((cell) => {
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+        cell.fill = {type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFFFFFF' } // White background
+        };
+      });
+    });
+
+    // Auto-size columns
+    ws.columns.forEach(column => {
+      let maxLength = 0;
+      column.eachCell({ includeEmpty: true }, cell => {
+        const columnLength = cell.value ? cell.value.toString().length : 10;
+        if (columnLength > maxLength) maxLength = columnLength;
+      });
+      column.width = maxLength < 15 ? 15 : maxLength > 50 ? 50 : maxLength;
+    });
+
+    // Generate Excel file
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+    const fileName = `Payout_Events_${userId}_${new Date().toISOString().slice(0,10)}.xlsx`;
+    saveAs(blob, fileName);
+
+    alert("Payout events exported successfully!");
+
+  } catch (error) {
+    console.error("Error exporting payout events:", error);
+    alert("Failed to export payout events: " + error.message);
+  }
+}
+}
+
+
+
+
+window.loadAllPayoutEvents = function() {
+    
+function loadAllPayoutEvents() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    console.log("No user is signed in.");
+    return;
+  }
+
+  const userId = user.uid;
+  const eventsRef = database.ref(`egy_user/${userId}/events`);
+
+  eventsRef.once('value')
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        const outputDiv = document.getElementById("payout-output") || document.body;
+        outputDiv.innerHTML = "<p>No payout events found.</p>";
+        return;
+      }
+
+      const outputDiv = document.getElementById("payout-output") || document.body;
+      outputDiv.innerHTML = ""; // Clear previous content
+
+      const events = snapshot.val();
+
+      Object.entries(events).forEach(([date, data]) => {
+        const amount = parseInt(data.Amount).toLocaleString(); // Format with commas
+        const account = data.Account;
+
+        const item = `
+          <div class="payout-item mb-4 p-4 border rounded-lg bg-gray-50">
+            <strong>Payout transaction ✅</strong><br>
+            Date: ${date}<br>
+            ${amount} EGP to your account (${account})
+          </div>
+        `;
+
+        outputDiv.innerHTML += item;
+      });
+    })
+    .catch(error => {
+      console.error("Error retrieving payout events:", error);
+    });
+}
+}
