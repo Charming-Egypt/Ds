@@ -3235,7 +3235,7 @@ window.loadAllPayoutEvents = function() {
         const account = data.Account;
 
         const item = `
-          <div class="payout-item mb-4 p-4 border rounded-lg bg-gray-50">
+          <div class="payout-item mb-4 p-4 border rounded-lg">
             <strong>Payout transaction ✅</strong><br>
             Date: ${date}<br>
             ${amount} EGP to your account (${account})
