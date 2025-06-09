@@ -2482,9 +2482,9 @@ const bookingManager = {
       { header: 'Customer', key: 'username', width: 25 },
       { header: 'Email', key: 'email', width: 30 },
       { header: 'Phone', key: 'phone', width: 20 },
-      { header: 'Hotel', key: 'hotelName', width: 25 },
-      { header: 'Room', key: 'roomNumber', width: 10 },
-      { header: 'Special Requests', key: 'specialRequests', width: 30 }
+      { header: 'Transportation', key: 'Transportation', width: 30 },
+      { header: 'Accommodation', key: 'Accommodation', width: 30 },
+      { header: 'Meal Plan', key: 'MealPlan', width: 30 }
     ];
 
     // Style header row
@@ -2521,13 +2521,13 @@ const bookingManager = {
         adults: booking.adults || 0,
         childrenUnder12: booking.childrenUnder12 || 0,
         infants: booking.infants || 0,
-        netTotal: parseFloat(booking.netTotal || 0),
+        netTotal: parseFloat(booking.netTotal - (booking.netTotal * (10 / 100)) || 0),
         username: booking.username || '',
         email: booking.email || '',
         phone: booking.phone || '',
-        hotelName: booking.hotelName || '',
-        roomNumber: booking.roomNumber || '',
-        specialRequests: booking.tripType || ''
+        Transportation: booking.Transportation || '',
+        Accommodation: booking.Accommodation || '',
+        MealPlan : booking.MealPlan || ''
       });
 
       // Style data rows
@@ -2614,9 +2614,9 @@ const bookingManager = {
       username: '',
       email: '',
       phone: '',
-      hotelName: '',
-      roomNumber: '',
-      specialRequests: ''
+      Transportation: '',
+      Accommodation: '',
+      MealPlan: ''
     });
 
     totalsRow.eachCell(cell => {
