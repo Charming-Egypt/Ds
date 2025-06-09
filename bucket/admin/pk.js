@@ -17,7 +17,7 @@ const storage = firebase.storage();
 
 
 // Chart Variables
-let statusChart, trendChart, guestChart, packagePerformanceChart;
+let statusChart, trendChart, guestChart, packagePerformanceChart, PopularPackagesChart;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
