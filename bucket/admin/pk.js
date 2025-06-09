@@ -1371,7 +1371,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
           };
         }
         packageData[packageName].bookings++;
-        packageData[packageName].revenue += parseFloat(booking.netTotal) || 0;
+        packageData[packageName].revenue += parseFloat(booking.netTotal*(0.10)) || 0;
       }
     });
 
