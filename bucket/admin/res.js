@@ -3335,7 +3335,7 @@ window.exportPayoutEventsToExcel = async function() {
 };
 
 
-window.loadAllPayoutEvents = function() {
+window.loadAllPayoutEvents = function () {
   const user = auth.currentUser;
   if (!user) {
     console.log("No user is signed in.");
@@ -3348,6 +3348,15 @@ window.loadAllPayoutEvents = function() {
 
   let totalPayouts = 0;
   let totalRevenue = 0;
+
+  // Helper: Check if tripDate is at least 2 days old
+  function isOlderThanTwoDays(tripDateStr) {
+    if (!tripDateStr) return false;
+    const bookingDate = new Date(tripDateStr);
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    return bookingDate < twoDaysAgo;
+  }
 
   // Step 1: Load and display payout events
   eventsRef.once('value')
@@ -3384,7 +3393,11 @@ window.loadAllPayoutEvents = function() {
       if (snapshot.exists()) {
         snapshot.forEach(childSnapshot => {
           const booking = childSnapshot.val();
-          if (booking.resStatus?.toLowerCase() === 'confirmed') {
+
+          if (
+            booking.resStatus?.toLowerCase() === 'confirmed' &&
+            isOlderThanTwoDays(booking.tripDate)
+          ) {
             const netTotal = parseFloat(booking.netTotal) || 0;
             totalRevenue += netTotal;
           }
@@ -3398,7 +3411,10 @@ window.loadAllPayoutEvents = function() {
       // Step 4: Update DOM Element
       const avPayoutElement = document.getElementById("avpayout");
       if (avPayoutElement) {
-        avPayoutElement.textContent = `EGP ${netEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        avPayoutElement.textContent = `EGP ${netEarnings.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`;
       }
 
     })
