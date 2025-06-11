@@ -2318,7 +2318,7 @@ const initPackagePerformanceChart = () => {
   });
 };
 
-},
+
 
 
 // Update the chart with new data
