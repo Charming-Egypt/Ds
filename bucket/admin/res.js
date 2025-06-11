@@ -15,7 +15,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart, packagePerformanceChart ;
+let statusChart, trendChart, guestChart, tripPerformanceChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
@@ -2253,14 +2253,14 @@ const dashboardManager = {
     }
 
 // Initialize the chart
-const initPackagePerformanceChart = () => {
-  const ctx = document.getElementById('packagePerformanceChart');
+const inittripPerformanceChart = () => {
+  const ctx = document.getElementById('tripPerformanceChart');
   if (!ctx) return;
 
-  packagePerformanceChart = new Chart(ctx.getContext('2d'), {
+  tripPerformanceChart = new Chart(ctx.getContext('2d'), {
     type: 'bar',
     data: {
-      labels: [], // Package names will go here
+      labels: [], // trip names will go here
       datasets: [{
         label: 'Bookings',
         data: [],
@@ -2282,7 +2282,7 @@ const initPackagePerformanceChart = () => {
             label: function(context) {
               const label = context.label || '';
               const value = context.raw || 0;
-              return packagePerformanceMetric === 'bookings'
+              return tripPerformanceMetric === 'bookings'
                 ? `${label}: ${value} Bookings`
                 : `${label}: EGP ${value.toFixed(2)}`;
             }
@@ -2292,10 +2292,10 @@ const initPackagePerformanceChart = () => {
       scales: {
         x: {
           grid: {
-            display: false // Hide grid lines for package names
+            display: false // Hide grid lines for trip names
           },
           ticks: {
-            autoSkip: false, // Ensure all package names are displayed
+            autoSkip: false, // Ensure all trip names are displayed
             maxRotation: 90, // Rotate labels if they overlap
             minRotation: 45
           }
@@ -2304,7 +2304,7 @@ const initPackagePerformanceChart = () => {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
-              return packagePerformanceMetric === 'bookings'
+              return tripPerformanceMetric === 'bookings'
                 ? value
                 : `EGP ${value.toFixed(2)}`;
             }
@@ -2322,11 +2322,11 @@ const initPackagePerformanceChart = () => {
 
 
 // Update the chart with new data
-dashboardManager.updatePackagePerformanceChart = () => {
+dashboardManager.updatetripPerformanceChart = () => {
   try {
     // Initialize the chart if it doesn't exist
-    if (!packagePerformanceChart) initPackagePerformanceChart();
-    if (!packagePerformanceChart) return;
+    if (!tripPerformanceChart) inittripPerformanceChart();
+    if (!tripPerformanceChart) return;
 
     // Ensure filteredBookingData is valid
     if (!Array.isArray(filteredBookingData)) {
@@ -2334,32 +2334,32 @@ dashboardManager.updatePackagePerformanceChart = () => {
       return;
     }
 
-    // Aggregate data by package name
-    const packageData = {};
+    // Aggregate data by trip name
+    const tripData = {};
     filteredBookingData.forEach(booking => {
       if (booking.resStatus?.toLowerCase() === 'confirmed') {
-        const packageName = booking.tour || 'Other';
-        if (!packageData[packageName]) {
-          packageData[packageName] = {
+        const tripName = booking.tour || 'Other';
+        if (!tripData[tripName]) {
+          tripData[tripName] = {
             bookings: 0,
             revenue: 0
           };
         }
-        packageData[packageName].bookings++;
+        tripData[tripName].bookings++;
         const com = booking.netTotal * 0.10; // 10% commission
-        packageData[packageName].revenue += parseFloat(booking.netTotal - com) || 0;
+        tripData[tripName].revenue += parseFloat(booking.netTotal - com) || 0;
       }
     });
 
-    // Sort and get top 5 packages
-    const sortedPackages = Object.entries(packageData)
-      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
+    // Sort and get top 5 trips
+    const sortedtrips = Object.entries(tripData)
+      .sort((a, b) => b[1][tripPerformanceMetric] - a[1][tripPerformanceMetric])
       .slice(0, 5);
 
     // Prepare chart data
-    const packageNames = sortedPackages.map(item => item[0]);
-    const packageValues = sortedPackages.map(item => {
-      return packagePerformanceMetric === 'bookings'
+    const tripNames = sortedtrips.map(item => item[0]);
+    const tripValues = sortedtrips.map(item => {
+      return tripPerformanceMetric === 'bookings'
         ? item[1].bookings
         : parseFloat(item[1].revenue.toFixed(2));
     });
@@ -2376,20 +2376,20 @@ dashboardManager.updatePackagePerformanceChart = () => {
       return colors[index % colors.length];
     };
 
-    const backgroundColors = packageNames.map((_, index) => generateColor(index));
+    const backgroundColors = tripNames.map((_, index) => generateColor(index));
     const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
 
     // Update chart data
-    packagePerformanceChart.data.labels = packageNames; // Package names on x-axis
-    packagePerformanceChart.data.datasets[0].data = packageValues;
-    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
-    packagePerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
-    packagePerformanceChart.data.datasets[0].borderColor = borderColors;
+    tripPerformanceChart.data.labels = tripNames; // trip names on x-axis
+    tripPerformanceChart.data.datasets[0].data = tripValues;
+    tripPerformanceChart.data.datasets[0].label = tripPerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
+    tripPerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
+    tripPerformanceChart.data.datasets[0].borderColor = borderColors;
 
     // Render the updated chart
-    packagePerformanceChart.update();
+    tripPerformanceChart.update();
   } catch (error) {
-    console.error("Error updating package performance chart:", error);
+    console.error("Error updating trip performance chart:", error);
   }
 };
   
@@ -2477,15 +2477,11 @@ dashboardManager.updatePackagePerformanceChart = () => {
       const totalRevenue = confirmedBookings.reduce((total, booking) => {
         return total + (parseFloat(booking.netTotal) || 0);
       }, 0);
+
+      const commission = totalRevenue * 0.10 ;
+      const rev = 'EGP ' + (totalRevenue - commission).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
       
-      if (elements.totalRevenue) elements.totalRevenue.textContent = 'EGP ' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      
-      const ratedBookings = confirmedBookings.filter(b => b.rating);
-      const avgRating = ratedBookings.length > 0 
-        ? (ratedBookings.reduce((sum, b) => sum + parseFloat(b.rating || 0), 0) / ratedBookings.length)
-        : 0;
-      
-      if (elements.avgRating) elements.avgRating.textContent = avgRating.toFixed(1);
+      if (elements.totalRevenue) elements.totalRevenue.textContent = rev ;
     } catch (error) {
       console.error("Error updating stats cards:", error);
     }
