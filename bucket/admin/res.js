@@ -15,7 +15,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart, tourPerformanceChart;
+let statusChart, trendChart, guestChart, packagePerformanceChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
