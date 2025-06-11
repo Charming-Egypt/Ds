@@ -1296,3 +1296,10 @@ input:checked + .slider:before {
 #bookingsFilterBar .hidden + button {
     margin-left: 0;
 }
+
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
