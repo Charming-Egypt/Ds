@@ -3212,6 +3212,7 @@ const initApp = () => {
         dashboardManager.loadBookingData();
         tripManager.loadpayout(user.uid);
         setupEventListeners();
+        loadAllPayoutEvents();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
@@ -3332,6 +3333,8 @@ window.exportPayoutEventsToExcel = async function() {
   }
 
 };
+
+
 window.loadAllPayoutEvents = function() {
   const user = auth.currentUser;
   if (!user) {
@@ -3390,7 +3393,7 @@ window.loadAllPayoutEvents = function() {
 
       // Step 3: Calculate deductions
       const commission = totalRevenue * 0.10; // 10% commission
-      const netEarnings = totalRevenue - commission - totalPayouts;
+      const netEarnings = (totalRevenue - commission) - totalPayouts;
 
       // Step 4: Update DOM Element
       const avPayoutElement = document.getElementById("avpayout");
