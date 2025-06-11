@@ -235,7 +235,7 @@
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card col-span-2">
                             <div class="stat-icon">
                                 <i class="fas fa-wallet"></i>
                             </div>
@@ -244,20 +244,29 @@
                                 <div class="stat-label">Revenue</div>
                             </div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="avgRating">0.0</div>
-                                <div class="stat-label">Rating</div>
-                            </div>
-                        </div>
                     </div>
                     
                     <!-- Main Charts Grid -->
-
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <!-- Package Performance Chart -->
+                       <div class="card">
+                            <div class="card-header flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+    <h2 class="font-medium text-lg flex items-center">
+        <i class="fas fa-chart-line text-amber-500 mr-2"></i> Package Performance
+    </h2>
+    <div class="card-actions">
+        <select id="packagePerformanceMetric" class="filter-btn">
+            <option value="revenue">By Revenue</option>
+            <option value="bookings">By Bookings</option>
+        </select>
+    </div>
+</div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="packagePerformanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </section>
 
