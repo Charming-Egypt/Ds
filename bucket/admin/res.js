@@ -2396,7 +2396,7 @@ dashboardManager.updatePackagePerformanceChart = () => {
 
 
 
-
+  },
 
 
 
