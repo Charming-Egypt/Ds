@@ -3496,13 +3496,44 @@ window.loadAllPayoutEvents = function () {
       }
 
       if (requestedAmount > 0 && pendingBadge) {
-        pendingBadge.textContent = `Pending Request: EGP ${requestedAmount.toFixed(2)}`;
-        pendingBadge.classList.remove("hidden");
-        pendingBadge.style.display = "inline-block";
-      } else if (pendingBadge) {
-        pendingBadge.classList.add("hidden");
-        pendingBadge.style.display = "none";
-      }
+  pendingBadge.innerHTML = `
+    <div class="pending-badge relative inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-amber-50 border border-amber-200 text-amber-800 transition-all duration-300 opacity-0 scale-95 animate-[pulse_2s_ease-in-out_infinite]">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="whitespace-nowrap">Pending Request: <span class="font-semibold ml-0.5">EGP ${requestedAmount.toFixed(2)}</span></span>
+      
+      <span class="loading-dots ml-1.5 flex items-center">
+        <span class="dot h-1.5 w-1.5 bg-amber-500 rounded-full"></span>
+      </span>
+    </div>
+  `;
+  
+  // Trigger reflow to enable animation
+  void pendingBadge.offsetWidth;
+  
+  // Animate in
+  pendingBadge.classList.remove("hidden");
+  pendingBadge.style.display = "inline-block";
+  setTimeout(() => {
+    pendingBadge.firstElementChild.classList.remove("opacity-0", "scale-95");
+  }, 10);
+  
+  // Add dynamic dots animation
+  const dotsContainer = pendingBadge.querySelector('.loading-dots');
+  dotsContainer.innerHTML = Array(3).fill('<span class="dot h-1.5 w-1.5 bg-amber-500 rounded-full ml-0.5"></span>').join('');
+  Array.from(dotsContainer.children).forEach((dot, i) => {
+    dot.style.animation = `bounce 1.4s infinite ${i * 0.16}s`;
+  });
+  
+} else if (pendingBadge) {
+  // Animate out before hiding
+  pendingBadge.firstElementChild?.classList.add("opacity-0", "scale-95");
+  setTimeout(() => {
+    pendingBadge.classList.add("hidden");
+    pendingBadge.style.display = "none";
+  }, 300);
+}
 
       // Attach event listener after DOM update
       attachPayoutButtonHandler(userId, avPayoutElement);
