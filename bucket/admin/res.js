@@ -2362,15 +2362,7 @@ function initPackagePerformanceChart() {
 
 
 
-    // Attach event listener for metric change
-    const metricSelector = document.getElementById('packagePerformanceMetric');
-    if (metricSelector) {
-        metricSelector.addEventListener('change', function () {
-            window.packagePerformanceMetric = this.value;
-            dashboardManager.updatepackagePerformanceChart();
-        });
-    }
-}
+    
 
 
 
