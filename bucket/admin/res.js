@@ -2334,17 +2334,9 @@ const inittripPerformanceChart = () => {
 
 
 // Update the chart with new data
-dashboardManager.updatetripPerformanceChart = () => {
+dashboardManager.updateTripPerformanceChart = () => {
   try {
-    // Initialize the chart if it doesn't exist
-    if (!tripPerformanceChart) inittripPerformanceChart();
     if (!tripPerformanceChart) return;
-
-    // Ensure filteredBookingData is valid
-    if (!Array.isArray(filteredBookingData)) {
-      console.error("Invalid or missing booking data.");
-      return;
-    }
 
     // Aggregate data by trip name
     const tripData = {};
@@ -2358,47 +2350,37 @@ dashboardManager.updatetripPerformanceChart = () => {
           };
         }
         tripData[tripName].bookings++;
-        const com = booking.netTotal * 0.10; // 10% commission
-        tripData[tripName].revenue += parseFloat(booking.netTotal - com) || 0;
+        tripData[tripName].revenue += parseFloat(booking.netTotal) || 0;
       }
     });
 
-    // Sort and get top 5 trips
-    const sortedtrips = Object.entries(tripData)
-      .sort((a, b) => b[1][tripPerformanceMetric] - a[1][tripPerformanceMetric])
+    // Sort and get top trips
+    const sortedTrips = Object.entries(tripData)
+      .sort((a, b) => b[1][tourPerformanceMetric] - a[1][tourPerformanceMetric])
       .slice(0, 5);
 
     // Prepare chart data
-    const tripNames = sortedtrips.map(item => item[0]);
-    const tripValues = sortedtrips.map(item => {
-      return tripPerformanceMetric === 'bookings'
-        ? item[1].bookings
-        : parseFloat(item[1].revenue.toFixed(2));
+    const tripNames = sortedTrips.map(item => item[0]);
+    const tripValues = sortedTrips.map(item => {
+      return tourPerformanceMetric === 'bookings' 
+        ? item[1].bookings 
+        : item[1].revenue;
     });
 
-    // Generate dynamic colors for each bar
-    const generateColor = (index) => {
-      const colors = [
-        'rgba(255, 193, 7, 0.7)',
-        'rgba(255, 152, 0, 0.7)',
-        'rgba(255, 87, 34, 0.7)',
-        'rgba(76, 175, 80, 0.7)',
-        'rgba(33, 150, 243, 0.7)'
-      ];
-      return colors[index % colors.length];
+    // Update chart
+    tripPerformanceChart.data.labels = tripNames;
+    tripPerformanceChart.data.datasets[0].data = tripValues;
+    tripPerformanceChart.data.datasets[0].label = tourPerformanceMetric === 'bookings' 
+      ? 'Bookings' 
+      : 'Revenue (EGP)';
+    
+    // Update y-axis format
+    tripPerformanceChart.options.scales.y.ticks.callback = function(value) {
+      return tourPerformanceMetric === 'bookings' 
+        ? value 
+        : `EGP ${value}`;
     };
 
-    const backgroundColors = tripNames.map((_, index) => generateColor(index));
-    const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
-
-    // Update chart data
-    tripPerformanceChart.data.labels = tripNames; // trip names on x-axis
-    tripPerformanceChart.data.datasets[0].data = tripValues;
-    tripPerformanceChart.data.datasets[0].label = tripPerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
-    tripPerformanceChart.data.datasets[0].backgroundColor = backgroundColors;
-    tripPerformanceChart.data.datasets[0].borderColor = borderColors;
-
-    // Render the updated chart
     tripPerformanceChart.update();
   } catch (error) {
     console.error("Error updating trip performance chart:", error);
@@ -3182,12 +3164,13 @@ const setupEventListeners = () => {
   }
 
   // Tour performance metric dropdown
-  if (elements.tourPerformanceMetric) {
-    elements.tourPerformanceMetric.addEventListener('change', function() {
-      tourPerformanceMetric = this.value;
-      dashboardManager.updateTourPerformanceChart();
-    });
-  }
+  
+if (elements.packagePerformanceMetric) {
+  elements.packagePerformanceMetric.addEventListener('change', function() {
+    tourPerformanceMetric = this.value;
+    dashboardManager.updateTripPerformanceChart();
+  });
+}
 
   // Export data button
   if (elements.exportData) {
