@@ -3229,7 +3229,7 @@ window.exportPayoutEventsToExcel = async function() {
                  
   const user = firebase.auth().currentUser;
   if (!user) {
-    console.log("No user is signed in.");
+  
     return;
   }
 
@@ -3239,7 +3239,7 @@ window.exportPayoutEventsToExcel = async function() {
   try {
     const snapshot = await eventsRef.once('value');
     if (!snapshot.exists()) {
-      alert("No payout events found.");
+      utils.showToast('No payout events found.', 'warning');
       return;
     }
 
@@ -3325,11 +3325,11 @@ window.exportPayoutEventsToExcel = async function() {
     const fileName = `Payout_Events_${userId}_${new Date().toISOString().slice(0,10)}.xlsx`;
     saveAs(blob, fileName);
 
-    alert("Payout events exported successfully!");
+    utils.showToast('Payout events exported successfully!', 'success');
 
   } catch (error) {
-    console.error("Error exporting payout events:", error);
-    alert("Failed to export payout events: " + error.message);
+    
+    utils.showToast('Failed to export payout events', 'error');
   }
 
 };
@@ -3341,7 +3341,7 @@ window.exportPayoutEventsToExcel = async function() {
 window.loadAllPayoutEvents = function () {
   const user = auth.currentUser;
   if (!user) {
-    console.log("No user is signed in.");
+    
     return;
   }
 
@@ -3460,8 +3460,7 @@ window.loadAllPayoutEvents = function () {
       startRealtimePayoutListener(userId, window.loadAllPayoutEvents);
     })
     .catch(error => {
-      console.error("Error retrieving payout or booking data:", error);
-    });
+      });
 };
 
 // =============
@@ -3481,13 +3480,13 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
     // Extract numeric value from "EGP 123.45"
     const amountMatch = amountText.match(/[\d\.]+/);
     if (!amountMatch) {
-      alert("No valid withdrawable amount found.");
+      utils.showToast('No valid withdrawable amount found.', 'warning');
       return;
     }
 
     const requestedAmount = parseFloat(amountMatch[0]);
     if (isNaN(requestedAmount) || requestedAmount <= 0) {
-      alert("The available amount is not sufficient for a withdrawal.");
+      utils.showToast('The available amount is not sufficient for a withdrawal.', 'error');
       return;
     }
 
@@ -3508,7 +3507,7 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
         .then(snapshot => {
           const currentRequest = snapshot.val();
           if (currentRequest && currentRequest.requestedAmount) {
-            alert("You already have a pending payout request.");
+            utils.showToast('You already have a pending payout request.', 'warning');
             showLoadingSpinner(false);
             return;
           }
@@ -3520,13 +3519,12 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
           });
         })
         .then(() => {
-          alert("Payout request submitted successfully!");
+          utils.showToast('Payout request submitted successfully!', 'success');
           avPayoutElement.textContent = "EGP 0"; // Reset display
           showLoadingSpinner(false);
         })
         .catch(error => {
-          console.error("Error submitting payout request:", error);
-          alert("Failed to submit payout request. Please try again later.");
+           utils.showToast('Failed to submit payout request. Please try again later.', 'error');
           showLoadingSpinner(false);
         });
     };
@@ -3546,10 +3544,10 @@ function startRealtimePayoutListener(userId, callback) {
   const payoutRef = database.ref(`egy_user/${userId}/payoutMethod`);
 
   payoutRef.on("value", snapshot => {
-    console.log("Payout data changed. Refreshing balance...");
+    
     callback(); // Triggers balance reload
   }, error => {
-    console.error("Error listening for payout changes:", error);
+    
   });
 }
 
