@@ -3479,6 +3479,9 @@ window.loadAllPayoutEvents = function () {
         const match = payoutData.requestedAmount.match(/[\d\.]+/);
         if (match) {
           requestedAmount = parseFloat(match[0]);
+
+        amountv = parseInt(requestedAmount);
+        if (!isNaN(amountv)) totalPayouts += amountv;
         }
       }
 
@@ -3545,7 +3548,7 @@ window.loadAllPayoutEvents = function () {
         <!-- Amount - Responsive positioning -->
         <div class="flex-shrink-0">
           <span class="text-xl font-bold text-amber-600 whitespace-nowrap">
-            ${requestedAmount} EGP
+            ${amount.toLocaleString()} EGP
           </span>
           
         </div>
