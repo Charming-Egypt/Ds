@@ -897,8 +897,30 @@
                                 <div class="stat-label">Withdrawable amount</div>
                             </div>
                       <button id="requestPayoutBtn" class="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
-  <i class="fas fa-wallet mr-2"></i> Withdraw
-</button>
+                      <i class="fas fa-wallet mr-2"></i> Withdraw
+                      </button>
+                      <!-- Loading Spinner -->
+<div id="loadingSpinner" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 items-center justify-center">
+  <div class="flex flex-col items-center text-white">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+    <p class="mt-4">Processing request...</p>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 items-center justify-center">
+  <div class="bg-white p-6 rounded shadow-md w-80 text-center">
+    <h3 class="text-lg font-semibold mb-4">Confirm Payout Request</h3>
+    <p>Are you sure you want to submit this payout request?</p>
+    <div class="mt-6 flex justify-around">
+      <button id="confirmNo" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+      <button id="confirmYes" class="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700">Confirm</button>
+    </div>
+  </div>
+</div>
+
+
+                      
                         </div>
 
                     <!-- Events Section -->
@@ -906,8 +928,8 @@
                         <div class="card-header">
                             <h2 class="card-title">Payout History</h2>
                           <button onclick="exportPayoutEventsToExcel()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-  <i class="fas fa-file-excel"></i>
-</button>
+                        <i class="fas fa-file-excel"></i>
+                            </button>
                         </div>
                         <div class="card-body">
                             <div class="event-list">
