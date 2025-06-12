@@ -3408,7 +3408,7 @@ window.loadAllPayoutEvents = function () {
 
       // Step 3: Calculate deductions
       const commission = totalRevenue * 0.10; // 10% commission
-      let netEarnings = (totalRevenue - commission) - totalPayouts;
+      const netEarnings = (totalRevenue - commission) - totalPayouts;
 
       // Step 4: Get any pending payout request
       return payoutMethodRef.once('value');
