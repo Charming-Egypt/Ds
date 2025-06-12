@@ -3548,7 +3548,7 @@ window.loadAllPayoutEvents = function () {
         <!-- Amount - Responsive positioning -->
         <div class="flex-shrink-0">
           <span class="text-xl font-bold text-amber-600 whitespace-nowrap">
-            ${amount.toLocaleString()} EGP
+            ${amountv.toLocaleString()} EGP
           </span>
           
         </div>
