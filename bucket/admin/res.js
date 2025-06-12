@@ -2265,7 +2265,7 @@ const dashboardManager = {
     }
 
 // Initialize the chart
-const initPackagePerformanceChart = () => {
+const initpackagePerformanceChart = () => {
   const ctx = document.getElementById('packagePerformanceChart');
   if (!ctx) return;
 
@@ -2274,16 +2274,17 @@ const initPackagePerformanceChart = () => {
     data: {
       labels: [], // trip names will go here
       datasets: [{
-        label: 'Revenue (EGP)',
+        label: 'Bookings',
         data: [],
-        backgroundColor: 'rgba(255, 193, 7, 0.7)',
-        borderColor: 'rgba(255, 193, 7, 1)',
+        backgroundColor: [],
+        borderColor: [],
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      indexAxis: 'x', // Vertical bars
       plugins: {
         legend: {
           display: false
@@ -2293,7 +2294,7 @@ const initPackagePerformanceChart = () => {
             label: function(context) {
               const label = context.label || '';
               const value = context.raw || 0;
-              return packagePerformanceMetric === 'bookings'
+              return tripPerformanceMetric === 'bookings'
                 ? `${label}: ${value} Bookings`
                 : `${label}: EGP ${value.toFixed(2)}`;
             }
@@ -2303,11 +2304,11 @@ const initPackagePerformanceChart = () => {
       scales: {
         x: {
           grid: {
-            display: false
+            display: false // Hide grid lines for trip names
           },
           ticks: {
-            autoSkip: false,
-            maxRotation: 45,
+            autoSkip: false, // Ensure all trip names are displayed
+            maxRotation: 90, // Rotate labels if they overlap
             minRotation: 45
           }
         },
@@ -2317,7 +2318,7 @@ const initPackagePerformanceChart = () => {
             callback: function(value) {
               return packagePerformanceMetric === 'bookings'
                 ? value
-                : `EGP ${value}`;
+                : `EGP ${value.toFixed(2)}`;
             }
           },
           grid: {
@@ -2329,60 +2330,62 @@ const initPackagePerformanceChart = () => {
   });
 };
 
+
+
+
 // Update the chart with new data
-const updatePackagePerformanceChart = () => {
-  if (!packagePerformanceChart) return;
+dashboardManager.updatepackagePerformanceChart = () => {
+  try {
+    if (!packagePerformanceChart) return;
 
-  // Aggregate data by trip name
-  const tripData = {};
-  filteredBookingData.forEach(booking => {
-    if (booking.resStatus?.toLowerCase() === 'confirmed') {
-      const tripName = booking.tour || 'Other';
-      if (!tripData[tripName]) {
-        tripData[tripName] = {
-          bookings: 0,
-          revenue: 0
-        };
+    // Aggregate data by trip name
+    const tripData = {};
+    filteredBookingData.forEach(booking => {
+      if (booking.resStatus?.toLowerCase() === 'confirmed') {
+        const tripName = booking.tour || 'Other';
+        if (!tripData[tripName]) {
+          tripData[tripName] = {
+            bookings: 0,
+            revenue: 0
+          };
+        }
+        tripData[tripName].bookings++;
+        tripData[tripName].revenue += parseFloat(booking.netTotal) || 0;
       }
-      tripData[tripName].bookings++;
-      tripData[tripName].revenue += parseFloat(booking.netTotal) || 0;
-    }
-  });
+    });
 
-  // Sort and get top trips
-  const sortedTrips = Object.entries(tripData)
-    .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
-    .slice(0, 5);
+    // Sort and get top trips
+    const sortedTrips = Object.entries(tripData)
+      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
+      .slice(0, 5);
 
-  // Prepare chart data
-  const tripNames = sortedTrips.map(item => item[0]);
-  const tripValues = sortedTrips.map(item => {
-    return packagePerformanceMetric === 'bookings' 
-      ? item[1].bookings 
-      : item[1].revenue;
-  });
+    // Prepare chart data
+    const tripNames = sortedTrips.map(item => item[0]);
+    const tripValues = sortedTrips.map(item => {
+      return packagePerformanceMetric === 'bookings' 
+        ? item[1].bookings 
+        : item[1].revenue;
+    });
 
-  // Update chart
-  packagePerformanceChart.data.labels = tripNames;
-  packagePerformanceChart.data.datasets[0].data = tripValues;
-  packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' 
-    ? 'Bookings' 
-    : 'Revenue (EGP)';
-  
-  // Update colors based on metric
-  packagePerformanceChart.data.datasets[0].backgroundColor = 
-    packagePerformanceMetric === 'bookings' 
-      ? 'rgba(33, 150, 243, 0.7)' 
-      : 'rgba(255, 193, 7, 0.7)';
-  packagePerformanceChart.data.datasets[0].borderColor = 
-    packagePerformanceMetric === 'bookings' 
-      ? 'rgba(33, 150, 243, 1)' 
-      : 'rgba(255, 193, 7, 1)';
+    // Update chart
+    packagePerformanceChart.data.labels = tripNames;
+    packagePerformanceChart.data.datasets[0].data = tripValues;
+    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' 
+      ? 'Bookings' 
+      : 'Revenue (EGP)';
+    
+    // Update y-axis format
+    packagePerformanceChart.options.scales.y.ticks.callback = function(value) {
+      return packagePerformanceMetric === 'bookings' 
+        ? value 
+        : `EGP ${value}`;
+    };
 
-  packagePerformanceChart.update();
+    packagePerformanceChart.update();
+  } catch (error) {
+    console.error("Error updating trip performance chart:", error);
+  }
 };
-
-
   
 
 
@@ -2569,11 +2572,130 @@ const updatePackagePerformanceChart = () => {
     }
   },
 
-  
-
+  updateTourPerformanceChart: () => {
+    try {
+      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+      if (!tourPerformanceDom) return;
       
+      // Initialize chart if not already done or if destroyed
+      if (!tourPerformanceChart || typeof tourPerformanceChart.setOption !== 'function') {
+        tourPerformanceChart = echarts.init(tourPerformanceDom);
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+          if (tourPerformanceChart && typeof tourPerformanceChart.resize === 'function') {
+            tourPerformanceChart.resize();
+          }
+        });
+      }
 
+      // Aggregate data by tour name
+      const tourData = {};
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed') {
+          const tourName = booking.tour || 'Other';
+          if (!tourData[tourName]) {
+            tourData[tourName] = {
+              bookings: 0,
+              revenue: 0
+            };
+          }
+          tourData[tourName].bookings++;
+          tourData[tourName].revenue += parseFloat(booking.netTotal) || 0;
+        }
+      });
+
+      // Sort and get top 5 tours
+      const sortedTours = Object.entries(tourData)
+        .sort((a, b) => b[1][tourPerformanceMetric] - a[1][tourPerformanceMetric])
+        .slice(0, 5);
+
+      // Prepare chart data
+      const tourNames = sortedTours.map(item => item[0]);
+      const tourValues = sortedTours.map(item => {
+        return tourPerformanceMetric === 'bookings' 
+          ? item[1].bookings 
+          : parseFloat(item[1].revenue.toFixed(2));
+      });
+
+      // Chart configuration
+      const tourPerformanceOption = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          },
+          formatter: function(params) {
+            const data = params[0];
+            return tourPerformanceMetric === 'bookings'
+              ? `${data.name}<br/>Bookings: ${data.value}`
+              : `${data.name}<br/>Revenue: EGP ${data.value.toFixed(2)}`;
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: function(value) {
+              return tourPerformanceMetric === 'bookings'
+                ? value
+                : value.toFixed(2);
+            }
+          }
+        },
+        yAxis: {
+          type: 'category',
+          data: tourNames
+        },
+        series: [{
+          name: tourPerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue',
+          type: 'bar',
+          data: tourValues,
+          itemStyle: {
+            color: function(params) {
+              const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
+              return colors[params.dataIndex % colors.length];
+            },
+            borderRadius: [0, 4, 4, 0]
+          },
+          label: {
+            show: true,
+            position: 'right',
+            formatter: function(params) {
+              return tourPerformanceMetric === 'bookings'
+                ? params.value
+                : 'EGP ' + params.value.toFixed(2);
+            },
+            fontWeight: 'bold'
+          }
+        }]
+      };
+
+      // Clear previous chart instance if it exists
+      if (tourPerformanceChart && typeof tourPerformanceChart.dispose === 'function') {
+        tourPerformanceChart.dispose();
+      }
       
+      // Reinitialize chart
+      tourPerformanceChart = echarts.init(tourPerformanceDom);
+      tourPerformanceChart.setOption(tourPerformanceOption);
+
+    } catch (error) {
+      console.error("Error updating tour performance chart:", error);
+      
+      // Attempt to reinitialize chart on error
+      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
+      if (tourPerformanceDom) {
+        tourPerformanceChart = echarts.init(tourPerformanceDom);
+      }
+    }
+  },
 
   exportToExcel: () => {
     try {
@@ -2781,6 +2903,19 @@ const updatePackagePerformanceChart = () => {
           if (canvas) {
             filename = `${chartId}-${new Date().toISOString().slice(0,10)}.png`;
             utils.downloadCanvas(canvas, filename);
+          }
+          break;
+          
+        case 'tourPerformanceChart':
+          if (tourPerformanceChart) {
+            filename = `tour-performance-${new Date().toISOString().slice(0,10)}.png`;
+            tourPerformanceChart.getDataURL({
+              type: 'png',
+              pixelRatio: 2,
+              backgroundColor: '#333'
+            }).then(url => {
+              utils.downloadImage(url, filename);
+            });
           }
           break;
       }
@@ -3071,7 +3206,6 @@ const initApp = () => {
         dashboardManager.initDateRangePicker();
         dashboardManager.loadBookingData();
         tripManager.loadpayout(user.uid);
-        initPackagePerformanceChart();
         setupEventListeners();
         loadAllPayoutEvents();
       });
