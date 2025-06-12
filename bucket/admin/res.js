@@ -2294,7 +2294,7 @@ const initpackagePerformanceChart = () => {
             label: function(context) {
               const label = context.label || '';
               const value = context.raw || 0;
-              return tripPerformanceMetric === 'bookings'
+              return packagePerformanceMetric === 'bookings'
                 ? `${label}: ${value} Bookings`
                 : `${label}: EGP ${value.toFixed(2)}`;
             }
@@ -2572,130 +2572,7 @@ dashboardManager.updatepackagePerformanceChart = () => {
     }
   },
 
-  updateTourPerformanceChart: () => {
-    try {
-      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-      if (!tourPerformanceDom) return;
-      
-      // Initialize chart if not already done or if destroyed
-      if (!tourPerformanceChart || typeof tourPerformanceChart.setOption !== 'function') {
-        tourPerformanceChart = echarts.init(tourPerformanceDom);
-        
-        // Handle window resize
-        window.addEventListener('resize', function() {
-          if (tourPerformanceChart && typeof tourPerformanceChart.resize === 'function') {
-            tourPerformanceChart.resize();
-          }
-        });
-      }
 
-      // Aggregate data by tour name
-      const tourData = {};
-      filteredBookingData.forEach(booking => {
-        if (booking.resStatus?.toLowerCase() === 'confirmed') {
-          const tourName = booking.tour || 'Other';
-          if (!tourData[tourName]) {
-            tourData[tourName] = {
-              bookings: 0,
-              revenue: 0
-            };
-          }
-          tourData[tourName].bookings++;
-          tourData[tourName].revenue += parseFloat(booking.netTotal) || 0;
-        }
-      });
-
-      // Sort and get top 5 tours
-      const sortedTours = Object.entries(tourData)
-        .sort((a, b) => b[1][tourPerformanceMetric] - a[1][tourPerformanceMetric])
-        .slice(0, 5);
-
-      // Prepare chart data
-      const tourNames = sortedTours.map(item => item[0]);
-      const tourValues = sortedTours.map(item => {
-        return tourPerformanceMetric === 'bookings' 
-          ? item[1].bookings 
-          : parseFloat(item[1].revenue.toFixed(2));
-      });
-
-      // Chart configuration
-      const tourPerformanceOption = {
-        backgroundColor: 'transparent',
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          },
-          formatter: function(params) {
-            const data = params[0];
-            return tourPerformanceMetric === 'bookings'
-              ? `${data.name}<br/>Bookings: ${data.value}`
-              : `${data.name}<br/>Revenue: EGP ${data.value.toFixed(2)}`;
-          }
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'value',
-          axisLabel: {
-            formatter: function(value) {
-              return tourPerformanceMetric === 'bookings'
-                ? value
-                : value.toFixed(2);
-            }
-          }
-        },
-        yAxis: {
-          type: 'category',
-          data: tourNames
-        },
-        series: [{
-          name: tourPerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue',
-          type: 'bar',
-          data: tourValues,
-          itemStyle: {
-            color: function(params) {
-              const colors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
-              return colors[params.dataIndex % colors.length];
-            },
-            borderRadius: [0, 4, 4, 0]
-          },
-          label: {
-            show: true,
-            position: 'right',
-            formatter: function(params) {
-              return tourPerformanceMetric === 'bookings'
-                ? params.value
-                : 'EGP ' + params.value.toFixed(2);
-            },
-            fontWeight: 'bold'
-          }
-        }]
-      };
-
-      // Clear previous chart instance if it exists
-      if (tourPerformanceChart && typeof tourPerformanceChart.dispose === 'function') {
-        tourPerformanceChart.dispose();
-      }
-      
-      // Reinitialize chart
-      tourPerformanceChart = echarts.init(tourPerformanceDom);
-      tourPerformanceChart.setOption(tourPerformanceOption);
-
-    } catch (error) {
-      console.error("Error updating tour performance chart:", error);
-      
-      // Attempt to reinitialize chart on error
-      const tourPerformanceDom = document.getElementById('tourPerformanceChart');
-      if (tourPerformanceDom) {
-        tourPerformanceChart = echarts.init(tourPerformanceDom);
-      }
-    }
-  },
 
   exportToExcel: () => {
     try {
@@ -2905,19 +2782,6 @@ dashboardManager.updatepackagePerformanceChart = () => {
             utils.downloadCanvas(canvas, filename);
           }
           break;
-          
-        case 'tourPerformanceChart':
-          if (tourPerformanceChart) {
-            filename = `tour-performance-${new Date().toISOString().slice(0,10)}.png`;
-            tourPerformanceChart.getDataURL({
-              type: 'png',
-              pixelRatio: 2,
-              backgroundColor: '#333'
-            }).then(url => {
-              utils.downloadImage(url, filename);
-            });
-          }
-          break;
       }
     } catch (error) {
       console.error('Error exporting chart:', error);
@@ -2930,7 +2794,7 @@ dashboardManager.updatepackagePerformanceChart = () => {
     dashboardManager.updateStatusChart();
     dashboardManager.updateTrendChart();
     dashboardManager.updateGuestChart();
-    dashboardManager.updateTourPerformanceChart();
+    dashboardManager.updatepackagePerformanceChart();
   },
 
   initDateRangePicker: () => {
@@ -3163,14 +3027,7 @@ const setupEventListeners = () => {
     });
   }
 
-  // Tour performance metric dropdown
-  
-if (elements.packagePerformanceMetric) {
-  elements.packagePerformanceMetric.addEventListener('change', function() {
-    tourPerformanceMetric = this.value;
-    dashboardManager.updateTripPerformanceChart();
-  });
-}
+
 
   // Export data button
   if (elements.exportData) {
