@@ -178,6 +178,18 @@ const state = {
     }
 
 
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleString('en-EG', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+
 function formatDateNoLeadingZeros(dateString) {
     if (!dateString) return '';
     return dateString.replace(/-0(\d)-0?(\d)/, '-$1-$2');
@@ -3439,16 +3451,7 @@ window.loadAllPayoutEvents = function () {
         outputDiv.innerHTML += item;
       });
 
-function formatDate(isoDate) {
-  const date = new Date(isoDate);
-  return date.toLocaleString('en-EG', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
+
 
       
 
