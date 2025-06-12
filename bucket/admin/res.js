@@ -3381,39 +3381,63 @@ window.loadAllPayoutEvents = function () {
         if (!isNaN(amount)) totalPayouts += amount;
 
         const item = `
-          <div class="payout-item mb-4 p-4 bg-white rounded-xl border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-200 hover:border-green-100">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <!-- Left Content -->
-    <div class="flex items-start gap-3 flex-1 min-w-0">
-      <!-- Status Icon -->
-      <div class="mt-0.5 flex-shrink-0 p-2 bg-green-50 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          <div class="payout-item group relative mb-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out hover:border-green-200/80 overflow-hidden">
+  <!-- Animated background effect -->
+  <div class="absolute inset-0 bg-gradient-to-r from-green-50/0 to-green-50/0 group-hover:from-green-50/40 group-hover:to-green-50/0 transition-all duration-500 -z-10"></div>
+  
+  <div class="flex flex-col xs:flex-row gap-3">
+    <!-- Icon Section -->
+    <div class="flex items-start">
+      <div class="p-2.5 bg-green-100/80 rounded-xl group-hover:bg-green-100 transition-colors duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 group-hover:text-green-700 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
         </svg>
-      </div>
-      
-      <!-- Main Content -->
-      <div class="min-w-0">
-        <h3 class="text-base font-semibold text-gray-900 truncate">Payout Completed</h3>
-        <p class="text-sm text-gray-500 mt-0.5">${date}</p>
-        
-        <!-- Mobile-only amount -->
-        <div class="sm:hidden mt-2">
-          <span class="text-lg font-bold text-green-600">${amount.toLocaleString()} EGP</span>
-        </div>
-        
-        <!-- Account Info - Always visible -->
-        <div class="mt-2 flex items-center text-sm text-gray-600">
-          Account:- 
-          <span class="truncate">${data.Account}</span>
-        </div>
       </div>
     </div>
     
-    <!-- Right Content (Desktop amount) -->
-    <div class="hidden sm:flex flex-col items-end">
-      <span class="text-xl font-bold text-green-600 whitespace-nowrap">${amount.toLocaleString()} EGP</span>
-      <span class="text-xs text-gray-400 mt-1">Successful transfer</span>
+    <!-- Main Content -->
+    <div class="flex-1 min-w-0">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div class="min-w-0">
+          <h3 class="text-lg font-semibold text-gray-900 truncate">Payout Successful</h3>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+            <span class="text-sm text-gray-500 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              ${date}
+            </span>
+            <span class="text-sm text-gray-500 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+              </svg>
+              <span class="truncate max-w-[160px] xs:max-w-[200px] sm:max-w-[240px]">${data.Account}</span>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Amount - Responsive positioning -->
+        <div class="flex-shrink-0">
+          <span class="text-xl font-bold text-green-600 whitespace-nowrap">
+            ${amount.toLocaleString()} EGP
+          </span>
+          <div class="text-right">
+            <span class="inline-block text-xs font-medium text-green-500 bg-green-50 px-2 py-0.5 rounded-full mt-1">
+              Completed
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Additional Details (appears on hover/focus) -->
+      <div class="mt-3 pt-3 border-t border-gray-100/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <button class="text-sm font-medium text-green-600 hover:text-green-700 flex items-center">
+          Transaction details
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
