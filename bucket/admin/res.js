@@ -3497,7 +3497,7 @@ window.loadAllPayoutEvents = function () {
 
       if (requestedAmount > 0 && pendingBadge) {
   pendingBadge.innerHTML = `
-    <div class="payout-item group relative mb-4 p-4 bg-white rounded-2xl border border-amber-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out hover:border-amber-200/80 overflow-hidden">
+    <div class="payout-item group w-full relative mb-4 p-4 bg-white rounded-2xl border border-amber-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out hover:border-amber-200/80 overflow-hidden">
   <!-- Animated background effect -->
   <div class="absolute inset-0 bg-gradient-to-r from-amber-50/0 to-amber-50/0 group-hover:from-amber-50/30 group-hover:to-amber-50/0 transition-all duration-500 -z-10"></div>
   
