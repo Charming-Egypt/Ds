@@ -3438,13 +3438,13 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
     // Extract numeric value from "EGP 123.45"
     const amountMatch = amountText.match(/[\d\.]+/);
     if (!amountMatch) {
-      alert("No valid withdrawable amount found.");
+      utils.showToast('No valid withdrawable amount found.');
       return;
     }
 
     const requestedAmount = parseFloat(amountMatch[0]);
     if (isNaN(requestedAmount) || requestedAmount <= 0) {
-      alert("The available amount is not sufficient for a withdrawal.");
+      utils.showToast('The available amount is not sufficient for a withdrawal.');
       return;
     }
 
@@ -3455,12 +3455,12 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
       requestDate: new Date().toISOString()
     })
       .then(() => {
-        alert("Payout request submitted successfully!");
-        avPayoutElement.textContent = "EGP 0"; // Reset display
+        utils.showToast('Payout request submitted successfully!');
+        
       })
       .catch(error => {
         console.error("Error submitting payout request:", error);
-        alert("Failed to submit payout request. Please try again later.");
+        utils.showToast('Error to submit payout request. Please try again later.');
       });
   });
 }
