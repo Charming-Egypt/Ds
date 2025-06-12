@@ -3392,16 +3392,16 @@ window.loadAllPayoutEvents = function () {
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 group-hover:text-green-700 transition-colors" viewBox="0 0 24 24" fill="currentColor">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
         </svg>
-      </div>
+      </div></div>
       <div class="text-right">
-            <span class="inline-block text-xs font-medium text-green-500 bg-green-50 px-2 py-0.5 rounded-full mt-1">
+            <span class="inline-block text-xs font-medium text-green-500  px-2 py-0.5 rounded-full mt-1">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
               Completed
             </span>
           </div>
-    </div>
+    
     
     <!-- Main Content -->
     <div class="flex-1 min-w-0">
@@ -3508,9 +3508,9 @@ window.loadAllPayoutEvents = function () {
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 group-hover:text-amber-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-      </div>
+      </div></div>
       <div class="text-right">
-            <span class="inline-block text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mt-1">
+            <span class="inline-block text-xs font-medium text-amber-600 px-2 py-0.5 rounded-full mt-1">
               <span class="flex items-center">
                 <span class="flex mr-1.5 space-x-0.5">
                   <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
@@ -3521,7 +3521,7 @@ window.loadAllPayoutEvents = function () {
               </span>
             </span>
           </div>
-    </div>
+    
     
     <!-- Main Content -->
     <div class="flex-1 min-w-0">
