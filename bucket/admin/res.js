@@ -3489,7 +3489,7 @@ window.loadAllPayoutEvents = function () {
 
       // Step 5: Update DOM Element
       const avPayoutElement = document.getElementById("avpayout");
-      const pendingBadge = document.getElementById("pendingBadge");
+      const pendingBadge = document.getElementById("pendingBadg");
 
       if (avPayoutElement) {
         avPayoutElement.textContent = `EGP ${finalAvailableBalance.toFixed(2)}`;
