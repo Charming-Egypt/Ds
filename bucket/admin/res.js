@@ -3336,6 +3336,8 @@ window.exportPayoutEventsToExcel = async function() {
 
 
 // Function to load all payout events and calculate available balance
+
+// Attach the function to window so it can be called globally
 window.loadAllPayoutEvents = function () {
   const user = auth.currentUser;
   if (!user) {
@@ -3369,7 +3371,7 @@ window.loadAllPayoutEvents = function () {
       if (!snapshot.exists()) {
         outputDiv.innerHTML = "<p>No payout events found.</p>";
         totalPayouts = 0;
-        return Promise.resolve({ totalPayouts, totalRevenue }); // Pass values forward
+        return Promise.resolve({ totalPayouts, totalRevenue });
       }
 
       const events = snapshot.val();
@@ -3436,14 +3438,126 @@ window.loadAllPayoutEvents = function () {
 
       // Step 5: Update DOM Element
       const avPayoutElement = document.getElementById("avpayout");
+      const pendingBadge = document.getElementById("pendingBadge");
+
       if (avPayoutElement) {
         avPayoutElement.textContent = `EGP ${finalAvailableBalance.toFixed(2)}`;
       }
 
+      if (requestedAmount > 0 && pendingBadge) {
+        pendingBadge.textContent = `Pending Request: EGP ${requestedAmount.toFixed(2)}`;
+        pendingBadge.classList.remove("hidden");
+        pendingBadge.style.display = "inline-block";
+      } else if (pendingBadge) {
+        pendingBadge.classList.add("hidden");
+        pendingBadge.style.display = "none";
+      }
+
       // Attach event listener after DOM update
       attachPayoutButtonHandler(userId, avPayoutElement);
+
+      // Start real-time listener to auto-refresh balance
+      startRealtimePayoutListener(userId, window.loadAllPayoutEvents);
     })
     .catch(error => {
       console.error("Error retrieving payout or booking data:", error);
     });
 };
+
+// =============
+// Function to handle button click
+// =============
+function attachPayoutButtonHandler(userId, avPayoutElement) {
+  const btn = document.getElementById("requestPayoutBtn");
+  const modal = document.getElementById("confirmModal");
+  const confirmYes = document.getElementById("confirmYes");
+  const confirmNo = document.getElementById("confirmNo");
+
+  if (!btn || !modal) return;
+
+  btn.addEventListener("click", function () {
+    const amountText = avPayoutElement.textContent || "EGP 0";
+
+    // Extract numeric value from "EGP 123.45"
+    const amountMatch = amountText.match(/[\d\.]+/);
+    if (!amountMatch) {
+      alert("No valid withdrawable amount found.");
+      return;
+    }
+
+    const requestedAmount = parseFloat(amountMatch[0]);
+    if (isNaN(requestedAmount) || requestedAmount <= 0) {
+      alert("The available amount is not sufficient for a withdrawal.");
+      return;
+    }
+
+    // Show confirmation modal
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+
+    // Confirm Yes
+    confirmYes.onclick = function () {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+      showLoadingSpinner(true);
+
+      // Prevent duplicate requests
+      const payoutRef = database.ref(`egy_user/${userId}/payoutMethod`);
+
+      payoutRef.once("value")
+        .then(snapshot => {
+          const currentRequest = snapshot.val();
+          if (currentRequest && currentRequest.requestedAmount) {
+            alert("You already have a pending payout request.");
+            showLoadingSpinner(false);
+            return;
+          }
+
+          // Send the amount with "EGP"
+          return payoutRef.update({
+            requestedAmount: amountText,
+            requestDate: new Date().toISOString()
+          });
+        })
+        .then(() => {
+          alert("Payout request submitted successfully!");
+          avPayoutElement.textContent = "EGP 0"; // Reset display
+          showLoadingSpinner(false);
+        })
+        .catch(error => {
+          console.error("Error submitting payout request:", error);
+          alert("Failed to submit payout request. Please try again later.");
+          showLoadingSpinner(false);
+        });
+    };
+
+    // Confirm No
+    confirmNo.onclick = function () {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    };
+  });
+}
+
+// =============
+// Real-time Payout Listener
+// =============
+function startRealtimePayoutListener(userId, callback) {
+  const payoutRef = database.ref(`egy_user/${userId}/payoutMethod`);
+
+  payoutRef.on("value", snapshot => {
+    console.log("Payout data changed. Refreshing balance...");
+    callback(); // Triggers balance reload
+  }, error => {
+    console.error("Error listening for payout changes:", error);
+  });
+}
+
+// =============
+// Loading Spinner Control
+// =============
+function showLoadingSpinner(show) {
+  const spinner = document.getElementById("loadingSpinner");
+  if (!spinner) return;
+  spinner.style.display = show ? "flex" : "none";
+}
