@@ -932,9 +932,7 @@
 
                       
                         </div>
-<div id="pendingBadge" class="hidden mt-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium">
-        Pending Request: EGP 0.00
-                              </div>
+
               
 
                     <!-- Events Section -->
@@ -945,14 +943,20 @@
                         <i class="fas fa-file-excel"></i>
                             </button>
                         </div>
-                        <div class="card-body">
-                          
-                            <div class="event-list">
-                              
-                              
-                             <div id="payout-output"></div>
-                            </div>
-                        </div>
+                        <div class="card-body p-4">
+  <div id="pendingBadge" class="hidden mb-4 px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium inline-flex items-center">
+    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+    </svg>
+    Pending Request: EGP 0.00
+  </div>
+  
+  <div class="event-list">
+    <div id="payout-output" class="rounded-lg shadow-sm p-4 ">
+      <!-- Payout content will appear here -->
+    </div>
+  </div>
+</div>
                     </div>
                 </div>
             </section>
