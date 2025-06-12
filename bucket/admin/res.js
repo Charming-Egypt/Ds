@@ -15,7 +15,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart, packagePerformanceChart;
+let statusChart, trendChart, guestChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
@@ -2264,66 +2264,6 @@ const dashboardManager = {
     }
 
 
-
-// === INIT PERFORMANCE CHART ===
-function initPackagePerformanceChart() {
-    const ctx = document.getElementById('packagePerformanceChart');
-    if (!ctx) return;
-
-    packagePerformanceChart = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: [], // Will be populated with tour names
-            datasets: [{
-                label: 'Bookings',
-                data: [],
-                backgroundColor: [],
-                borderColor: [],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'x', // Vertical bars
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.raw || 0;
-                            return packagePerformanceMetric === 'bookings'
-                                ? `${value} Bookings`
-                                : `EGP ${value.toFixed(2)}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 90,
-                        minRotation: 45
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return packagePerformanceMetric === 'bookings'
-                                ? value
-                                : `EGP ${value.toFixed(2)}`;
-                        }
-                    },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                }
-            }
-        }
-    });
-}
-
   },
 
 
@@ -2361,11 +2301,6 @@ function initPackagePerformanceChart() {
   },
 
 
-
-    
-
-
-
   applyPeriodFilter: () => {
     const now = new Date();
     let startDate, endDate;
@@ -2390,9 +2325,6 @@ function initPackagePerformanceChart() {
     
     return dashboardManager.filterDataByDateRange(startDate, endDate);
   },
-
-
-
 
   updateStatsCards: () => {
     try {
@@ -2422,130 +2354,97 @@ function initPackagePerformanceChart() {
     }
   },
 
-
-
-
-// === CHART MANAGER ===
-const dashboardManager = {
-    updateStatusChart: () => {
-        try {
-            if (!statusChart) return;
-            const statusCounts = { confirmed: 0, new: 0, cancelled: 0, noshow: 0 };
-            filteredBookingData.forEach(booking => {
-                const status = booking.resStatus?.toLowerCase().replace(' ', '') || 'new';
-                if (statusCounts.hasOwnProperty(status)) {
-                    statusCounts[status]++;
-                }
-            });
-
-            statusChart.data.datasets[0].data = [
-                statusCounts.confirmed,
-                statusCounts.new,
-                statusCounts.cancelled,
-                statusCounts.noshow
-            ];
-            statusChart.update();
-        } catch (error) {
-            console.error("Error updating status chart:", error);
+  updateStatusChart: () => {
+    try {
+      if (!statusChart) return;
+      
+      const statusCounts = {
+        confirmed: 0,
+        new: 0,
+        cancelled: 0,
+        noshow: 0
+      };
+      
+      filteredBookingData.forEach(booking => {
+        const status = booking.resStatus?.toLowerCase().replace(' ', '') || 'new';
+        if (statusCounts.hasOwnProperty(status)) {
+          statusCounts[status]++;
         }
-    },
-
-    updateTrendChart: () => {
-        try {
-            if (!trendChart) return;
-            const monthlyCounts = Array(12).fill(0);
-            const currentYear = new Date().getFullYear();
-
-            filteredBookingData.forEach(booking => {
-                if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tripDate) {
-                    const dateParts = booking.tripDate.split('-');
-                    if (dateParts[0] == currentYear) {
-                        const month = parseInt(dateParts[1]) - 1;
-                        if (month >= 0 && month < 12) {
-                            monthlyCounts[month]++;
-                        }
-                    }
-                }
-            });
-
-            trendChart.data.datasets[0].data = monthlyCounts;
-            trendChart.update();
-        } catch (error) {
-            console.error("Error updating trend chart:", error);
-        }
-    },
-
-    updateGuestChart: () => {
-        try {
-            if (!guestChart) return;
-            const guestCounts = { adults: 0, children: 0 };
-
-            filteredBookingData.forEach(booking => {
-                if (booking.resStatus?.toLowerCase() === 'confirmed') {
-                    guestCounts.adults += parseInt(booking.adults) || 0;
-                    guestCounts.children += parseInt(booking.children) || 0;
-                }
-            });
-
-            guestChart.data.datasets[0].data = [guestCounts.adults, guestCounts.children];
-            guestChart.update();
-        } catch (error) {
-            console.error("Error updating guest chart:", error);
-        }
-    },
-
-    updatepackagePerformanceChart: () => {
-        try {
-            if (!packagePerformanceChart) return;
-
-            const tripData = {};
-            filteredBookingData.forEach(booking => {
-                if (booking.resStatus?.toLowerCase() === 'confirmed') {
-                    const tripName = booking.tour || 'Other';
-                    if (!tripData[tripName]) {
-                        tripData[tripName] = { bookings: 0, revenue: 0 };
-                    }
-                    tripData[tripName].bookings++;
-                    tripData[tripName].revenue += parseFloat(booking.netTotal) || 0;
-                }
-            });
-
-            const sortedTrips = Object.entries(tripData)
-                .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
-                .slice(0, 5);
-
-            const tripNames = sortedTrips.map(item => item[0]);
-            const tripValues = sortedTrips.map(item => {
-                return packagePerformanceMetric === 'bookings' ? item[1].bookings : item[1].revenue;
-            });
-
-            // Set dynamic colors
-            const bgColors = ['#ffc107', '#ff9800', '#ff5722', '#4caf50', '#2196f3'];
-            const bdColors = ['#ffca2c', '#ffa726', '#ef5350', '#66bb6a', '#42a5f5'];
-
-            packagePerformanceChart.data.labels = tripNames;
-            packagePerformanceChart.data.datasets[0].data = tripValues;
-            packagePerformanceChart.data.datasets[0].label =
-                packagePerformanceMetric === 'bookings' ? 'Bookings' : 'Revenue (EGP)';
-            packagePerformanceChart.data.datasets[0].backgroundColor = tripValues.map((_, i) =>
-                bgColors[i % bgColors.length]
-            );
-            packagePerformanceChart.data.datasets[0].borderColor = tripValues.map((_, i) =>
-                bdColors[i % bdColors.length]
-            );
-
-            packagePerformanceChart.options.scales.y.ticks.callback = function(value) {
-                return packagePerformanceMetric === 'bookings' ? value : `EGP ${value.toFixed(2)}`;
-            };
-
-            packagePerformanceChart.update();
-        } catch (error) {
-            console.error("Error updating package performance chart:", error);
-        }
+      });
+      
+      statusChart.data.datasets[0].data = [
+        statusCounts.confirmed,
+        statusCounts.new,
+        statusCounts.cancelled,
+        statusCounts.noshow
+      ];
+      statusChart.update();
+      
+      if (elements.statusUpdated) elements.statusUpdated.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    } catch (error) {
+      console.error("Error updating status chart:", error);
     }
-    
-    
-    
+  },
+
+  updateTrendChart: () => {
+    try {
+      if (!trendChart) return;
+      
+      const monthlyCounts = Array(12).fill(0);
+      const currentYear = new Date().getFullYear();
+      
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tripDate) {
+          const dateParts = booking.tripDate.split('-');
+          if (dateParts[0] == currentYear) {
+            const month = parseInt(dateParts[1]) - 1;
+            if (month >= 0 && month < 12) {
+              monthlyCounts[month]++;
+            }
+          }
+        }
+      });
+      
+      trendChart.data.datasets[0].data = monthlyCounts;
+      trendChart.update();
+      
+      if (elements.trendUpdated) elements.trendUpdated.textContent = currentYear;
+    } catch (error) {
+      console.error("Error updating trend chart:", error);
+    }
+  },
+
+  updateGuestChart: () => {
+    try {
+      if (!guestChart) return;
+      
+      const guestCounts = {
+        adults: 0,
+        children: 0,
+        infants: 0
+      };
+      
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed') {
+          guestCounts.adults += parseInt(booking.adults) || 0;
+          guestCounts.children += parseInt(booking.childrenUnder12) || 0;
+          guestCounts.infants += parseInt(booking.infants) || 0;
+        }
+      });
+      
+      guestChart.data.datasets[0].data = [
+        guestCounts.adults,
+        guestCounts.children,
+        guestCounts.infants
+      ];
+      guestChart.update();
+      
+      if (elements.guestUpdated) elements.guestUpdated.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+    } catch (error) {
+      console.error("Error updating guest chart:", error);
+    }
+  },
+
 
 
   exportToExcel: () => {
@@ -2768,7 +2667,6 @@ const dashboardManager = {
     dashboardManager.updateStatusChart();
     dashboardManager.updateTrendChart();
     dashboardManager.updateGuestChart();
-    dashboardManager.updatepackagePerformanceChart();
 
   },
 
@@ -3040,7 +2938,6 @@ const initApp = () => {
         tripManager.loadpayout(user.uid);
         setupEventListeners();
         loadAllPayoutEvents();
-        initPackagePerformanceChart();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
@@ -3524,39 +3421,3 @@ function showLoadingSpinner(show) {
   if (!spinner) return;
   spinner.style.display = show ? "flex" : "none";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
