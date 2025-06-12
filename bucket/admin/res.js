@@ -3409,7 +3409,7 @@ window.loadAllPayoutEvents = function () {
             </span>
             <span class="text-sm text-gray-500 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18V7a1 1 0 00-1-1H4a1 1 0 00-1 1v3zm0 2v8a1 1 0 001 1h16a1 1 0 001-1v-8H3z"/>
               </svg>
               <span class="truncate max-w-[160px] xs:max-w-[200px] sm:max-w-[240px]">${data.Account}</span>
             </span>
@@ -3423,19 +3423,22 @@ window.loadAllPayoutEvents = function () {
           </span>
           <div class="text-right">
             <span class="inline-block text-xs font-medium text-green-500 bg-green-50 px-2 py-0.5 rounded-full mt-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
               Completed
             </span>
           </div>
         </div>
       </div>
       
-      <!-- Additional Details (appears on hover/focus) -->
+      <!-- Additional Details -->
       <div class="mt-3 pt-3 border-t border-gray-100/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <button class="text-sm font-medium text-green-600 hover:text-green-700 flex items-center">
-          Transaction details
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
+          Transaction details
         </button>
       </div>
     </div>
