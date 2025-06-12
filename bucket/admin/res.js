@@ -3335,6 +3335,7 @@ window.exportPayoutEventsToExcel = async function() {
 };
 
 
+// Function to load all payout events and calculate available balance
 window.loadAllPayoutEvents = function () {
   const user = auth.currentUser;
   if (!user) {
@@ -3417,8 +3418,49 @@ window.loadAllPayoutEvents = function () {
         })}`;
       }
 
+      // Attach event listener after DOM update
+      attachPayoutButtonHandler(userId, avPayoutElement);
+
     })
     .catch(error => {
       console.error("Error retrieving payout or booking data:", error);
     });
 };
+
+// Function to handle "Request Withdrawal" button click
+function attachPayoutButtonHandler(userId, avPayoutElement) {
+  const btn = document.getElementById("requestPayoutBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", function () {
+    const amountText = avPayoutElement.textContent || "EGP 0";
+
+    // Extract numeric value from "EGP 123.45"
+    const amountMatch = amountText.match(/[\d\.]+/);
+    if (!amountMatch) {
+      alert("No valid withdrawable amount found.");
+      return;
+    }
+
+    const requestedAmount = parseFloat(amountMatch[0]);
+    if (isNaN(requestedAmount) || requestedAmount <= 0) {
+      alert("The available amount is not sufficient for a withdrawal.");
+      return;
+    }
+
+    // Send to Firebase
+    const payoutRef = database.ref(`egy_user/${userId}/payoutMethod`);
+    payoutRef.update({
+      requestedAmount: requestedAmount.toFixed(2),
+      requestDate: new Date().toISOString()
+    })
+      .then(() => {
+        alert("Payout request submitted successfully!");
+        avPayoutElement.textContent = "EGP 0"; // Reset display
+      })
+      .catch(error => {
+        console.error("Error submitting payout request:", error);
+        alert("Failed to submit payout request. Please try again later.");
+      });
+  });
+}
