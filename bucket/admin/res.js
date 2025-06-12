@@ -3530,7 +3530,7 @@ window.loadAllPayoutEvents = function () {
             <span class="inline-block text-xs font-medium text-amber-600 px-2 py-0.5 rounded-full mt-1">
               <span class="flex items-center">
                 Pending
-                <span class="flex mr-1.5 space-x-0.5">
+                <span class="flex ml-1.5 space-x-0.5">
                   <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
                   <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
                   <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
