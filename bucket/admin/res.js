@@ -3497,16 +3497,65 @@ window.loadAllPayoutEvents = function () {
 
       if (requestedAmount > 0 && pendingBadge) {
   pendingBadge.innerHTML = `
-    <div class="pending-badge relative inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-amber-50 border border-amber-200 text-amber-800 transition-all duration-300 opacity-0 scale-95 animate-[pulse_2s_ease-in-out_infinite]">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span class="whitespace-nowrap">Pending Request: <span class="font-semibold ml-0.5">EGP ${requestedAmount.toFixed(2)}</span></span>
-      
-      <span class="loading-dots ml-1.5 flex items-center">
-        <span class="dot h-1.5 w-1.5 bg-amber-500 rounded-full"></span>
-      </span>
+    <div class="payout-item group relative mb-4 p-4 bg-white rounded-2xl border border-amber-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out hover:border-amber-200/80 overflow-hidden">
+  <!-- Animated background effect -->
+  <div class="absolute inset-0 bg-gradient-to-r from-amber-50/0 to-amber-50/0 group-hover:from-amber-50/30 group-hover:to-amber-50/0 transition-all duration-500 -z-10"></div>
+  
+  <div class="flex flex-col xs:flex-row gap-3">
+    <!-- Icon Section -->
+    <div class="flex items-start">
+      <div class="p-2.5 bg-amber-100/80 rounded-xl group-hover:bg-amber-100 transition-colors duration-300 animate-pulse">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 group-hover:text-amber-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
     </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 min-w-0">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div class="min-w-0">
+          <h3 class="text-lg font-semibold text-gray-900 truncate">Payout Processing</h3>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+            <span class="text-sm text-gray-500 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              ${payoutData.requestDate}
+            </span>
+            <span class="text-sm text-gray-500 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18V7a1 1 0 00-1-1H4a1 1 0 00-1 1v3zm0 2v8a1 1 0 001 1h16a1 1 0 001-1v-8H3z"/>
+              </svg>
+              <span class="truncate max-w-[160px] xs:max-w-[200px] sm:max-w-[240px]">${payoutData.accountNumber}</span>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Amount - Responsive positioning -->
+        <div class="flex-shrink-0">
+          <span class="text-xl font-bold text-amber-600 whitespace-nowrap">
+            ${requestedAmount} EGP
+          </span>
+          <div class="text-right">
+            <span class="inline-block text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mt-1">
+              <span class="flex items-center">
+                <span class="flex mr-1.5 space-x-0.5">
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+                </span>
+                Pending
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      
+    </div>
+  </div>
+</div>
   `;
   
   // Trigger reflow to enable animation
