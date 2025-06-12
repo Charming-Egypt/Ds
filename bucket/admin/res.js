@@ -3509,6 +3509,18 @@ window.loadAllPayoutEvents = function () {
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
+      <div class="text-right">
+            <span class="inline-block text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mt-1">
+              <span class="flex items-center">
+                <span class="flex mr-1.5 space-x-0.5">
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+                </span>
+                Pending
+              </span>
+            </span>
+          </div>
     </div>
     
     <!-- Main Content -->
@@ -3537,18 +3549,7 @@ window.loadAllPayoutEvents = function () {
           <span class="text-xl font-bold text-amber-600 whitespace-nowrap">
             ${requestedAmount} EGP
           </span>
-          <div class="text-right">
-            <span class="inline-block text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mt-1">
-              <span class="flex items-center">
-                <span class="flex mr-1.5 space-x-0.5">
-                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
-                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
-                  <span class="h-1.5 w-1.5 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
-                </span>
-                Pending
-              </span>
-            </span>
-          </div>
+          
         </div>
       </div>
       
