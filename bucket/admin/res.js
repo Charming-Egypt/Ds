@@ -15,11 +15,10 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart, packagePerformanceChart ;
+let statusChart, trendChart, guestChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
-let packagePerformanceMetric = 'revenue';
 let dateRangePicker;
 
 // DOM Elements
@@ -2264,131 +2263,6 @@ const dashboardManager = {
       });
     }
 
-// Initialize the chart
-const initpackagePerformanceChart = () => {
-  const ctx = document.getElementById('packagePerformanceChart');
-  if (!ctx) return;
-
-  packagePerformanceChart = new Chart(ctx.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: [], // trip names will go here
-      datasets: [{
-        label: 'Bookings',
-        data: [],
-        backgroundColor: [],
-        borderColor: [],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'x', // Vertical bars
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const label = context.label || '';
-              const value = context.raw || 0;
-              return packagePerformanceMetric === 'bookings'
-                ? `${label}: ${value} Bookings`
-                : `${label}: EGP ${value.toFixed(2)}`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false // Hide grid lines for trip names
-          },
-          ticks: {
-            autoSkip: false, // Ensure all trip names are displayed
-            maxRotation: 90, // Rotate labels if they overlap
-            minRotation: 45
-          }
-        },
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return packagePerformanceMetric === 'bookings'
-                ? value
-                : `EGP ${value.toFixed(2)}`;
-            }
-          },
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)'
-          }
-        }
-      }
-    }
-  });
-};
-
-
-
-
-// Update the chart with new data
-dashboardManager.updatepackagePerformanceChart = () => {
-  try {
-    if (!packagePerformanceChart) return;
-
-    // Aggregate data by trip name
-    const tripData = {};
-    filteredBookingData.forEach(booking => {
-      if (booking.resStatus?.toLowerCase() === 'confirmed') {
-        const tripName = booking.tour || 'Other';
-        if (!tripData[tripName]) {
-          tripData[tripName] = {
-            bookings: 0,
-            revenue: 0
-          };
-        }
-        tripData[tripName].bookings++;
-        tripData[tripName].revenue += parseFloat(booking.netTotal) || 0;
-      }
-    });
-
-    // Sort and get top trips
-    const sortedTrips = Object.entries(tripData)
-      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
-      .slice(0, 5);
-
-    // Prepare chart data
-    const tripNames = sortedTrips.map(item => item[0]);
-    const tripValues = sortedTrips.map(item => {
-      return packagePerformanceMetric === 'bookings' 
-        ? item[1].bookings 
-        : item[1].revenue;
-    });
-
-    // Update chart
-    packagePerformanceChart.data.labels = tripNames;
-    packagePerformanceChart.data.datasets[0].data = tripValues;
-    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' 
-      ? 'Bookings' 
-      : 'Revenue (EGP)';
-    
-    // Update y-axis format
-    packagePerformanceChart.options.scales.y.ticks.callback = function(value) {
-      return packagePerformanceMetric === 'bookings' 
-        ? value 
-        : `EGP ${value}`;
-    };
-
-    packagePerformanceChart.update();
-  } catch (error) {
-    console.error("Error updating trip performance chart:", error);
-  }
-};
-  
-
-
 
   },
 
@@ -2403,8 +2277,7 @@ dashboardManager.updatepackagePerformanceChart = () => {
       dashboardManager.updateStatusChart();
       dashboardManager.updateTrendChart();
       dashboardManager.updateGuestChart();
-      dashboardManager.updatepackagePerformanceChart();
-    } catch (error) {
+      } catch (error) {
       console.error("Error processing booking data:", error);
     }
   },
@@ -2794,7 +2667,7 @@ dashboardManager.updatepackagePerformanceChart = () => {
     dashboardManager.updateStatusChart();
     dashboardManager.updateTrendChart();
     dashboardManager.updateGuestChart();
-    dashboardManager.updatepackagePerformanceChart();
+
   },
 
   initDateRangePicker: () => {
