@@ -3381,25 +3381,42 @@ window.loadAllPayoutEvents = function () {
         if (!isNaN(amount)) totalPayouts += amount;
 
         const item = `
-          <div class="payout-item mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-  <div class="flex items-start justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="p-2 bg-green-100 rounded-full">
+          <div class="payout-item mb-4 p-4 bg-white rounded-xl border border-gray-100 shadow-xs hover:shadow-sm transition-all duration-200 hover:border-green-100">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <!-- Left Content -->
+    <div class="flex items-start gap-3 flex-1 min-w-0">
+      <!-- Status Icon -->
+      <div class="mt-0.5 flex-shrink-0 p-2 bg-green-50 rounded-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
         </svg>
       </div>
-      <div>
-        <h3 class="font-semibold text-gray-800">Payout Completed</h3>
-        <p class="text-sm text-gray-500">${date}</p>
+      
+      <!-- Main Content -->
+      <div class="min-w-0">
+        <h3 class="text-base font-semibold text-gray-900 truncate">Payout Completed</h3>
+        <p class="text-sm text-gray-500 mt-0.5">${date}</p>
+        
+        <!-- Mobile-only amount -->
+        <div class="sm:hidden mt-2">
+          <span class="text-lg font-bold text-green-600">${amount.toLocaleString()} EGP</span>
+        </div>
+        
+        <!-- Account Info - Always visible -->
+        <div class="mt-2 flex items-center text-sm text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+          </svg>
+          <span class="truncate">${data.Account}</span>
+        </div>
       </div>
     </div>
-    <span class="text-lg font-bold text-green-600">${amount.toLocaleString()} EGP</span>
-  </div>
-  <div class="mt-3 pt-3 border-t border-gray-100">
-    <p class="text-sm text-gray-600">
-      <span class="font-medium">Account:</span> ${data.Account}
-    </p>
+    
+    <!-- Right Content (Desktop amount) -->
+    <div class="hidden sm:flex flex-col items-end">
+      <span class="text-xl font-bold text-green-600 whitespace-nowrap">${amount.toLocaleString()} EGP</span>
+      <span class="text-xs text-gray-400 mt-1">Successful transfer</span>
+    </div>
   </div>
 </div>
         `;
