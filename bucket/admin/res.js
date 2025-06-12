@@ -15,11 +15,11 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart, tripPerformanceChart ;
+let statusChart, trendChart, guestChart, packagePerformanceChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
-let tourPerformanceMetric = 'bookings';
+let packagePerformanceMetric = 'revenue';
 let dateRangePicker;
 
 // DOM Elements
@@ -79,7 +79,7 @@ const elements = {
   trendUpdated: document.getElementById('trendUpdated'),
   guestUpdated: document.getElementById('guestUpdated'),
   dateRangePicker: document.getElementById('dateRangePicker'),
-  tourPerformanceMetric: document.getElementById('tourPerformanceMetric'),
+  packagePerformanceMetric: document.getElementById('packagePerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
   dashboardSection: document.getElementById('dashboardSection'),
@@ -2265,11 +2265,11 @@ const dashboardManager = {
     }
 
 // Initialize the chart
-const inittripPerformanceChart = () => {
-  const ctx = document.getElementById('tripPerformanceChart');
+const initpackagePerformanceChart = () => {
+  const ctx = document.getElementById('packagePerformanceChart');
   if (!ctx) return;
 
-  tripPerformanceChart = new Chart(ctx.getContext('2d'), {
+  packagePerformanceChart = new Chart(ctx.getContext('2d'), {
     type: 'bar',
     data: {
       labels: [], // trip names will go here
@@ -2316,7 +2316,7 @@ const inittripPerformanceChart = () => {
           beginAtZero: true,
           ticks: {
             callback: function(value) {
-              return tripPerformanceMetric === 'bookings'
+              return packagePerformanceMetric === 'bookings'
                 ? value
                 : `EGP ${value.toFixed(2)}`;
             }
@@ -2334,9 +2334,9 @@ const inittripPerformanceChart = () => {
 
 
 // Update the chart with new data
-dashboardManager.updateTripPerformanceChart = () => {
+dashboardManager.updatepackagePerformanceChart = () => {
   try {
-    if (!tripPerformanceChart) return;
+    if (!packagePerformanceChart) return;
 
     // Aggregate data by trip name
     const tripData = {};
@@ -2356,32 +2356,32 @@ dashboardManager.updateTripPerformanceChart = () => {
 
     // Sort and get top trips
     const sortedTrips = Object.entries(tripData)
-      .sort((a, b) => b[1][tourPerformanceMetric] - a[1][tourPerformanceMetric])
+      .sort((a, b) => b[1][packagePerformanceMetric] - a[1][packagePerformanceMetric])
       .slice(0, 5);
 
     // Prepare chart data
     const tripNames = sortedTrips.map(item => item[0]);
     const tripValues = sortedTrips.map(item => {
-      return tourPerformanceMetric === 'bookings' 
+      return packagePerformanceMetric === 'bookings' 
         ? item[1].bookings 
         : item[1].revenue;
     });
 
     // Update chart
-    tripPerformanceChart.data.labels = tripNames;
-    tripPerformanceChart.data.datasets[0].data = tripValues;
-    tripPerformanceChart.data.datasets[0].label = tourPerformanceMetric === 'bookings' 
+    packagePerformanceChart.data.labels = tripNames;
+    packagePerformanceChart.data.datasets[0].data = tripValues;
+    packagePerformanceChart.data.datasets[0].label = packagePerformanceMetric === 'bookings' 
       ? 'Bookings' 
       : 'Revenue (EGP)';
     
     // Update y-axis format
-    tripPerformanceChart.options.scales.y.ticks.callback = function(value) {
-      return tourPerformanceMetric === 'bookings' 
+    packagePerformanceChart.options.scales.y.ticks.callback = function(value) {
+      return packagePerformanceMetric === 'bookings' 
         ? value 
         : `EGP ${value}`;
     };
 
-    tripPerformanceChart.update();
+    packagePerformanceChart.update();
   } catch (error) {
     console.error("Error updating trip performance chart:", error);
   }
@@ -2403,7 +2403,7 @@ dashboardManager.updateTripPerformanceChart = () => {
       dashboardManager.updateStatusChart();
       dashboardManager.updateTrendChart();
       dashboardManager.updateGuestChart();
-      dashboardManager.updateTourPerformanceChart();
+      dashboardManager.updatepackagePerformanceChart();
     } catch (error) {
       console.error("Error processing booking data:", error);
     }
