@@ -3369,7 +3369,7 @@ window.loadAllPayoutEvents = function () {
       if (!snapshot.exists()) {
         outputDiv.innerHTML = "<p>No payout events found.</p>";
         totalPayouts = 0;
-        return Promise.resolve(); // Continue flow
+        return Promise.resolve({ totalPayouts, totalRevenue }); // Pass values forward
       }
 
       const events = snapshot.val();
@@ -3410,11 +3410,16 @@ window.loadAllPayoutEvents = function () {
       const commission = totalRevenue * 0.10; // 10% commission
       const netEarnings = (totalRevenue - commission) - totalPayouts;
 
-      // Step 4: Get any pending payout request
-      return payoutMethodRef.once('value');
-
+      // Pass netEarnings to next step
+      return { netEarnings, payoutMethodRef };
     })
-    .then(payoutSnapshot => {
+    .then(({ netEarnings, payoutMethodRef }) => {
+      // Step 4: Get any pending payout request
+      return payoutMethodRef.once('value').then(payoutSnapshot => {
+        return { netEarnings, payoutSnapshot };
+      });
+    })
+    .then(({ netEarnings, payoutSnapshot }) => {
       const payoutData = payoutSnapshot.val();
       let requestedAmount = 0;
 
@@ -3437,7 +3442,6 @@ window.loadAllPayoutEvents = function () {
 
       // Attach event listener after DOM update
       attachPayoutButtonHandler(userId, avPayoutElement);
-
     })
     .catch(error => {
       console.error("Error retrieving payout or booking data:", error);
