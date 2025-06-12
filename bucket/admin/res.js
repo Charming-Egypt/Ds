@@ -3381,11 +3381,27 @@ window.loadAllPayoutEvents = function () {
         if (!isNaN(amount)) totalPayouts += amount;
 
         const item = `
-          <div class="payout-item mb-4 p-4 border rounded-lg">
-            <strong>Payout transaction ✅</strong><br>
-            Date: ${date}<br>
-            ${amount.toLocaleString()} EGP to your account (${data.Account})
-          </div>
+          <div class="payout-item mb-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+  <div class="flex items-start justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-green-100 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-800">Payout Completed</h3>
+        <p class="text-sm text-gray-500">${date}</p>
+      </div>
+    </div>
+    <span class="text-lg font-bold text-green-600">${amount.toLocaleString()} EGP</span>
+  </div>
+  <div class="mt-3 pt-3 border-t border-gray-100">
+    <p class="text-sm text-gray-600">
+      <span class="font-medium">Account:</span> ${data.Account}
+    </p>
+  </div>
+</div>
         `;
         outputDiv.innerHTML += item;
       });
