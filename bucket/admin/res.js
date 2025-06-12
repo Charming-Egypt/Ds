@@ -18,7 +18,6 @@ const auth = firebase.auth();
 let statusChart, trendChart, guestChart, packagePerformanceChart;
 let currentPeriod = 'week';
 let bookingData = [];
-let packagePerformanceChart = null;
 let filteredBookingData = [];
 let dateRangePicker;
 
