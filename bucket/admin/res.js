@@ -3439,6 +3439,19 @@ window.loadAllPayoutEvents = function () {
         outputDiv.innerHTML += item;
       });
 
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleString('en-EG', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+      
+
       // Step 2: Load booking data to calculate total revenue
       return bookingsRef.once('value');
     })
