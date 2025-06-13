@@ -814,7 +814,7 @@ function showBookingDetails(refNumber) {
 function updateBookingStatus(refNumber, newStatus) {
     const booking = allBookings.find(b => b.refNumber === refNumber);
     if (!booking) {
-        showToast('Booking not found', 'error');
+        utils.showToast('Booking not found', 'error');
         return;
     }
     
@@ -824,10 +824,10 @@ function updateBookingStatus(refNumber, newStatus) {
     // Update status in Firebase
     database.ref('trip-bookings/' + booking.key).update({
         resStatus: newStatus,
-        lastUpdated: firebase.database.ServerValue().TIMESTAMP
+        
     })
     .then(() => {
-        showToast(`Booking status updated to ${newStatus}`, 'success');
+        utils.showToast(`Booking status updated to ${newStatus}`, 'success');
         // Update local data
         booking.resStatus = newStatus;
         applyFilters(); // Refresh table to reflect new status
@@ -835,7 +835,7 @@ function updateBookingStatus(refNumber, newStatus) {
         closeModal(); // Close modal after update
     })
     .catch(error => {
-        showToast('Failed to update booking status: ' + error.message, 'error');
+        utils.showToast("Failed to update booking status", "error");
     })
     .then(() => {
         hideLoading();
