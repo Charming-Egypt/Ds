@@ -648,9 +648,13 @@ function updateBookingsTable() {
         switch(status.toLowerCase()) {
             case 'paid':
                 return 'status-confirmed';
-            case 'pending':
+            case 'confirmed':
+                return 'status-confirmed';
+            case 'new':
                 return 'status-new';
             case 'refund':
+                return 'status-cancelled';
+            case 'cancelled':
                 return 'status-cancelled';
             default:
                 return 'status-noshow';
