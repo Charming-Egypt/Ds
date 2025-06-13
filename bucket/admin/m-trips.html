@@ -124,6 +124,28 @@
     height: auto;
     min-height: 200px;
       }
+.status-badge select {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #666;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.status-badge select:focus {
+    outline: none;
+    border-color: #007;
+    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.status-badge select option {
+    background-color: #333;
+    color: #fff;
+}
+      
     </style>
 </head>
 <body>
@@ -829,11 +851,9 @@
                     <a id="whatsappButton" href="#" target="_blank" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center">
             <i class="fab fa-whatsapp mr-2"></i> WhatsApp
         </a>
-                  <select onchange="updateBookingStatus('${escapedRefNumber}', this.value)" class="status-badge bg-gray-700 text-white rounded p-1">
-                        <option disabled value="new" ${resStatus === 'new' ? 'selected' : ''}>new</option>
-                        <option value="confirmed" ${resStatus === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                        <option value="no show" ${resStatus === 'no show' ? 'selected' : ''}>No Show</option>
-                    </select>
+                  <div id="statusDropdownContainer">
+                        <!-- Status dropdown will be injected here -->
+                    </div>
                 </div>
             </div>
         </div>
