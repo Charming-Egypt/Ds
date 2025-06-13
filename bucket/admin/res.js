@@ -722,7 +722,7 @@ function showBookingDetails(refNumber) {
                 </div>
                 <div class="col-span-2 md:col-span-1 bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <div class="text-gray-400 text-sm">Total</div>
-                    <div class="font-bold">${formatCurrency(booking.netTotal - ( booking.netTotal * 0,10) || 0)}</div>
+                    <div class="font-bold">${formatCurrency(booking.netTotal - ( booking.netTotal * 10/100) || 0)}</div>
                 </div>
             </div>
             
@@ -756,10 +756,10 @@ function showBookingDetails(refNumber) {
                                 <div class="font-medium text-center">${booking.infants || 0}</div>
                             </div>
                         </div>
-                        ${booking.pickupLocation ? `
+                        ${booking.pickuptime ? `
                         <div>
-                            <div class="text-gray-400 text-sm">Pickup Location</div>
-                            <div class="font-medium">${escapeHtml(booking.pickupLocation)}</div>
+                            <div class="text-gray-400 text-sm">Pickup time</div>
+                            <div class="font-medium">${escapeHtml(booking.pickuptime)}</div>
                         </div>
                         ` : ''}
                     </div>
