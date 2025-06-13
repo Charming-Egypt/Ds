@@ -822,7 +822,7 @@ function updateBookingStatus(refNumber, newStatus) {
     showLoading();
 
     // Update status in Firebase
-    database.ref('BookingStatus/' + booking.key).update({
+    database.ref('trip-bookings/' + booking.key).update({
         resStatus: newStatus,
         lastUpdated: firebase.database.ServerValue().TIMESTAMP
     })
