@@ -125,12 +125,12 @@ const elements = {
     let currentUser = null;
     let realTimeListener = null;
     let flatpickrInstance = null;
-    let activeTab = null;
+    let activeTab = 'new';
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentFilters = {
         search: '',
-        status: null,
+        status: 'new',
         date: null
     };
 
