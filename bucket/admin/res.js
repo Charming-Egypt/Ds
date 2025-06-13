@@ -2535,15 +2535,22 @@ const dashboardManager = {
           booking.tripDate
         ) {
           const tourName = booking.tour;
-          const date = new Date(booking.reservationDate);
-          const month = date.toLocaleString('default', { month: 'short' });
+          // Parse tripDate (e.g., '2025-07-5' or '2025-07-05')
+          const dateParts = booking.tripDate.split('-');
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]) - 1; // JS months are 0-based
+          const day = parseInt(dateParts[2]);
+          const date = new Date(year, month, day);
+          if (isNaN(date.getTime())) return; // Skip invalid dates
+          const monthShort = date.toLocaleString('default', { month: 'short' });
+
           const rcom = parseFloat(booking.netTotal * 0.10) || 0;
           const revenue = parseFloat(booking.netTotal - rcom) || 0;
 
           if (!tourRevenueByMonth[tourName]) {
             tourRevenueByMonth[tourName] = Array(12).fill(0);
           }
-          const monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(month);
+          const monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(monthShort);
           if (monthIndex !== -1) {
             tourRevenueByMonth[tourName][monthIndex] += revenue;
           }
