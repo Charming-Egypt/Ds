@@ -2268,38 +2268,73 @@ const dashboardManager = {
 
   // Package Performance Chart
     const packageCtx = elements.packagePerformanceChart?.getContext('2d');
-if (packageCtx) {
-    packageChart = new Chart(packageCtx, {
-        type: 'bar',
+    if (packageCtx) {
+      packageChart = new Chart(packageCtx, {
+        type: 'line',
         data: {
-            labels: [],
-            datasets: [{
-                label: 'Revenue (EGP)',
-                data: [],
-                backgroundColor: '#ffc107',
-                borderColor: '#ffffff',
-                borderWidth: 1
-            }]
+          labels: [],
+          datasets: [{
+            label: 'Revenue (EGP)',
+            data: [],
+            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+            borderColor: '#ffc107',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: '#ffa107',
+            pointBorderColor: '#333',
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top', labels: { color: '#f5f5f5', font: { size: 12 } } },
-                datalabels: { 
-                    color: '#ffffff', 
-                    anchor: 'end', 
-                    align: 'top', 
-                    formatter: (value) => `EGP ${value.toLocaleString()}` 
-                }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#f5f5f5',
+                font: { size: 12 }
+              }
             },
-            scales: {
-                y: { beginAtZero: true, ticks: { color: '#f5f5f5', callback: (value) => `EGP ${value.toLocaleString()}` } },
-                x: { ticks: { color: '#f5f5f5' } }
+            tooltip: {
+              backgroundColor: '#222',
+              titleColor: '#ffc107',
+              borderColor: '#666',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return `EGP ${context.raw.toLocaleString()}`;
+                }
+              }
             }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: '#f5f5f5',
+                callback: (value) => `EGP ${value.toLocaleString()}`
+              },
+              grid: {
+                color: '#444',
+                drawBorder: false
+              }
+            },
+            x: {
+              ticks: {
+                color: '#f5f5f5'
+              },
+              grid: {
+                color: '#444',
+                display: false
+              }
+            }
+          }
         }
-    });
-}
+      });
+    }
   },
 
 
@@ -2484,42 +2519,43 @@ if (packageCtx) {
 
 updatePackageChart: () => {
     try {
-        if (!packageChart) return;
+      if (!packageChart) return;
 
-        const tourRevenue = {};
-        filteredBookingData.forEach(booking => {
-            if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
-                const tourName = booking.tour;
-                const rcom = parseFloat(booking.netTotal * 0.10) || 0;
-                const revenue = parseFloat(booking.netTotal - rcom) || 0;
-                tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
-            }
-        });
-
-        const labels = Object.keys(tourRevenue);
-        const data = Object.values(tourRevenue);
-
-        if (labels.length === 0 || data.length === 0) {
-            packageChart.data.labels = ['No Data'];
-            packageChart.data.datasets[0].data = [0];
-            packageChart.data.datasets[0].backgroundColor = ['#666'];
-            packageChart.options.plugins.datalabels.display = false;
-        } else {
-            packageChart.data.labels = labels;
-            packageChart.data.datasets[0].data = data;
-            packageChart.data.datasets[0].backgroundColor = ['#ffc107'];
-            packageChart.options.plugins.datalabels.display = true;
+      const tourRevenue = {};
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
+          const tourName = booking.tour;
+          const rcom = parseFloat(booking.netTotal * 0.10) || 0;
+          const revenue = parseFloat(booking.netTotal - rcom) || 0;
+          tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
         }
+      });
 
-        packageChart.update();
+      const labels = Object.keys(tourRevenue);
+      const data = Object.values(tourRevenue);
 
-        if (elements.packagePerformanceMetric) {
-            elements.packagePerformanceMetric.textContent = 'Updated: ' + new Date().toLocaleTimeString();
-        }
+      if (labels.length === 0 || data.length === 0) {
+        packageChart.data.labels = ['No Data'];
+        packageChart.data.datasets[0].data = [0];
+        packageChart.data.datasets[0].backgroundColor = ['rgba(102, 102, 102, 0.1)'];
+        packageChart.data.datasets[0].borderColor = ['#666'];
+      } else {
+        packageChart.data.labels = labels;
+        packageChart.data.datasets[0].data = data;
+        packageChart.data.datasets[0].backgroundColor = ['rgba(255, 193, 7, 0.1)'];
+        packageChart.data.datasets[0].borderColor = ['#ffc107'];
+      }
+
+      packageChart.update();
+
+      if (elements.packagePerformanceMetric) {
+        elements.packagePerformanceMetric.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+      }
     } catch (error) {
-        console.error("Error updating package performance chart:", error);
+      console.error("Error updating package performance chart:", error);
     }
-},
+  },
+
   
 
   exportToExcel: () => {
