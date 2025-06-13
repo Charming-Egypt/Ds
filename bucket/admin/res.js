@@ -814,10 +814,14 @@ confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
 
 
 
-let pickupTimePicker; // Store Flatpickr instance globally
 
+
+// Global Flatpickr instance
+let pickupTimePicker;
+
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Flatpickr when DOM is loaded
+    // Initialize Flatpickr
     pickupTimePicker = flatpickr("#pickupTimeInput", {
         enableTime: true,
         noCalendar: true,
@@ -827,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
         defaultHour: 8,
         defaultMinute: 0,
         onReady: function(selectedDates, dateStr, instance) {
-            // Prevent auto-translation of time elements
+            // Prevent auto-translation
             const elements = [
                 instance.calendarContainer,
                 ...instance.calendarContainer.querySelectorAll('.flatpickr-time .numInputWrapper, .flatpickr-time .flatpickr-am-pm')
@@ -836,24 +840,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event listeners for modal buttons
-    const confirmWithPickupBtn = document.getElementById('confirmWithPickupTime');
-    const cancelPickupBtn = document.getElementById('cancelPickupTime');
-    const pickupModalCloseBtn = document.getElementById('pickupModalCloseButton');
-    
-    if (confirmWithPickupBtn) {
-        confirmWithPickupBtn.addEventListener('click', confirmPickupTime);
-    }
-    
-    if (cancelPickupBtn) {
-        cancelPickupBtn.addEventListener('click', hidePickupTimeModal);
-    }
-    
-    if (pickupModalCloseBtn) {
-        pickupModalCloseBtn.addEventListener('click', hidePickupTimeModal);
-    }
+    // Event listeners
+    document.getElementById('confirmWithPickupTime').addEventListener('click', confirmPickupTime);
+    document.getElementById('cancelPickupTime').addEventListener('click', hidePickupTimeModal);
+    document.getElementById('pickupModalCloseButton').addEventListener('click', hidePickupTimeModal);
 });
 
+// Show modal with Flatpickr
 function showPickupTimeModal(refNumber) {
     currentBookingToConfirm = refNumber;
     const modal = document.getElementById('pickupTimeModal');
@@ -864,29 +857,28 @@ function showPickupTimeModal(refNumber) {
     pickupTimePicker.set('maxTime', '23:00');
     
     // Show modal
-    modal.style.display = 'flex';
-    void modal.offsetWidth; // Trigger reflow for animation
-    modal.classList.add('show');
+    modal.classList.remove('hidden');
+    void modal.offsetWidth; // Trigger reflow
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
     
-    // Focus and open time picker immediately
+    // Focus and open time picker
     setTimeout(() => {
         document.getElementById('pickupTimeInput').focus();
         pickupTimePicker.open();
-    }, 100);
+    }, 50);
 }
 
+// Hide modal
 function hidePickupTimeModal() {
     const modal = document.getElementById('pickupTimeModal');
-    modal.classList.remove('show');
-    
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-        pickupTimePicker.close();
-    }, 300);
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    pickupTimePicker.close();
 }
 
+// Confirm pickup time
 function confirmPickupTime() {
     const pickupTime = document.getElementById('pickupTimeInput').value;
     
@@ -926,7 +918,6 @@ function confirmPickupTime() {
         hideLoading();
     });
 }
-
 
 
 
