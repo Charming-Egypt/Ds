@@ -499,11 +499,11 @@ function updateBookingsTable() {
         paginatedBookings.forEach(booking => {
             if (!booking.refNumber) return;
             
-            const statusClass = getStatusClass(booking.paymentStatus);
+            const statusClass = getStatusClass(booking.resStatus);
             const escapedRefNumber = escapeHtml(booking.refNumber);
             const tour = escapeHtml(booking.tour || 'Unknown Tour');
             const tripDate = formatTripDate(booking.tripDate || '');
-            const resStatus = escapeHtml(booking.paymentStatus || 'pending');
+            const resStatus = escapeHtml(booking.resStatus || 'new');
             const guestCount = (parseInt(booking.adults) || 0) + 
                              (parseInt(booking.childrenUnder12) || 0) + 
                              (parseInt(booking.infants) || 0);
@@ -666,7 +666,7 @@ function showBookingDetails(refNumber) {
         return;
     }
     
-    const statusClass = getStatusClass(booking.resStatus);
+    const statusClass = getStatusClass(booking.paymentStatus);
     const escapedRefNumber = escapeHtml(refNumber);
     const escapedTour = escapeHtml(booking.tour || 'Unknown Tour');
     const escapedUsername = escapeHtml(booking.username || 'N/A');
