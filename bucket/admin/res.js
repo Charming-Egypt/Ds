@@ -1025,8 +1025,9 @@ function filterByDate(bookings, date, activeTab) {
 
     // Load bookings from Firebase - only shows bookings where owner = current user
     function loadBookings() {
-        showLoading();
-        
+    showLoading();
+    
+    return new Promise((resolve) => {
         if (realTimeListener) {
             database.ref("trip-bookings").orderByChild("owner").equalTo(currentUserId).off('value', realTimeListener);
         }
@@ -1048,25 +1049,28 @@ function filterByDate(bookings, date, activeTab) {
                         allBookings.push(booking);
                     });
                     
-                    // Initialize date filter with available dates
                     initDateFilter();
-                    
-                    // Apply current filters
                     applyFilters();
                     updateDashboard();
                     hideLoading();
+                    resolve(); // Resolve the promise when done
                 } else {
                     showToast("No bookings found for your account", 'warning');
                     allBookings = [];
                     applyFilters();
                     updateDashboard();
                     hideLoading();
+                    resolve(); // Resolve even if no data
                 }
             }, (error) => {
                 showToast("Error loading data: " + error.message, 'error');
                 hideLoading();
+                reject(error); // Reject on error
             });
-    }
+    });
+}
+
+
 
     // Update the dashboard
     function updateDashboard() {
