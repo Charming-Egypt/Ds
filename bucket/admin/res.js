@@ -894,13 +894,13 @@ function switchTab(tab) {
     // Update current filters
     currentFilters = {
         search: '',
-        status: tab === 'all' ? 'all' : tab,
+        status: tab === 'new' ? 'new' : tab,
         date: defaultDate
     };
     
     // Update UI elements
     elements.searchInput.value = '';
-    elements.statusFilter.value = tab === 'all' ? 'all' : tab;
+    elements.statusFilter.value = tab === 'new' ? 'new' : tab;
     
     // Update Flatpickr if initialized
     if (flatpickrInstance) {
@@ -3635,36 +3635,3 @@ function showLoadingSpinner(show) {
   if (!spinner) return;
   spinner.style.display = show ? "flex" : "none";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-    
-    
-  
-
-  
-  
