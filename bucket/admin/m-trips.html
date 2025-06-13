@@ -269,9 +269,8 @@
 </div>
                             <div class="card-body">
                                 <div class="chart-container">
-                                    <!-- Add or correct the canvas element -->
-<canvas id="packagePerformanceChart"></canvas>
-                                </div>
+  <canvas id="packagePerformanceChart" aria-label="Package Performance Chart"></canvas>
+</div>
                             </div>
                         </div>
                 </div>
@@ -450,6 +449,19 @@
                                                             
                                                         </div>
                                                     </div>
+                                                   <div class="mb-4">
+  <label for="cprice" class="block text-sm font-medium text-gray-300">Children (5-12) Price (EGP)</label>
+                                                     <div class="flex">
+                                                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
+                                                                EGP 
+                                                            </span>
+  <input type="number" id="cprice" name="cprice" step="0.01" min="0" 
+         class="w-full p-2 input-field rounded text-sm focus:ring-2 focus:ring-amber-500" 
+         placeholder="Enter children price" required>
+</div></div>
+
+
+                                                  
                                                     <div>
                                                         <label for="duration" class="block text-sm font-medium mb-1">Duration*</label>
                                                         <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="4 hours">
