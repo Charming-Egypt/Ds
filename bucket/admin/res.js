@@ -691,17 +691,15 @@ function showBookingDetails(refNumber) {
         }
     }
 
-// Populate status dropdown in footer
-    const statusDropdownContainer = document.getElementById('statusDropdownContainer');
-    if (statusDropdownContainer) {
-        const resStatus = escapeHtml(booking.resStatus || 'new');
-        statusDropdownContainer.innerHTML = `
-            <select onchange="updateBookingStatus('${escapedRefNumber}', this.value)" class="status-badge bg-gray-700 text-white rounded p-1">
-                <option disabled value="new" ${resStatus === 'new' ? 'selected' : ''}>New</option>
-                <option value="confirmed" ${resStatus === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                <option value="no show" ${resStatus === 'no show' ? 'selected' : ''}>No Show</option>
-            </select>
-        `;
+    // Populate confirm button in footer
+    const confirmButtonContainer = document.getElementById('confirmButtonContainer');
+    if (confirmButtonContainer) {
+        const resStatus = booking.resStatus?.toLowerCase() || 'new';
+        confirmButtonContainer.innerHTML = resStatus === 'new' ? `
+            <button onclick="updateBookingStatus('${escapedRefNumber}', 'confirmed')" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+                Confirm
+            </button>
+        ` : '';
     }
 
 
@@ -824,9 +822,9 @@ function updateBookingStatus(refNumber, newStatus) {
     showLoading();
 
     // Update status in Firebase
-    database.ref('trip-bookings/' + booking.key).update({
+    database.ref('BookingStatus/' + booking.key).update({
         resStatus: newStatus,
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+        lastUpdated: firebase.database.ServerValue().TIMESTAMP
     })
     .then(() => {
         showToast(`Booking status updated to ${newStatus}`, 'success');
@@ -834,15 +832,15 @@ function updateBookingStatus(refNumber, newStatus) {
         booking.resStatus = newStatus;
         applyFilters(); // Refresh table to reflect new status
         updateDashboard(); // Update dashboard stats
+        closeModal(); // Close modal after update
     })
     .catch(error => {
-        showToast('Failed to update booking status: ' + error.message, 'error');
+        showToast('Failed to update booking status: ' + error.message), 'error');
     })
-    .finally(() => {
+    .then(() => {
         hideLoading();
     });
 }
-
 
 function closeModal() {
     const modal = document.getElementById('bookingDetailsModal');
