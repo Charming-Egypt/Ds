@@ -125,12 +125,12 @@ const elements = {
     let currentUser = null;
     let realTimeListener = null;
     let flatpickrInstance = null;
-    let activeTab = 'new';
+    let activeTab = 'all';
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentFilters = {
         search: '',
-        status: 'new',
+        status: 'all',
         date: null
     };
 
@@ -457,7 +457,7 @@ function initBookingSystem() {
         });
         
         // Initialize with default tab
-        switchTab('new');
+        switchTab('all');
     });
 }
 
