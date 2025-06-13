@@ -15,14 +15,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   
     <!-- Date Range Picker -->
@@ -122,6 +118,12 @@
             background-color: #ffc107;
             color: #333;
         }
+      .chart-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+      }
     </style>
 </head>
 <body>
@@ -268,7 +270,7 @@
                             <div class="card-body">
                                 <div class="chart-container">
                                     <!-- Add or correct the canvas element -->
-<canvas id="packagePerformanceChart" width="400" height="200"></canvas>
+<canvas id="packagePerformanceChart"></canvas>
                                 </div>
                             </div>
                         </div>
