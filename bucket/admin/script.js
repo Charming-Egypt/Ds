@@ -1,179 +1,108 @@
-const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
-
-allSideMenu.forEach(item=> {
-	const li = item.parentElement;
-
-	item.addEventListener('click', function () {
-		allSideMenu.forEach(i=> {
-			i.parentElement.classList.remove('active');
-		})
-		li.classList.add('active');
-	})
-});
-
-
-
-
 // TOGGLE SIDEBAR
 const menuBar = document.querySelector('#content nav .bx.bx-menu');
 const sidebar = document.getElementById('sidebar');
 
 menuBar.addEventListener('click', function () {
-	sidebar.classList.toggle('hide');
-})
+    sidebar.classList.toggle('hide');
+});
 
-
-
-
-
-
-
-const searchButton = document.querySelector('#content nav form .form-input button');
-const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
-const searchForm = document.querySelector('#content nav form');
-
-searchButton.addEventListener('click', function (e) {
-	if(window.innerWidth < 576) {
-		e.preventDefault();
-		searchForm.classList.toggle('show');
-		if(searchForm.classList.contains('show')) {
-			searchButtonIcon.classList.replace('bx-search', 'bx-x');
-		} else {
-			searchButtonIcon.classList.replace('bx-x', 'bx-search');
-		}
-	}
-})
-
-
-
-
-
+// Responsive sidebar behavior
 if(window.innerWidth < 768) {
-	sidebar.classList.add('hide');
-} else if(window.innerWidth > 576) {
-	searchButtonIcon.classList.replace('bx-x', 'bx-search');
-	searchForm.classList.remove('show');
+    sidebar.classList.add('hide');
 }
 
+// SIDEBAR MENU ACTIVE STATE
+const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
-window.addEventListener('resize', function () {
-	if(this.innerWidth > 576) {
-		searchButtonIcon.classList.replace('bx-x', 'bx-search');
-		searchForm.classList.remove('show');
-	}
-})
+allSideMenu.forEach(item => {
+    const li = item.parentElement;
 
+    item.addEventListener('click', function () {
+        allSideMenu.forEach(i => {
+            i.parentElement.classList.remove('active');
+        })
+        li.classList.add('active');
+    })
+});
 
-
-
-
-
-
-
-
-
-
-// Get all sidebar menu items and content sections
+// SECTION SWITCHING
 const sideMenuItems = document.querySelectorAll('#sidebar .side-menu li[data-section]');
 const contentSections = document.querySelectorAll('.content-section');
 
-// Function to show a specific section
 function showSection(sectionId) {
-  // Hide all content sections
-  contentSections.forEach(section => {
-    section.classList.remove('active');
-    section.classList.add('hidden');
-  });
-  
-  // Show the selected section
-  const activeSection = document.getElementById(`${sectionId}-section`);
-  if (activeSection) {
-    activeSection.classList.remove('hidden');
-    activeSection.classList.add('active');
-  }
-  
-  // Update active menu item
-  sideMenuItems.forEach(item => {
-    item.classList.remove('active');
-    if (item.dataset.section === sectionId) {
-      item.classList.add('active');
-    }
-  });
-  
-  // Store in localStorage
-  localStorage.setItem('activeSection', sectionId);
-}
-
-// Function to handle sidebar clicks
-function handleSidebarClick() {
-  sideMenuItems.forEach(item => {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      const sectionId = this.dataset.section;
-      showSection(sectionId);
-      
-      // Close sidebar on mobile
-      if (window.innerWidth < 768) {
-        document.getElementById('sidebar').classList.add('hide');
-      }
+    contentSections.forEach(section => {
+        section.classList.remove('active');
+        section.classList.add('hidden');
     });
-  });
+    
+    const activeSection = document.getElementById(`${sectionId}-section`);
+    if (activeSection) {
+        activeSection.classList.remove('hidden');
+        activeSection.classList.add('active');
+    }
+    
+    sideMenuItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.section === sectionId) {
+            item.classList.add('active');
+        }
+    });
+    
+    localStorage.setItem('activeSection', sectionId);
 }
 
-// Initialize on DOM load
+function handleSidebarClick() {
+    sideMenuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.dataset.section;
+            showSection(sectionId);
+            
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('hide');
+            }
+        });
+    });
+}
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  handleSidebarClick();
-  
-  // Check for saved active section
-  const savedSection = localStorage.getItem('activeSection');
-  const defaultSection = sideMenuItems[0]?.dataset.section || 'dashboard';
-  
-  // Show either saved section or default
-  showSection(savedSection || defaultSection);
+    handleSidebarClick();
+    const savedSection = localStorage.getItem('activeSection');
+    const defaultSection = sideMenuItems[0]?.dataset.section || 'dashboard';
+    showSection(savedSection || defaultSection);
 });
 
-
-
-
 // Cookie helper function
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
 
-
-
+// User profile initialization
+const isUserLoggedIn = getCookie('username');
+if (isUserLoggedIn) {
+    document.getElementById('userName').value = isUserLoggedIn;
+    document.getElementById('userEmail').value = getCookie('email');
+    document.getElementById('userPhone').value = getCookie('phone');
+    const backgroundImageUrl = getCookie('photo');
     
-      const isUserLoggedIn = getCookie('username');
+    const profilePhoto = document.querySelector('.profile-photo');
+    profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+    profilePhoto.onerror = function() {
+        this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+    };
 
-      
-
-      if (isUserLoggedIn) {
-        document.getElementById('userName').value = isUserLoggedIn;
-        document.getElementById('userEmail').value = getCookie('email');
-        document.getElementById('userPhone').value = getCookie('phone');
-        const backgroundImageUrl = getCookie('photo');
-        
-        // Set default profile photo if none exists
-        const profilePhoto = document.querySelector('.profile-photo');
-        profilePhoto.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        profilePhoto.onerror = function() {
-          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
-        };
-
-
-const profilePhoto2 = document.querySelector('.profile-photo2');
+    const profilePhoto2 = document.querySelector('.profile-photo2');
+    if (profilePhoto2) {
         profilePhoto2.src = backgroundImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
         profilePhoto2.onerror = function() {
-          this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+            this.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
         };
-        
-
-      } else {
-        
-      } 
+    }
+}
 
 
 
