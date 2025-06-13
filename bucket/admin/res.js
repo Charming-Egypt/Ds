@@ -3552,6 +3552,11 @@ function attachPayoutButtonHandler(userId, avPayoutElement) {
           utils.showToast('Payout request submitted successfully!', 'success');
           avPayoutElement.textContent = "EGP 0"; // Reset display
           showLoadingSpinner(false);
+          pendingBadge.classList.remove("hidden");
+  pendingBadge.style.display = "inline-block";
+  setTimeout(() => {
+    pendingBadge.firstElementChild.classList.remove("opacity-0", "scale-95");
+  }, 10);
         })
         .catch(error => {
            utils.showToast('Failed to submit payout request. Please try again later.', 'error');
