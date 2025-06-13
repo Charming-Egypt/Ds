@@ -798,7 +798,35 @@ function showBookingDetails(refNumber) {
 }
 
 
+function updateBookingStatus(refNumber, newStatus) {
+    const booking = allBookings.find(b => b.refNumber === refNumber);
+    if (!booking) {
+        showToast('Booking not found', 'error');
+        return;
+    }
 
+    // Show loading state
+    showLoading();
+
+    // Update status in Firebase
+    database.ref('trip-bookings/' + booking.key).update({
+        resStatus: newStatus,
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+    })
+    .then(() => {
+        showToast(`Booking status updated to ${newStatus}`, 'success');
+        // Update local data
+        booking.resStatus = newStatus;
+        applyFilters(); // Refresh table to reflect new status
+        updateDashboard(); // Update dashboard stats
+    })
+    .catch(error => {
+        showToast('Failed to update booking status: ' + error.message, 'error');
+    })
+    .finally(() => {
+        hideLoading();
+    });
+}
 
 
 function closeModal() {
@@ -853,7 +881,7 @@ function switchTab(tab) {
     // Update current filters
     currentFilters = {
         search: '',
-        status: tab === 'all' ? 'all' : tab,
+        status: tab === 'confirmed' ? 'all' : tab,
         date: defaultDate
     };
     
@@ -1283,35 +1311,7 @@ function filterByDate(bookings, date, activeTab) {
 
 
 
-function updateBookingStatus(refNumber, newStatus) {
-    const booking = allBookings.find(b => b.refNumber === refNumber);
-    if (!booking) {
-        showToast('Booking not found', 'error');
-        return;
-    }
 
-    // Show loading state
-    showLoading();
-
-    // Update status in Firebase
-    database.ref('trip-bookings/' + booking.key).update({
-        resStatus: newStatus,
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP
-    })
-    .then(() => {
-        showToast(`Booking status updated to ${newStatus}`, 'success');
-        // Update local data
-        booking.resStatus = newStatus;
-        applyFilters(); // Refresh table to reflect new status
-        updateDashboard(); // Update dashboard stats
-    })
-    .catch(error => {
-        showToast('Failed to update booking status: ' + error.message, 'error');
-    })
-    .finally(() => {
-        hideLoading();
-    });
-}
 
 
 
