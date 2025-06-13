@@ -2088,6 +2088,19 @@ loadpayout: (userId) => {
   }
 };
 
+
+const tourColors = [
+  { border: '#ffc107', background: 'rgba(255, 193, 7, 0.1)' },  // Amber
+  { border: '#4caf50', background: 'rgba(76, 175, 80, 0.1)' },  // Green
+  { border: '#2196f3', background: 'rgba(33, 150, 243, 0.1)' }, // Blue
+  { border: '#f44336', background: 'rgba(244, 67, 54, 0.1)' },  // Red
+  { border: '#ff9800', background: 'rgba(255, 152, 0, 0.1)' },  // Orange
+  { border: '#673ab7', background: 'rgba(103, 58, 183, 0.1)' }, // Purple
+];
+
+
+
+
 // Dashboard Functions
 const dashboardManager = {
   initCharts: () => {
