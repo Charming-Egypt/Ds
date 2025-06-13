@@ -179,46 +179,26 @@
 }
 
 
-/* Flatpickr Time Picker Styling */
-#pickupTimeInput {
-    background: rgba(55, 65, 81, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    width: 100%;
-    font-size: 1rem;
-    transition: all 0.2s;
-}
-
-#pickupTimeInput:focus {
-    outline: none;
-    border-color: rgba(251, 191, 36, 0.5);
-    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
-}
-
-.flatpickr-calendar {
-    background: #1f2937;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid #374151;
-}
-
+      /* Flatpickr Time Picker Customization */
 .flatpickr-time .numInputWrapper span.arrowUp:after {
-    border-bottom-color: #f59e0b;
+  border-bottom-color: #ffc107;
 }
-
 .flatpickr-time .numInputWrapper span.arrowDown:after {
-    border-top-color: #f59e0b;
+  border-top-color: #ffc107;
 }
-
+.flatpickr-time input:hover, 
+.flatpickr-time .flatpickr-am-pm:hover {
+  background: #333;
+}
 .flatpickr-time input {
-    color: white;
-    background: #1f2937;
+  color: white;
 }
-
-.flatpickr-time .flatpickr-am-pm:hover,
-.flatpickr-time .flatpickr-am-pm:focus {
-    background: #374151;
+.flatpickr-calendar {
+  background: #222;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.flatpickr-time .numInputWrapper {
+  width: 40%;
 }
     </style>
 </head>
