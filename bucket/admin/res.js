@@ -697,12 +697,12 @@ function showBookingDetails(refNumber) {
     }
 
     // In your showBookingDetails function:
-confirmButtonContainer.innerHTML = resStatus === 'new' ? `
-    <button onclick="updateBookingStatus('${escapedRefNumber}', 'confirmed')" 
-            class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
-        Confirm
-    </button>
-` : '';
+confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
+        <button onclick="updateBookingStatus('${escapedRefNumber}', 'confirmed')" 
+                class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+            Confirm
+        </button>
+    ` : '';
 
 
   
