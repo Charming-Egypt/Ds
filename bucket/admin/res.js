@@ -2485,7 +2485,8 @@ updatePackageChart: () => {
       filteredBookingData.forEach(booking => {
         if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
           const tourName = booking.tour;
-          const revenue = parseFloat(booking.netTotal) || 0;
+          const rcom = parseFloat(booking.netTotal *0.10) || 0;
+          const revenue = parseFloat(booking.netTotal - rcom) || 0;
           tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
         }
       });
