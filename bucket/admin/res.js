@@ -2268,34 +2268,39 @@ const dashboardManager = {
 
   // Package Performance Chart
     const packageCtx = elements.packagePerformanceChart?.getContext('2d');
-    if (packageCtx) {
-      Chart.register(ChartDataLabels);
-      packageChart = new Chart(packageCtx, {
+    const packageCtx = elements.packagePerformanceChart?.getContext('2d');
+if (packageCtx) {
+    packageChart = new Chart(packageCtx, {
         type: 'bar',
         data: {
-          labels: [],
-          datasets: [{
-            label: 'Revenue (EGP)',
-            data: [],
-            backgroundColor: '#ffc107',
-            borderColor: '#ffffff',
-            borderWidth: 1
-          }]
+            labels: [],
+            datasets: [{
+                label: 'Revenue (EGP)',
+                data: [],
+                backgroundColor: '#ffc107',
+                borderColor: '#ffffff',
+                borderWidth: 1
+            }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { color: '#f5f5f5', font: { size: 12 } } },
-            datalabels: { color: '#ffffff', anchor: 'end', align: 'top', formatter: (value) => `EGP ${value.toLocaleString()}` }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#f5f5f5', callback: (value) => `EGP ${value.toLocaleString()}` } },
-            x: { ticks: { color: '#f5f5f5' } }
-          }
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { color: '#f5f5f5', font: { size: 12 } } },
+                datalabels: { 
+                    color: '#ffffff', 
+                    anchor: 'end', 
+                    align: 'top', 
+                    formatter: (value) => `EGP ${value.toLocaleString()}` 
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: '#f5f5f5', callback: (value) => `EGP ${value.toLocaleString()}` } },
+                x: { ticks: { color: '#f5f5f5' } }
+            }
         }
-      });
-    }
+    });
+}
   },
 
 
@@ -2480,26 +2485,43 @@ const dashboardManager = {
 
 updatePackageChart: () => {
     try {
-      if (!packageChart) return;
-      const tourRevenue = {};
-      filteredBookingData.forEach(booking => {
-        if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
-          const tourName = booking.tour;
-          const rcom = parseFloat(booking.netTotal *0.10) || 0;
-          const revenue = parseFloat(booking.netTotal - rcom) || 0;
-          tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
+        if (!packageChart) return;
+
+        const tourRevenue = {};
+        filteredBookingData.forEach(booking => {
+            if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
+                const tourName = booking.tour;
+                const rcom = parseFloat(booking.netTotal * 0.10) || 0;
+                const revenue = parseFloat(booking.netTotal - rcom) || 0;
+                tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
+            }
+        });
+
+        const labels = Object.keys(tourRevenue);
+        const data = Object.values(tourRevenue);
+
+        if (labels.length === 0 || data.length === 0) {
+            packageChart.data.labels = ['No Data'];
+            packageChart.data.datasets[0].data = [0];
+            packageChart.data.datasets[0].backgroundColor = ['#666'];
+            packageChart.options.plugins.datalabels.display = false;
+        } else {
+            packageChart.data.labels = labels;
+            packageChart.data.datasets[0].data = data;
+            packageChart.data.datasets[0].backgroundColor = ['#ffc107'];
+            packageChart.options.plugins.datalabels.display = true;
         }
-      });
-      packageChart.data.labels = Object.keys(tourRevenue);
-      packageChart.data.datasets[0].data = Object.values(tourRevenue);
-      packageChart.update();
-      if (elements.packagePerformanceMetric) {
-        elements.packagePerformanceMetric.textContent = 'Updated: ' + new Date().toLocaleTimeString();
-      }
+
+        packageChart.update();
+
+        if (elements.packagePerformanceMetric) {
+            elements.packagePerformanceMetric.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+        }
     } catch (error) {
-      console.error("Error updating package performance chart:", error);
+        console.error("Error updating package performance chart:", error);
     }
-  },
+},
+  
 
   exportToExcel: () => {
     try {
