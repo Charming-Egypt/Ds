@@ -691,6 +691,21 @@ function showBookingDetails(refNumber) {
         }
     }
 
+// Populate status dropdown in footer
+    const statusDropdownContainer = document.getElementById('statusDropdownContainer');
+    if (statusDropdownContainer) {
+        const resStatus = escapeHtml(booking.resStatus || 'new');
+        statusDropdownContainer.innerHTML = `
+            <select onchange="updateBookingStatus('${escapedRefNumber}', this.value)" class="status-badge bg-gray-700 text-white rounded p-1">
+                <option disabled value="new" ${resStatus === 'new' ? 'selected' : ''}>New</option>
+                <option value="confirmed" ${resStatus === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="no show" ${resStatus === 'no show' ? 'selected' : ''}>No Show</option>
+            </select>
+        `;
+    }
+
+
+  
     const detailsHTML = `
         <div class="space-y-4">
             <!-- Booking Summary -->
@@ -798,7 +813,35 @@ function showBookingDetails(refNumber) {
 }
 
 
+function updateBookingStatus(refNumber, newStatus) {
+    const booking = allBookings.find(b => b.refNumber === refNumber);
+    if (!booking) {
+        showToast('Booking not found', 'error');
+        return;
+    }
+    
+    // Show loading state
+    showLoading();
 
+    // Update status in Firebase
+    database.ref('trip-bookings/' + booking.key).update({
+        resStatus: newStatus,
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+    })
+    .then(() => {
+        showToast(`Booking status updated to ${newStatus}`, 'success');
+        // Update local data
+        booking.resStatus = newStatus;
+        applyFilters(); // Refresh table to reflect new status
+        updateDashboard(); // Update dashboard stats
+    })
+    .catch(error => {
+        showToast('Failed to update booking status: ' + error.message, 'error');
+    })
+    .finally(() => {
+        hideLoading();
+    });
+}
 
 
 function closeModal() {
