@@ -2519,7 +2519,7 @@ const dashboardManager = {
           booking.resStatus?.toLowerCase() === 'confirmed' &&
           booking.tour &&
           booking.netTotal &&
-          booking.reservationDate
+          booking.tripDate
         ) {
           const tourName = booking.tour;
           const date = new Date(booking.reservationDate);
