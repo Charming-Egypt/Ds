@@ -835,7 +835,7 @@ function updateBookingStatus(refNumber, newStatus) {
         closeModal(); // Close modal after update
     })
     .catch(error => {
-        showToast('Failed to update booking status: ' + error.message), 'error');
+        showToast('Failed to update booking status: ' + error.message, 'error');
     })
     .then(() => {
         hideLoading();
