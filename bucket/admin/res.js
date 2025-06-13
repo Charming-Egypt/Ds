@@ -763,7 +763,7 @@ confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
                         ` : ''}
                     </div>
                 </div>
-                
+                ${booking.resStatus === 'confirmed' ? `
                 <!-- Customer Details -->
                 <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
                     <h4 class="font-medium mb-3 text-amber-400 border-b border-gray-700 pb-2">Customer Information</h4>
@@ -791,7 +791,7 @@ confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
                     </div>
                 </div>
             </div>
-            
+            ` : ''}
             <!-- Special Requests -->
             ${booking.tripType ? `
             <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
