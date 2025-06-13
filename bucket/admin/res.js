@@ -2309,6 +2309,7 @@ const dashboardManager = {
       dashboardManager.updateStatusChart();
       dashboardManager.updateTrendChart();
       dashboardManager.updateGuestChart();
+      dashboardManager.updatePackageChart();
       } catch (error) {
       console.error("Error processing booking data:", error);
     }
