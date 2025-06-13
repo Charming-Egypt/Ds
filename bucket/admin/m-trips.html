@@ -211,10 +211,16 @@
     <!-- CONTENT -->
     <section id="content">
         <!-- NAVBAR -->
-        <nav aria-label="Top navigation">
-            <button class="menu-toggle" aria-label="Toggle sidebar" aria-expanded="true">
-                <i class='bx bx-menu'></i>
-            </button>
+        <nav>
+            <i class='bx bx-menu'></i>
+            <form action="#" hidden>
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+            <input type="checkbox" id="switch-mode" hidden>
+            <label for="switch-mode" class="switch-mode"></label>
         </nav>
         <!-- NAVBAR -->
 
