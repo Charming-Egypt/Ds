@@ -2293,7 +2293,7 @@ const dashboardManager = {
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'top',
+              position: 'bottom',
               labels: {
                 color: '#f5f5f5',
                 font: { size: 12 },
@@ -2319,7 +2319,7 @@ const dashboardManager = {
               beginAtZero: true,
               ticks: {
                 color: '#f5f5f5',
-                callback: (value) => `EGP ${value.toLocaleString()}`
+                callback: (value) => `${value.toLocaleString()}`
               },
               grid: {
                 color: '#444',
