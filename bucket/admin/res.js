@@ -2272,20 +2272,8 @@ const dashboardManager = {
       packageChart = new Chart(packageCtx, {
         type: 'line',
         data: {
-          labels: [],
-          datasets: [{
-            label: 'Revenue (EGP)',
-            data: [],
-            backgroundColor: 'rgba(255, 193, 7, 0.1)',
-            borderColor: '#ffc107',
-            borderWidth: 2,
-            tension: 0.3,
-            fill: true,
-            pointBackgroundColor: '#ffa107',
-            pointBorderColor: '#333',
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: []
         },
         options: {
           responsive: true,
@@ -2295,7 +2283,8 @@ const dashboardManager = {
               position: 'top',
               labels: {
                 color: '#f5f5f5',
-                font: { size: 12 }
+                font: { size: 12 },
+                usePointStyle: true
               }
             },
             tooltip: {
@@ -2303,9 +2292,11 @@ const dashboardManager = {
               titleColor: '#ffc107',
               borderColor: '#666',
               borderWidth: 1,
+              mode: 'index',
+              intersect: false,
               callbacks: {
                 label: function(context) {
-                  return `EGP ${context.raw.toLocaleString()}`;
+                  return `${context.dataset.label}: EGP ${context.raw.toLocaleString()}`;
                 }
               }
             }
@@ -2517,33 +2508,72 @@ const dashboardManager = {
     }
   },
 
-updatePackageChart: () => {
+  updatePackageChart: () => {
     try {
       if (!packageChart) return;
 
-      const tourRevenue = {};
+      // Aggregate revenue by tour and month
+      const tourRevenueByMonth = {};
       filteredBookingData.forEach(booking => {
-        if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
+        if (
+          booking.resStatus?.toLowerCase() === 'confirmed' &&
+          booking.tour &&
+          booking.netTotal &&
+          booking.reservationDate
+        ) {
           const tourName = booking.tour;
+          const date = new Date(booking.reservationDate);
+          const month = date.toLocaleString('default', { month: 'short' });
           const rcom = parseFloat(booking.netTotal * 0.10) || 0;
           const revenue = parseFloat(booking.netTotal - rcom) || 0;
-          tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
+
+          if (!tourRevenueByMonth[tourName]) {
+            tourRevenueByMonth[tourName] = Array(12).fill(0);
+          }
+          const monthIndex = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].indexOf(month);
+          if (monthIndex !== -1) {
+            tourRevenueByMonth[tourName][monthIndex] += revenue;
+          }
         }
       });
 
-      const labels = Object.keys(tourRevenue);
-      const data = Object.values(tourRevenue);
+      // Create datasets for each tour
+      const datasets = Object.keys(tourRevenueByMonth).map((tourName, index) => {
+        const color = tourColors[index % tourColors.length];
+        return {
+          label: tourName,
+          data: tourRevenueByMonth[tourName],
+          backgroundColor: color.background,
+          borderColor: color.border,
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: color.border,
+          pointBorderColor: '#333',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        };
+      });
 
-      if (labels.length === 0 || data.length === 0) {
+      // Update chart data
+      if (datasets.length === 0) {
         packageChart.data.labels = ['No Data'];
-        packageChart.data.datasets[0].data = [0];
-        packageChart.data.datasets[0].backgroundColor = ['rgba(102, 102, 102, 0.1)'];
-        packageChart.data.datasets[0].borderColor = ['#666'];
+        packageChart.data.datasets = [{
+          label: 'No Data',
+          data: [0],
+          backgroundColor: 'rgba(102, 102, 102, 0.1)',
+          borderColor: '#666',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: '#666',
+          pointBorderColor: '#333',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }];
       } else {
-        packageChart.data.labels = labels;
-        packageChart.data.datasets[0].data = data;
-        packageChart.data.datasets[0].backgroundColor = ['rgba(255, 193, 7, 0.1)'];
-        packageChart.data.datasets[0].borderColor = ['#ffc107'];
+        packageChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        packageChart.data.datasets = datasets;
       }
 
       packageChart.update();
