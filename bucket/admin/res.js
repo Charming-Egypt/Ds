@@ -2720,8 +2720,7 @@ updatePackageChart: () => {
     dashboardManager.updateTrendChart();
     dashboardManager.updateGuestChart();
     dashboardManager.updatePackageChart();
-  }
-};
+  },
 
   initDateRangePicker: () => {
     const pickerElement = document.getElementById('dateRangePicker');
