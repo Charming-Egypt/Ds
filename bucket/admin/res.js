@@ -127,6 +127,7 @@ const elements = {
     let flatpickrInstance = null;
     let activeTab = 'all';
     let currentPage = 1;
+    let currentBookingToConfirm = null;
     const itemsPerPage = 10;
     let currentFilters = {
         search: '',
@@ -695,16 +696,13 @@ function showBookingDetails(refNumber) {
         }
     }
 
-    // Populate confirm button in footer
-    const confirmButtonContainer = document.getElementById('confirmButtonContainer');
-    if (confirmButtonContainer) {
-        const resStatus = booking.resStatus?.toLowerCase() || 'new';
-        confirmButtonContainer.innerHTML = resStatus === 'new' ? `
-            <button onclick="updateBookingStatus('${escapedRefNumber}', 'confirmed')" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
-                Confirm
-            </button>
-        ` : '';
-    }
+    // In your showBookingDetails function:
+confirmButtonContainer.innerHTML = resStatus === 'new' ? `
+    <button onclick="updateBookingStatus('${escapedRefNumber}', 'confirmed')" 
+            class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+        Confirm
+    </button>
+` : '';
 
 
   
@@ -815,36 +813,120 @@ function showBookingDetails(refNumber) {
 }
 
 
+
+function showPickupTimeModal(refNumber) {
+    currentBookingToConfirm = refNumber;
+    const modal = document.getElementById('pickupTimeModal');
+    modal.classList.remove('hidden');
+    
+    // Reset the time input
+    document.getElementById('pickupTimeInput').value = '';
+    
+    // Force reflow to enable animation
+    void modal.offsetWidth;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function hidePickupTimeModal() {
+    const modal = document.getElementById('pickupTimeModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }, 300);
+}
+
 function updateBookingStatus(refNumber, newStatus) {
+    if (newStatus === 'confirmed') {
+        showPickupTimeModal(refNumber);
+        return;
+    }
+    
+    // Existing code for other status updates
     const booking = allBookings.find(b => b.refNumber === refNumber);
     if (!booking) {
         utils.showToast('Booking not found', 'error');
         return;
     }
     
-    // Show loading state
     showLoading();
 
-    // Update status in Firebase
     database.ref('trip-bookings/' + booking.key).update({
-        resStatus: newStatus,
-        
+        resStatus: newStatus
     })
     .then(() => {
         utils.showToast(`Booking status updated to ${newStatus}`, 'success');
-        // Update local data
         booking.resStatus = newStatus;
-        applyFilters(); // Refresh table to reflect new status
-        updateDashboard(); // Update dashboard stats
-        closeModal(); // Close modal after update
+        applyFilters();
+        updateDashboard();
+        closeModal();
     })
     .catch(error => {
         utils.showToast("Failed to update booking status", "error");
     })
-    .then(() => {
+    .finally(() => {
         hideLoading();
     });
 }
+
+// Add event listeners for the pickup time modal
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmWithPickupBtn = document.getElementById('confirmWithPickupTime');
+    const cancelPickupBtn = document.getElementById('cancelPickupTime');
+    const pickupModalCloseBtn = document.getElementById('pickupModalCloseButton');
+    
+    if (confirmWithPickupBtn) {
+        confirmWithPickupBtn.addEventListener('click', function() {
+            const pickupTime = document.getElementById('pickupTimeInput').value;
+            
+            if (!pickupTime) {
+                utils.showToast('Please enter a pickup time', 'error');
+                return;
+            }
+            
+            const booking = allBookings.find(b => b.refNumber === currentBookingToConfirm);
+            if (!booking) {
+                utils.showToast('Booking not found', 'error');
+                hidePickupTimeModal();
+                return;
+            }
+            
+            showLoading();
+            hidePickupTimeModal();
+
+            database.ref('trip-bookings/' + booking.key).update({
+                resStatus: 'confirmed',
+                pickuptime: pickupTime
+            })
+            .then(() => {
+                utils.showToast('Booking confirmed with pickup time!', 'success');
+                booking.resStatus = 'confirmed';
+                booking.pickuptime = pickupTime;
+                applyFilters();
+                updateDashboard();
+                closeModal();
+            })
+            .catch(error => {
+                utils.showToast("Failed to confirm booking", "error");
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        });
+    }
+    
+    if (cancelPickupBtn) {
+        cancelPickupBtn.addEventListener('click', hidePickupTimeModal);
+    }
+    
+    if (pickupModalCloseBtn) {
+        pickupModalCloseBtn.addEventListener('click', hidePickupTimeModal);
+    }
+});
+
+
 
 function closeModal() {
     const modal = document.getElementById('bookingDetailsModal');
