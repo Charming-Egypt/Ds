@@ -125,12 +125,12 @@ const elements = {
     let currentUser = null;
     let realTimeListener = null;
     let flatpickrInstance = null;
-    let activeTab = 'all';
+    let activeTab = 'new';
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentFilters = {
         search: '',
-        status: 'all',
+        status: 'new',
         date: null
     };
 
@@ -3147,6 +3147,7 @@ const initApp = () => {
         tripManager.loadpayout(user.uid);
         setupEventListeners();
         loadAllPayoutEvents();
+        initBookingSystem();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
