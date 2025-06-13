@@ -814,35 +814,107 @@ confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
 
 
 
-let pickupTimePicker; // Store Flatpickr instance globally
+function showPickupTimeModal(refNumber) {
+    currentBookingToConfirm = refNumber;
+    const modal = document.getElementById('pickupTimeModal');
+    modal.classList.remove('hidden');
+    
+    // Reset the time input
+    document.getElementById('pickupTimeInput').value = '';
+    
+    // Force reflow to enable animation
+    void modal.offsetWidth;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Flatpickr when DOM is loaded
-    pickupTimePicker = flatpickr("#pickupTimeInput", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true,
-        minuteIncrement: 15,
-        defaultHour: 8,
-        defaultMinute: 0,
-        onReady: function(selectedDates, dateStr, instance) {
-            // Prevent auto-translation of time elements
-            const elements = [
-                instance.calendarContainer,
-                ...instance.calendarContainer.querySelectorAll('.flatpickr-time .numInputWrapper, .flatpickr-time .flatpickr-am-pm')
-            ];
-            elements.forEach(el => el?.setAttribute('translate', 'no'));
-        }
+function hidePickupTimeModal() {
+    const modal = document.getElementById('pickupTimeModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }, 300);
+}
+
+function updateBookingStatus(refNumber, newStatus) {
+    if (newStatus === 'confirmed') {
+        showPickupTimeModal(refNumber);
+        return;
+    }
+    
+    // Existing code for other status updates
+    const booking = allBookings.find(b => b.refNumber === refNumber);
+    if (!booking) {
+        utils.showToast('Booking not found', 'error');
+        return;
+    }
+    
+    showLoading();
+
+    database.ref('trip-bookings/' + booking.key).update({
+        resStatus: newStatus
+    })
+    .then(() => {
+        utils.showToast(`Booking status updated to ${newStatus}`, 'success');
+        booking.resStatus = newStatus;
+        applyFilters();
+        updateDashboard();
+        closeModal();
+    })
+    .catch(error => {
+        utils.showToast("Failed to update booking status", "error");
+    })
+    .finally(() => {
+        hideLoading();
     });
+}
 
-    // Event listeners for modal buttons
+// Add event listeners for the pickup time modal
+document.addEventListener('DOMContentLoaded', function() {
     const confirmWithPickupBtn = document.getElementById('confirmWithPickupTime');
     const cancelPickupBtn = document.getElementById('cancelPickupTime');
     const pickupModalCloseBtn = document.getElementById('pickupModalCloseButton');
     
     if (confirmWithPickupBtn) {
-        confirmWithPickupBtn.addEventListener('click', confirmPickupTime);
+        confirmWithPickupBtn.addEventListener('click', function() {
+            const pickupTime = document.getElementById('pickupTimeInput').value;
+            
+            if (!pickupTime) {
+                utils.showToast('Please enter a pickup time', 'error');
+                return;
+            }
+            
+            const booking = allBookings.find(b => b.refNumber === currentBookingToConfirm);
+            if (!booking) {
+                utils.showToast('Booking not found', 'error');
+                hidePickupTimeModal();
+                return;
+            }
+            
+            showLoading();
+            hidePickupTimeModal();
+
+            database.ref('trip-bookings/' + booking.key).update({
+                resStatus: 'confirmed',
+                pickuptime: pickupTime
+            })
+            .then(() => {
+                utils.showToast('Booking confirmed with pickup time!', 'success');
+                booking.resStatus = 'confirmed';
+                booking.pickuptime = pickupTime;
+                applyFilters();
+                updateDashboard();
+                closeModal();
+            })
+            .catch(error => {
+                utils.showToast("Failed to confirm booking", "error");
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        });
     }
     
     if (cancelPickupBtn) {
@@ -853,85 +925,6 @@ document.addEventListener('DOMContentLoaded', function() {
         pickupModalCloseBtn.addEventListener('click', hidePickupTimeModal);
     }
 });
-
-function showPickupTimeModal(refNumber) {
-    currentBookingToConfirm = refNumber;
-    const modal = document.getElementById('pickupTimeModal');
-    
-    // Reset and configure Flatpickr
-    pickupTimePicker.clear();
-    pickupTimePicker.set('minTime', '06:00');
-    pickupTimePicker.set('maxTime', '23:00');
-    
-    // Show modal
-    modal.style.display = 'flex';
-    void modal.offsetWidth; // Trigger reflow for animation
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-    
-    // Focus and open time picker immediately
-    setTimeout(() => {
-        document.getElementById('pickupTimeInput').focus();
-        pickupTimePicker.open();
-    }, 100);
-}
-
-function hidePickupTimeModal() {
-    const modal = document.getElementById('pickupTimeModal');
-    modal.classList.remove('show');
-    
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-        pickupTimePicker.close();
-    }, 300);
-}
-
-function confirmPickupTime() {
-    const pickupTime = document.getElementById('pickupTimeInput').value;
-    
-    if (!pickupTime) {
-        utils.showToast('Please select a pickup time', 'error');
-        return;
-    }
-    
-    const booking = allBookings.find(b => b.refNumber === currentBookingToConfirm);
-    if (!booking) {
-        utils.showToast('Booking not found', 'error');
-        hidePickupTimeModal();
-        return;
-    }
-    
-    showLoading();
-    hidePickupTimeModal();
-
-    database.ref('trip-bookings/' + booking.key).update({
-        resStatus: 'confirmed',
-        pickuptime: pickupTime,
-        lastUpdated: firebase.database.ServerValue.TIMESTAMP
-    })
-    .then(() => {
-        utils.showToast('Booking confirmed with pickup time!', 'success');
-        booking.resStatus = 'confirmed';
-        booking.pickuptime = pickupTime;
-        applyFilters();
-        updateDashboard();
-        closeModal();
-    })
-    .catch(error => {
-        utils.showToast("Failed to confirm booking: " + error.message, "error");
-        console.error("Booking confirmation error:", error);
-    })
-    .finally(() => {
-        hideLoading();
-    });
-}
-
-
-
-
-
-
 
 
 
