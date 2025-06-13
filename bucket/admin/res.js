@@ -125,12 +125,12 @@ const elements = {
     let currentUser = null;
     let realTimeListener = null;
     let flatpickrInstance = null;
-    let activeTab = 'new';
+    let activeTab = null;
     let currentPage = 1;
     const itemsPerPage = 10;
     let currentFilters = {
         search: '',
-        status: 'new',
+        status: null,
         date: null
     };
 
@@ -146,7 +146,7 @@ const state = {
   currentUserRole: null,
   allTrips: {},
   currentPage: 1,
-  tripsPerPage: 10,
+  tripsPerPage: 5,
   tripsCache: null,
   lastFetchTime: 0
 };
