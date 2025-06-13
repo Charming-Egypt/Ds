@@ -2268,7 +2268,6 @@ const dashboardManager = {
 
   // Package Performance Chart
     const packageCtx = elements.packagePerformanceChart?.getContext('2d');
-    const packageCtx = elements.packagePerformanceChart?.getContext('2d');
 if (packageCtx) {
     packageChart = new Chart(packageCtx, {
         type: 'bar',
@@ -2300,7 +2299,7 @@ if (packageCtx) {
             }
         }
     });
-
+}
   },
 
 
