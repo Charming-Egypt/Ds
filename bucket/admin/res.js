@@ -15,7 +15,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 
 // Chart Variables
-let statusChart, trendChart, guestChart ;
+let statusChart, trendChart, guestChart, packageChart ;
 let currentPeriod = 'week';
 let bookingData = [];
 let filteredBookingData = [];
@@ -32,6 +32,7 @@ const elements = {
   name: document.getElementById('name'),
   bookingLink: document.getElementById('bookingLink'),
   price: document.getElementById('price'),
+  cprice: document.getElementById('cprice'),
   duration: document.getElementById('duration'),
   category: document.getElementById('category'),
   mainImage: document.getElementById('mainImage'),
@@ -78,11 +79,11 @@ const elements = {
   trendUpdated: document.getElementById('trendUpdated'),
   guestUpdated: document.getElementById('guestUpdated'),
   dateRangePicker: document.getElementById('dateRangePicker'),
+  packagePerformanceChart: document.getElementById('packagePerformanceChart'),
   packagePerformanceMetric: document.getElementById('packagePerformanceMetric'),
   exportData: document.getElementById('exportData'),
   dashboardTab: document.getElementById('dashboardTab'),
   dashboardSection: document.getElementById('dashboardSection'),
-
   payoutMethod: document.getElementById("payoutMethod"),
   payoutName: document.getElementById("payoutName"),
   accountNumber: document.getElementById("accountNumber"),
@@ -1450,7 +1451,6 @@ const tripManager = {
     elements.tripListTab.classList.add('tab-active');
     elements.tripEditorTab.classList.remove('tab-active');
   },
-
   showEditorSection: () => {
     elements.tripListSection.classList.add('hidden');
     elements.tripEditorSection.classList.remove('hidden');
@@ -1770,6 +1770,7 @@ loadpayout: (userId) => {
     elements.name.value = tripData.name || '';
     elements.bookingLink.value = tripId || '';
     elements.price.value = tripData.price || '';
+    elements.cprice.value = tripData.cprice || '';
     elements.duration.value = tripData.duration || '';
     elements.category.value = tripData.category || '';
     elements.mainImage.value = tripData.image || '';
@@ -1865,6 +1866,7 @@ loadpayout: (userId) => {
       name: utils.sanitizeInput(elements.name.value),
       bookingLink: utils.sanitizeInput(elements.bookingLink.value),
       price: parseFloat(utils.sanitizeInput(elements.price.value)),
+      cprice: parseFloat(utils.sanitizeInput(elements.cprice.value)) || 0,
       duration: utils.sanitizeInput(elements.duration.value),
       category: utils.sanitizeInput(elements.category.value),
       image: utils.sanitizeInput(elements.mainImage.value),
@@ -2264,6 +2266,36 @@ const dashboardManager = {
     }
 
 
+  // Package Performance Chart
+    const packageCtx = elements.packagePerformanceChart?.getContext('2d');
+    if (packageCtx) {
+      Chart.register(ChartDataLabels);
+      packageChart = new Chart(packageCtx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Revenue (EGP)',
+            data: [],
+            backgroundColor: '#ffc107',
+            borderColor: '#ffffff',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#f5f5f5', font: { size: 12 } } },
+            datalabels: { color: '#ffffff', anchor: 'end', align: 'top', formatter: (value) => `EGP ${value.toLocaleString()}` }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#f5f5f5', callback: (value) => `EGP ${value.toLocaleString()}` } },
+            x: { ticks: { color: '#f5f5f5' } }
+          }
+        }
+      });
+    }
   },
 
 
@@ -2445,7 +2477,27 @@ const dashboardManager = {
     }
   },
 
-
+updatePackageChart: () => {
+    try {
+      if (!packageChart) return;
+      const tourRevenue = {};
+      filteredBookingData.forEach(booking => {
+        if (booking.resStatus?.toLowerCase() === 'confirmed' && booking.tour && booking.netTotal) {
+          const tourName = booking.tour;
+          const revenue = parseFloat(booking.netTotal) || 0;
+          tourRevenue[tourName] = (tourRevenue[tourName] || 0) + revenue;
+        }
+      });
+      packageChart.data.labels = Object.keys(tourRevenue);
+      packageChart.data.datasets[0].data = Object.values(tourRevenue);
+      packageChart.update();
+      if (elements.packagePerformanceMetric) {
+        elements.packagePerformanceMetric.textContent = 'Updated: ' + new Date().toLocaleTimeString();
+      }
+    } catch (error) {
+      console.error("Error updating package performance chart:", error);
+    }
+  },
 
   exportToExcel: () => {
     try {
@@ -2667,8 +2719,9 @@ const dashboardManager = {
     dashboardManager.updateStatusChart();
     dashboardManager.updateTrendChart();
     dashboardManager.updateGuestChart();
-
-  },
+    dashboardManager.updatePackageChart();
+  }
+};
 
   initDateRangePicker: () => {
     const pickerElement = document.getElementById('dateRangePicker');
@@ -2869,7 +2922,14 @@ const setupEventListeners = () => {
   }
   
   // Common event listeners
-  if (elements.cancelBtn) elements.cancelBtn.addEventListener('click', tripManager.showListSection);
+  if (elements.cancelBtn) {
+    elements.cancelBtn.addEventListener('click', () => {
+      tripManager.resetForm();
+      tripManager.showListSection();
+    });
+  }
+  
+  
   if (elements.logoutBtn) elements.logoutBtn.addEventListener('click', () => {
     auth.signOut().then(() => {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
@@ -3421,3 +3481,36 @@ function showLoadingSpinner(show) {
   if (!spinner) return;
   spinner.style.display = show ? "flex" : "none";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+    
+    
+  
+
+  
+  
