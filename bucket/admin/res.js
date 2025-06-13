@@ -800,6 +800,9 @@ confirmButtonContainer.innerHTML = booking.resStatus === 'new' ? `
             </div>
             ` : ''}
         </div>
+        <div>
+        <p class="text-sm mt-4 text-gray-400">Guest Details available only in confirmed reservations.</p>
+        </div>
     `;
     
     bookingDetailsContent.innerHTML = detailsHTML;
