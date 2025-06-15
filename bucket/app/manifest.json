@@ -11,8 +11,8 @@
   "scope": "/",
   "display": "standalone",
   "prefer_related_applications": true,
-  "background_color": "#212121",
-  "theme_color": "#212121",
+  "background_color": "#1E1E1E",
+  "theme_color": "#1E1E1E",
   "icons": [
     {
       "src": "icons/favicon.ico",
