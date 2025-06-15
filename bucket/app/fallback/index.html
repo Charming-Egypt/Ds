@@ -8,19 +8,35 @@
   <link rel="icon" href="/app/icons/favicon.ico" type="image/x-icon">
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --background: #0f172a;
-      --surface: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-secondary: #94a3b8;
+      --primary: #FFC107; /* Vibrant amber */
+      --primary-dark: #FFA000;
+      --background: #121212;
+      --surface: #1E1E1E;
+      --surface-light: #2A2A2A;
+      --border: #333333;
+      --text: #FFFFFF;
+      --text-secondary: #BDBDBD;
+      --error: #FF5252;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      src: url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2');
+    }
+
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      src: url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2');
     }
 
     body {
@@ -35,75 +51,133 @@
       line-height: 1.5;
     }
 
+    .error-container {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 480px;
+    }
+
     .error-card {
       background: var(--surface);
-      border-radius: 1rem;
+      border-radius: 16px;
       padding: 2.5rem;
-      max-width: 480px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
-                  0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 
+                  0 8px 10px -6px rgba(0, 0, 0, 0.2);
       border: 1px solid var(--border);
-      transform: translateY(0);
-      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
     }
 
     .error-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-5px) rotateX(5deg);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4), 
+                  0 12px 15px -8px rgba(0, 0, 0, 0.3);
+    }
+
+    .error-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary);
+      background: linear-gradient(90deg, var(--primary), #FF9800);
     }
 
     .error-icon {
       margin: 0 auto 1.5rem;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: rgba(220, 38, 38, 0.1);
+      background-color: rgba(255, 193, 7, 0.1);
       border-radius: 50%;
-      color: #ef4444;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
     }
 
     .error-icon svg {
-      width: 48px;
-      height: 48px;
+      width: 60px;
+      height: 60px;
+      color: var(--primary);
+    }
+
+    .error-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px dashed var(--primary);
+      border-radius: 50%;
+      animation: spin 15s linear infinite;
+      opacity: 0.3;
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
+      background: linear-gradient(to right, var(--primary), #FF9800);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
     }
 
     .error-description {
       color: var(--text-secondary);
       margin-bottom: 2rem;
       font-size: 1rem;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .reload-button {
       background: var(--primary);
-      color: white;
+      color: #121212;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 2rem;
       font-size: 1rem;
-      font-weight: 500;
-      border-radius: 0.5rem;
+      font-weight: 600;
+      border-radius: 12px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 
-                  0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      gap: 0.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px rgba(255, 193, 7, 0.2);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .reload-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      z-index: -1;
+      transition: opacity 0.3s ease;
+      opacity: 0;
     }
 
     .reload-button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-                  0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    .reload-button:hover::before {
+      opacity: 1;
     }
 
     .reload-button:active {
@@ -113,7 +187,82 @@
     .reload-icon {
       width: 20px;
       height: 20px;
-      animation: spin 1s linear infinite;
+      animation: spin 1.5s linear infinite;
+    }
+
+    .troubleshoot-tips {
+      margin-top: 2.5rem;
+      text-align: left;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      background: var(--surface-light);
+      padding: 1.5rem;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .troubleshoot-tips::before {
+      content: '💡';
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      font-size: 1.5rem;
+      background: var(--surface);
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .troubleshoot-tips h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .troubleshoot-tips ul {
+      padding-left: 1.5rem;
+    }
+
+    .troubleshoot-tips li {
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .troubleshoot-tips li::before {
+      content: '→';
+      position: absolute;
+      left: -1.25rem;
+      color: var(--primary);
+    }
+
+    .connection-status {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--error);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     @keyframes spin {
@@ -121,92 +270,207 @@
       to { transform: rotate(360deg); }
     }
 
-    .troubleshoot-tips {
-      margin-top: 2rem;
-      text-align: left;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
-    .troubleshoot-tips h3 {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-
-    .troubleshoot-tips ul {
-      padding-left: 1.25rem;
-    }
-
-    .troubleshoot-tips li {
-      margin-bottom: 0.25rem;
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .error-card {
+        padding: 2rem 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .error-icon {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .error-icon svg {
+        width: 50px;
+        height: 50px;
+      }
     }
 
     @media (max-width: 480px) {
       .error-card {
-        padding: 1.5rem;
+        padding: 1.75rem 1.25rem;
+        border-radius: 12px;
       }
       
       h1 {
         font-size: 1.25rem;
       }
+      
+      .error-description {
+        max-width: 100%;
+        font-size: 0.9375rem;
+      }
+      
+      .reload-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9375rem;
+      }
+      
+      .troubleshoot-tips {
+        padding: 1.25rem;
+      }
+    }
+
+    /* Dark/light mode toggle (bonus feature) */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text);
     }
   </style>
 </head>
 
 <body>
-  <div class="error-card">
-    <div class="error-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-      </svg>
+  <div class="error-container">
+    <div class="error-card">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+        </svg>
+      </div>
+      
+      <h1>Connection Lost</h1>
+      <p class="error-description">
+        We're unable to connect to our servers. This might be due to network issues or server maintenance.
+      </p>
+      
+      <button class="reload-button" id="reloadButton">
+        <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reconnect Now
+      </button>
+      
+      <div class="connection-status">
+        <div class="status-indicator"></div>
+        <span>No internet connection detected</span>
+      </div>
+      
+      <div class="troubleshoot-tips">
+        <h3>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          Troubleshooting Tips
+        </h3>
+        <ul>
+          <li>Check your Wi-Fi or mobile data connection</li>
+          <li>Restart your router or toggle airplane mode</li>
+          <li>Disable any VPN or proxy services</li>
+          <li>Try again in a few minutes</li>
+        </ul>
+      </div>
     </div>
-    
-    <h1>Connection Error</h1>
-    <p class="error-description">
-      We couldn't establish a connection to the server. Please check your internet connection and try again.
-    </p>
-    
-    <button class="reload-button" id="reloadButton">
-      <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Reload Page
-    </button>
-    
-    <div class="troubleshoot-tips">
-      <h3>Quick troubleshooting:</h3>
-      <ul>
-        <li>Check your Wi-Fi or mobile data connection</li>
-        <li>Restart your router if you're on Wi-Fi</li>
-        <li>Disable any VPN or proxy services</li>
-        <li>Try again in a few minutes</li>
-      </ul>
-    </div>
+  </div>
+
+  <!-- Bonus: Dark/Light mode toggle -->
+  <div class="theme-toggle" id="themeToggle">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
   </div>
 
   <script>
     const reloadButton = document.getElementById('reloadButton');
+    const themeToggle = document.getElementById('themeToggle');
     
+    // Enhanced reload functionality
     reloadButton.addEventListener('click', () => {
-      // Add loading state
       reloadButton.disabled = true;
       reloadButton.innerHTML = `
         <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
-        Trying to reconnect...
+        Connecting...
       `;
+      
+      // Simulate connection attempt
+      setTimeout(() => {
+        if(navigator.onLine) {
+          window.location.reload();
+        } else {
+          reloadButton.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            Failed to connect
+          `;
+          setTimeout(() => {
+            reloadButton.disabled = false;
+            reloadButton.innerHTML = `
+              <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Try Again
+            `;
+          }, 1500);
+        }
+      }, 2000);
+    });
+    
+    // Auto-reload when connection is restored
+    window.addEventListener('online', () => {
+      const statusIndicator = document.querySelector('.status-indicator');
+      const statusText = document.querySelector('.connection-status span');
+      
+      statusIndicator.style.background = '#4CAF50';
+      statusIndicator.style.animation = 'none';
+      statusText.textContent = 'Connection restored! Reloading...';
       
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     });
     
-    // Auto-reload when connection is restored
-    window.addEventListener('online', () => {
-      window.location.reload();
+    // Bonus: Theme toggle functionality
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('light-mode');
+      
+      // You would need to add light mode styles if implementing fully
+      // This is just a basic toggle example
+      if(document.documentElement.classList.contains('light-mode')) {
+        themeToggle.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        `;
+      } else {
+        themeToggle.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        `;
+      }
     });
   </script>
 </body>
