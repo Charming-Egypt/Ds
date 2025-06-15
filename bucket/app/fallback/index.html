@@ -8,7 +8,7 @@
   <link rel="icon" href="/app/icons/favicon.ico" type="image/x-icon">
   <style>
     :root {
-      --primary: #FFC107; /* Amber */
+      --primary: #FFC107; /* Vibrant amber */
       --primary-dark: #FFA000;
       --background: #121212;
       --surface: #1E1E1E;
@@ -38,15 +38,39 @@
       line-height: 1.5;
     }
 
+    .error-container {
+      width: 100%;
+      max-width: 480px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
     .error-card {
       background: var(--surface);
       border-radius: 16px;
       padding: 2.5rem;
-      max-width: 480px;
       width: 100%;
       text-align: center;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
+      transform: translateY(0);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .error-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), #FF9800);
     }
 
     .error-icon {
@@ -58,6 +82,8 @@
       justify-content: center;
       background-color: rgba(255, 193, 7, 0.1);
       border-radius: 50%;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
     }
 
     .error-icon svg {
@@ -66,17 +92,35 @@
       color: var(--primary);
     }
 
+    .error-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px dashed var(--primary);
+      border-radius: 50%;
+      animation: spin 15s linear infinite;
+      opacity: 0.3;
+    }
+
     h1 {
       font-size: 1.75rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
-      color: var(--primary);
+      background: linear-gradient(to right, var(--primary), #FF9800);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
     }
 
     .error-description {
       color: var(--text-secondary);
       margin-bottom: 2rem;
       font-size: 1rem;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .reload-button {
@@ -91,11 +135,15 @@
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
-      transition: transform 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px rgba(255, 193, 7, 0.2);
+      position: relative;
+      overflow: hidden;
     }
 
     .reload-button:hover {
       transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
     }
 
     .reload-button:active {
@@ -105,6 +153,42 @@
     .reload-icon {
       width: 20px;
       height: 20px;
+    }
+
+    .troubleshoot-tips {
+      margin-top: 2.5rem;
+      text-align: left;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      background: var(--surface-light);
+      padding: 1.5rem;
+      border-radius: 12px;
+    }
+
+    .troubleshoot-tips h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .troubleshoot-tips ul {
+      padding-left: 1.5rem;
+    }
+
+    .troubleshoot-tips li {
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .troubleshoot-tips li::before {
+      content: '→';
+      position: absolute;
+      left: -1.25rem;
+      color: var(--primary);
     }
 
     .connection-status {
@@ -122,33 +206,34 @@
       height: 10px;
       border-radius: 50%;
       background: var(--error);
+      animation: pulse 2s infinite;
     }
 
-    .troubleshoot-tips {
-      margin-top: 2rem;
-      text-align: left;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
-    .troubleshoot-tips h3 {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--primary);
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .troubleshoot-tips ul {
-      padding-left: 1.25rem;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
-    .troubleshoot-tips li {
-      margin-bottom: 0.25rem;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 480px) {
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
       .error-card {
-        padding: 1.5rem;
+        padding: 2rem 1.5rem;
       }
       
       h1 {
@@ -165,41 +250,76 @@
         height: 50px;
       }
     }
+
+    @media (max-width: 480px) {
+      .error-card {
+        padding: 1.75rem 1.25rem;
+        border-radius: 12px;
+      }
+      
+      h1 {
+        font-size: 1.25rem;
+      }
+      
+      .error-description {
+        max-width: 100%;
+        font-size: 0.9375rem;
+      }
+      
+      .reload-button {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9375rem;
+      }
+      
+      .troubleshoot-tips {
+        padding: 1.25rem;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="error-card">
-    <div class="error-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-      </svg>
-    </div>
-    
-    <h1>Connection Error</h1>
-    <p class="error-description">
-      We couldn't establish a connection to the server. Please check your internet connection.
-    </p>
-    
-    <button class="reload-button" id="reloadButton">
-      <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Reload Page
-    </button>
-    
-    <div class="connection-status">
-      <div class="status-indicator" id="statusIndicator"></div>
-      <span id="statusText">No internet connection</span>
-    </div>
-    
-    <div class="troubleshoot-tips">
-      <h3>Troubleshooting Tips</h3>
-      <ul>
-        <li>Check your Wi-Fi or mobile data connection</li>
-        <li>Restart your router or device</li>
-        <li>Disable any VPN or proxy services</li>
-      </ul>
+  <div class="error-container">
+    <div class="error-card">
+      <div class="error-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+        </svg>
+      </div>
+      
+      <h1>Connection Lost</h1>
+      <p class="error-description">
+        We're unable to connect to our servers. This might be due to network issues or server maintenance.
+      </p>
+      
+      <button class="reload-button" id="reloadButton">
+        <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reconnect Now
+      </button>
+      
+      <div class="connection-status">
+        <div class="status-indicator" id="statusIndicator"></div>
+        <span id="statusText">No internet connection detected</span>
+      </div>
+      
+      <div class="troubleshoot-tips">
+        <h3>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          Troubleshooting Tips
+        </h3>
+        <ul>
+          <li>Check your Wi-Fi or mobile data connection</li>
+          <li>Restart your router or toggle airplane mode</li>
+          <li>Disable any VPN or proxy services</li>
+          <li>Try again in a few minutes</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -208,31 +328,31 @@
     const statusIndicator = document.getElementById('statusIndicator');
     const statusText = document.getElementById('statusText');
 
-    // Check connection status immediately
-    updateConnectionStatus();
-    
-    // Update connection status when it changes
-    window.addEventListener('online', updateConnectionStatus);
-    window.addEventListener('offline', updateConnectionStatus);
-    
-    // Simple reload button functionality
-    reloadButton.addEventListener('click', () => {
-      window.location.reload();
-    });
-    
+    // Update connection status on load and when it changes
     function updateConnectionStatus() {
       if (navigator.onLine) {
         statusIndicator.style.background = 'var(--success)';
-        statusText.textContent = 'Connection restored!';
-        // Auto-reload when connection comes back
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        statusIndicator.style.animation = 'none';
+        statusText.textContent = 'Connection restored! Reloading...';
+        setTimeout(() => window.location.reload(), 1000);
       } else {
         statusIndicator.style.background = 'var(--error)';
-        statusText.textContent = 'No internet connection';
+        statusIndicator.style.animation = 'pulse 2s infinite';
+        statusText.textContent = 'No internet connection detected';
       }
     }
+
+    // Set initial status
+    updateConnectionStatus();
+    
+    // Listen for connection changes
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Simple reload functionality
+    reloadButton.addEventListener('click', () => {
+      window.location.reload();
+    });
   </script>
 </body>
 
