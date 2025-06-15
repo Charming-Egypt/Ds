@@ -35,7 +35,7 @@ if ('serviceWorker' in navigator) {
       if (registration.active?.scriptURL) {
         logs.push([`Script:  ${registration.active.scriptURL}`]);
       }
-      logs.push(['Build by: Fineshop Design'], ['Developer site: https://fineshopdesign.com']);
+      logs.push(['Build by: Discover Sharm'], ['Developer site: https//www.discover-sharm.com']);
 
       groupLog(['%cService Worker: Registered Successfully', 'color: green'], logs);
     })
