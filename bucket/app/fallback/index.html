@@ -1,167 +1,211 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <!--[ Meta Tags ]-->
-  <title>Something went wrong!</title>
-  <meta charset="UTF-8" />
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" name="viewport" />
-  <meta content="IE=edge" http-equiv="X-UA-Compatible" />
-
-  <!--[ Favicon ]-->
-  <link href="/app/icons/favicon.ico" rel="icon" type="image/x-icon" />
-  <link href="/app/icons/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-
-  <!--[ Styles ]-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connection Error</title>
+  <link rel="icon" href="/app/icons/favicon.ico" type="image/x-icon">
   <style>
-    *,
-    ::after,
-    ::before {
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --background: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-secondary: #94a3b8;
+    }
+
+    * {
       box-sizing: border-box;
-    }
-
-    /* Content */
-    body {
       margin: 0;
-      background: #212121;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
-      font-weight: 400;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+      padding: 0;
     }
 
-    body:focus {
-      outline: none !important;
-    }
-
-    .main-wrapper {
-      min-width: 100vw;
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
+      padding: 1rem;
+      line-height: 1.5;
     }
 
-    .container {
-      position: relative;
-      overflow: hidden;
+    .error-card {
+      background: var(--surface);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      max-width: 480px;
+      width: 100%;
       text-align: center;
-      padding: 15px;
-      border-radius: 12px;
-      background: #212121;
-      border: 1px solid #ebebeb;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+                  0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      transform: translateY(0);
+      transition: transform 0.3s ease;
     }
 
-    .noIntIcon {
-      padding: 30px;
+    .error-card:hover {
+      transform: translateY(-5px);
     }
 
-    .noConHead {
-      font-weight: 600;
-      font-size: 1.3rem;
-    }
-
-    .noConDesc {
-      font-size: 16px;
-      line-height: 1.4em;
-      padding-top: 20px;
-      font-weight: 400;
-      opacity: 0.8;
-    }
-
-    .relCont {
+    .error-icon {
+      margin: 0 auto 1.5rem;
+      width: 80px;
+      height: 80px;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      background-color: rgba(220, 38, 38, 0.1);
+      border-radius: 50%;
+      color: #ef4444;
     }
 
-    .relCont {
-      padding: 30px;
+    .error-icon svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      font-size: 1rem;
     }
 
     .reload-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 66px;
-      height: 66px;
-      background-color: #212121;
-      outline: none;
-      border: 1px solid #ebebeb;
-      border-radius: 690px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 
+                  0 1px 2px -1px rgba(0, 0, 0, 0.1);
     }
 
     .reload-button:hover {
-      background-color: #212121;
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                  0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
 
-    .icon {
-      content: "";
-      width: 25px;
-      height: 25px;
-      display: inline-block;
+    .reload-button:active {
+      transform: translateY(0);
     }
 
-    .icon-lg {
-      content: "";
-      width: 50px;
-      height: 50px;
-      display: inline-block;
+    .reload-icon {
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
     }
 
-    .icon.reload {
-      background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239dabc0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='23 4 23 10 17 10'/><path d='M20.49 15a9 9 0 1 1-2.12-9.36L23 10'/></svg>") center / 25px no-repeat;
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
-    .icon-lg.wifi-off {
-      background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f1f1f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='1' y1='1' x2='23' y2='23'/><path d='M16.72 11.06A10.94 10.94 0 0 1 19 12.55'/><path d='M5 12.55a10.94 10.94 0 0 1 5.17-2.39'/><path d='M10.71 5.05A16 16 0 0 1 22.58 9'/><path d='M1.42 9a15.91 15.91 0 0 1 4.7-2.88'/><path d='M8.53 16.11a6 6 0 0 1 6.95 0'/><line x1='12' y1='20' x2='12.01' y2='20'/></svg>") center / 50px no-repeat;
+    .troubleshoot-tips {
+      margin-top: 2rem;
+      text-align: left;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
     }
 
-    @media screen and (min-width: 401px) {
-      .container {
-        min-width: 400px;
+    .troubleshoot-tips h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .troubleshoot-tips ul {
+      padding-left: 1.25rem;
+    }
+
+    .troubleshoot-tips li {
+      margin-bottom: 0.25rem;
+    }
+
+    @media (max-width: 480px) {
+      .error-card {
+        padding: 1.5rem;
       }
-    }
-
-    @media screen and (max-width: 400px) {
-      .container {
-        width: 100%;
+      
+      h1 {
+        font-size: 1.25rem;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="main-wrapper notranslate">
-    <div class="container">
-      <div class="noIntIcon">
-        <i class="icon-lg wifi-off"></i>
-      </div>
-      <div class="noConHead">Something went wrong!</div>
-
-      <div class="relCont">
-        <button class="reload-button">
-          <i class="icon reload"></i>
-        </button>
-      </div>
+  <div class="error-card">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+      </svg>
+    </div>
+    
+    <h1>Connection Error</h1>
+    <p class="error-description">
+      We couldn't establish a connection to the server. Please check your internet connection and try again.
+    </p>
+    
+    <button class="reload-button" id="reloadButton">
+      <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Reload Page
+    </button>
+    
+    <div class="troubleshoot-tips">
+      <h3>Quick troubleshooting:</h3>
+      <ul>
+        <li>Check your Wi-Fi or mobile data connection</li>
+        <li>Restart your router if you're on Wi-Fi</li>
+        <li>Disable any VPN or proxy services</li>
+        <li>Try again in a few minutes</li>
+      </ul>
     </div>
   </div>
 
-  <!--[ Script ]-->
   <script>
-    document.querySelector(".reload-button")
-      .addEventListener("click", () => {
+    const reloadButton = document.getElementById('reloadButton');
+    
+    reloadButton.addEventListener('click', () => {
+      // Add loading state
+      reloadButton.disabled = true;
+      reloadButton.innerHTML = `
+        <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Trying to reconnect...
+      `;
+      
+      setTimeout(() => {
         window.location.reload();
-      });
-    window.addEventListener("online", () => {
+      }, 1000);
+    });
+    
+    // Auto-reload when connection is restored
+    window.addEventListener('online', () => {
       window.location.reload();
     });
   </script>
