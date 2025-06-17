@@ -2598,243 +2598,316 @@ const bookingManager = {
     bookingManager.updatePagination();
   },
 
+
+
+
+
+
+
+
+
+
+  
   exportToExcel: () => {
     if (filteredBookings.length === 0) {
-      utils.showToast("No bookings to export with current filters", 'warning');
-      return;
+        showToast("No bookings to export with current filters", 'warning');
+        return;
     }
 
+    // Calculate totals
     const totals = {
-      adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
-      childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
-      infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
-      amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) - (b.netTotal * (10 / 100)) || 0), 0)
+        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
+        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
+        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
+        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) || 0), 0)
     };
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Bookings');
 
-    worksheet.columns = [
-      { header: 'Ref #', key: 'refNumber', width: 30 },
-      { header: 'Package', key: 'tour', width: 35 },
-      { header: 'Date', key: 'tripDate', width: 15 },
-      { header: 'Status', key: 'resStatus', width: 15 },
-      { header: 'Adults', key: 'adults', width: 10 },
-      { header: 'Children (Under 12)', key: 'childrenUnder12', width: 15 },
-      { header: 'Infants', key: 'infants', width: 10 },
-      { header: 'Amount (EGP)', key: 'netTotal', width: 15 },
-      { header: 'Customer', key: 'username', width: 25 },
-      { header: 'Email', key: 'email', width: 30 },
-      { header: 'Phone', key: 'phone', width: 20 },
-      { header: 'Transportation', key: 'Transportation', width: 35 },
-      { header: 'Accommodation', key: 'Accommodation', width: 35 },
-      { header: 'Meal Plan', key: 'MealPlan', width: 35 }
+    // Base columns (always included)
+    const baseColumns = [
+        { header: 'Ref #', key: 'refNumber', width: 25 },
+        { header: 'Tour', key: 'tour', width: 25 },
+        { header: 'Date', key: 'tripDate', width: 15 },
+        { header: 'Status', key: 'resStatus', width: 15 },
+        { header: 'Adults', key: 'adults', width: 10 },
+        { header: 'Children (Under 12)', key: 'childrenUnder12', width: 15 },
+        { header: 'Infants', key: 'infants', width: 10 },
+        { header: 'Amount (EGP)', key: 'netTotal', width: 15 }
     ];
+
+    // Additional columns (only for confirmed bookings)
+    const confirmedAdditionalColumns = [
+        { header: 'Customer', key: 'username', width: 25 },
+        { header: 'Email', key: 'email', width: 30 },
+        { header: 'Phone', key: 'phone', width: 20 },
+        { header: 'Hotel', key: 'hotelName', width: 25 },
+        { header: 'Room', key: 'roomNumber', width: 10 },
+        { header: 'Special Requests', key: 'specialRequests', width: 30 }
+    ];
+
+    // Determine export settings
+    const isConfirmedTab = activeTab === 'confirmed';
+    const isNewTab = activeTab === 'new';
+    const isCancelledFilter = currentFilters.status === 'cancelled';
+    const isNoShowFilter = currentFilters.status === 'noshow';
+    const isNewFilter = currentFilters.status === 'new';
+    const isConfirmedFilter = currentFilters.status === 'confirmed';
+
+    // Should we include customer details?
+    const includeCustomerDetails = isConfirmedTab || 
+                                 (activeTab === 'all' && isConfirmedFilter) ||
+                                 (activeTab === 'all' && !currentFilters.status && 
+                                  filteredBookings.some(b => b.resStatus?.toLowerCase() === 'confirmed'));
+
+    // Set worksheet columns
+    worksheet.columns = includeCustomerDetails 
+        ? [...baseColumns, ...confirmedAdditionalColumns] 
+        : baseColumns;
 
     // Style header row
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell(cell => {
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFD700' }
-      };
-      cell.font = { 
-        bold: true,
-        color: { argb: '000000' }
-      };
-      cell.alignment = { 
-        horizontal: 'center',
-        vertical: 'middle'
-      };
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFD700' }
+        };
+        cell.font = { 
+            bold: true,
+            color: { argb: '000000' }
+        };
+        cell.alignment = { 
+            horizontal: 'center',
+            vertical: 'middle'
+        };
     });
 
     // Add data rows
     filteredBookings.forEach((booking, index) => {
-      const row = worksheet.addRow({
-        refNumber: booking.refNumber || '',
-        tour: booking.tour || '',
-        tripDate: booking.tripDate,
-        resStatus: booking.resStatus || 'new',
-        adults: booking.adults || 0,
-        childrenUnder12: booking.childrenUnder12 || 0,
-        infants: booking.infants || 0,
-        netTotal: parseFloat(booking.netTotal - (booking.netTotal * (10 / 100)) || 0),
-        username: booking.username || '',
-        email: booking.email || '',
-        phone: booking.phone || '',
-        Transportation: booking.Transportation || '',
-        Accommodation: booking.Accommodation || '',
-        MealPlan : booking.MealPlan || ''
-      });
+        const rowIndex = index + 2;
+        
+        // Base data for all bookings
+        const rowData = {
+            refNumber: booking.refNumber || '',
+            tour: booking.tour || '',
+            tripDate: booking.tripDate,
+            resStatus: booking.resStatus || 'new',
+            adults: booking.adults || 0,
+            childrenUnder12: booking.childrenUnder12 || 0,
+            infants: booking.infants || 0,
+            netTotal: parseFloat(booking.netTotal || 0)
+        };
 
-      // Style data rows
-      row.eachCell(cell => {
-        cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' }
-        };
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFFFFFF' }
-        };
-      
-        if (cell._address.startsWith('H')) {
-          cell.numFmt = '"EGP "#,##0.00';
-          cell.font = {
-            bold: true,
-            color: { argb: 'C00000' }
-          };
-        };
-        cell.alignment = { 
-          horizontal: 'center',
-          vertical: 'middle'
-        };
-      });
+        // Add customer details when appropriate
+        if (includeCustomerDetails && booking.resStatus?.toLowerCase() === 'confirmed') {
+            Object.assign(rowData, {
+                username: booking.username || '',
+                email: booking.email || '',
+                phone: booking.phone || '',
+                hotelName: booking.hotelName || '',
+                roomNumber: booking.roomNumber || '',
+                specialRequests: booking.tripType || ''
+            });
+        }
 
-      // Color status cell
-      const statusCell = worksheet.getCell(`D${row.number}`);
-      const status = booking.resStatus?.toLowerCase() || '';
-      
-      if (status === 'confirmed') {
-        statusCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFC6EFCE' }
-        };
-        statusCell.font = {
-          color: { argb: 'FF006100' }
-        };
-      } else if (status === 'cancelled') {
-        statusCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFFC7CE' }
-        };
-        statusCell.font = {
-          color: { argb: 'FF9C0006' }
-        };
-      } else if (status === 'noshow' || status === 'no show') {
-        statusCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFFFC107' }
-        };
-        statusCell.font = {
-          color: { argb: 'FF000000' }
-        };
-      } else {
-        statusCell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FF3B82F6' }
-        };
-        statusCell.font = {
-          color: { argb: 'FFFFFF' }
-        };
-      }
+        const row = worksheet.addRow(rowData);
+
+        // Style data rows
+        row.eachCell(cell => {
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFFFFF' }
+            };
+          
+            if (cell._address.startsWith('H')) {
+                cell.numFmt = '"EGP "#,##0.00';
+                cell.font = {
+                    bold: true,
+                    color: { argb: 'C00000' }
+                };
+            };
+            cell.alignment = { 
+                horizontal: 'center',
+                vertical: 'middle'
+            };
+        });
+
+        // Color status cell
+        const statusCell = worksheet.getCell(`D${rowIndex}`);
+        const status = booking.resStatus?.toLowerCase() || 'new';
+        
+        if (status === 'confirmed') {
+            statusCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFC6EFCE' }
+            };
+            statusCell.font = {
+                color: { argb: 'FF006100' }
+            };
+        } else if (status === 'cancelled') {
+            statusCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFC7CE' }
+            };
+            statusCell.font = {
+                color: { argb: 'FF9C0006' }
+            };
+        } else if (status === 'noshow' || status === 'no show') {
+            statusCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFC107' }
+            };
+            statusCell.font = {
+                color: { argb: 'FF000000' }
+            };
+        } else {
+            statusCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FF3B82F6' }
+            };
+            statusCell.font = {
+                color: { argb: 'FFFFFF' }
+            };
+        }
     });
 
     // Add totals row
     const totalsRowIndex = filteredBookings.length + 2;
-    const totalsRow = worksheet.addRow({
-      refNumber: 'TOTAL',
-      tour: '',
-      tripDate: '',
-      resStatus: '',
-      adults: totals.adults,
-      childrenUnder12: totals.childrenUnder12,
-      infants: totals.infants,
-      netTotal: totals.amount,
-      username: '',
-      email: '',
-      phone: '',
-      Transportation: '',
-      Accommodation: '',
-      MealPlan: ''
-    });
+    const totalsRowData = {
+        refNumber: 'TOTAL',
+        tour: '',
+        tripDate: '',
+        resStatus: '',
+        adults: totals.adults,
+        childrenUnder12: totals.childrenUnder12,
+        infants: totals.infants,
+        netTotal: totals.amount
+    };
 
+    if (includeCustomerDetails) {
+        Object.assign(totalsRowData, {
+            username: '',
+            email: '',
+            phone: '',
+            hotelName: '',
+            roomNumber: '',
+            specialRequests: ''
+        });
+    }
+
+    const totalsRow = worksheet.addRow(totalsRowData);
+
+    // Style totals row
     totalsRow.eachCell(cell => {
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFF2CC' }
-      };
-      cell.alignment = { 
-        horizontal: 'center',
-        vertical: 'middle'
-      };
-      
-      if (cell._address.startsWith('H')) {
-        cell.numFmt = '"EGP "#,##0.00';
-        cell.font = {
-          bold: true,
-          color: { argb: 'C00000' }
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
         };
-      }
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF2CC' }
+        };
+        cell.alignment = { 
+            horizontal: 'center',
+            vertical: 'middle'
+        };
+        
+        if (cell._address.startsWith('H')) {
+            cell.numFmt = '"EGP "#,##0.00';
+            cell.font = {
+                bold: true,
+                color: { argb: 'C00000' }
+            };
+        }
     });
 
     // Auto-size columns
     worksheet.columns.forEach(column => {
-      let maxLength = column.header ? column.header.length : 10;
-      column.eachCell({ includeEmpty: true }, cell => {
-        const length = cell.text ? cell.text.length : 0;
-        if (length > maxLength) {
-          maxLength = length;
-        }
-      });
-      column.width = Math.min(Math.max(maxLength + 2, 10), 50);
+        let maxLength = 0;
+        column.eachCell({ includeEmpty: true }, cell => {
+            let columnLength = cell.value ? cell.value.toString().length : 0;
+            if (columnLength > maxLength) {
+                maxLength = columnLength;
+            }
+        });
+        column.width = Math.min(Math.max(maxLength + 2, 10), 50);
     });
 
     // Freeze header row and add filter
     worksheet.views = [
-      { state: 'frozen', ySplit: 1 }
+        { state: 'frozen', ySplit: 1 }
     ];
 
+    const filterRange = includeCustomerDetails ? 'A1:M' : 'A1:H';
     worksheet.autoFilter = {
-      from: 'A1',
-      to: `M${totalsRowIndex}`
+        from: 'A1',
+        to: `${filterRange}${totalsRowIndex}`
     };
 
-    // Generate and download file
-    const today = new Date();
-    const dateStr = `${today.getFullYear()}-${(today.getMonth()+1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+    // Generate filename
+    let exportType;
+    if (isConfirmedTab || isConfirmedFilter) {
+        exportType = 'Confirmed_Bookings';
+    } else if (isNewTab || isNewFilter) {
+        exportType = 'New_Bookings';
+    } else if (isCancelledFilter) {
+        exportType = 'Cancelled_Bookings';
+    } else if (isNoShowFilter) {
+        exportType = 'NoShow_Bookings';
+    } else {
+        exportType = 'All_Bookings';
+    }
+
+    const dateRangeStr = utils.getDateRangeLabel();
     
     workbook.xlsx.writeBuffer().then(buffer => {
-      const blob = new Blob([buffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Package_Bookings_Export_${dateStr}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
+        const blob = new Blob([buffer], { 
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${exportType}_${dateRangeStr}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
     }).catch(error => {
-      console.error('Error generating Excel file:', error);
-      utils.showToast('Error generating Excel file: ' + error.message, 'error');
+        console.error('Error generating Excel file:', error);
+        showToast('Error generating Excel file: ' + error.message, 'error');
     });
-  },
-  
+},
+
+
+
+
+
+
+      
   refreshBookings: () => {
     bookingManager.loadBookings();
     utils.showToast('Bookings refreshed', 'success');
