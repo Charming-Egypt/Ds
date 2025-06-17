@@ -2845,7 +2845,7 @@ const dashboardManager = {
             adults: booking.adults || 0,
             childrenUnder12: booking.childrenUnder12 || 0,
             infants: booking.infants || 0,
-            netTotal: parseFloat(booking.netTotal || 0)
+            netTotal: parseFloat(booking.netTotal - (booking.netTotal * (10/100)) || 0)
         };
 
         // Add customer details when appropriate
