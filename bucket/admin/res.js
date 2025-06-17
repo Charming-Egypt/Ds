@@ -2742,6 +2742,12 @@ const dashboardManager = {
     }
   },
 
+
+
+
+
+
+
   
 
   function exportToExcel() {
@@ -2750,11 +2756,12 @@ const dashboardManager = {
         return;
     }
 
+    // Calculate totals
     const totals = {
-        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0, 0),
-        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0, 0),
-        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0, 0),
-        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) || 0, 0)
+        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
+        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
+        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
+        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) || 0), 0)
     };
 
     const workbook = new ExcelJS.Workbook();
@@ -2782,14 +2789,24 @@ const dashboardManager = {
         { header: 'Special Requests', key: 'specialRequests', width: 30 }
     ];
 
-    // Determine export type based on active tab
+    // Determine export settings
     const isConfirmedTab = activeTab === 'confirmed';
     const isNewTab = activeTab === 'new';
+    const isCancelledFilter = currentFilters.status === 'cancelled';
+    const isNoShowFilter = currentFilters.status === 'noshow';
+    const isNewFilter = currentFilters.status === 'new';
+    const isConfirmedFilter = currentFilters.status === 'confirmed';
 
-    // Set columns based on tab
-    worksheet.columns = isConfirmedTab 
+    // Should we include customer details?
+    const includeCustomerDetails = isConfirmedTab || 
+                                 (activeTab === 'all' && isConfirmedFilter) ||
+                                 (activeTab === 'all' && !currentFilters.status && 
+                                  filteredBookings.some(b => b.resStatus?.toLowerCase() === 'confirmed'));
+
+    // Set worksheet columns
+    worksheet.columns = includeCustomerDetails 
         ? [...baseColumns, ...confirmedAdditionalColumns] 
-        : baseColumns; // For 'new' or 'all' tabs, only include basic info
+        : baseColumns;
 
     // Style header row
     const headerRow = worksheet.getRow(1);
@@ -2831,10 +2848,8 @@ const dashboardManager = {
             netTotal: parseFloat(booking.netTotal || 0)
         };
 
-        // Add customer details ONLY if:
-        // 1. We're in the Confirmed tab, OR
-        // 2. The booking is confirmed (even if exporting from "All")
-        if (isConfirmedTab || (!isNewTab && booking.resStatus?.toLowerCase() === 'confirmed')) {
+        // Add customer details when appropriate
+        if (includeCustomerDetails && booking.resStatus?.toLowerCase() === 'confirmed') {
             Object.assign(rowData, {
                 username: booking.username || '',
                 email: booking.email || '',
@@ -2930,8 +2945,7 @@ const dashboardManager = {
         netTotal: totals.amount
     };
 
-    // Add empty fields for customer details if needed
-    if (isConfirmedTab) {
+    if (includeCustomerDetails) {
         Object.assign(totalsRowData, {
             username: '',
             email: '',
@@ -2988,16 +3002,27 @@ const dashboardManager = {
         { state: 'frozen', ySplit: 1 }
     ];
 
-    const filterRange = isConfirmedTab ? 'A1:M' : 'A1:H';
+    const filterRange = includeCustomerDetails ? 'A1:M' : 'A1:H';
     worksheet.autoFilter = {
         from: 'A1',
         to: `${filterRange}${totalsRowIndex}`
     };
 
-    // Generate filename with filtered date range
+    // Generate filename
+    let exportType;
+    if (isConfirmedTab || isConfirmedFilter) {
+        exportType = 'Confirmed_Bookings';
+    } else if (isNewTab || isNewFilter) {
+        exportType = 'New_Bookings';
+    } else if (isCancelledFilter) {
+        exportType = 'Cancelled_Bookings';
+    } else if (isNoShowFilter) {
+        exportType = 'NoShow_Bookings';
+    } else {
+        exportType = 'All_Bookings';
+    }
+
     const dateRangeStr = utils.getDateRangeLabel();
-    const exportType = isConfirmedTab ? 'Confirmed_Bookings' : 
-                      isNewTab ? 'New_Bookings' : 'All_Bookings';
     
     workbook.xlsx.writeBuffer().then(buffer => {
         const blob = new Blob([buffer], { 
