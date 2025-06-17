@@ -2750,7 +2750,7 @@ const dashboardManager = {
 
   
 
-  function exportToExcel() {
+  exportToExcel() => {
     if (filteredBookings.length === 0) {
         showToast("No bookings to export with current filters", 'warning');
         return;
