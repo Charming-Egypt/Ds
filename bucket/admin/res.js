@@ -1916,7 +1916,7 @@ loadpayout: (userId) => {
       
       // Action buttons (only for users who can edit trips)
       const actionButtons = tripManager.canEditTrips() ? `
-        <div class="flex justify-end mt-4 space-x-2">
+        <div class="flex justify-between mt-4 space-x-2">
           <button class="text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-full edit-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
             <i class="fas fa-edit mr-1"></i> Edit
           </button>
