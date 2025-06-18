@@ -1115,10 +1115,10 @@ function filterByDate(bookings, date, activeTab) {
 
     // Calculate totals
     const totals = {
-        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0, 0)),
-        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0, 0)),
-        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0, 0)),
-        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal - (b.netTotal * 0.10)) || 0, 0))
+        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
+        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
+        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
+        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal- (b.netTotal * (0.10))) || 0), 0)
     };
 
     const workbook = new ExcelJS.Workbook();
