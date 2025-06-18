@@ -456,26 +456,7 @@ function filterByDate(bookings, date, activeTab) {
 
 
 
-// Initialize the booking system
-function initBookingSystem() {
-    // Load bookings data first
-    loadBookings().then(() => {
-        // Then initialize date filter with proper defaults
-        initDateFilter();
-        
-          // Tab switching event listeners
-  document.querySelectorAll('.tab-button').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const tab = this.dataset.tab;
-      switchTab(tab);
-    });
-  });
-  
-  // Initialize with default tab
-  switchTab('all');
 
-    });
-}
 
 
 
@@ -3177,7 +3158,7 @@ const initApp = () => {
         tripManager.loadpayout(user.uid);
         setupEventListeners();
         loadAllPayoutEvents();
-        initBookingSystem();
+        
  
       });
     } else {
