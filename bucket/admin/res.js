@@ -463,22 +463,7 @@ function initBookingSystem() {
         // Then initialize date filter with proper defaults
         initDateFilter();
         
-        // Set up tab switching
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tab = this.dataset.tab;
-                switchTab(tab);
-            });
-        });
-        
-        // Initialize with default tab
-        switchTab('all');
-    });
-}
-
-
-function setupTabListeners() {
-  // Tab switching event listeners
+          // Tab switching event listeners
   document.querySelectorAll('.tab-button').forEach(btn => {
     btn.addEventListener('click', function() {
       const tab = this.dataset.tab;
@@ -488,7 +473,12 @@ function setupTabListeners() {
   
   // Initialize with default tab
   switchTab('all');
+
+    });
 }
+
+
+
 
 
 
@@ -3187,8 +3177,8 @@ const initApp = () => {
         tripManager.loadpayout(user.uid);
         setupEventListeners();
         loadAllPayoutEvents();
-        
-        setupTabListeners();
+        initBookingSystem();
+ 
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
