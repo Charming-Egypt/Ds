@@ -352,48 +352,58 @@ function getTomorrowDateString() {
 
 
 
-    // Apply all filters
     function applyFilters() {
-        currentFilters.search = searchInput.value.toLowerCase();
-        currentFilters.status = statusFilter.value;
-        
-        filterBookings();
-    }
+    // Safely get filter values with fallbacks
+    currentFilters.search = elements.searchInput?.value?.toLowerCase() || '';
+    currentFilters.status = elements.statusFilter?.value || 'all';
+    
+    filterBookings();
+}
 
 // Main filtering function with date handling
 function filterBookings() {
     let filtered = [...allBookings];
     
-    // Apply search filter if exists
+    // Apply search filter if exists - with null checks
     if (currentFilters.search?.trim()) {
         const searchTerm = currentFilters.search.toLowerCase().trim();
-        filtered = filtered.filter(booking => 
-            (booking.refNumber?.toLowerCase().includes(searchTerm)) ||
-            (booking.tour?.toLowerCase().includes(searchTerm)) ||
-            (booking.username?.toLowerCase().includes(searchTerm)) ||
-            (booking.email?.toLowerCase().includes(searchTerm))
-        );
+        filtered = filtered.filter(booking => {
+            // Safely handle potentially undefined properties
+            const refNumber = booking.refNumber || '';
+            const tour = booking.tour || '';
+            const username = booking.username || '';
+            const email = booking.email || '';
+            
+            return (
+                refNumber.toLowerCase().includes(searchTerm) ||
+                tour.toLowerCase().includes(searchTerm) ||
+                username.toLowerCase().includes(searchTerm) ||
+                email.toLowerCase().includes(searchTerm)
+            );
+        });
     }
     
-    // Apply status filter if not 'all'
+    // Apply status filter if not 'all' - with null check
     if (currentFilters.status && currentFilters.status !== 'all') {
         const statusTerm = currentFilters.status.toLowerCase();
-        filtered = filtered.filter(booking => 
-            booking.resStatus?.toLowerCase() === statusTerm
-        );
+        filtered = filtered.filter(booking => {
+            const bookingStatus = (booking.resStatus || 'new').toLowerCase();
+            return bookingStatus === statusTerm;
+        });
     }
     
-    // Apply date filter with tab-specific logic
+    // Apply date filter with tab-specific logic - with null check
     if (currentFilters.date) {
         filtered = filterByDate(filtered, currentFilters.date, activeTab);
     }
     
-    // Apply tab-specific status filter
+    // Apply tab-specific status filter - with null check
     if (activeTab !== 'all') {
         const tabStatus = activeTab.toLowerCase();
-        filtered = filtered.filter(booking => 
-            booking.resStatus?.toLowerCase() === tabStatus
-        );
+        filtered = filtered.filter(booking => {
+            const bookingStatus = (booking.resStatus || 'new').toLowerCase();
+            return bookingStatus === tabStatus;
+        });
     }
     
     filteredBookings = filtered;
@@ -402,42 +412,47 @@ function filterBookings() {
     updatePagination();
 }
 
+
+
+
 function filterByDate(bookings, date, activeTab) {
-    if (!date) return bookings; // Return all if no date filter
+    if (!date) return bookings;
     
     try {
-        // Format the filter date to match our storage format (YYYY-MM-D)
         const [year, month, day] = date.split('-');
         const formattedFilterDate = `${year}-${month.padStart(2, '0')}-${parseInt(day, 10)}`;
         
         return bookings.filter(booking => {
             if (!booking.tripDate) return false;
             
-            // Format the booking date for comparison (remove leading zero from day)
             const [bYear, bMonth, bDay] = booking.tripDate.split('-');
             const formattedBookingDate = `${bYear}-${bMonth}-${parseInt(bDay, 10)}`;
             
+            // Safely get status with fallback
+            const bookingStatus = (booking.resStatus || 'new').toLowerCase();
+            
             switch(activeTab) {
                 case 'new':
-                    // For new bookings, show future dates (including selected date)
                     return formattedBookingDate >= formattedFilterDate && 
-                           booking.resStatus?.toLowerCase() === 'new';
+                           bookingStatus === 'new';
                 
                 case 'confirmed':
-                    // For confirmed bookings, show only exact date matches
                     return formattedBookingDate === formattedFilterDate && 
-                           booking.resStatus?.toLowerCase() === 'confirmed';
+                           bookingStatus === 'confirmed';
                 
                 default:
-                    // For all other tabs, show exact date matches regardless of status
                     return formattedBookingDate === formattedFilterDate;
             }
         });
     } catch (error) {
         console.error('Error filtering by date:', error);
-        return bookings; // Return unfiltered if error occurs
+        return bookings;
     }
 }
+
+
+
+
 
 
 
