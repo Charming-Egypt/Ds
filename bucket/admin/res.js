@@ -127,7 +127,7 @@ const elements = {
     let activeTab = 'all';
     let currentPage = 1;
     let currentBookingToConfirm = null;
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
     let currentFilters = {
         search: '',
         status: 'all',
@@ -615,8 +615,8 @@ function updateBookingsTable() {
     elements.nextPageBtn.disabled = currentPage === totalPages;
     
     // Update button styles
-    elements.prevPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === 1 ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
-    elements.nextPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === totalPages ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-xs sm:text-sm`;
+    elements.prevPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === 1 ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700'} text-xs sm:text-sm`;
+    elements.nextPageBtn.className = `px-2 py-1 sm:px-3 sm:py-1 rounded-lg ${currentPage === totalPages ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700'} text-xs sm:text-sm`;
 }
 
     // Go to previous page
