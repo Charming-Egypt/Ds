@@ -1115,10 +1115,10 @@ function filterByDate(bookings, date, activeTab) {
 
     // Calculate totals
     const totals = {
-        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
-        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
-        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
-        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal- (b.netTotal * (0.10))) || 0), 0)
+        adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0, 0),
+        childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0, 0),
+        infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0, 0),
+        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal - (b.netTotal * 0.10)) || 0, 0)
     };
 
     const workbook = new ExcelJS.Workbook();
@@ -1133,7 +1133,6 @@ function filterByDate(bookings, date, activeTab) {
         { header: 'Adults', key: 'adults', width: 10 },
         { header: 'Children (Under 12)', key: 'childrenUnder12', width: 15 },
         { header: 'Infants', key: 'infants', width: 10 }
-        
     ];
 
     // Additional columns (only for confirmed bookings)
@@ -1203,12 +1202,12 @@ function filterByDate(bookings, date, activeTab) {
             adults: booking.adults || 0,
             childrenUnder12: booking.childrenUnder12 || 0,
             infants: booking.infants || 0
-            };
+        };
 
         // Add customer details when appropriate
         if (includeCustomerDetails && booking.resStatus?.toLowerCase() === 'confirmed') {
             Object.assign(rowData, {
-                netTotal: parseFloat(booking.netTotal - (booking.netTotal * (0.10)) || 0),
+                netTotal: parseFloat(booking.netTotal - (booking.netTotal * 0.10)) || 0,
                 username: booking.username || '',
                 email: booking.email || '',
                 phone: booking.phone || '',
@@ -1366,7 +1365,7 @@ function filterByDate(bookings, date, activeTab) {
         to: `${filterRange}${totalsRowIndex}`
     };
 
-    // Generate filename
+    // Generate filename with date range info
     let exportType;
     if (isConfirmedTab || isConfirmedFilter) {
         exportType = 'Confirmed_Bookings';
@@ -1380,8 +1379,37 @@ function filterByDate(bookings, date, activeTab) {
         exportType = 'All_Bookings';
     }
 
-    const dateRangeStr = utils.getDateRangeLabel();
+    // Format date for filename (YYYY-MM-DD)
+    function formatDateForFilename(dateString) {
+        if (!dateString) return '';
+        // Remove any non-alphanumeric characters except dash
+        return dateString.replace(/[^0-9-]/g, '');
+    }
+
+    // Get date range string for filename
+    let dateRangeStr = '';
     
+    // If using date filter
+    if (currentFilters.date) {
+        dateRangeStr = `_${formatDateForFilename(currentFilters.date)}`;
+    } 
+    // If using custom date range picker
+    else if (dateRangePicker && dateRangePicker.selectedDates.length === 2) {
+        const start = formatDateForFilename(dateRangePicker.selectedDates[0]);
+        const end = formatDateForFilename(dateRangePicker.selectedDates[1]);
+        dateRangeStr = `_${start}_to_${end}`;
+    }
+    // For tab-specific date filters (today/tomorrow)
+    else if (activeTab === 'new' || activeTab === 'confirmed') {
+        const tabDate = activeTab === 'new' ? getTomorrowDateString() : getTodayDateString();
+        dateRangeStr = `_${formatDateForFilename(tabDate)}`;
+    }
+
+    // Generate the final filename
+    const currentDate = new Date().toISOString().slice(0, 10);
+    const fileName = `${exportType}${dateRangeStr}_${currentDate}.xlsx`;
+
+    // Export the file
     workbook.xlsx.writeBuffer().then(buffer => {
         const blob = new Blob([buffer], { 
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
@@ -1389,7 +1417,7 @@ function filterByDate(bookings, date, activeTab) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${exportType}_${dateRangeStr}.xlsx`;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         setTimeout(() => {
