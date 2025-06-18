@@ -1101,7 +1101,7 @@ function filterByDate(bookings, date, activeTab) {
         adults: filteredBookings.reduce((sum, b) => sum + (parseInt(b.adults) || 0), 0),
         childrenUnder12: filteredBookings.reduce((sum, b) => sum + (parseInt(b.childrenUnder12) || 0), 0),
         infants: filteredBookings.reduce((sum, b) => sum + (parseInt(b.infants) || 0), 0),
-        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal) || 0), 0)
+        amount: filteredBookings.reduce((sum, b) => sum + (parseFloat(b.netTotal- (b.netTotal * (0.10))) || 0), 0)
     };
 
     const workbook = new ExcelJS.Workbook();
@@ -1115,12 +1115,13 @@ function filterByDate(bookings, date, activeTab) {
         { header: 'Status', key: 'resStatus', width: 15 },
         { header: 'Adults', key: 'adults', width: 10 },
         { header: 'Children (Under 12)', key: 'childrenUnder12', width: 15 },
-        { header: 'Infants', key: 'infants', width: 10 },
-        { header: 'Amount (EGP)', key: 'netTotal', width: 15 }
+        { header: 'Infants', key: 'infants', width: 10 }
+        
     ];
 
     // Additional columns (only for confirmed bookings)
     const confirmedAdditionalColumns = [
+        { header: 'Amount (EGP)', key: 'netTotal', width: 15 },
         { header: 'Customer', key: 'username', width: 25 },
         { header: 'Email', key: 'email', width: 30 },
         { header: 'Phone', key: 'phone', width: 20 },
@@ -1184,13 +1185,13 @@ function filterByDate(bookings, date, activeTab) {
             resStatus: booking.resStatus || 'new',
             adults: booking.adults || 0,
             childrenUnder12: booking.childrenUnder12 || 0,
-            infants: booking.infants || 0,
-            netTotal: parseFloat(booking.netTotal - (booking.netTotal * (0.10)) || 0)
-        };
+            infants: booking.infants || 0
+            };
 
         // Add customer details when appropriate
         if (includeCustomerDetails && booking.resStatus?.toLowerCase() === 'confirmed') {
             Object.assign(rowData, {
+                netTotal: parseFloat(booking.netTotal - (booking.netTotal * (0.10)) || 0),
                 username: booking.username || '',
                 email: booking.email || '',
                 phone: booking.phone || '',
