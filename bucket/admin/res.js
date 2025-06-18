@@ -3175,7 +3175,7 @@ const initApp = () => {
         dashboardManager.loadBookingData();
         tripManager.loadpayout(user.uid);
         setupEventListeners();
-        dashboardManager.setupTabListeners();
+        
         loadAllPayoutEvents();
         initBookingSystem();
       });
