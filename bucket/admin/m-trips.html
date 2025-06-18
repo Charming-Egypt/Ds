@@ -6,9 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard || Discover Sharm</title>
     <meta name="theme-color" content="#1A1A2E">
-  <!-- لـ iOS -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- Boxicons -->
+    <!-- لـ iOS -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+  <!-- أضف هذه الأسطر إلى قسم head -->
+<link rel="manifest" href="/admin/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="application-name" content="DS Admin">
+<meta name="apple-mobile-web-app-title" content="DS Admin">
+<meta name="msapplication-starturl" content="/admin/">
+
+
+  
+  
+  
+  
+  <!-- Boxicons -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link href='https://www.discover-sharm.com/admin/style.css' rel='stylesheet'>
     <!-- Font Awesome -->
@@ -1126,6 +1140,52 @@
         <div id="toast" class="toast"></div>
     </section>
 
+
+<!-- أضف هذا النص البرمجي قبل إغلاق body -->
+<script>
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/admin/service-worker.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful');
+        })
+        .catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+    });
+  }
+
+  // Handle before install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    
+    // Show install button (you can add this to your UI)
+    const installButton = document.createElement('button');
+    installButton.textContent = 'Install App';
+    installButton.className = 'bg-amber-500 text-white px-4 py-2 rounded-lg fixed bottom-4 right-4 z-50';
+    installButton.onclick = () => {
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      });
+    };
+    document.body.appendChild(installButton);
+  });
+</script>
+
+  
     <script src="https://www.discover-sharm.com/admin/script.js"></script>
         
 <script src="https://www.discover-sharm.com/admin/res.js"></script>
