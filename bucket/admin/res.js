@@ -477,7 +477,18 @@ function initBookingSystem() {
 }
 
 
-
+function setupTabListeners() {
+  // Tab switching event listeners
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tab = this.dataset.tab;
+      switchTab(tab);
+    });
+  });
+  
+  // Initialize with default tab
+  switchTab('all');
+}
 
 
 
