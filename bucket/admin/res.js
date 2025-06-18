@@ -3175,9 +3175,9 @@ const initApp = () => {
         dashboardManager.loadBookingData();
         tripManager.loadpayout(user.uid);
         setupEventListeners();
-        
         loadAllPayoutEvents();
         initBookingSystem();
+        setupTabListeners();
       });
     } else {
       window.location.href = 'https://www.discover-sharm.com/p/login.html';
