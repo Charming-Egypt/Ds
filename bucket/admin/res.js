@@ -92,7 +92,6 @@ const elements = {
 
   
   
-  
   // DOM Elements
     bookingsTableBody: document.getElementById('bookingsTableBody'),
     toast : document.getElementById('toast'),
@@ -952,47 +951,50 @@ function closeModal() {
 function switchTab(tab) {
     activeTab = tab;
     
-    // Update UI for active tab
+    // Update UI for active tab - with null checks
     document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active');
+        if (btn) btn.classList.remove('active');
     });
-    document.getElementById(`${tab}BookingsTab`).classList.add('active');
-    
-    // Hide/show date filter based on tab
-    const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative');
-    if (tab === 'new' || tab === 'confirmed') {
-        dateFilterContainer.classList.add('hidden');
-    } else {
-        dateFilterContainer.classList.remove('hidden');
+
+    const activeTabElement = document.getElementById(`${tab}BookingsTab`);
+    if (activeTabElement) {
+        activeTabElement.classList.add('active');
     }
-    
+
+    // Hide/show date filter based on tab - with null check
+    const dateFilterContainer = document.querySelector('#bookingsFilterBar .relative');
+    if (dateFilterContainer) {
+        dateFilterContainer.classList.toggle('hidden', tab === 'new' || tab === 'confirmed');
+    }
+
     // Set default date for the tab
     let defaultDate;
+    const titleElement = document.getElementById('bookingsTableTitle');
     switch(tab) {
         case 'new':
             defaultDate = getTomorrowDateString();
-            document.getElementById('bookingsTableTitle').textContent = 'New Bookings (Tomorrow)';
+            if (titleElement) titleElement.textContent = 'New Bookings (Tomorrow)';
             break;
         case 'confirmed':
             defaultDate = getTodayDateString();
-            document.getElementById('bookingsTableTitle').textContent = 'Confirmed Bookings (Today)';
+            if (titleElement) titleElement.textContent = 'Confirmed Bookings (Today)';
             break;
         default:
             defaultDate = null;
-            document.getElementById('bookingsTableTitle').textContent = 'All Bookings';
+            if (titleElement) titleElement.textContent = 'All Bookings';
     }
-    
+
     // Update current filters
     currentFilters = {
         search: '',
         status: tab === 'new' ? 'new' : tab,
         date: defaultDate
     };
-    
-    // Update UI elements
-    elements.searchInput.value = '';
-    elements.statusFilter.value = tab === 'new' ? 'new' : tab;
-    
+
+    // Update UI elements - with null checks
+    if (elements.searchInput) elements.searchInput.value = '';
+    if (elements.statusFilter) elements.statusFilter.value = tab === 'new' ? 'new' : tab;
+
     // Update Flatpickr if initialized
     if (flatpickrInstance) {
         if (defaultDate) {
@@ -1001,7 +1003,7 @@ function switchTab(tab) {
             flatpickrInstance.clear();
         }
     }
-    
+
     // Apply filters
     applyFilters();
 }
