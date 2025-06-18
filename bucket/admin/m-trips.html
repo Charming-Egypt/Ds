@@ -16,7 +16,7 @@
 <meta name="application-name" content="DS Admin">
 <meta name="msapplication-config" content="/admin/browserconfig.xml">
 <meta name="apple-mobile-web-app-title" content="DS Admin">
-<meta name="msapplication-starturl" content="/admin/">
+<meta name="msapplication-starturl" content="/admin/m-trips.html">
 
 
   
@@ -1165,7 +1165,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferredPrompt = e;
   
   // عرض زر التثبيت فقط في صفحة /admin/
-  if (window.location.pathname.startsWith('/admin/')) {
+  if (window.location.pathname.startsWith('/admin/m-trips.html')) {
     showInstallButton();
   }
 });
