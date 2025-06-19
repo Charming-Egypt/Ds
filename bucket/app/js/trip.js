@@ -624,7 +624,7 @@ function calculateNetTotal() {
   return calculateBaseTotal() + calculateExtraServicesTotal();
 }
 
-function calculateTotalWithTaxesAndCommission() {
+function calculateTotalWithTaxes() {
   const netTotal = calculateNetTotal();
   const baseTax = netTotal * TAX_RATE; // 3% of net total
   const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
@@ -697,7 +697,7 @@ function updateSummary() {
       if (summaryService) summaryService.textContent = 'None';
     }
     
-    const total = calculateTotalWithTaxesAndCommission();
+    const total = calculateTotalWithTaxes();
     const totalUSD = (total / exchangeRate).toFixed(2);
     
     if (totalPriceDisplay) {
@@ -814,7 +814,7 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const total = calculateTotalWithTaxesAndCommission();
+    const total = calculateTotalWithTaxes();
     const netTotal = calculateNetTotal();
     const baseTax = netTotal * TAX_RATE;
     const taxOnTax = baseTax * TAX_ON_TAX_RATE;
@@ -831,16 +831,17 @@ async function submitForm() {
       tripDate: document.getElementById("tripDate").value,
       tripType: selectedTripType || 'None',
       tripTypePrice: selectedTripType ? tourTypes[selectedTripType] : 0,
-      basePrice: currentTrip.basePrice,
       hotelName: sanitizeInput(document.getElementById("hotelName").value),
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
       timestamp: Date.now(),
       status: "pending",
       tour: currentTrip.name,
+      id: tripName,
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
       total: total.toFixed(2),
+      netTotal: netTotal,
       totalTax: totalTax.toFixed(2),
       uid: user.uid,
       owner: tripOwnerId,
