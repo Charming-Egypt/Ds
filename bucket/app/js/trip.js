@@ -607,7 +607,8 @@ function calculateBaseTotal() {
   if (!currentTrip.basePrice) return 0;
   
   const basePrice = parseInt(currentTrip.basePrice);
-  return (adults * basePrice) + (childrenUnder12 * Math.round(basePrice * 0.7));
+  const childPrice = parseInt(currentTrip.cprice) || Math.round(basePrice * 0.5);
+  return (adults * basePrice) + (childrenUnder12 * childPrice);
 }
 
 function calculateExtraServicesTotal() {
@@ -682,7 +683,7 @@ function updateSummary() {
   
   if (currentTrip.basePrice) {
     const basePrice = parseInt(currentTrip.basePrice);
-    const childPriceUnder12 = Math.round(basePrice * 0.7);
+    const childPriceUnder12 = parseInt(currentTrip.cprice) || Math.round(basePrice * 0.5);
     
     if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
     if (summaryAdults) summaryAdults.textContent = `${adults} Adult${adults !== 1 ? 's' : ''}`;
