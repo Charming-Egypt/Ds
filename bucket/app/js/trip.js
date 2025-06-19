@@ -278,13 +278,10 @@ function loadMediaContent(mediaData) {
             
             <div class="tour-meta">
               <span class="tour-meta-item">
-                <i class="fas fa-star"></i> ${currentTrip.rating?.average?.toFixed(1) || '4.9'}
+                <i class="fas fa-star"></i> ${currentTrip.rating.toFixed(1) || '4.9'}
               </span>
               <span class="tour-meta-item">
-                <i class="fas fa-clock"></i> Full day
-              </span>
-              <span class="tour-meta-item">
-                <i class="fas fa-user-group"></i> Max 10
+                <i class="fas fa-clock"></i> ${currentTrip.duration || ''}
               </span>
             </div>
           </div>
@@ -595,7 +592,7 @@ function displayTripInfo(tripInfo) {
   }
   
   if (tripName) {
-    tripName.value = tripPName;
+    tripName.value = tripInfo.name;
   }
 }
 
