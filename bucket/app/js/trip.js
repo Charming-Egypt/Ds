@@ -632,7 +632,7 @@ function calculateTotalWithTaxesAndCommission() {
   const subtotalWithTax = netTotal + totalTax;
   const commissionRate = currentTrip.commissionRate || 0.10;
   const commission = subtotalWithTax * commissionRate;
-  return subtotalWithTax + commission;
+  return subtotalWithTax;
 }
 
 function updateInfantsMax() {
@@ -840,11 +840,8 @@ async function submitForm() {
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
-      currency: 'EGP',
       total: total.toFixed(2),
-      netTotal: netTotal.toFixed(2),
       totalTax: totalTax.toFixed(2),
-      commission: commission.toFixed(2),
       uid: user.uid,
       owner: tripOwnerId,
       exchangeRate: exchangeRate
