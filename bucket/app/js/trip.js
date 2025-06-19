@@ -592,7 +592,7 @@ function displayTripInfo(tripInfo) {
   }
   
   if (tripName) {
-    tripName.value = tripInfo.name;
+    tripName.value = tripName;
   }
 }
 
@@ -630,7 +630,7 @@ function calculateTotalWithTaxesAndCommission() {
   const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
   const totalTax = baseTax + taxOnTax + FIXED_FEE;
   const subtotalWithTax = netTotal + totalTax;
-  const commissionRate = currentTrip.commissionRate || 0.15;
+  const commissionRate = currentTrip.commissionRate || 0.10;
   const commission = subtotalWithTax * commissionRate;
   return subtotalWithTax + commission;
 }
@@ -820,7 +820,7 @@ async function submitForm() {
     const taxOnTax = baseTax * TAX_ON_TAX_RATE;
     const totalTax = baseTax + taxOnTax + FIXED_FEE;
     const subtotalWithTax = netTotal + totalTax;
-    const commissionRate = currentTrip.commissionRate || 0.15;
+    const commissionRate = currentTrip.commissionRate || 0.10;
     const commission = subtotalWithTax * commissionRate;
 
     const formData = {
@@ -836,7 +836,7 @@ async function submitForm() {
       roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
       timestamp: Date.now(),
       status: "pending",
-      tour: tripPName,
+      tour: currentTrip.name,
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
