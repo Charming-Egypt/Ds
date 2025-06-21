@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "name": "Fares Seafood",
+        "description": "Fresh seafood restaurant with stunning Red Sea views and the catch of the day prepared to perfection.",
+        "image": "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&w=800&q=80",
+        "cuisine": "seafood",
+        "area": "old-market",
+        "rating": 4.9,
+        "reviews": 247,
+        "amenities": ["Sea View", "Fresh Catch", "Wine Pairing", "Outdoor Seating", "Live Music"],
+        "menuLink": "#",
+        "phone": "+20123456789"
+    },
+    {
+        "id": 2,
+        "name": "Koshary El Tahrir",
+        "description": "Authentic Egyptian cuisine featuring the best koshary in town along with other traditional dishes.",
+        "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80",
+        "cuisine": "egyptian",
+        "area": "naama",
+        "rating": 4.7,
+        "reviews": 184,
+        "amenities": ["Traditional", "Vegetarian Options", "Quick Service", "Family Friendly"],
+        "menuLink": "#",
+        "phone": "+20123456788"
+    }
+]
