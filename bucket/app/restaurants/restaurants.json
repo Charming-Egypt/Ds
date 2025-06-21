@@ -119,7 +119,7 @@
         "menuLink": "https://shawarmastreet.com/menu",
         "phone": "+201990011223"
     },
-    // Additional 90 restaurants follow the same structure...
+
     {
         "id": 11,
         "name": "Red Sea Catch",
@@ -481,7 +481,7 @@
         "menuLink": "https://shawarmapalace.com/menu",
         "phone": "+201990011223"
     },
-    // Additional 60 restaurants continue...
+    
     {
         "id": 100,
         "name": "Red Sea Grill House",
