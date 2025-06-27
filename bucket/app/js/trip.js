@@ -203,7 +203,7 @@ function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
     // Calculate total price with taxes and commission
-    const totalPrice = calculateTotalWithTaxesAndCommission();
+    const totalPrice = calculateTotalWithTaxes();
     const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
     priceElement.innerHTML = `
       <span class="notranslate">${priceInUSD} $</span>
