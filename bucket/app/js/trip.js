@@ -258,7 +258,7 @@ function loadMediaContent(mediaData) {
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
 // Calculate total price with taxes and commission
-  const totalPrice = calculateTotalWithTaxesAndCommission();
+  const totalPrice = calculateTotalWithTaxes();
   const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
 
   // Add image slides
