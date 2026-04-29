@@ -2,1201 +2,741 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="origin-trial" content="your-firebase-origin-trial-token-if-any">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard || Discover Sharm</title>
-    <meta name="theme-color" content="#1A1A2E">
-    <!-- لـ iOS -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Discover Sharm | Admin Dashboard</title>
     
-  <!-- أضف هذه الأسطر إلى قسم head -->
-<link rel="manifest" href="/admin/manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="application-name" content="DS Admin">
-<meta name="msapplication-config" content="/admin/browserconfig.xml">
-<meta name="apple-mobile-web-app-title" content="DS Admin">
-<meta name="msapplication-starturl" content="/admin/m-trips.html">
-
-
-  
-  
-  
-  
-  <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <link href='https://www.discover-sharm.com/admin/style.css' rel='stylesheet'>
-    <!-- Font Awesome -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <!-- Chart.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  
-    <!-- Date Range Picker -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
     
-    <!-- Firebase JS -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    
-    <!-- Custom CSS -->
-
-  
     <style>
-        /* Add your custom styles here */
-        
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
         
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        /* Login Page Styles - from first code */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+        }
+        
+        .admin-panel.visible {
+            display: block;
+        }
+        
+        /* Mobile Header - from first code */
+        .mobile-header {
+            background: white;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-header {
+                display: none;
+            }
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B35, #FFA630);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* Sidebar - from first code style */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: white;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+            color: #475569;
+            font-weight: 500;
+            margin: 4px 12px;
+        }
+        
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #fff7ed;
+            color: #FF6B35;
+        }
+        
+        .sidebar-link i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+        
+        /* Desktop Header */
+        .desktop-header {
+            background: white;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+            padding: 16px 24px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        @media (min-width: 1024px) {
+            .desktop-header {
+                display: flex;
+                margin-left: 260px;
+            }
+        }
+        
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 12px 12px;
+        }
+        
+        @media (min-width: 1024px) {
+            .mobile-bottom-nav {
+                display: none;
+            }
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: #FF6B35;
+            background: #fff7ed;
+        }
+        
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Cards - from first code */
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        /* FAB - from first code */
+        .fab {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, #FF6B35, #FFA630);
+            color: white;
+            box-shadow: 0 8px 24px rgba(255,107,53,0.4);
+            z-index: 99;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .fab:active {
+            transform: scale(0.94);
+        }
+        
+        @media (min-width: 1024px) {
+            .fab {
+                bottom: 40px;
+                right: 40px;
+            }
+        }
+        
+        /* Modal Sheet - from first code */
+        .modal-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 85vh;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+        
+        .modal-sheet.open {
+            transform: translateY(0);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+        
+        /* Form Elements */
         .input-field {
-            background-color: #2d2d2d;
-            border: 1px solid #444;
-            color: #f5f5f5;
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-family: 'Poppins', sans-serif;
         }
         
         .input-field:focus {
             outline: none;
-            border-color: #ffc107;
-            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 4px rgba(255,107,53,0.1);
+            background: white;
         }
         
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35, #FFA630);
             color: white;
-            z-index: 1000;
-            animation: fadeIn 0.3s;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .toast-success {
-            background-color: #4caf50;
+        .btn-primary:active {
+            transform: scale(0.97);
         }
         
-        .toast-error {
-            background-color: #f44336;
-        }
-        
-        .toast-warning {
-            background-color: #ff9800;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .role-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
         }
         
-        .role-admin {
-            background-color: #4caf50;
+        .status-confirmed { background: #D1FAE5; color: #065F46; }
+        .status-new { background: #FEF3C7; color: #92400E; }
+        .status-cancelled { background: #FEE2E2; color: #991B1B; }
+        .status-paid { background: #D1FAE5; color: #065F46; }
+        .status-unpaid { background: #FEE2E2; color: #991B1B; }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            display: inline-block;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background: linear-gradient(to right, #FF6B35, #FFA630);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+        
+        /* Grid */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 500;
+            z-index: 3000;
+            transition: transform 0.3s;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.success { background: #059669; }
+        .toast.error { background: #DC2626; }
+        
+        /* Filter Chips */
+        .filter-chip {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .filter-chip.active {
+            background: #FF6B35;
             color: white;
         }
         
-        .role-moderator {
-            background-color: #2196f3;
-            color: white;
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
         }
         
-        .role-user {
-            background-color: #9e9e9e;
-            color: white;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
         
-        .tab-active {
-            color: #ffc107;
-            border-bottom: 2px solid #ffc107;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
         }
         
-        .filter-btn.active {
-            background-color: #ffc107;
-            color: #333;
+        th {
+            font-weight: 600;
+            color: #475569;
         }
-      .chart-container {
-    position: relative;
-    width: 100%;
-    height: auto;
-    min-height: 200px;
-      }
-.status-badge select {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #666;
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
-}
-
-.status-badge select:focus {
-    outline: none;
-    border-color: #007;
-    box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
-}
-
-.status-badge select option {
-    background-color: #333;
-    color: #fff;
-}
-
-          #pickupTimeModal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999; /* Very high z-index to ensure it's on top */
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-
-#pickupTimeModal.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-#pickupTimeModal .modal-content {
-  background: #222;
-  padding: 2rem;
-  border-radius: 10px;
-  border: 1px solid #ffc107;
-  max-width: 400px;
-  width: 90%;
-  z-index: 10000; /* Even higher than the overlay */
-  position: relative;
-}
-      
+        
+        @media (min-width: 1024px) {
+            .main-content {
+                margin-left: 260px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- SIDEBAR -->
-    <section id="sidebar">
-        <a href="#" class="brand">
-            <div class="logo-container">
-                <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjGLYfehf5gTkhli-onh8WqHg2Ve_BEw1GHxqS5E0pUMywRV9LXj0M45PfhXXgiEwCcR3t8EzzoBUAbhLjIlbAmttq5Jf1Quhxke9PBW5GFu1fwSIjtAzPwRhjUTAk_vV1kpZzApx6V-nYEfRpPMeBI7QUDp7yUTk_0pwLbC3lXPnwQzvZPfuDSigaHziw=s1600" alt="Discover Sharm Logo" class="app-logo">
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-3xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Admin Login</h1>
+                <p class="text-gray-500 mt-2">Sign in to manage your travel content</p>
             </div>
-            <span class="text">Discover Sharm</span>
-        </a>
-        <ul class="side-menu top">
-            <li class="active" data-section="dashboard">
-                <a href="#" id="dashboardTab">
-                    <i class='bx bxs-dashboard'></i>
-                    <span class="text">Dashboard</span>
-                </a>
-            </li>
-            <li data-section="trips">
-                <a href="#">
-                    <i class='bx bxs-store-alt'></i>
-                    <span class="text">My Trips</span>
-                </a>
-            </li>
-            <li data-section="analytics">
-                <a href="#">
-                    <i class='bx bxs-doughnut-chart'></i>
-                    <span class="text"> Analytics </span>
-                </a>
-            </li>
-            <li data-section="reservation">
-                <a href="#">
-                    <i class="bx bx-calendar"></i>
-                    <span class="text">Reservations</span>
-                </a>
-            </li>
-            <li data-section="withdraw">
-                <a href="#">
-                    <i class='bx bx-credit-card'></i>
-                    <span class="text">payout</span>
-                </a>
-            </li>
-        </ul>
-        <ul class="side-menu">
-            <li data-section="settings">
-                <a href="#">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCSguTpqiMQyYizuEwdgH7LMP1s8_bWJ85LrFm6JFCguzAS5Hy1g3GouU&s=10" class="profile-photo" id="profile-s">
-                    <span class="text text-center">Profile</span>
-                </a>
-            </li>
-        </ul>
-          <ul class="side-menu">
-            <li>
-                <a href="#" id="logoutBtn" class="logoutBtn">
-                    <i class='bx bx-log-out'></i>
-                    <span class="text">Logout</span>
-                </a>
-            </li>
-        </ul>
-    </section>
-    <!-- SIDEBAR -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="email" id="login-email" required class="login-input" placeholder="Email Address">
+                <input type="password" id="login-password" required class="login-input" placeholder="Password">
+                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg text-sm"></div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            <div class="mt-6 text-center">
+                <button onclick="showResetPassword()" class="text-sm text-purple-600 hover:text-purple-700 font-medium">Forgot password?</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- CONTENT -->
-    <section id="content">
-        <!-- NAVBAR -->
-        <nav>
-            <i class='bx bx-menu'></i>
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="admin-panel">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="menuToggle" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                <i class="fas fa-bars text-xl text-gray-600"></i>
+            </button>
+            <h1 class="text-lg font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+                Discover Sharm
+            </h1>
+            <div class="flex items-center gap-3">
+                <div class="user-avatar" id="user-avatar-mobile">A</div>
+                <button onclick="exportAllData()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                    <i class="fas fa-download text-gray-600"></i>
+                </button>
+                <button id="mobileLogout" class="p-2 hover:bg-red-50 rounded-lg transition text-red-500">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="desktop-header">
+            <h2 class="text-xl font-bold text-gray-800" id="desktop-title">Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <div class="user-avatar" id="user-avatar-desktop">A</div>
+                <span id="user-email-desktop" class="text-sm text-gray-600">admin@example.com</span>
+                <button onclick="exportAllData()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                    <i class="fas fa-download text-gray-600"></i>
+                </button>
+                <button id="desktopLogout" class="p-2 hover:bg-red-50 rounded-lg transition text-red-500">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="p-5 border-b">
+                <h1 class="text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1>
+                <p class="text-sm text-gray-500 mt-1" id="user-email-sidebar">admin@example.com</p>
+            </div>
+            <nav class="p-3 space-y-1">
+                <div class="sidebar-link active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></div>
+                <div class="sidebar-link" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>My Trips</span></div>
+                <div class="sidebar-link" data-section="reservations"><i class="fas fa-calendar-check"></i><span>Reservations</span></div>
+                <div class="sidebar-link" data-section="payments"><i class="fas fa-credit-card"></i><span>Payments</span></div>
+                <div class="sidebar-link" data-section="payout"><i class="fas fa-wallet"></i><span>Payouts</span></div>
+                <div class="sidebar-link" data-section="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div>
+                <div class="sidebar-link" data-section="exchange"><i class="fas fa-dollar-sign"></i><span>Exchange Rate</span></div>
+                <hr class="my-3">
+                <div class="sidebar-link" id="logout-sidebar"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div>
             </nav>
-        <!-- NAVBAR -->
-
-        <!-- MAIN CONTENT SECTIONS -->
-        <main>
-            <!-- Dashboard Section -->
-            <section id="dashboard-section" class="content-section active">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Dashboard</h1>
-
-                        <div class="grid grid-cols-2 gap-2 w-full">
-                            <button class="filter-btn whitespace-nowrap" data-period="week">Week</button>
-                            <button class="filter-btn whitespace-nowrap" data-period="month">Month</button>
-                            <button class="filter-btn whitespace-nowrap" data-period="year">Year</button>
-                            <button class="filter-btn active whitespace-nowrap" data-period="all">All</button>
-                            <input type="text" id="dateRangePicker" class="filter-btn whitespace-nowrap col-span-2" placeholder="Select date range" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="container">
-                    <!-- Stats Summary -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalBookings">0</div>
-                                <div class="stat-label">Bookings</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalGuests">0</div>
-                                <div class="stat-label">Guests</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card col-span-2">
-                            <div class="stat-icon">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value" id="totalRevenue">EGP 0</div>
-                                <div class="stat-label">Revenue</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Main Charts Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                        <!-- Package Performance Chart -->
-                       <div class="card">
-                            <div class="card-header flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-    <h2 class="font-medium text-lg flex items-center">
-        <i class="fas fa-chart-line text-amber-500 mr-2"></i> Trip Performance
-    </h2>
-    
-</div>
-                            <div class="card-body">
-                                <div class="chart-container">
-  <canvas id="packagePerformanceChart" aria-label="Package Performance Chart"></canvas>
-</div>
-                            </div>
-                        </div>
-                </div>
-            </section>
-
-            <!-- trips Section -->
-            <section id="trips-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>My trips</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">trips</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a href="#" aria-label="Add new trip" id="newTripBtn" class="hidden bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-3 rounded-full text-sm font-medium shadow-sm transition-all">
-                        <i class='bx bxs-plus-circle'></i>
-                        <span class="text">Add trip</span>
-                    </a>
-                </div>
-
-                <div class="container">
-                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        <div class="glass-card p-4 rounded-xl stat-card">
-                            <div class="flex items-center justify-between w-full">
-                                <div>
-                                    <p class="text-sm">Active</p>
-                                    <h3 class="text-2xl font-bold" id="totalTrips">0</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-amber-100 text-amber-600">
-                                    <i class="fas fa-suitcase-rolling"></i>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="glass-card p-4 rounded-xl stat-card">
-                            <div class="flex items-center justify-between w-full">
-                                <div>
-                                    <p class="text-sm">Pending</p>
-                                    <h3 class="text-2xl font-bold" id="pendingTrips">0</h3>
-                                </div>
-                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tabs -->
-                    <div class="flex space-x-6 border-b border-slate-200 mb-6 overflow-x-auto pb-1">
-                        <button id="tripListTab" class="px-1 py-2 font-medium tab-active whitespace-nowrap text-sm sm:text-base">
-                            <i class="fas fa-list mr-2"></i>Trip List
-                        </button>
-                        <button id="tripEditorTab" class="px-1 py-2 font-medium whitespace-nowrap text-sm sm:text-base">
-                            <i class="fas fa-edit mr-2"></i>Trip Editor
-                        </button>
-                    </div>
-
-                    <!-- Trip List Section -->
-                    <div id="tripListSection">
-                        <div class="flex justify-between gap-4 items-center mb-4"></div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tripList">
-                            <!-- Skeleton loading -->
-                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse">
-                                <div class="h-40 bg-slate-200"></div>
-                                <div class="p-4">
-                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden md:block">
-                                <div class="h-40 bg-slate-200"></div>
-                                <div class="p-4">
-                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="trip-card glass-card rounded-xl overflow-hidden animate-pulse hidden lg:block">
-                                <div class="h-40 bg-slate-200"></div>
-                                <div class="p-4">
-                                    <div class="h-5 bg-slate-200 rounded mb-3 w-3/4"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-2 w-1/2"></div>
-                                    <div class="h-4 bg-slate-200 rounded mb-4 w-1/3"></div>
-                                    <div class="h-8 bg-slate-200 rounded w-2/3"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Empty state -->
-                        <div id="emptyState" class="hidden text-center py-12">
-                            <div class="mx-auto w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                                <i class="fas fa-suitcase text-amber-500 text-3xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium mb-2">No trips found</h3>
-                            <p class="mb-4">Create your first trip to get started</p>
-                            <button id="emptyStateNewTripBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition-all hidden">
-                                <i class="fas fa-plus mr-2"></i> Create New Trip
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Trip Editor Section -->
-                    <div id="tripEditorSection" class="hidden">
-                        <form id="tripForm">
-                            <input type="hidden" id="tripId">
-                            <input type="hidden" id="ownerId">
-                            
-                            <div class="mb-6">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h2 class="text-xl font-semibold" id="editorTitle">Create New Trip</h2>
-                                    <div class="flex space-x-2">
-                                        <button type="button" id="cancelBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white shadow-sm transition">
-                                            <i class="fa-solid fa-xmark"></i>
-                                        </button>
-
-                                        <button type="button" id="deleteBtn" style="display:none" class="hidden px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm transition delete-btn" data-id="${id}" ${!canEdit ? 'disabled' : ''}>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        
-                                        <button type="submit" id="saveBtn" class="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-sm transition flex items-center">
-                                            <i class="fa-regular fa-floppy-disk"></i>
-                                            <span id="spinner" class="ml-1 hidden">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                    <!-- Left Column -->
-                                    <div class="lg:col-span-2 space-y-4">
-                                        <!-- Basic Info Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <h3 class="font-medium text-amber-500 mb-4 flex items-center">
-                                                <i class="fas fa-info-circle text-amber-500 mr-2"></i> Basic Information
-                                            </h3>
-                                            
-                                            <div class="space-y-4">
-                                                <div>
-                                                    <label for="name" class="block text-sm font-medium mb-1">Trip Name*</label>
-                                                    <input type="text" id="name" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                                                </div>
-                                                
-                                                <div>
-                                                    <label for="bookingLink" class="block text-sm font-medium mb-1">Booking Link ID*</label>
-                                                    <div class="flex">
-                                                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
-                                                            ID 
-                                                        </span>
-                                                        <input type="text" id="bookingLink" required class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
-                                                    </div>
-                                                    <p class="text-xs text-slate-300 mt-1">URL-friendly ID (e.g., "ras-mohamed-diving")</p>
-                                                </div>
-                                                
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label for="price" class="block text-sm font-medium mb-1">Price (EGP)*</label>
-                                                        <div class="flex">
-                                                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
-                                                                EGP 
-                                                            </span>
-                                                            
-                                                            <input type="number" id="price" required placeholder="Enter Adult price" class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
-                                                            
-                                                        </div>
-                                                    </div>
-                                                   <div>
-  <label for="cprice" class="block text-sm font-medium mb-1">Children (5-12) Price (EGP) *</label>
-                                                     <div class="flex">
-                                                            <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-800 bg-slate-800 text-slate-50 text-sm">
-                                                                EGP 
-                                                            </span>
-  <input type="number" id="cprice" name="cprice" required placeholder="Enter children price" class="flex-1 min-w-0 block w-full p-3 rounded-none rounded-r-lg input-field text-sm focus:ring-2 focus:ring-amber-500">
-
-</div></div>
-</div>
-
-                                                  
-                                                    <div>
-                                                        <label for="duration" class="block text-sm font-medium mb-1">Duration*</label>
-                                                        <input type="text" id="duration" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="(4) hours / Half Day / Full Day">
-                                                    </div>
-                                                
-                                                
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label for="category" class="block text-sm font-medium mb-1">Category*</label>
-                                                        <select id="category" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                                                            <option value="">Select Category</option>
-                                                            <option value="Adventure">Adventure</option>
-                                                            <option value="Cultural">Cultural</option>
-                                                            <option value="Nature">Nature</option>
-                                                        </select>
-                                                    </div>
-                                                    
-                                                </div>
-                                                
-                                                <div>
-                                                    <label for="description" class="block text-sm font-medium mb-1">Short Description*</label>
-                                                    <textarea id="description" rows="4" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Media Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <div class="flex justify-between items-center mb-4">
-                                                <h3 class="font-medium flex items-center">
-                                                    <i class="fas fa-images text-amber-500 mr-2"></i> Media
-                                                </h3>
-                                                <div class="flex space-x-2" id="mediaButtons">
-                                                    <button type="button" id="addImageBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                        Add <i class="fas fa-image mr-1"></i>
-                                                    </button>
-                                                    <button type="button" id="addVideoBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                        Add <i class="fas fa-video mr-1"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="space-y-3">
-                                                <div>
-                                                    <label for="mainImage" class="block text-sm font-medium mb-1">Main Image URL*</label>
-                                                    <input type="text" id="mainImage" required class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                                                </div>
-                                                
-                                                <div id="imageList">
-                                                    <!-- Image URLs will be added here -->
-                                                </div>
-                                                <div id="videoList">
-                                                    <!-- Video entries will be added here -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Timeline Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <div class="flex justify-between items-center mb-4">
-                                                <h3 class="font-medium flex items-center">
-                                                    <i class="fas fa-clock text-amber-500 mr-2"></i> Timeline
-                                                </h3>
-                                                <button type="button" id="addTimelineBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                    <i class="fas fa-plus mr-1"></i> Add 
-                                                </button>
-                                            </div>
-                                            
-                                            <div id="timelineList" class="space-y-3">
-                                                <!-- Timeline items will be added here -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Right Column -->
-                                    <div class="space-y-4">
-                                        <!-- Included/Not Included Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <div class="grid grid-cols-1 gap-4">
-                                                <div>
-                                                    <div class="flex justify-between items-center mb-3">
-                                                        <h3 class="font-medium flex items-center">
-                                                            <i class="fas fa-check-circle text-green-500 mr-2"></i> Included
-                                                        </h3>
-                                                        <button type="button" id="addIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                            <i class="fas fa-plus mr-1"></i> Add 
-                                                        </button>
-                                                    </div>
-                                                    <div id="includedList" class="space-y-2">
-                                                        <!-- Included items will be added here -->
-                                                    </div>
-                                                </div>
-                                                
-                                                <div>
-                                                    <div class="flex justify-between items-center mb-3">
-                                                        <h3 class="font-medium flex items-center">
-                                                            <i class="fas fa-times-circle text-red-500 mr-2"></i> Not Included
-                                                        </h3>
-                                                        <button type="button" id="addNotIncludedBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                            <i class="fas fa-plus mr-1"></i> Add 
-                                                        </button>
-                                                    </div>
-                                                    <div id="notIncludedList" class="space-y-2">
-                                                        <!-- Not included items will be added here -->
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- What to Bring Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <div class="flex justify-between items-center mb-3">
-                                                <h3 class="font-medium flex items-center">
-                                                    <i class="fas fa-suitcase text-purple-500 mr-2"></i> What to Bring
-                                                </h3>
-                                                <button type="button" id="addWhatToBringBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                    <i class="fas fa-plus mr-1"></i> Add 
-                                                </button>
-                                            </div>
-                                            <div id="whatToBringList" class="space-y-2">
-                                                <!-- What to bring items will be added here -->
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Extra Services Card -->
-                                        <div class="glass-card p-5 rounded-xl">
-                                            <div class="flex justify-between items-center mb-3">
-                                                <h3 class="font-medium flex items-center">
-                                                    <i class="fas fa-concierge-bell text-blue-500 mr-2"></i> Extra Services
-                                                </h3>
-                                                <button type="button" id="addTourTypeBtn" class="text-xs bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded-full shadow-sm">
-                                                    <i class="fas fa-plus mr-1"></i> Add 
-                                                </button>
-                                            </div>
-                                            <div id="tourTypeList" class="space-y-2">
-                                                <!-- Tour types will be added here -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Analytics Section -->
-            <section id="analytics-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Analytics</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Analytics</a>
-                            </li>
-                        </ul>
-                    </div>
-                      <button id="exportData" class="btn-download text-white">
-                        <i class="fas fa-file-excel mr-2"></i>Export
-                      </button>
-                    
-                </div>
-
-                <div class="container">
-                    <!-- Charts will be rendered here -->
-                                        <div class="charts-grid">
-                        <!-- Booking Status Distribution -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Booking Status</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-new" id="statusUpdated">Today</div>
-                                    <button class="export-btn" data-chart="statusChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="statusChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Monthly Booking Trends -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Monthly Trends</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-confirmed" id="trendUpdated">2023</div>
-                                    <button class="export-btn" data-chart="trendChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="trendChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="charts-grid">
-                        <!-- Tour Performance -->
-                        
-                        
-                        <!-- Guest Composition -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Guest Composition</h2>
-                                <div class="card-actions">
-                                    <div class="badge badge-confirmed" id="guestUpdated">Current</div>
-                                    <button class="export-btn" data-chart="guestChart" title="Download Chart">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="half-pie-container">
-                                    <canvas id="guestChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-
-          
-            <!-- Reservations Section -->
-            <section id="reservation-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Reservations</h1>
-                        <ul class="breadcrumb">
-                            <li><a href="#">Dashboard</a></li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li><a class="active" href="#">Reservations</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="container full-width">
-                    <!-- Search and Filter Bar -->
-                    <div class="glass-card mb-3 sm:mb-4 p-2 sm:p-3 md:p-4">
-                        <div class="grid grid-colns-1 flex-row gap-3">
-                            <div class="w-full">
-                                <input type="text" id="searchInput" placeholder="Search bookings..." 
-                                    class="w-full px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
-                            </div>
-                            <div class="flex justify-between items-center w-full">
-                                <select id="statusFilter" class="px-2 py-1 sm:px-3 sm:py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm sm:text-base">
-                                    <option value="all">All Statuses</option>
-                                    <option value="new">New</option>
-                                    <option value="confirmed">Confirmed</option>
-                                    <option value="No Show">No Show</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                                <button onclick="applyFilters()" class="px-3 py-1 sm:px-4 sm:py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-sm sm:text-base">
-                                    <i class="fas fa-filter mr-1"></i> <span class="hidden sm:inline">Filter</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tabs for New and Confirmed Bookings -->
-                    <div class="flex mb-3 sm:mb-4 space-x-1 sm:space-x-2 overflow-x-auto pb-1">
-                        <button id="allBookingsTab" class="tab-button active" onclick="switchTab('all')">
-                            <i class="fas fa-list mr-1 sm:mr-2"></i> <span class="hidden sm:inline">All</span>
-                        </button>
-                        <button id="newBookingsTab" class="tab-button" onclick="switchTab('new')">
-                            <i class="fas fa-clock mr-1 sm:mr-2"></i> <span class="hidden sm:inline">New</span>
-                        </button>
-                        <button id="confirmedBookingsTab" class="tab-button" onclick="switchTab('confirmed')">
-                            <i class="fas fa-check-circle mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Confirmed</span>
-                        </button>
-                    </div>
-
-                    <!-- Main Content -->
-                    <div class="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
-                        <!-- Bookings Table -->
-                        <div id="bookingsSection" class="glass-card p-5">
-                            <div id="bookingsFilterBar" class="filter-bar2 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-3 gap-1 sm:gap-2">
-                                <h2 class="text-lg sm:text-xl font-semibold" id="bookingsTableTitle">All Bookings</h2>
-                                <div class="flex space-x-1 sm:space-x-2">
-                                    <div class="relative">
-                                        <input type="text" id="dateFilter" placeholder="Date" 
-                                            class="w-24 sm:w-32 px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500" readonly>
-                                        <button onclick="clearDateFilter()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
-                                            <i class="fas fa-times text-xs"></i>
-                                        </button>
-                                    </div>
-                                    <button onclick="exportToExcel()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-green-600 hover:bg-green-700">
-                                        <i class="fas fa-file-excel mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Export</span>
-                                    </button>
-                                    <button onclick="refreshBookings()" class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm bg-amber-600 hover:bg-amber-700">
-                                        <i class="fas fa-sync-alt mr-0 sm:mr-1"></i> <span class="hidden sm:inline">Refresh</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="responsive-table">
-                                <table class="text-center min-w-full divide-y divide-gray-700">
-                                    
-                                    <tbody id="bookingsTableBody" class="divide-y divide-gray-700 text-center">
-                                        <tr>
-                                            <td colspan="7" class="table-cell text-center text-gray-500">Loading bookings...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Pagination -->
-                            <div class="flex flex-col sm:flex-row justify-between items-center mt-2 sm:mt-3 px-2 sm:px-4 py-1 sm:py-2">
-                                <div class="text-xs sm:text-sm text-gray-400 mb-1 sm:mb-0">
-                                    Showing <span id="startItem">0</span> to <span id="endItem">0</span> of <span id="totalItems">0</span> bookings
-                                </div>
-                                <div class="flex space-x-1 sm:space-x-2">
-                                    <button id="prevPage" onclick="prevPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <div class="flex items-center space-x-1 text-xs sm:text-sm">
-                                        <span id="currentPage">1</span>
-                                        <span>of</span>
-                                        <span id="totalPages">1</span>
-                                    </div>
-                                    <button id="nextPage" onclick="nextPage()" disabled class="px-2 py-1 sm:px-3 sm:py-1 rounded-lg bg-gray-800 text-gray-400 cursor-not-allowed text-xs sm:text-sm">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-<!-- Pickup Time Modal -->
-<div id="pickupTimeModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-    
-    <!-- Modal Container -->
-    <div class="relative w-full max-w-md">
-        <!-- Modal Content -->
-        <div class="glass-card rounded-lg shadow-xl transform transition-all duration-300 overflow-hidden">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-4 sm:p-6 bg-gray-900/80 backdrop-blur-sm border-b border-gray-700">
-                <h3 class="text-lg sm:text-xl font-bold text-amber-400">Set Pickup Time</h3>
-                <button id="pickupModalCloseButton" class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="p-4 sm:p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label for="pickupTimeInput" class="block text-sm font-medium text-gray-300 mb-2">Pickup Time</label>
-                        <input type="time" id="pickupTimeInput" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
-                    </div>
-                    <p class="text-sm text-gray-400">Enter the pickup time so you can confirm this reservation.</p>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="p-4 bg-gray-900/50 border-t border-gray-700">
-                <div class="flex justify-end gap-3">
-                    <button id="cancelPickupTime" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
-                        Cancel
-                    </button>
-                    <button id="confirmWithPickupTime" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 transition-colors">
-                        Confirm Booking
-                    </button>
-                </div>
-            </div>
         </div>
-    </div>
-</div>
 
-
-
-
-                  
-
-                    <!-- Booking Details Modal -->
-<div id="bookingDetailsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="closeModal()"></div>
-    
-    <!-- Modal Container -->
-    <div class="relative w-full max-w-3xl max-h-[90vh]">
-        <!-- Modal Content -->
-        <div class="glass-card rounded-lg shadow-xl transform transition-all duration-300 overflow-hidden">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-4 sm:p-6 bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-700">
-                <h3 class="text-lg sm:text-xl font-bold text-amber-400">Booking Details</h3>
-                <button id="modalCloseButton" class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors" onclick="closeModal()">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div id="bookingDetailsContent" class="p-4 sm:p-6 overflow-y-auto max-h-[70vh]">
-                <!-- Content will be loaded here -->
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="p-4 bg-gray-900/50 border-t border-gray-700 sticky bottom-0">
-                <div class="flex justify-end gap-3">
-                  
-                    <button onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
-                        Close
-                    </button>
-                    <a id="whatsappButton" href="#" target="_blank" class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-colors flex items-center">
-            <i class="fab fa-whatsapp mr-2"></i> WhatsApp
-        </a>
-                   <div id="confirmButtonContainer">
-                        <!-- Confirm button will be injected here -->
-                    </div>
-                </div>
-                 </div>
+        <!-- Mobile Bottom Nav -->
+        <div class="mobile-bottom-nav">
+            <div class="nav-item active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Home</span></div>
+            <div class="nav-item" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>Trips</span></div>
+            <div class="nav-item" data-section="reservations"><i class="fas fa-calendar"></i><span>Bookings</span></div>
+            <div class="nav-item" data-section="payout"><i class="fas fa-wallet"></i><span>Wallet</span></div>
         </div>
-    </div>
-</div>
-            </section>
 
+        <!-- FAB -->
+        <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
 
-
-
-          
-            <!-- Payout Section -->
-            <section id="withdraw-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Payout Method</h1>
-                        <ul class="breadcrumb">
-                            <li><a href="#">Dashboard</a></li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li><a class="active" href="#">Payout Method</a></li>
-                        </ul>
-                    </div>
+        <!-- Main Content -->
+        <div class="main-content" style="padding: 20px; padding-bottom: 100px;">
+            <!-- Dashboard -->
+            <div id="dashboard-section" class="content-section active">
+                <h2 class="text-2xl font-bold text-gray-800 mb-5">Dashboard Overview</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="stat-card"><div><p class="text-gray-500 text-sm">Total Trips</p><h3 class="text-2xl font-bold" id="totalTripsStat">0</h3></div><i class="fas fa-map-marked-alt text-3xl text-orange-500"></i></div>
+                    <div class="stat-card"><div><p class="text-gray-500 text-sm">Bookings</p><h3 class="text-2xl font-bold" id="totalBookingsStat">0</h3></div><i class="fas fa-calendar-check text-3xl text-orange-500"></i></div>
+                    <div class="stat-card"><div><p class="text-gray-500 text-sm">Guests</p><h3 class="text-2xl font-bold" id="totalGuestsStat">0</h3></div><i class="fas fa-users text-3xl text-orange-500"></i></div>
+                    <div class="stat-card"><div><p class="text-gray-500 text-sm">Revenue</p><h3 class="text-2xl font-bold" id="totalRevenueStat">EGP 0</h3></div><i class="fas fa-wallet text-3xl text-orange-500"></i></div>
                 </div>
+                <div class="card"><canvas id="trendChart" height="200"></canvas></div>
+            </div>
 
-                <div class="container">
-                    <div class="card full-width">
-                        <div class="card-header">
-                            <h2 class="card-title">Payout Method</h2>
-                            <div class="card-actions"></div>
-                        </div>
-                        <div class="card-body">
-                            <form id="payoutForm">
-                                <!-- Payout Method Selection -->
-                                <div class="form-group">
-                                    <label for="payoutMethod">Payout Method</label>
-                                    <div>
-                                        <select id="payoutMethod" class="w-full p-3 input-field rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
-                                            <option value="wallet">e-Wallet</option>
-                                            <option value="bankAccount" disabled>Bank Account ( soon )</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Always Visible Fields -->
-                                <div class="form-group">
-                                    <label for="payoutName">Full Name</label>
-                                    <input type="text" id="payoutName" class="w-full p-3 input-field" placeholder="Enter your full name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="accountNumber">Account Number</label>
-                                    <input type="text" id="accountNumber" class="w-full p-3 input-field" placeholder="Enter account number" required>
-                                </div>
-
-                                <!-- Conditional Fields (Bank Account Only) -->
-                                <div id="bankFields" style="display: none;">
-                                    <div class="form-group">
-                                        <label for="bankName">Bank Name</label>
-                                        <input type="text" id="bankName" class="w-full p-3 input-field" placeholder="e.g., Banque Misr">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="branchName">Branch Name</label>
-                                        <input type="text" id="branchName" class="w-full p-3 input-field" placeholder="e.g., Sharm El-Sheikh">
-                                    </div>
-                                </div>
-
-                                <button type="submit" id="savePayoutBtn" class="btn-primary save-btn">
-                                    <i class="fa-regular fa-floppy-disk"></i> Save
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-<div class="card full-width">
-                    <div class="stat-card full-width flex items-center justify-between p-4 rounded-lg shadow-md">
-  <div class="flex items-center space-x-4">
-    <!-- Icon -->
-    <div class="stat-icon p-3 bg-amber-100 text-amber-600 rounded-full">
-      <i class="fas fa-wallet text-xl"></i>
-    </div>
-
-    <!-- Info -->
-    <div class="stat-info">
-      <div class="stat-value text-2xl font-semibold " id="avpayout">EGP 0</div>
-      <div class="stat-label text-sm ">Withdrawable amount</div>
-    </div>
-  </div>
-
-  <!-- Button -->
-  <button id="requestPayoutBtn" class="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500">
-    <i class="fas fa-wallet mr-2"></i> Withdraw
-  </button>
-</div>
-
-                  
-                      <!-- Loading Spinner -->
-<div id="loadingSpinner" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 items-center justify-center">
-  <div class="flex flex-col items-center text-white">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
-    <p class="mt-4">Processing request...</p>
-  </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div id="confirmModal" class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 items-center justify-center">
-  <div class="bg-[#333] p-6 rounded shadow-md w-80 text-center">
-    <h3 class="text-lg font-semibold mb-4">Confirm Payout Request</h3>
-    <p>Are you sure you want to submit this payout request?</p>
-    <div class="mt-6 flex justify-around">
-      <button id="confirmNo" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
-      <button id="confirmYes" class="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700">Confirm</button>
-    </div>
-  </div>
-</div>
-
-</div>
-                      
-                        </div>
-
-              
-
-                    <!-- Events Section -->
-                    <div class="card full-width mt-6">
-                        <div class="card-header">
-                            <h2 class="card-title">Payout History</h2>
-                          <button onclick="exportPayoutEventsToExcel()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                        <i class="fas fa-file-excel"></i>
-                            </button>
-                        </div>
-                        <div class="card-body p-4">
-  <div id="pendingBadg" class="hidden w-full"></div>
-  
-  <div>
-    <div id="payout-output">
-      <!-- Payout content will appear here -->
-    </div>
-  </div>
-</div>
-                    </div>
+            <!-- Trips -->
+            <div id="trips-section" class="content-section">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+                    <h2 class="text-2xl font-bold">My Trips</h2>
+                    <div class="flex gap-2 flex-wrap"><button onclick="setTripFilter('all')" class="filter-chip active">All</button><button onclick="setTripFilter('approved')" class="filter-chip">Approved</button><button onclick="setTripFilter('pending')" class="filter-chip">Pending</button></div>
                 </div>
-            </section>
+                <div class="mb-4 relative"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" id="tripSearch" placeholder="Search trips..." class="input-field pl-12"></div>
+                <div id="trips-container" class="grid-cards"></div>
+            </div>
 
-            <!-- Settings Section -->
-            <section id="settings-section" class="content-section">
-                <div class="head-title">
-                    <div class="left">
-                        <h1>Profile</h1>
-                        <ul class="breadcrumb">
-                            <li>
-                                <a href="#">Dashboard</a>
-                            </li>
-                            <li><i class='bx bx-chevron-right'></i></li>
-                            <li>
-                                <a class="active" href="#">Profile</a>
-                            </li>
-                        </ul>
+            <!-- Reservations -->
+            <div id="reservations-section" class="content-section">
+                <div class="card">
+                    <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                        <h2 class="text-xl font-bold">All Reservations</h2>
+                        <div class="flex gap-2"><button onclick="switchReservationTab('all')" class="filter-chip active">All</button><button onclick="switchReservationTab('unpaid')" class="filter-chip">⚠️ Unpaid <span id="unpaidBadge" class="ml-1 text-xs">0</span></button><button onclick="switchReservationTab('paid')" class="filter-chip">✅ Paid</button></div>
                     </div>
+                    <div class="flex flex-wrap gap-3 mb-4"><input type="text" id="resSearch" placeholder="Search..." class="input-field flex-1"><select id="statusFilter" class="input-field w-36"><option value="all">All Status</option><option value="new">New</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select><button onclick="refreshReservations()" class="btn-primary px-4"><i class="fas fa-sync-alt"></i></button><button onclick="openManualBookingModal()" class="bg-green-600 text-white px-4 py-3 rounded-xl"><i class="fas fa-plus"></i> Manual</button></div>
+                    <div class="table-responsive"><table class="w-full"><thead><tr><th>Guest</th><th>Trip</th><th>Date</th><th>Pax</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="resTableBody"><tr><td colspan="8" class="text-center py-8">Loading...</td></tr></tbody></table></div>
                 </div>
+            </div>
 
-                <div class="container">
-                    <div class="card full-width">
-                        <div class="card-header">
-                            <h2 class="card-title">Account Details</h2>
-                            <span id="userRole" class="text"></span>
-                        </div>
-                        <div class="card-body">
-                            <form class="settings-form">
-                                <div class="form-group">
-                                    <div class="profile-pic-upload">
-                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCSguTpqiMQyYizuEwdgH7LMP1s8_bWJ85LrFm6JFCguzAS5Hy1g3GouU&s=10" class="profile-photo" id="profile-pic-preview">
-                                    </div>
-                                </div>
+            <!-- Payments -->
+            <div id="payments-section" class="content-section"><div class="card"><h2 class="text-xl font-bold mb-4">Payment Management</h2><div class="table-responsive"><table class="w-full"><thead><tr><th>Booking ID</th><th>Guest</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="paymentsTableBody"></tbody></table></div></div></div>
 
-                                <div class="form-group">
-                                    <label for="username">Your Name</label>
-                                    <input class="text-sm" type="text" id="userName" value="" readonly>
-                                </div>
+            <!-- Payout -->
+            <div id="payout-section" class="content-section">
+                <div class="card mb-5"><h3 class="font-bold text-lg mb-3">Payout Method</h3><form id="payoutForm"><input type="text" id="payoutName" placeholder="Full Name" class="input-field mb-3"><input type="text" id="accountNumber" placeholder="Wallet ID / Account" class="input-field mb-3"><button type="submit" class="btn-primary">Save Method</button></form></div>
+                <div class="stat-card flex justify-between items-center"><div><span class="text-gray-500">Available Balance</span><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3></div><button id="requestPayoutBtn" class="btn-primary">Withdraw</button></div>
+                <div class="card mt-5"><h3 class="font-bold mb-3">Payout History</h3><div id="payoutHistoryList" class="space-y-2"></div></div>
+            </div>
 
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input class="text-sm" type="email" id="userEmail" value="" readonly>
-                                </div>
+            <!-- Analytics -->
+            <div id="analytics-section" class="content-section"><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card"><canvas id="statusChart" height="250"></canvas></div><div class="card"><canvas id="guestChart" height="250"></canvas></div></div></div>
 
-                                <div class="form-group">
-                                    <label for="phone">Phone</label>
-                                    <input class="text-sm" type="phone" id="userPhone" value="" readonly>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+            <!-- Exchange Rate -->
+            <div id="exchange-section" class="content-section"><div class="card"><h3 class="font-bold text-lg mb-3">USD to EGP Rate</h3><input type="number" id="exchangeRateInput" step="0.01" class="input-field w-48 mb-3"><button id="saveExchangeBtn" class="btn-primary">Save</button></div></div>
+        </div>
 
-        <!-- Toast Notification -->
+        <!-- Modals -->
+        <div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4" id="modal-title">Add Trip</h3><form id="item-form" onsubmit="saveTrip(event)"><input type="hidden" id="item-id"><input type="text" id="item-name" placeholder="Trip Name *" class="input-field mb-3" required><textarea id="item-desc" placeholder="Description" rows="3" class="input-field mb-3"></textarea><div class="grid grid-cols-2 gap-3 mb-3"><input type="number" id="item-price" placeholder="Price (EGP)" class="input-field"><input type="number" id="item-cprice" placeholder="Child Price" class="input-field"></div><div class="grid grid-cols-2 gap-3 mb-3"><input type="text" id="item-duration" placeholder="Duration" class="input-field"><input type="text" id="item-bookingLink" placeholder="Booking Slug" class="input-field"></div><div class="flex justify-between items-center mb-3"><span>Approved</span><label class="toggle-switch"><input type="checkbox" id="item-approved" checked><span class="toggle-slider"></span></label></div><input type="text" id="item-image" placeholder="Image URL" class="input-field mb-3"><div class="flex gap-3"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
+
+        <div class="modal-overlay" id="payment-overlay" onclick="closePaymentModal()"></div>
+        <div class="modal-sheet" id="payment-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-3">Confirm Payment</h3><p id="paymentBookingInfo" class="mb-4"></p><div class="flex gap-3"><button onclick="closePaymentModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirmPaymentBtn" class="flex-1 btn-primary">Mark as Paid</button></div></div></div>
+
+        <div class="modal-overlay" id="delete-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-sheet" id="delete-modal"><div class="modal-handle"></div><div class="p-5 text-center"><i class="fas fa-trash-alt text-4xl text-red-500 mb-3"></i><h3 class="text-xl font-bold">Delete Trip?</h3><div class="flex gap-3 mt-5"><button onclick="closeDeleteModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white rounded-xl py-3">Delete</button></div></div></div>
+
         <div id="toast" class="toast"></div>
-    </section>
+    </div>
 
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", authDomain: "egypt-travels.firebaseapp.com", databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", projectId: "egypt-travels", storageBucket: "egypt-travels.appspot.com" };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(), db = firebase.database();
 
-<!-- أضف هذا النص البرمجي قبل إغلاق body -->
-<script>
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/admin/service-worker.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful');
-        })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
-    });
-  }
+        let currentUser = null, allTrips = [], allReservations = [];
+        let tripFilter = 'all', tripSearch = '', currentReservationTab = 'all';
+        let pendingDeleteId = null, pendingPaymentId = null;
+        let trendChart = null;
 
-  // Handle before install prompt
-  let deferredPrompt;
+        function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
+        function exportAllData(){ showToast('Export feature ready', 'info'); }
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  
-  // عرض زر التثبيت فقط في صفحة /admin/
-  if (window.location.pathname.startsWith('/admin/m-trips.html')) {
-    showInstallButton();
-  }
-});
-
-function showInstallButton() {
-  const existingBtn = document.getElementById('installAdminBtn');
-  if (existingBtn) return;
-  
-  const installBtn = document.createElement('button');
-  installBtn.id = 'installAdminBtn';
-  installBtn.innerHTML = `
-    <i class="fas fa-download mr-2"></i>
-    Install Admin App
-  `;
-  installBtn.className = 'fixed bottom-6 right-6 bg-amber-600 text-white px-4 py-3 rounded-full shadow-lg z-50';
-  
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      installBtn.remove();
-    }
-    deferredPrompt = null;
-  });
-  
-  document.body.appendChild(installBtn);
-  };
-</script>
-
-  
-    <script src="https://www.discover-sharm.com/admin/script.js"></script>
+        async function handleLogin(e){ e.preventDefault(); try{ await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } catch(err){ let d=document.getElementById('login-error'); d.innerText=err.message; d.classList.remove('hidden'); } }
+        function showResetPassword(){ let e=prompt("Enter your email"); if(e) auth.sendPasswordResetEmail(e).then(()=>alert("Reset link sent")); }
         
-<script src="https://www.discover-sharm.com/admin/res.js"></script>
+        auth.onAuthStateChanged(async user=>{ if(user){ currentUser=user; document.getElementById('login-page').style.display='none'; document.getElementById('admin-panel').classList.add('visible'); let initial=user.email.charAt(0).toUpperCase(); document.getElementById('user-avatar-mobile').innerText=initial; document.getElementById('user-avatar-desktop').innerText=initial; document.getElementById('user-email-sidebar').innerText=user.email; document.getElementById('user-email-desktop').innerText=user.email; await loadAllData(); await loadReservations(); await loadExchangeRate(); await loadPayoutData(); switchSection('dashboard'); setInterval(()=>{ loadReservations(); updateDashboard(); },30000); } else { document.getElementById('login-page').style.display='flex'; document.getElementById('admin-panel').classList.remove('visible'); } });
+
+        async function loadAllData(){ let ts=await db.ref('trips').once('value'); allTrips=Object.entries(ts.val()||{}).map(([id,val])=>({id,...val})); renderTrips(); updateDashboard(); }
+
+        function renderTrips(){ let filtered=allTrips.filter(t=>{ let match=(t.name||'').toLowerCase().includes(tripSearch.toLowerCase()); if(tripFilter=='approved') return match && (t.approved===true||t.approved==="true"); if(tripFilter=='pending') return match && !(t.approved===true||t.approved==="true"); return match; }); let c=document.getElementById('trips-container'); if(!filtered.length){ c.innerHTML='<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; return; } c.innerHTML=filtered.map(t=>`<div class="card"><img src="${t.image||'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3"><h3 class="font-bold text-lg">${t.name||''}</h3><p class="text-orange-600 font-bold">EGP ${t.price||0}</p><p class="text-sm text-gray-500">${t.duration||''}</p><div class="flex gap-2 mt-3"><button onclick="editTrip('${t.id}')" class="bg-blue-500 text-white px-3 py-2 rounded-xl text-sm"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 text-white px-3 py-2 rounded-xl text-sm"><i class="fas fa-trash"></i> Delete</button></div></div>`).join(''); }
+
+        function openAddTripModal(){ document.getElementById('modal-title').innerText='Add New Trip'; document.getElementById('item-form').reset(); document.getElementById('item-approved').checked=true; document.getElementById('item-id').value=''; openModal(); }
+        function editTrip(id){ let t=allTrips.find(t=>t.id===id); if(!t)return; document.getElementById('modal-title').innerText='Edit Trip'; document.getElementById('item-id').value=id; document.getElementById('item-name').value=t.name||''; document.getElementById('item-desc').value=t.description||''; document.getElementById('item-price').value=t.price||0; document.getElementById('item-cprice').value=t.cprice||0; document.getElementById('item-duration').value=t.duration||''; document.getElementById('item-bookingLink').value=t.bookingLink||''; document.getElementById('item-approved').checked=(t.approved===true||t.approved==="true"); document.getElementById('item-image').value=t.image||''; openModal(); }
+        async function saveTrip(e){ e.preventDefault(); let id=document.getElementById('item-id').value; let data={ name:document.getElementById('item-name').value, description:document.getElementById('item-desc').value, price:parseFloat(document.getElementById('item-price').value)||0, cprice:parseFloat(document.getElementById('item-cprice').value)||0, duration:document.getElementById('item-duration').value, bookingLink:document.getElementById('item-bookingLink').value, approved:document.getElementById('item-approved').checked?"true":"false", image:document.getElementById('item-image').value, updatedAt:Date.now() }; if(id) await db.ref(`trips/${id}`).update(data); else await db.ref('trips').push({...data,createdAt:Date.now()}); showToast('Trip saved!'); closeModal(); loadAllData(); }
+        function deleteTripPrompt(id){ pendingDeleteId=id; openSheet('delete-modal','delete-overlay'); }
+        async function confirmDelete(){ if(pendingDeleteId){ await db.ref(`trips/${pendingDeleteId}`).remove(); showToast('Deleted'); loadAllData(); closeDeleteModal(); pendingDeleteId=null; } }
+        document.getElementById('confirm-delete-btn')?.addEventListener('click',confirmDelete);
+        function setTripFilter(f){ tripFilter=f; document.querySelectorAll('#trips-section .filter-chip').forEach(c=>c.classList.remove('active')); event?.target.classList.add('active'); renderTrips(); }
+        document.getElementById('tripSearch')?.addEventListener('input',e=>{ tripSearch=e.target.value; renderTrips(); });
+
+        async function loadReservations(){ let snap=await db.ref('trip-bookings').once('value'); allReservations=Object.entries(snap.val()||{}).map(([id,val])=>({id,...val,isPaid:val.paymentStatus==='paid'||val.isPaid===true})); updateUnpaidBadge(); renderReservations(); }
+        function updateUnpaidBadge(){ let unpaid=allReservations.filter(r=>!r.isPaid).length; let badge=document.getElementById('unpaidBadge'); if(badge) badge.innerText=unpaid; }
+        function renderReservations(){ let search=document.getElementById('resSearch')?.value.toLowerCase()||''; let status=document.getElementById('statusFilter')?.value||'all'; let filtered=allReservations.filter(r=>(r.userName||'').toLowerCase().includes(search)||(r.tripName||'').toLowerCase().includes(search)); if(status!=='all') filtered=filtered.filter(r=>r.status===status); if(currentReservationTab==='paid') filtered=filtered.filter(r=>r.isPaid===true); if(currentReservationTab==='unpaid') filtered=filtered.filter(r=>r.isPaid!==true); let tbody=document.getElementById('resTableBody'); if(!filtered.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center py-8">No reservations</td></tr>'; return; } tbody.innerHTML=filtered.map(r=>`<tr class="border-b"><td><div class="font-medium">${r.username||'Guest'}</div><div class="text-xs text-gray-500">${r.phone||'-'}</div></td><td>${r.tour||'-'}</td><td>${r.tripDate||'-'}</td><td>${r.adults||0}A / ${r.childrenUnder12||0}C</td><td class="font-bold">EGP ${r.netTotal||0}</td><td><span class="status-badge ${r.isPaid?'status-paid':'status-unpaid'}">${r.isPaid?'✅ Paid':'⚠️ Unpaid'}</span></td><td><span class="status-badge status-${r.status||'new'}">${r.status||'new'}</span></td><td><div class="flex gap-1">${!r.isPaid?`<button onclick="openPaymentModal('${r.id}','${r.username}','${r.netTotal}')" class="bg-green-600 text-white px-2 py-1 rounded-lg text-xs">Pay</button>`:''}<button onclick="updateBookingStatus('${r.id}','confirmed')" class="bg-amber-600 text-white px-2 py-1 rounded-lg text-xs">Confirm</button></div></td></tr>`).join(''); }
+        function switchReservationTab(tab){ currentReservationTab=tab; document.querySelectorAll('#reservations-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); renderReservations(); }
+        function openPaymentModal(id,name,amount){ pendingPaymentId=id; document.getElementById('paymentBookingInfo').innerHTML=`Confirm payment for <strong>${name}</strong> of <strong>EGP ${amount}</strong>`; openSheet('payment-modal','payment-overlay'); }
+        async function confirmPayment(){ if(pendingPaymentId){ await db.ref(`trip-bookings/${pendingPaymentId}`).update({ isPaid:true, paymentStatus:'paid', paymentDate:Date.now(), status:'confirmed' }); showToast('Payment confirmed!'); closePaymentModal(); loadReservations(); updateDashboard(); pendingPaymentId=null; } }
+        document.getElementById('confirmPaymentBtn')?.addEventListener('click',confirmPayment);
+        async function updateBookingStatus(id,status){ await db.ref(`trip-bookings/${id}`).update({ status, updatedAt:Date.now() }); showToast(`Booking ${status}`); loadReservations(); updateDashboard(); }
+        function openManualBookingModal(){ let tripsOpt=allTrips.map(t=>`<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`).join(''); let html=`<div id="manualModal" class="modal-overlay" style="display:flex;visibility:visible;opacity:1"><div class="modal-card" style="background:white;max-width:500px;width:90%;border-radius:28px;padding:24px"><h3 class="text-xl font-bold mb-3">Manual Booking</h3><form id="manualForm"><input type="text" id="manualName" placeholder="Guest Name" class="input-field mb-3" required><input type="tel" id="manualPhone" placeholder="Phone" class="input-field mb-3"><select id="manualTrip" class="input-field mb-3">${tripsOpt}</select><div class="grid grid-cols-2 gap-3 mb-3"><input type="number" id="manualAdults" placeholder="Adults" value="1" class="input-field"><input type="number" id="manualChildren" placeholder="Children" value="0" class="input-field"></div><input type="date" id="manualDate" class="input-field mb-3"><div class="flex items-center gap-3 mb-4"><label><input type="checkbox" id="manualPaid"> Mark as Paid</label></div><div class="flex gap-3"><button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save</button></div></form></div></div>`; document.body.insertAdjacentHTML('beforeend',html); document.getElementById('manualForm').onsubmit=async(e)=>{ e.preventDefault(); let tripData=document.getElementById('manualTrip').value.split('|'); let total=(parseInt(document.getElementById('manualAdults').value)+parseInt(document.getElementById('manualChildren').value))*parseFloat(tripData[2]); let booking={ userName:document.getElementById('manualName').value, Phone:document.getElementById('manualPhone').value, tripId:tripData[0], tripName:tripData[1], adults:parseInt(document.getElementById('manualAdults').value), children:parseInt(document.getElementById('manualChildren').value), totalPrice:total, date:document.getElementById('manualDate').value||new Date().toISOString().split('T')[0], isPaid:document.getElementById('manualPaid').checked, paymentStatus:document.getElementById('manualPaid').checked?'paid':'unpaid', status:document.getElementById('manualPaid').checked?'confirmed':'new', createdAt:Date.now() }; await db.ref('trip-bookings').push(booking); showToast('Booking added'); document.getElementById('manualModal').remove(); loadReservations(); updateDashboard(); }; }
+        function refreshReservations(){ loadReservations(); }
+
+        async function loadPayoutData(){ if(!currentUser)return; let snap=await db.ref(`egy_user/${currentUser.uid}/payoutMethods`).once('value'); let d=snap.val(); if(d){ document.getElementById('payoutName').value=d.name||''; document.getElementById('accountNumber').value=d.account||''; } let earn=await db.ref(`commissions/${currentUser.uid}`).once('value'); let bal=earn.val()?.total||0; document.getElementById('avpayout').innerHTML=`EGP ${bal}`; let hist=await db.ref(`payoutRequests/${currentUser.uid}`).once('value'); let html=''; hist.forEach(h=>{ html+=`<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${h.val().amount} EGP</span><span>${h.val().status}</span><span>${new Date(h.val().createdAt).toLocaleDateString()}</span></div>`; }); document.getElementById('payoutHistoryList').innerHTML=html||'<p>No requests</p>'; }
+        document.getElementById('payoutForm')?.addEventListener('submit',async(e)=>{ e.preventDefault(); if(!currentUser)return; await db.ref(`payoutMethods/${currentUser.uid}`).set({ name:document.getElementById('payoutName').value, account:document.getElementById('accountNumber').value }); showToast('Payout method saved'); });
+        document.getElementById('requestPayoutBtn')?.addEventListener('click',async()=>{ let balText=document.getElementById('avpayout').innerText; let amt=parseFloat(balText.replace('EGP','')); if(amt<=0){ showToast('No balance','error'); return; } if(confirm(`Request payout of ${amt} EGP?`)){ await db.ref(`payoutRequests/${currentUser.uid}`).push({ amount:amt, status:'pending', createdAt:Date.now() }); showToast('Request sent'); loadPayoutData(); } });
+
+        async function loadExchangeRate(){ let s=await db.ref('exchangeRates/rate').once('value'); document.getElementById('exchangeRateInput').value=s.val()||50.5; }
+        document.getElementById('saveExchangeBtn')?.addEventListener('click',async()=>{ let v=parseFloat(document.getElementById('exchangeRateInput').value); if(v) await db.ref('exchangeRates').set({ rate:v }); showToast('Rate saved'); });
+
+        async function updateDashboard(){ let ts=await db.ref('trips').once('value'); let bs=await db.ref('trip-bookings').once('value'); let rev=0,guests=0; bs.forEach(b=>{ let v=b.val(); rev+=(v.netTotal||0); guests+=(v.adults||0)+(v.childrenUnder12||0); });
+        document.getElementById('totalTripsStat').innerText=ts.numChildren(); 
+        document.getElementById('totalBookingsStat').innerText=bs.numChildren(); 
+        document.getElementById('totalGuestsStat').innerText=guests; 
+        document.getElementById('totalRevenueStat').innerHTML=`EGP ${rev.toFixed(0)}`; if(trendChart)trendChart.destroy(); let ctx=document.getElementById('trendChart').getContext('2d'); trendChart=new Chart(ctx,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'trip-Bookings',data:[5,9,7,12,15,10],borderColor:'#f97316',tension:0.3}]}}); }
+
+        function renderAnalyticsCharts(){ let statusCount={new:0,confirmed:0,cancelled:0}; allReservations.forEach(r=>{ let s=r.status||'new'; statusCount[s]++; }); new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:['New','Confirmed','Cancelled'],datasets:[{data:[statusCount.new,statusCount.confirmed,statusCount.cancelled],backgroundColor:['#f97316','#22c55e','#ef4444']}]}}); new Chart(document.getElementById('guestChart'),{type:'bar',data:{labels:['Adults','Children'],datasets:[{label:'Total',data:[allReservations.reduce((a,b)=>a+(b.adults||0),0),allReservations.reduce((a,b)=>a+(b.childrenUnder12||0),0)],backgroundColor:'#3b82f6'}]}}); }
+
+        function switchSection(section){ document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active')); document.getElementById(`${section}-section`).classList.add('active'); document.querySelectorAll('.sidebar-link, .nav-item').forEach(l=>l.classList.remove('active')); document.querySelectorAll(`[data-section="${section}"]`).forEach(l=>l.classList.add('active')); document.getElementById('desktop-title').innerText=document.querySelector(`[data-section="${section}"] span`)?.innerText||section; if(section==='analytics') renderAnalyticsCharts(); if(section==='payments') document.getElementById('paymentsTableBody').innerHTML=allReservations.map(r=>`<tr><td>${r.id.slice(-6)}</td><td>${r.username||'-'}</td><td>EGP ${r.netTotal||0}</td><td><span class="status-badge ${r.isPaid?'status-paid':'status-unpaid'}">${r.isPaid?'Paid':'Unpaid'}</span></td><td>${new Date(r.createdAt||Date.now()).toLocaleDateString()}</td><td>${!r.isPaid?`<button onclick="openPaymentModal('${r.id}','${r.username}','${r.netTotal}')" class="btn-primary px-3 py-1 text-xs">Mark Paid</button>`:'-'}</td></tr>`).join('')||'<tr><td colspan="6" class="text-center">No payments</td></tr>'; }
+        
+        document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el=>{ el.addEventListener('click',()=>{ switchSection(el.getAttribute('data-section')); if(window.innerWidth<1024) document.getElementById('sidebar').classList.remove('open'); }); });
+        document.getElementById('logout-sidebar')?.addEventListener('click',()=>auth.signOut());
+        document.getElementById('mobileLogout')?.addEventListener('click',()=>auth.signOut());
+        document.getElementById('desktopLogout')?.addEventListener('click',()=>auth.signOut());
+        document.getElementById('fabBtn')?.addEventListener('click',openAddTripModal);
+        document.getElementById('menuToggle')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+        
+        function openModal(){ openSheet('item-modal'); }
+        function closeModal(){ closeSheet('item-modal'); }
+        function closePaymentModal(){ closeSheet('payment-modal','payment-overlay'); pendingPaymentId=null; }
+        function closeDeleteModal(){ closeSheet('delete-modal','delete-overlay'); pendingDeleteId=null; }
+        function openSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.add('open'); document.getElementById(oId).classList.add('open'); document.body.style.overflow='hidden'; }
+        function closeSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.remove('open'); document.getElementById(oId).classList.remove('open'); document.body.style.overflow=''; }
+        
+        window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.openPaymentModal=openPaymentModal; window.updateBookingStatus=updateBookingStatus; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.refreshReservations=refreshReservations; window.exportAllData=exportAllData; window.openAddTripModal=openAddTripModal;
+    </script>
+</body>
+</html>
