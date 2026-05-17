@@ -18,9 +18,10 @@ const FIXED_FEE = 3; // Fixed 3 EGP fee
 const TAX_RATE = 0.03; // 3% tax
 const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
 let currentStep = 0;
+let currentTotalPriceEGP = 0; // Store current total price in EGP
 
 // ========================================
-// CURRENCY INTEGRATION (No fixed rates, no Firebase rates)
+// CURRENCY INTEGRATION
 // ========================================
 
 // Get current currency from header system
@@ -28,7 +29,7 @@ function getCurrentCurrency() {
     if (window.SharmCurrency && window.SharmCurrency.get) {
         return window.SharmCurrency.get();
     }
-    return 'EGP'; // Default fallback
+    return 'EGP';
 }
 
 // Get exchange rates from header system
@@ -59,7 +60,6 @@ function formatPriceWithCurrency(priceEGP) {
         return symbol + converted.toFixed(2);
     }
     
-    // Fallback to EGP if rates not available
     return Math.round(priceEGP) + ' EGP';
 }
 
@@ -83,29 +83,75 @@ function getExchangeRateValue() {
     return 1;
 }
 
+// ========================================
+// UPDATE ALL PRICE DISPLAYS
+// ========================================
+function updateAllPriceDisplays() {
+    // 1. Update main price display
+    updatePriceDisplay();
+    
+    // 2. Update price tag on first slide
+    updateFirstSlidePriceTag();
+    
+    // 3. Update trip type dropdown
+    if (tourTypes && Object.keys(tourTypes).length > 0) {
+        populateTripTypeDropdown(tourTypes);
+    }
+    
+    // 4. Update summary total
+    updateSummary();
+    
+    // 5. Update booking summary if visible
+    const totalPriceDisplay = document.getElementById("totalPriceDisplay");
+    if (totalPriceDisplay && currentTotalPriceEGP > 0) {
+        totalPriceDisplay.innerHTML = formatPriceWithCurrency(currentTotalPriceEGP);
+    }
+    
+    console.log('All price displays updated to:', getCurrentCurrency());
+}
+
+// Update the price tag on the first slide
+function updateFirstSlidePriceTag() {
+    const totalPrice = calculateTotalWithTaxes();
+    const priceTag = document.querySelector('.price-tag');
+    if (priceTag) {
+        priceTag.innerHTML = formatPriceWithCurrency(totalPrice);
+        priceTag.classList.add('notranslate');
+    }
+}
+
 // Listen for currency changes from header
 function listenToCurrencyChanges() {
     window.addEventListener('currencyChanged', function(event) {
+        console.log('Currency changed event received:', event.detail);
         // Update all price displays
-        updatePriceDisplay();
-        updateSummary();
+        updateAllPriceDisplays();
         
-        // Update trip type dropdown prices
-        if (tourTypes && Object.keys(tourTypes).length > 0) {
-            populateTripTypeDropdown(tourTypes);
-        }
+        // Force update of swiper price tag
+        setTimeout(function() {
+            updateFirstSlidePriceTag();
+            if (swiper) swiper.update();
+        }, 100);
     });
 }
 
 // Initialize currency from header
 function initCurrencyIntegration() {
+    // Check if header currency system is already available
+    if (window.SharmCurrency && window.SharmCurrency.get) {
+        console.log('Currency system already available. Current currency:', getCurrentCurrency());
+        listenToCurrencyChanges();
+        updateAllPriceDisplays();
+        return;
+    }
+    
     // Wait for header currency system to be ready
     var checkInterval = setInterval(function() {
         if (window.SharmCurrency && window.SharmCurrency.get) {
             clearInterval(checkInterval);
             console.log('Currency system connected. Current currency:', getCurrentCurrency());
             listenToCurrencyChanges();
-            updatePriceDisplay();
+            updateAllPriceDisplays();
         }
     }, 100);
     
@@ -114,6 +160,7 @@ function initCurrencyIntegration() {
         clearInterval(checkInterval);
         if (!window.SharmCurrency) {
             console.log('Currency system not available, using EGP only');
+            updateAllPriceDisplays();
         }
     }, 5000);
 }
@@ -280,6 +327,7 @@ function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
     const totalPrice = calculateTotalWithTaxes();
+    currentTotalPriceEGP = totalPrice;
     priceElement.innerHTML = formatPriceWithCurrency(totalPrice);
     priceElement.setAttribute('data-price-egp', totalPrice);
   }
@@ -324,6 +372,8 @@ function loadMediaContent(mediaData) {
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
   const totalPrice = calculateTotalWithTaxes();
+  currentTotalPriceEGP = totalPrice;
+  const formattedPrice = formatPriceWithCurrency(totalPrice);
 
   if (mediaData.images && mediaData.images.length > 0) {
     mediaData.images.forEach((imageUrl, index) => {
@@ -333,7 +383,7 @@ function loadMediaContent(mediaData) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
-            ${formatPriceWithCurrency(totalPrice)}
+            ${formattedPrice}
           </div>
           <div class="tour-title-overlay">
             <div class="tour-meta">
@@ -541,7 +591,9 @@ function populateTripTypeDropdown(tourTypes) {
   const tripTypeSelect = document.getElementById('tripType');
   if (!tripTypeSelect) return;
   
+  const currentSelection = tripTypeSelect.value;
   tripTypeSelect.innerHTML = '';
+  
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
   defaultOption.textContent = 'No extra services needed';
@@ -555,6 +607,7 @@ function populateTripTypeDropdown(tourTypes) {
       const option = document.createElement('option');
       option.value = key;
       option.textContent = `${key} - ${formattedPrice} (per person)`;
+      if (currentSelection === key) option.selected = true;
       tripTypeSelect.appendChild(option);
     });
   }
@@ -600,7 +653,9 @@ function calculateTotalWithTaxes() {
   const subtotalWithTax = netTotal + totalTax;
   const commissionRate = currentTrip.commissionRate || 0.10;
   const commission = subtotalWithTax * commissionRate;
-  return subtotalWithTax + commission;
+  const finalTotal = subtotalWithTax + commission;
+  currentTotalPriceEGP = finalTotal;
+  return finalTotal;
 }
 
 function updateInfantsMax() {
@@ -649,6 +704,7 @@ function updateSummary() {
     }
     
     const total = calculateTotalWithTaxes();
+    currentTotalPriceEGP = total;
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = formatPriceWithCurrency(total);
     }
@@ -976,7 +1032,7 @@ window.onload = async function () {
 
   document.getElementById('submitBtn').addEventListener('click', submitForm);
 
-  // Initialize currency integration FIRST
+  // Initialize currency integration FIRST (before loading data)
   initCurrencyIntegration();
 
   auth.onAuthStateChanged((user) => {
