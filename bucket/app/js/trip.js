@@ -7,23 +7,24 @@ let tripData = {};
 let currentTrip = {};
 let tourTypes = {};
 let selectedTripType = "";
-let iti;
+let iti; // For phone input
 const refNumber = generateReference();
 let currentUserUid = '';
 let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_ADULT = 2;
 const MAX_TOTAL_INFANTS = 10;
-const FIXED_FEE = 3;
-const TAX_RATE = 0.03;
-const TAX_ON_TAX_RATE = 0.14;
+const FIXED_FEE = 3; // Fixed 3 EGP fee
+const TAX_RATE = 0.03; // 3% tax
+const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
 let currentStep = 0;
 let currentTotalPriceEGP = 0;
 
 // ========================================
-// CURRENCY INTEGRATION - FIXED VERSION
+// CURRENCY INTEGRATION WITH HEADER
 // ========================================
 
+// Get current currency from header system
 function getCurrentCurrency() {
     if (window.SharmCurrency && window.SharmCurrency.get) {
         return window.SharmCurrency.get();
@@ -31,13 +32,15 @@ function getCurrentCurrency() {
     return 'EGP';
 }
 
+// Get exchange rates from header system
 function getExchangeRates() {
     if (window.SharmCurrency && window.SharmCurrency.rates) {
         return window.SharmCurrency.rates;
     }
-    return null;
+    return { USD: 50.5, EUR: 55.0, GBP: 65.0 };
 }
 
+// Format price based on selected currency
 function formatPriceWithCurrency(priceEGP) {
     var currency = getCurrentCurrency();
     
@@ -48,64 +51,65 @@ function formatPriceWithCurrency(priceEGP) {
     var rates = getExchangeRates();
     if (rates && rates[currency]) {
         var converted = priceEGP * rates[currency];
-        var symbol = currency === 'USD' ? '$' : (currency === 'EUR' ? '€' : '£');
+        var symbol = '';
+        if (currency === 'USD') symbol = '$';
+        else if (currency === 'EUR') symbol = '€';
+        else if (currency === 'GBP') symbol = '£';
+        else return Math.round(priceEGP) + ' EGP';
+        
         return symbol + converted.toFixed(2);
     }
     
     return Math.round(priceEGP) + ' EGP';
 }
 
-// ========================================
-// UPDATE ALL PRICE DISPLAYS
-// ========================================
+// Update ALL price displays on the page
 function updateAllPriceDisplays() {
     var totalPrice = calculateTotalWithTaxes();
     currentTotalPriceEGP = totalPrice;
     
-    // 1. Update main tour price
+    // 1. Update main tour price element
     var tourPriceEl = document.getElementById('tourPrice');
     if (tourPriceEl) {
+        tourPriceEl.setAttribute('data-price-egp', totalPrice);
         tourPriceEl.innerHTML = formatPriceWithCurrency(totalPrice);
     }
     
-    // 2. Update total price display in summary
+    // 2. Update total price display in booking summary
     var totalDisplayEl = document.getElementById('totalPriceDisplay');
     if (totalDisplayEl) {
+        totalDisplayEl.setAttribute('data-price-egp', totalPrice);
         totalDisplayEl.innerHTML = formatPriceWithCurrency(totalPrice);
     }
     
-    // 3. Update price tag on swiper slide
+    // 3. Update price tag on swiper slide image
     var priceTag = document.querySelector('.price-tag');
     if (priceTag) {
+        priceTag.setAttribute('data-price-egp', totalPrice);
         priceTag.innerHTML = formatPriceWithCurrency(totalPrice);
     }
     
-    // 4. Update trip type dropdown options
+    // 4. Update trip type dropdown options prices
     if (tourTypes && Object.keys(tourTypes).length > 0) {
         var tripTypeSelect = document.getElementById('tripType');
-        if (tripTypeSelect) {
+        if (tripTypeSelect && tripTypeSelect.options) {
             var currentSelection = tripTypeSelect.value;
-            tripTypeSelect.innerHTML = '';
             
-            var defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'No extra services needed';
-            defaultOption.selected = true;
-            tripTypeSelect.appendChild(defaultOption);
+            for (var i = 0; i < tripTypeSelect.options.length; i++) {
+                var opt = tripTypeSelect.options[i];
+                var optValue = opt.value;
+                if (optValue && tourTypes[optValue]) {
+                    var priceEGP = parseInt(tourTypes[optValue]);
+                    var formattedPrice = formatPriceWithCurrency(priceEGP);
+                    opt.textContent = optValue + ' - ' + formattedPrice + ' (per person)';
+                }
+            }
             
-            Object.keys(tourTypes).forEach(function(key) {
-                var priceEGP = parseInt(tourTypes[key]);
-                var formattedPrice = formatPriceWithCurrency(priceEGP);
-                var option = document.createElement('option');
-                option.value = key;
-                option.textContent = key + ' - ' + formattedPrice + ' (per person)';
-                if (currentSelection === key) option.selected = true;
-                tripTypeSelect.appendChild(option);
-            });
+            tripTypeSelect.value = currentSelection;
         }
     }
     
-    console.log('Prices updated to:', getCurrentCurrency(), 'Total:', totalPrice);
+    console.log('Prices updated to:', getCurrentCurrency(), 'Total EGP:', totalPrice);
 }
 
 // Listen for currency changes from header
@@ -123,6 +127,7 @@ function listenToCurrencyChanges() {
 
 // Initialize currency integration
 function initCurrencyIntegration() {
+    // Check if header currency system is already available
     if (window.SharmCurrency && window.SharmCurrency.get) {
         console.log('Currency system available. Current currency:', getCurrentCurrency());
         listenToCurrencyChanges();
@@ -130,6 +135,7 @@ function initCurrencyIntegration() {
         return;
     }
     
+    // Wait for header currency system to be ready
     var checkInterval = setInterval(function() {
         if (window.SharmCurrency && window.SharmCurrency.get) {
             clearInterval(checkInterval);
@@ -139,6 +145,7 @@ function initCurrencyIntegration() {
         }
     }, 100);
     
+    // Timeout after 5 seconds
     setTimeout(function() {
         clearInterval(checkInterval);
         if (!window.SharmCurrency) {
@@ -149,9 +156,10 @@ function initCurrencyIntegration() {
 }
 
 // ========================================
-// REST OF THE CODE
+// UTILITY FUNCTIONS
 // ========================================
 
+// Get trip name from URL parameter
 function getTripIdFromURL() {
     var urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('trip-id');
@@ -196,7 +204,9 @@ function showToast(message, type) {
     toast.className = "toast " + (type === 'success' ? 'toast-success' : 'toast-error');
     toast.textContent = message;
     document.body.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 4000);
+    setTimeout(function() {
+        toast.remove();
+    }, 4000);
 }
 
 function showSpinner() {
@@ -213,9 +223,14 @@ function hideSpinner() {
     if (submitBtn) submitBtn.disabled = false;
 }
 
+// ========================================
+// FORM NAVIGATION
+// ========================================
+
 function updateProgressBar() {
     var progressPercentage = (currentStep + 1) * 25;
-    document.getElementById('progressBar').style.width = progressPercentage + '%';
+    var progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.style.width = progressPercentage + '%';
     
     for (var i = 1; i <= 4; i++) {
         var indicator = document.getElementById('step' + i + 'Indicator');
@@ -235,14 +250,21 @@ function updateProgressBar() {
 function nextStep() {
     if (!validateCurrentStep()) return;
     
-    document.getElementById('step' + (currentStep + 1)).classList.remove('active');
-    currentStep++;
-    document.getElementById('step' + (currentStep + 1)).classList.add('active');
+    var currentStepDiv = document.getElementById('step' + (currentStep + 1));
+    if (currentStepDiv) currentStepDiv.classList.remove('active');
     
-    if (currentStep === 3) {
-        document.getElementById('submitBtn').classList.remove('hidden');
-    } else {
-        document.getElementById('submitBtn').classList.add('hidden');
+    currentStep++;
+    
+    var nextStepDiv = document.getElementById('step' + (currentStep + 1));
+    if (nextStepDiv) nextStepDiv.classList.add('active');
+    
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        if (currentStep === 3) {
+            submitBtn.classList.remove('hidden');
+        } else {
+            submitBtn.classList.add('hidden');
+        }
     }
     
     updateProgressBar();
@@ -250,13 +272,23 @@ function nextStep() {
 }
 
 function prevStep() {
-    document.getElementById('step' + (currentStep + 1)).classList.remove('active');
-    currentStep--;
-    document.getElementById('step' + (currentStep + 1)).classList.add('active');
+    var currentStepDiv = document.getElementById('step' + (currentStep + 1));
+    if (currentStepDiv) currentStepDiv.classList.remove('active');
     
-    document.getElementById('submitBtn').classList.add('hidden');
+    currentStep--;
+    
+    var prevStepDiv = document.getElementById('step' + (currentStep + 1));
+    if (prevStepDiv) prevStepDiv.classList.add('active');
+    
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) submitBtn.classList.add('hidden');
+    
     updateProgressBar();
 }
+
+// ========================================
+// TRIP DATA FUNCTIONS
+// ========================================
 
 async function fetchAllTripData() {
     try {
@@ -265,7 +297,8 @@ async function fetchAllTripData() {
         var allTripsData = snapshot.val();
         
         if (!allTripsData) {
-            showToast("No trips available at the moment.", 'error');
+            console.warn("No trip data found in Firebase.");
+            showToast("No trips available at the moment. Please check back later.", 'error');
             return {};
         }
         
@@ -285,28 +318,19 @@ async function fetchAllTripData() {
             loadTimeline(currentTrip.timeline);
             loadWhatToBring(currentTrip.whatToBring);
             updateRating(currentTrip.rating);
-            updatePriceDisplay();
+            updateAllPriceDisplays();
         } else {
             showToast("Trip not found. Please check the URL.", 'error');
+            console.error("Trip not found:", tripPName);
         }
         
         return allTripsData;
     } catch (error) {
         console.error("Error fetching trip data:", error);
-        showToast("Failed to load trip data.", 'error');
+        showToast("Failed to load trip data. Please refresh the page.", 'error');
         throw error;
     } finally {
         hideSpinner();
-    }
-}
-
-function updatePriceDisplay() {
-    var totalPrice = calculateTotalWithTaxes();
-    currentTotalPriceEGP = totalPrice;
-    
-    var tourPriceEl = document.getElementById('tourPrice');
-    if (tourPriceEl) {
-        tourPriceEl.innerHTML = formatPriceWithCurrency(totalPrice);
     }
 }
 
@@ -315,8 +339,9 @@ function updateRating(ratingData) {
     
     var ratingStars = document.getElementById('ratingStars');
     var ratingCount = document.getElementById('ratingCount');
+    var ratingContainer = document.querySelector('.rating-container');
     
-    if (ratingStars && ratingCount) {
+    if (ratingStars && ratingCount && ratingContainer) {
         ratingStars.innerHTML = '';
         var averageRating = ratingData.average || 0;
         var reviewCount = ratingData.count || 0;
@@ -336,7 +361,7 @@ function updateRating(ratingData) {
         }
         
         ratingCount.textContent = '(' + reviewCount + ' reviews)';
-        ratingStars.parentElement.classList.remove('hidden');
+        ratingContainer.classList.remove('hidden');
     }
 }
 
@@ -352,20 +377,22 @@ function loadMediaContent(mediaData) {
     var totalPrice = calculateTotalWithTaxes();
     var formattedPrice = formatPriceWithCurrency(totalPrice);
 
+    // Add images
     if (mediaData.images && mediaData.images.length > 0) {
         mediaData.images.forEach(function(imageUrl, index) {
             var slide = document.createElement('div');
             slide.className = 'swiper-slide';
+            
             if (index === 0) {
-                slide.innerHTML = '<img src="' + imageUrl + '" alt="' + currentTrip.name + '">' +
-                    '<div class="price-tag notranslate">' + formattedPrice + '</div>' +
+                slide.innerHTML = '<img src="' + imageUrl + '" alt="' + (currentTrip.name || 'Trip') + '">' +
+                    '<div class="price-tag notranslate" data-price-egp="' + totalPrice + '">' + formattedPrice + '</div>' +
                     '<div class="tour-title-overlay">' +
                     '<div class="tour-meta">' +
-                    '<span class="tour-meta-item"><i class="fas fa-star"></i> ' + (currentTrip.rating?.toFixed(1) || '4.9') + '</span>' +
+                    '<span class="tour-meta-item"><i class="fas fa-star"></i> ' + (currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9') + '</span>' +
                     '<span class="tour-meta-item"><i class="fas fa-clock"></i> ' + (currentTrip.duration || '') + '</span>' +
                     '</div></div>';
             } else {
-                slide.innerHTML = '<img src="' + imageUrl + '" alt="' + currentTrip.name + '">';
+                slide.innerHTML = '<img src="' + imageUrl + '" alt="' + (currentTrip.name || 'Trip') + '">';
             }
             swiperWrapper.appendChild(slide);
             
@@ -382,13 +409,14 @@ function loadMediaContent(mediaData) {
         });
     }
     
+    // Add videos
     if (mediaData.videos && mediaData.videos.length > 0) {
         mediaData.videos.forEach(function(video, index) {
             var videoIndex = mediaData.images ? mediaData.images.length + index : index;
             var slide = document.createElement('div');
             slide.className = 'swiper-slide swiper-slide-video';
             slide.dataset.videoUrl = video.videoUrl;
-            slide.innerHTML = '<img src="' + video.thumbnail + '" alt="' + currentTrip.name + ' video" class="video-thumbnail">' +
+            slide.innerHTML = '<img src="' + video.thumbnail + '" alt="' + (currentTrip.name || 'Trip') + ' video" class="video-thumbnail">' +
                 '<div class="play-button"><i class="fas fa-play"></i></div>';
             swiperWrapper.appendChild(slide);
             
@@ -405,6 +433,7 @@ function loadMediaContent(mediaData) {
         });
     }
     
+    // Initialize Swiper
     if (!swiper) {
         swiper = new Swiper('.swiper', {
             slidesPerView: 1,
@@ -419,7 +448,7 @@ function loadMediaContent(mediaData) {
                         var iframe = currentVideoSlide.querySelector('iframe');
                         if (iframe) {
                             iframe.src = '';
-                            currentVideoSlide.innerHTML = '<img src="' + currentVideoSlide.dataset.thumbnail + '" alt="' + currentTrip.name + ' video" class="video-thumbnail">' +
+                            currentVideoSlide.innerHTML = '<img src="' + currentVideoSlide.dataset.thumbnail + '" alt="' + (currentTrip.name || 'Trip') + ' video" class="video-thumbnail">' +
                                 '<div class="play-button"><i class="fas fa-play"></i></div>';
                             currentVideoSlide = null;
                         }
@@ -428,6 +457,7 @@ function loadMediaContent(mediaData) {
             }
         });
         
+        // Play video on click
         document.querySelector('.swiper').addEventListener('click', function(e) {
             var playButton = e.target.closest('.play-button');
             if (playButton) {
@@ -448,10 +478,10 @@ function loadMediaContent(mediaData) {
 
 function playVideo(slide) {
     if (currentVideoSlide) {
-        var iframe = currentVideoSlide.querySelector('iframe');
-        if (iframe) {
-            iframe.src = '';
-            currentVideoSlide.innerHTML = '<img src="' + currentVideoSlide.dataset.thumbnail + '" alt="' + currentTrip.name + ' video" class="video-thumbnail">' +
+        var oldIframe = currentVideoSlide.querySelector('iframe');
+        if (oldIframe) {
+            oldIframe.src = '';
+            currentVideoSlide.innerHTML = '<img src="' + currentVideoSlide.dataset.thumbnail + '" alt="' + (currentTrip.name || 'Trip') + ' video" class="video-thumbnail">' +
                 '<div class="play-button"><i class="fas fa-play"></i></div>';
         }
     }
@@ -459,18 +489,18 @@ function playVideo(slide) {
     var thumbnail = slide.querySelector('img').src;
     slide.dataset.thumbnail = thumbnail;
     var videoUrl = slide.dataset.videoUrl;
-    var videoId;
+    var videoId = null;
     
-    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+    if (videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be'))) {
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         var match = videoUrl.match(regExp);
-        videoId = (match && match[2].length === 11) ? match[2] : null;
+        videoId = (match && match[2] && match[2].length === 11) ? match[2] : null;
         
         if (videoId) {
             slide.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             currentVideoSlide = slide;
         }
-    } else {
+    } else if (videoUrl) {
         slide.innerHTML = '<video width="100%" height="100%" controls autoplay><source src="' + videoUrl + '" type="video/mp4">Your browser does not support the video tag.</video>';
         currentVideoSlide = slide;
     }
@@ -491,7 +521,7 @@ function loadIncludedNotIncluded(tripData) {
     var includedContainer = document.getElementById('includedItems');
     var notIncludedContainer = document.getElementById('notIncludedItems');
     
-    if (includedContainer && tripData.included) {
+    if (includedContainer && tripData.included && tripData.included.length) {
         includedContainer.innerHTML = '';
         tripData.included.forEach(function(item) {
             var itemElement = document.createElement('div');
@@ -501,7 +531,7 @@ function loadIncludedNotIncluded(tripData) {
         });
     }
     
-    if (notIncludedContainer && tripData.notIncluded) {
+    if (notIncludedContainer && tripData.notIncluded && tripData.notIncluded.length) {
         notIncludedContainer.innerHTML = '';
         tripData.notIncluded.forEach(function(item) {
             var itemElement = document.createElement('div');
@@ -522,10 +552,11 @@ function loadTimeline(timelineData) {
         timelineItem.className = 'timeline-item';
         timelineItem.innerHTML = '<div class="timeline-time"></div>' +
             '<div class="timeline-content">' +
-            '<div class="timeline-title">' + item.title + '</div>' +
-            '<div class="timeline-description">' + item.description + '</div></div>';
+            '<div class="timeline-title">' + (item.title || '') + '</div>' +
+            '<div class="timeline-description">' + (item.description || '') + '</div></div>';
         if (item.time) {
-            timelineItem.querySelector('.timeline-time').setAttribute('title', item.time);
+            var timeDiv = timelineItem.querySelector('.timeline-time');
+            if (timeDiv) timeDiv.setAttribute('title', item.time);
         }
         timelineContainer.appendChild(timelineItem);
     });
@@ -572,10 +603,14 @@ function populateTripTypeDropdown(tourTypes) {
 
 function displayTripInfo(tripInfo) {
     var tripTitle = document.getElementById('tourTitle');
-    var tripName = document.getElementById('tripName');
+    var tripNameInput = document.getElementById('tripName');
     if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
-    if (tripName) tripName.value = tripInfo.name;
+    if (tripNameInput) tripNameInput.value = tripInfo.name || '';
 }
+
+// ========================================
+// PRICE CALCULATION (All in EGP)
+// ========================================
 
 function calculateBaseTotal() {
     var adults = parseInt(document.getElementById('adults').value) || 0;
@@ -609,7 +644,9 @@ function calculateTotalWithTaxes() {
     var subtotalWithTax = netTotal + totalTax;
     var commissionRate = currentTrip.commissionRate || 0.10;
     var commission = subtotalWithTax * commissionRate;
-    return subtotalWithTax + commission;
+    var finalTotal = subtotalWithTax + commission;
+    currentTotalPriceEGP = finalTotal;
+    return finalTotal;
 }
 
 function updateInfantsMax() {
@@ -645,20 +682,26 @@ function updateSummary() {
     if (summaryRef) summaryRef.textContent = refNumber;
     
     if (currentTrip.basePrice) {
-        if (summaryTour) summaryTour.textContent = currentTrip.name;
+        if (summaryTour) summaryTour.textContent = currentTrip.name || 'N/A';
         if (summaryAdults) summaryAdults.textContent = adults + ' Adult' + (adults !== 1 ? 's' : '');
         if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = childrenUnder12 + ' Child' + (childrenUnder12 !== 1 ? 'ren' : '');
         if (summaryInfants) summaryInfants.textContent = infants + ' Infant' + (infants !== 1 ? 's' : '');
         
-        if (selectedService && tourTypes[selectedService]) {
-            if (summaryService) summaryService.textContent = selectedService;
-        } else {
-            if (summaryService) summaryService.textContent = 'None';
+        if (summaryService) {
+            if (selectedService && tourTypes[selectedService]) {
+                summaryService.textContent = selectedService;
+            } else {
+                summaryService.textContent = 'None';
+            }
         }
     }
     
     updateAllPriceDisplays();
 }
+
+// ========================================
+// FORM VALIDATION & SUBMISSION
+// ========================================
 
 async function populateForm() {
     var user = auth.currentUser;
@@ -669,11 +712,16 @@ async function populateForm() {
         var userData = userSnapshot.val();
 
         if (userData) {
-            if (document.getElementById("username")) document.getElementById("username").value = userData.username || "";
-            if (document.getElementById("customerEmail")) document.getElementById("customerEmail").value = userData.email || "";
-            if (document.getElementById("uid")) document.getElementById("uid").value = user.uid || "";
-            if (userData.phone && iti && document.getElementById("phone")) {
-                document.getElementById("phone").value = userData.phone;
+            var usernameField = document.getElementById("username");
+            var emailField = document.getElementById("customerEmail");
+            var uidField = document.getElementById("uid");
+            var phoneField = document.getElementById("phone");
+            
+            if (usernameField) usernameField.value = userData.username || "";
+            if (emailField) emailField.value = userData.email || "";
+            if (uidField) uidField.value = user.uid || "";
+            if (userData.phone && iti && phoneField) {
+                phoneField.value = userData.phone;
                 iti.setNumber(userData.phone);
             }
         }
@@ -689,14 +737,22 @@ function validateCurrentStep() {
         var username = document.getElementById("username")?.value.trim();
         var email = document.getElementById("customerEmail")?.value.trim();
         
-        if (!username) { showError('username', 'Please enter your full name'); isValid = false; }
-        else { clearError('username'); }
+        if (!username) {
+            showError('username', 'Please enter your full name');
+            isValid = false;
+        } else {
+            clearError('username');
+        }
         
-        if (!email) { showError('customerEmail', 'Please enter your email address'); isValid = false; }
-        else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
+        if (!email) {
+            showError('customerEmail', 'Please enter your email address');
+            isValid = false;
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
             showError('customerEmail', 'Please enter a valid email address');
             isValid = false;
-        } else { clearError('customerEmail'); }
+        } else {
+            clearError('customerEmail');
+        }
         
         var phoneNumber = iti?.getNumber();
         if (!phoneNumber || !iti?.isValidNumber()) {
@@ -704,21 +760,34 @@ function validateCurrentStep() {
             isValid = false;
         } else {
             clearError('phone');
-            if (document.getElementById("phone")) document.getElementById("phone").value = phoneNumber;
+            var phoneField = document.getElementById("phone");
+            if (phoneField) phoneField.value = phoneNumber;
         }
     } else if (currentStep === 1) {
         var tripDate = document.getElementById("tripDate")?.value.trim();
         var hotelName = document.getElementById("hotelName")?.value.trim();
         var roomNumber = document.getElementById("roomNumber")?.value.trim();
         
-        if (!tripDate) { showError('tripDate', 'Please select a trip date'); isValid = false; }
-        else { clearError('tripDate'); }
+        if (!tripDate) {
+            showError('tripDate', 'Please select a trip date');
+            isValid = false;
+        } else {
+            clearError('tripDate');
+        }
         
-        if (!hotelName) { showError('hotelName', 'Please enter your hotel name'); isValid = false; }
-        else { clearError('hotelName'); }
+        if (!hotelName) {
+            showError('hotelName', 'Please enter your hotel name');
+            isValid = false;
+        } else {
+            clearError('hotelName');
+        }
         
-        if (!roomNumber) { showError('roomNumber', 'Please enter your room number'); isValid = false; }
-        else { clearError('roomNumber'); }
+        if (!roomNumber) {
+            showError('roomNumber', 'Please enter your room number');
+            isValid = false;
+        } else {
+            clearError('roomNumber');
+        }
     }
     
     return isValid;
@@ -737,6 +806,10 @@ async function submitForm() {
         var baseTax = netTotal * TAX_RATE;
         var taxOnTax = baseTax * TAX_ON_TAX_RATE;
         var totalTax = baseTax + taxOnTax + FIXED_FEE;
+        var subtotalWithTax = netTotal + totalTax;
+        var commissionRate = currentTrip.commissionRate || 0.10;
+        var commission = subtotalWithTax * commissionRate;
+        var finalTotal = subtotalWithTax + commission;
 
         var formData = {
             refNumber: refNumber,
@@ -755,7 +828,7 @@ async function submitForm() {
             adults: parseInt(document.getElementById('adults').value) || 0,
             childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
             infants: parseInt(document.getElementById('infants').value) || 0,
-            total: total.toFixed(2),
+            total: finalTotal.toFixed(2),
             netTotal: netTotal,
             totalTax: totalTax.toFixed(2),
             uid: user.uid,
@@ -809,38 +882,46 @@ async function submitForm() {
         
     } catch (error) {
         console.error('Submission Error:', error);
-        showToast('Error: ' + (error.message || 'Failed to process booking.'), 'error');
+        showToast('Error: ' + (error.message || 'Failed to process booking. Please try again.'), 'error');
         hideSpinner();
     }
 }
+
+// ========================================
+// NUMBER CONTROLS INITIALIZATION
+// ========================================
 
 function initNumberControls() {
     var adultsPlus = document.getElementById('adultsPlus');
     var adultsMinus = document.getElementById('adultsMinus');
     
-    if (adultsPlus && adultsMinus) {
+    if (adultsPlus) {
         adultsPlus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('adults');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue < MAX_PER_TYPE) {
-                input.value = currentValue + 1;
-                updateInfantsMax();
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue < MAX_PER_TYPE) {
+                    input.value = currentValue + 1;
+                    updateInfantsMax();
+                    updateSummary();
+                }
             }
             return false;
         });
-        
+    }
+    
+    if (adultsMinus) {
         adultsMinus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('adults');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue > 1) {
-                input.value = currentValue - 1;
-                updateInfantsMax();
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue > 1) {
+                    input.value = currentValue - 1;
+                    updateInfantsMax();
+                    updateSummary();
+                }
             }
             return false;
         });
@@ -849,27 +930,31 @@ function initNumberControls() {
     var childrenPlus = document.getElementById('childrenUnder12Plus');
     var childrenMinus = document.getElementById('childrenUnder12Minus');
     
-    if (childrenPlus && childrenMinus) {
+    if (childrenPlus) {
         childrenPlus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('childrenUnder12');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue < MAX_PER_TYPE) {
-                input.value = currentValue + 1;
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue < MAX_PER_TYPE) {
+                    input.value = currentValue + 1;
+                    updateSummary();
+                }
             }
             return false;
         });
-        
+    }
+    
+    if (childrenMinus) {
         childrenMinus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('childrenUnder12');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue > 0) {
-                input.value = currentValue - 1;
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue > 0) {
+                    input.value = currentValue - 1;
+                    updateSummary();
+                }
             }
             return false;
         });
@@ -878,40 +963,48 @@ function initNumberControls() {
     var infantsPlus = document.getElementById('infantsPlus');
     var infantsMinus = document.getElementById('infantsMinus');
     
-    if (infantsPlus && infantsMinus) {
+    if (infantsPlus) {
         infantsPlus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('infants');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue < input.max) {
-                input.value = currentValue + 1;
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue < input.max) {
+                    input.value = currentValue + 1;
+                    updateSummary();
+                }
             }
             return false;
         });
-        
+    }
+    
+    if (infantsMinus) {
         infantsMinus.addEventListener('click', function(e) {
             e.preventDefault();
             var input = document.getElementById('infants');
-            if (!input) return;
-            var currentValue = parseInt(input.value);
-            if (currentValue > 0) {
-                input.value = currentValue - 1;
-                updateSummary();
+            if (input) {
+                var currentValue = parseInt(input.value);
+                if (currentValue > 0) {
+                    input.value = currentValue - 1;
+                    updateSummary();
+                }
             }
             return false;
         });
     }
 }
 
-// Initialize the application
+// ========================================
+// INITIALIZATION
+// ========================================
+
 window.onload = async function() {
     if (!tripPName) {
         showToast("No trip specified. Please access this page through a valid trip link.", 'error');
         return;
     }
 
+    // Initialize phone input
     var phoneInput = document.querySelector("#phone");
     if (phoneInput) {
         try {
@@ -929,8 +1022,10 @@ window.onload = async function() {
         }
     }
 
+    // Initialize number controls
     initNumberControls();
 
+    // Initialize date picker
     flatpickr("#tripDate", {
         locale: "en",
         minDate: new Date().fp_incr(1),
@@ -942,11 +1037,14 @@ window.onload = async function() {
                 instance.calendarContainer,
                 ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
             ];
-            elements.forEach(function(el) { if (el) el.setAttribute('translate', 'no'); });
+            elements.forEach(function(el) {
+                if (el) el.setAttribute('translate', 'no');
+            });
         },
         onChange: updateSummary
     });
 
+    // Add Flatpickr styles
     var style = document.createElement('style');
     style.textContent = '.flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }' +
         '.flatpickr-months, .flatpickr-weekdays { background: #222 !important; }' +
@@ -961,16 +1059,25 @@ window.onload = async function() {
         '.flatpickr-time input, .flatpickr-time .flatpickr-time-separator, .flatpickr-time .flatpickr-am-pm { color: #ffc207 !important; }';
     document.head.appendChild(style);
 
-    document.getElementById('tripType').addEventListener('change', function() {
-        selectedTripType = this.value;
-        updateSummary();
-    });
+    // Trip type change handler
+    var tripTypeSelect = document.getElementById('tripType');
+    if (tripTypeSelect) {
+        tripTypeSelect.addEventListener('change', function() {
+            selectedTripType = this.value;
+            updateSummary();
+        });
+    }
 
-    document.getElementById('submitBtn').addEventListener('click', submitForm);
+    // Submit button handler
+    var submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitForm);
+    }
 
     // Initialize currency integration FIRST
     initCurrencyIntegration();
 
+    // Auth state handler
     auth.onAuthStateChanged(function(user) {
         if (user) {
             currentUserUid = user.uid;
@@ -980,6 +1087,7 @@ window.onload = async function() {
         }
     });
 
+    // Load data
     await populateForm();
     await fetchAllTripData();
     updateSummary();
