@@ -2,8 +2,6 @@
 let swiper;
 let currentVideoSlide = null;
 
-
-
 // Global variables
 let tripData = {};
 let currentTrip = {};
@@ -19,8 +17,106 @@ const MAX_TOTAL_INFANTS = 10;
 const FIXED_FEE = 3; // Fixed 3 EGP fee
 const TAX_RATE = 0.03; // 3% tax
 const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
-let exchangeRate = 50; // Default exchange rate (will be updated from Firebase)
 let currentStep = 0;
+
+// ========================================
+// CURRENCY INTEGRATION (No fixed rates, no Firebase rates)
+// ========================================
+
+// Get current currency from header system
+function getCurrentCurrency() {
+    if (window.SharmCurrency && window.SharmCurrency.get) {
+        return window.SharmCurrency.get();
+    }
+    return 'EGP'; // Default fallback
+}
+
+// Get exchange rates from header system
+function getExchangeRates() {
+    if (window.SharmCurrency && window.SharmCurrency.rates) {
+        return window.SharmCurrency.rates;
+    }
+    return null;
+}
+
+// Format price based on selected currency from header
+function formatPriceWithCurrency(priceEGP) {
+    var currency = getCurrentCurrency();
+    
+    if (currency === 'EGP') {
+        return Math.round(priceEGP) + ' EGP';
+    }
+    
+    var rates = getExchangeRates();
+    if (rates && rates[currency]) {
+        var converted = priceEGP * rates[currency];
+        var symbol = '';
+        if (currency === 'USD') symbol = '$';
+        else if (currency === 'EUR') symbol = '€';
+        else if (currency === 'GBP') symbol = '£';
+        else return Math.round(priceEGP) + ' EGP';
+        
+        return symbol + converted.toFixed(2);
+    }
+    
+    // Fallback to EGP if rates not available
+    return Math.round(priceEGP) + ' EGP';
+}
+
+// Get currency symbol only
+function getCurrencySymbol() {
+    var currency = getCurrentCurrency();
+    if (currency === 'USD') return '$';
+    if (currency === 'EUR') return '€';
+    if (currency === 'GBP') return '£';
+    return 'EGP';
+}
+
+// Get exchange rate value for calculations
+function getExchangeRateValue() {
+    var currency = getCurrentCurrency();
+    if (currency === 'EGP') return 1;
+    var rates = getExchangeRates();
+    if (rates && rates[currency]) {
+        return rates[currency];
+    }
+    return 1;
+}
+
+// Listen for currency changes from header
+function listenToCurrencyChanges() {
+    window.addEventListener('currencyChanged', function(event) {
+        // Update all price displays
+        updatePriceDisplay();
+        updateSummary();
+        
+        // Update trip type dropdown prices
+        if (tourTypes && Object.keys(tourTypes).length > 0) {
+            populateTripTypeDropdown(tourTypes);
+        }
+    });
+}
+
+// Initialize currency from header
+function initCurrencyIntegration() {
+    // Wait for header currency system to be ready
+    var checkInterval = setInterval(function() {
+        if (window.SharmCurrency && window.SharmCurrency.get) {
+            clearInterval(checkInterval);
+            console.log('Currency system connected. Current currency:', getCurrentCurrency());
+            listenToCurrencyChanges();
+            updatePriceDisplay();
+        }
+    }, 100);
+    
+    // Timeout after 5 seconds
+    setTimeout(function() {
+        clearInterval(checkInterval);
+        if (!window.SharmCurrency) {
+            console.log('Currency system not available, using EGP only');
+        }
+    }, 5000);
+}
 
 // Get trip name from URL parameter
 function getTripIdFromURL() {
@@ -92,7 +188,6 @@ function updateProgressBar() {
   const progressPercentage = (currentStep + 1) * 25;
   document.getElementById('progressBar').style.width = `${progressPercentage}%`;
   
-  // Update step indicators
   for (let i = 1; i <= 4; i++) {
     const indicator = document.getElementById(`step${i}Indicator`);
     if (indicator) {
@@ -115,7 +210,6 @@ function nextStep() {
   currentStep++;
   document.getElementById(`step${currentStep + 1}`).classList.add('active');
   
-  // Show/hide appropriate buttons
   if (currentStep === 3) {
     document.getElementById('submitBtn').classList.remove('hidden');
   } else {
@@ -131,23 +225,8 @@ function prevStep() {
   currentStep--;
   document.getElementById(`step${currentStep + 1}`).classList.add('active');
   
-  // Hide submit button when going back
   document.getElementById('submitBtn').classList.add('hidden');
-  
   updateProgressBar();
-}
-
-// Exchange Rate Function
-async function fetchExchangeRate() {
-  try {
-    const snapshot = await db.ref('exchangeRates').once('value');
-    const rateData = snapshot.val();
-    if (rateData && rateData.rate) {
-      exchangeRate = parseFloat(rateData.rate);
-    }
-  } catch (error) {
-    console.error("Error fetching exchange rate:", error);
-  }
 }
 
 // Trip Data Functions
@@ -175,14 +254,12 @@ async function fetchAllTripData() {
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
       
-      // Load dynamic content
       loadMediaContent(currentTrip.media);
       loadIncludedNotIncluded(currentTrip);
       loadTimeline(currentTrip.timeline);
       loadWhatToBring(currentTrip.whatToBring);
       updateRating(currentTrip.rating);
       
-      // Update price display
       updatePriceDisplay();
     } else {
       showToast("Trip not found. Please check the URL.", 'error');
@@ -202,13 +279,9 @@ async function fetchAllTripData() {
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.price) {
-    // Calculate total price with taxes and commission
     const totalPrice = calculateTotalWithTaxes();
-    const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
-    priceElement.innerHTML = `
-      <span class="notranslate">${priceInUSD} $</span>
-      <span class="text-sm text-gray-500 notranslate">(${Math.round(totalPrice)} EGP)</span>
-    `;
+    priceElement.innerHTML = formatPriceWithCurrency(totalPrice);
+    priceElement.setAttribute('data-price-egp', totalPrice);
   }
 }
 
@@ -219,30 +292,24 @@ function updateRating(ratingData) {
   const ratingCount = document.getElementById('ratingCount');
   
   if (ratingStars && ratingCount) {
-    // Clear existing stars
     ratingStars.innerHTML = '';
-    
     const averageRating = ratingData.average || 0;
     const reviewCount = ratingData.count || 0;
     
-    // Add full stars
     const fullStars = Math.floor(averageRating);
     for (let i = 0; i < fullStars; i++) {
       ratingStars.innerHTML += '<i class="fas fa-star"></i>';
     }
     
-    // Add half star if needed
     if (averageRating % 1 >= 0.5) {
       ratingStars.innerHTML += '<i class="fas fa-star-half-alt"></i>';
     }
     
-    // Add empty stars
     const emptyStars = 5 - Math.ceil(averageRating);
     for (let i = 0; i < emptyStars; i++) {
       ratingStars.innerHTML += '<i class="far fa-star"></i>';
     }
     
-    // Update review count
     ratingCount.textContent = `(${reviewCount} reviews)`;
   }
 }
@@ -253,32 +320,25 @@ function loadMediaContent(mediaData) {
   const swiperWrapper = document.querySelector('.swiper-wrapper');
   const thumbnailsContainer = document.getElementById('thumbnailsContainer');
   
-  // Clear existing slides and thumbnails
   if (swiperWrapper) swiperWrapper.innerHTML = '';
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
-// Calculate total price with taxes and commission
   const totalPrice = calculateTotalWithTaxes();
-  const priceInUSD = (totalPrice / exchangeRate).toFixed(2);
 
-  // Add image slides
   if (mediaData.images && mediaData.images.length > 0) {
     mediaData.images.forEach((imageUrl, index) => {
-      // Add main slide
       const slide = document.createElement('div');
       slide.className = 'swiper-slide';
-      // First slide gets special treatment (price tag and title)
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
-            ${priceInUSD} $
-      </div>
+            ${formatPriceWithCurrency(totalPrice)}
+          </div>
           <div class="tour-title-overlay">
-            
             <div class="tour-meta">
               <span class="tour-meta-item">
-                <i class="fas fa-star"></i> ${currentTrip.rating.toFixed(1) || '4.9'}
+                <i class="fas fa-star"></i> ${currentTrip.rating?.toFixed(1) || '4.9'}
               </span>
               <span class="tour-meta-item">
                 <i class="fas fa-clock"></i> ${currentTrip.duration || ''}
@@ -287,38 +347,26 @@ function loadMediaContent(mediaData) {
           </div>
         `;
       } else {
-        slide.innerHTML = `
-          <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="tour-title-overlay">
-        
-          </div>
-        `;
+        slide.innerHTML = `<img src="${imageUrl}" alt="${currentTrip.name}">`;
       }
-      
       swiperWrapper.appendChild(slide);
       
-      // Add thumbnail
       const thumb = document.createElement('img');
       thumb.src = imageUrl;
       thumb.alt = `Thumbnail ${index + 1}`;
       thumb.className = 'thumbnail';
       thumb.dataset.index = index;
-      
       thumb.addEventListener('click', () => {
         swiper.slideTo(index);
         updateActiveThumbnail(index);
       });
-      
       thumbnailsContainer.appendChild(thumb);
     });
   }
   
-  // Add video slides
   if (mediaData.videos && mediaData.videos.length > 0) {
     mediaData.videos.forEach((video, index) => {
       const videoIndex = mediaData.images ? mediaData.images.length + index : index;
-      
-      // Create video slide
       const slide = document.createElement('div');
       slide.className = 'swiper-slide swiper-slide-video';
       slide.dataset.videoUrl = video.videoUrl;
@@ -327,60 +375,39 @@ function loadMediaContent(mediaData) {
         <div class="play-button">
           <i class="fas fa-play"></i>
         </div>
-        
-          
-        </div>
       `;
-      
       swiperWrapper.appendChild(slide);
       
-      // Add video thumbnail
       const thumb = document.createElement('img');
       thumb.src = video.thumbnail;
       thumb.alt = `Video ${index + 1}`;
       thumb.className = 'thumbnail';
       thumb.dataset.index = videoIndex;
-      
       thumb.addEventListener('click', () => {
         swiper.slideTo(videoIndex);
         updateActiveThumbnail(videoIndex);
       });
-      
       thumbnailsContainer.appendChild(thumb);
     });
   }
   
-  // Initialize or update Swiper
   if (!swiper) {
     swiper = new Swiper('.swiper', {
       slidesPerView: 1,
       spaceBetween: 0,
       loop: true,
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
+      pagination: { el: '.swiper-pagination', clickable: true },
+      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
       on: {
         slideChange: function() {
           updateActiveThumbnail(this.realIndex);
-          
-          // Pause any playing video when changing slides
           if (currentVideoSlide) {
             const iframe = currentVideoSlide.querySelector('iframe');
             if (iframe) {
-              iframe.src = ''; // This stops the video
+              iframe.src = '';
               currentVideoSlide.innerHTML = `
                 <img src="${currentVideoSlide.dataset.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-                <div class="play-button">
-                  <i class="fas fa-play"></i>
-                </div>
-                
-                
-                </div>
+                <div class="play-button"><i class="fas fa-play"></i></div>
               `;
               currentVideoSlide = null;
             }
@@ -389,7 +416,6 @@ function loadMediaContent(mediaData) {
       }
     });
     
-    // Add click handler for play buttons
     document.querySelector('.swiper').addEventListener('click', function(e) {
       const playButton = e.target.closest('.play-button');
       if (playButton) {
@@ -403,7 +429,6 @@ function loadMediaContent(mediaData) {
     swiper.update();
   }
   
-  // Set first thumbnail as active
   if (thumbnailsContainer.firstChild) {
     thumbnailsContainer.firstChild.classList.add('active');
   }
@@ -411,53 +436,32 @@ function loadMediaContent(mediaData) {
 
 function playVideo(slide) {
   if (currentVideoSlide) {
-    // If another video is playing, stop it first
     const iframe = currentVideoSlide.querySelector('iframe');
     if (iframe) {
       iframe.src = '';
       currentVideoSlide.innerHTML = `
         <img src="${currentVideoSlide.dataset.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-        <div class="play-button">
-          <i class="fas fa-play"></i>
-        </div>
-        
-        </div>
+        <div class="play-button"><i class="fas fa-play"></i></div>
       `;
     }
   }
   
-  // Store the thumbnail for later
   const thumbnail = slide.querySelector('img').src;
   slide.dataset.thumbnail = thumbnail;
-  
-  // Extract video ID from URL (works for YouTube)
   const videoUrl = slide.dataset.videoUrl;
   let videoId;
   
   if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-    // YouTube URL
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = videoUrl.match(regExp);
     videoId = (match && match[2].length === 11) ? match[2] : null;
     
     if (videoId) {
-      slide.innerHTML = `
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        
-        </div>
-      `;
+      slide.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
       currentVideoSlide = slide;
     }
   } else {
-    // For other video providers, you might need different handling
-    slide.innerHTML = `
-      <video width="100%" height="100%" controls autoplay>
-        <source src="${videoUrl}" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      
-      </div>
-    `;
+    slide.innerHTML = `<video width="100%" height="100%" controls autoplay><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
     currentVideoSlide = slide;
   }
 }
@@ -481,14 +485,8 @@ function loadIncludedNotIncluded(tripData) {
     includedContainer.innerHTML = '';
     tripData.included.forEach(item => {
       const itemElement = document.createElement('div');
-      itemElement.style.display = 'flex';
-      itemElement.style.alignItems = 'center';
-      itemElement.style.gap = '10px';
-      itemElement.style.marginBottom = '10px';
-      itemElement.innerHTML = `
-        <i class="fas fa-check" style="color: #4CAF50;"></i>
-        <span>${item}</span>
-      `;
+      itemElement.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px';
+      itemElement.innerHTML = `<i class="fas fa-check" style="color:#4CAF50;"></i><span>${item}</span>`;
       includedContainer.appendChild(itemElement);
     });
   }
@@ -497,14 +495,8 @@ function loadIncludedNotIncluded(tripData) {
     notIncludedContainer.innerHTML = '';
     tripData.notIncluded.forEach(item => {
       const itemElement = document.createElement('div');
-      itemElement.style.display = 'flex';
-      itemElement.style.alignItems = 'center';
-      itemElement.style.gap = '10px';
-      itemElement.style.marginBottom = '10px';
-      itemElement.innerHTML = `
-        <i class="fas fa-times" style="color: #F44336;"></i>
-        <span>${item}</span>
-      `;
+      itemElement.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px';
+      itemElement.innerHTML = `<i class="fas fa-times" style="color:#F44336;"></i><span>${item}</span>`;
       notIncludedContainer.appendChild(itemElement);
     });
   }
@@ -515,11 +507,9 @@ function loadTimeline(timelineData) {
   if (!timelineContainer || !timelineData) return;
   
   timelineContainer.innerHTML = '';
-  
-  timelineData.forEach((item, index) => {
+  timelineData.forEach((item) => {
     const timelineItem = document.createElement('div');
     timelineItem.className = 'timeline-item';
-    
     timelineItem.innerHTML = `
       <div class="timeline-time"></div>
       <div class="timeline-content">
@@ -527,13 +517,9 @@ function loadTimeline(timelineData) {
         <div class="timeline-description">${item.description}</div>
       </div>
     `;
-    
-    // Add time if available
     if (item.time) {
-      const timeElement = timelineItem.querySelector('.timeline-time');
-      timeElement.setAttribute('title', item.time);
+      timelineItem.querySelector('.timeline-time').setAttribute('title', item.time);
     }
-    
     timelineContainer.appendChild(timelineItem);
   });
 }
@@ -545,28 +531,17 @@ function loadWhatToBring(whatToBringData) {
   whatToBringList.innerHTML = '';
   whatToBringData.forEach(item => {
     const li = document.createElement('li');
-    li.style.padding = '8px 0';
-    li.style.borderBottom = '1px dashed #64748b';
-    li.style.display = 'flex';
-    li.style.alignItems = 'center';
-    li.style.gap = '10px';
-    li.innerHTML = `
-      <i class="fas fa-check" style="color: #f59e0b;"></i> ${item}
-    `;
+    li.style.cssText = 'padding:8px 0;border-bottom:1px dashed #64748b;display:flex;align-items:center;gap:10px';
+    li.innerHTML = `<i class="fas fa-check" style="color:#f59e0b;"></i> ${item}`;
     whatToBringList.appendChild(li);
   });
 }
 
 function populateTripTypeDropdown(tourTypes) {
   const tripTypeSelect = document.getElementById('tripType');
-  if (!tripTypeSelect) {
-    console.error("Trip type select element not found");
-    return;
-  }
+  if (!tripTypeSelect) return;
   
   tripTypeSelect.innerHTML = '';
-  
-  // Add default "No extra services" option
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
   defaultOption.textContent = 'No extra services needed';
@@ -575,9 +550,11 @@ function populateTripTypeDropdown(tourTypes) {
   
   if (tourTypes && typeof tourTypes === 'object') {
     Object.keys(tourTypes).forEach(key => {
+      const priceEGP = parseInt(tourTypes[key]);
+      const formattedPrice = formatPriceWithCurrency(priceEGP);
       const option = document.createElement('option');
       option.value = key;
-      option.textContent = `${key} - ${tourTypes[key]} EGP (per person)`;
+      option.textContent = `${key} - ${formattedPrice} (per person)`;
       tripTypeSelect.appendChild(option);
     });
   }
@@ -586,23 +563,15 @@ function populateTripTypeDropdown(tourTypes) {
 function displayTripInfo(tripInfo) {
   const tripTitle = document.getElementById('tourTitle');
   const tripName = document.getElementById('tripName');
-  
-  if (tripTitle && tripInfo.name) {
-    tripTitle.textContent = tripInfo.name;
-  }
-  
-  if (tripName) {
-    tripName.value = tripName;
-  }
+  if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
+  if (tripName) tripName.value = tripInfo.name;
 }
 
-// Price Calculation Functions
+// Price Calculation Functions (ALL in EGP)
 function calculateBaseTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-  
   if (!currentTrip.basePrice) return 0;
-  
   const basePrice = parseInt(currentTrip.basePrice);
   const childPrice = parseInt(currentTrip.cprice) || Math.round(basePrice * 0.5);
   return (adults * basePrice) + (childrenUnder12 * childPrice);
@@ -612,7 +581,6 @@ function calculateExtraServicesTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   const selectedService = document.getElementById('tripType').value;
-  
   if (selectedService && tourTypes[selectedService]) {
     const servicePrice = parseInt(tourTypes[selectedService]);
     return (adults + childrenUnder12) * servicePrice;
@@ -626,33 +594,23 @@ function calculateNetTotal() {
 
 function calculateTotalWithTaxes() {
   const netTotal = calculateNetTotal();
-  const baseTax = netTotal * TAX_RATE; // 3% of net total
-  const taxOnTax = baseTax * TAX_ON_TAX_RATE; // 14% of the 3%
+  const baseTax = netTotal * TAX_RATE;
+  const taxOnTax = baseTax * TAX_ON_TAX_RATE;
   const totalTax = baseTax + taxOnTax + FIXED_FEE;
   const subtotalWithTax = netTotal + totalTax;
   const commissionRate = currentTrip.commissionRate || 0.10;
   const commission = subtotalWithTax * commissionRate;
-  return subtotalWithTax;
+  return subtotalWithTax + commission;
 }
 
 function updateInfantsMax() {
   const adultsInput = document.getElementById('adults');
   const infantsInput = document.getElementById('infants');
-  
   if (!adultsInput || !infantsInput) return;
-  
   const adults = parseInt(adultsInput.value) || 0;
   const currentInfants = parseInt(infantsInput.value) || 0;
-  
-  // Calculate maximum allowed infants (2 per adult, but no more than 10 total)
   const maxInfants = Math.min(adults * MAX_INFANTS_PER_ADULT, MAX_TOTAL_INFANTS);
-  
-  // If current infants exceed the new maximum, adjust it
-  if (currentInfants > maxInfants) {
-    infantsInput.value = maxInfants;
-  }
-  
-  // Update the max attribute to prevent manual entry beyond limit
+  if (currentInfants > maxInfants) infantsInput.value = maxInfants;
   infantsInput.max = maxInfants;
 }
 
@@ -679,34 +637,20 @@ function updateSummary() {
   if (summaryRef) summaryRef.textContent = refNumber;
   
   if (currentTrip.basePrice) {
-    const basePrice = parseInt(currentTrip.basePrice);
-    const childPriceUnder12 = parseInt(currentTrip.cprice) || Math.round(basePrice * 0.5);
-    
     if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
     if (summaryAdults) summaryAdults.textContent = `${adults} Adult${adults !== 1 ? 's' : ''}`;
     if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Child${childrenUnder12 !== 1 ? 'ren' : ''}`;
     if (summaryInfants) summaryInfants.textContent = `${infants} Infant${infants !== 1 ? 's' : ''}`;
     
     if (selectedService && tourTypes[selectedService]) {
-      const servicePrice = parseInt(tourTypes[selectedService]);
-      const serviceTotal = (adults + childrenUnder12) * servicePrice;
-      if (summaryService) {
-        summaryService.textContent = `${selectedService}`;
-      }
+      if (summaryService) summaryService.textContent = `${selectedService}`;
     } else {
       if (summaryService) summaryService.textContent = 'None';
     }
     
     const total = calculateTotalWithTaxes();
-    const totalUSD = (total / exchangeRate).toFixed(2);
-    
     if (totalPriceDisplay) {
-      totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${totalUSD} $</div>
-        <div class="text-sm text-green-600 mt-1 notranslate">${total.toFixed(2)} EGP</div>
-        <div class="text-xs text-gray-500">Exchange rate: 1 USD = ${exchangeRate} EGP</div>
-        <div class="text-xs text-gray-500">all taxes included</div>
-      `;
+      totalPriceDisplay.innerHTML = formatPriceWithCurrency(total);
     }
   }
 }
@@ -720,15 +664,9 @@ async function populateForm() {
     const userData = userSnapshot.val();
 
     if (userData) {
-      if (document.getElementById("username")) {
-        document.getElementById("username").value = userData.username || "";
-      }
-      if (document.getElementById("customerEmail")) {
-        document.getElementById("customerEmail").value = userData.email || "";
-      }
-      if (document.getElementById("uid")) {
-        document.getElementById("uid").value = user.uid || "";
-      }
+      if (document.getElementById("username")) document.getElementById("username").value = userData.username || "";
+      if (document.getElementById("customerEmail")) document.getElementById("customerEmail").value = userData.email || "";
+      if (document.getElementById("uid")) document.getElementById("uid").value = user.uid || "";
       if (userData.phone && iti && document.getElementById("phone")) {
         document.getElementById("phone").value = userData.phone;
         iti.setNumber(userData.phone);
@@ -746,22 +684,14 @@ function validateCurrentStep() {
     const username = document.getElementById("username")?.value.trim();
     const email = document.getElementById("customerEmail")?.value.trim();
     
-    if (!username) {
-      showError('username', 'Please enter your full name');
-      isValid = false;
-    } else {
-      clearError('username');
-    }
+    if (!username) { showError('username', 'Please enter your full name'); isValid = false; }
+    else { clearError('username'); }
     
-    if (!email) {
-      showError('customerEmail', 'Please enter your email address');
-      isValid = false;
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
+    if (!email) { showError('customerEmail', 'Please enter your email address'); isValid = false; }
+    else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
       showError('customerEmail', 'Please enter a valid email address');
       isValid = false;
-    } else {
-      clearError('customerEmail');
-    }
+    } else { clearError('customerEmail'); }
     
     const phoneNumber = iti?.getNumber();
     if (!phoneNumber || !iti?.isValidNumber()) {
@@ -769,35 +699,21 @@ function validateCurrentStep() {
       isValid = false;
     } else {
       clearError('phone');
-      if (document.getElementById("phone")) {
-        document.getElementById("phone").value = phoneNumber;
-      }
+      if (document.getElementById("phone")) document.getElementById("phone").value = phoneNumber;
     }
   } else if (currentStep === 1) {
     const tripDate = document.getElementById("tripDate")?.value.trim();
     const hotelName = document.getElementById("hotelName")?.value.trim();
     const roomNumber = document.getElementById("roomNumber")?.value.trim();
     
-    if (!tripDate) {
-      showError('tripDate', 'Please select a trip date');
-      isValid = false;
-    } else {
-      clearError('tripDate');
-    }
+    if (!tripDate) { showError('tripDate', 'Please select a trip date'); isValid = false; }
+    else { clearError('tripDate'); }
     
-    if (!hotelName) {
-      showError('hotelName', 'Please enter your hotel name');
-      isValid = false;
-    } else {
-      clearError('hotelName');
-    }
+    if (!hotelName) { showError('hotelName', 'Please enter your hotel name'); isValid = false; }
+    else { clearError('hotelName'); }
     
-    if (!roomNumber) {
-      showError('roomNumber', 'Please enter your room number');
-      isValid = false;
-    } else {
-      clearError('roomNumber');
-    }
+    if (!roomNumber) { showError('roomNumber', 'Please enter your room number'); isValid = false; }
+    else { clearError('roomNumber'); }
   }
   
   return isValid;
@@ -810,9 +726,7 @@ async function submitForm() {
   
   try {
     const user = auth.currentUser;
-    if (!user) {
-      throw new Error('Please sign in to complete your booking');
-    }
+    if (!user) throw new Error('Please sign in to complete your booking');
 
     const total = calculateTotalWithTaxes();
     const netTotal = calculateNetTotal();
@@ -836,7 +750,7 @@ async function submitForm() {
       timestamp: Date.now(),
       status: "pending",
       tour: currentTrip.name,
-      id: tripName,
+      id: tripPName,
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
@@ -845,10 +759,10 @@ async function submitForm() {
       totalTax: totalTax.toFixed(2),
       uid: user.uid,
       owner: tripOwnerId,
-      exchangeRate: exchangeRate
+      currency: getCurrentCurrency(),
+      currencyRate: getExchangeRateValue()
     };
 
-    // Generate payment hash
     const response = await fetch('https://www.discover-sharm.com/hash', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -867,7 +781,6 @@ async function submitForm() {
 
     const data = await response.json();
     
-    // Construct payment URL
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
@@ -882,20 +795,16 @@ async function submitForm() {
 
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
 
-    // Save complete booking to Firebase
     await db.ref('trip-bookings').child(refNumber).set({
       ...formData,
       paymenturl: kashierUrl,
     });
 
-    // Store user data in session
     sessionStorage.setItem("username", formData.username);
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("phone", formData.phone);
 
     showToast('Booking submitted! Redirecting to payment...');
-    
-    // Redirect to payment page in the same window
     window.location.href = kashierUrl;
     
   } catch (error) {
@@ -907,7 +816,6 @@ async function submitForm() {
 
 // Initialize Number Controls
 function initNumberControls() {
-  // Adults controls
   const adultsPlus = document.getElementById('adultsPlus');
   const adultsMinus = document.getElementById('adultsMinus');
   
@@ -917,7 +825,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('adults');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue < MAX_PER_TYPE) {
         input.value = currentValue + 1;
@@ -932,7 +839,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('adults');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue > 1) {
         input.value = currentValue - 1;
@@ -943,7 +849,6 @@ function initNumberControls() {
     });
   }
 
-  // Children under 12 controls
   const childrenPlus = document.getElementById('childrenUnder12Plus');
   const childrenMinus = document.getElementById('childrenUnder12Minus');
   
@@ -953,7 +858,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('childrenUnder12');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue < MAX_PER_TYPE) {
         input.value = currentValue + 1;
@@ -967,7 +871,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('childrenUnder12');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue > 0) {
         input.value = currentValue - 1;
@@ -977,7 +880,6 @@ function initNumberControls() {
     });
   }
 
-  // Infants controls
   const infantsPlus = document.getElementById('infantsPlus');
   const infantsMinus = document.getElementById('infantsMinus');
   
@@ -987,7 +889,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('infants');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue < input.max) {
         input.value = currentValue + 1;
@@ -1001,7 +902,6 @@ function initNumberControls() {
       e.stopPropagation();
       const input = document.getElementById('infants');
       if (!input) return;
-      
       const currentValue = parseInt(input.value);
       if (currentValue > 0) {
         input.value = currentValue - 1;
@@ -1014,13 +914,11 @@ function initNumberControls() {
 
 // Initialize the application
 window.onload = async function () {
-  // Check if trip ID is provided
   if (!tripPName) {
     showToast("No trip specified. Please access this page through a valid trip link.", 'error');
     return;
   }
 
-  // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
     try {
@@ -1036,133 +934,51 @@ window.onload = async function () {
     }
   }
 
-  // Initialize number controls
   initNumberControls();
 
-  // Initialize date picker
   flatpickr("#tripDate", {
     locale: "en",
-    minDate: new Date().fp_incr(1), // Tomorrow's date
+    minDate: new Date().fp_incr(1),
     dateFormat: "Y-m-d",
     inline: false,
     disableMobile: true,
     onReady: function(selectedDates, dateStr, instance) {
-        // Add translate='no' to prevent auto-translation
-        const elements = [
-            instance.calendarContainer,
-            ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
-        ];
-        elements.forEach(el => el?.setAttribute('translate', 'no'));
+      const elements = [
+        instance.calendarContainer,
+        ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
+      ];
+      elements.forEach(el => el?.setAttribute('translate', 'no'));
     },
     onChange: updateSummary
   });
 
-  // Inject CSS for date picker
+  // Add styles
   const style = document.createElement('style');
   style.textContent = `
-    /* Flatpickr Dark Theme Overrides */
-    .flatpickr-calendar {
-      background: #222 !important;
-      color: #ffc207 !important;
-      border-radius: 10px !important;
-      border: 1px solid #333 !important;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    /* Month header */
-    .flatpickr-months,
-    .flatpickr-weekdays {
-      background: #222 !important;
-    }
-
-    .flatpickr-month,
-    .flatpickr-weekday {
-      color: #ffc207 !important;
-    }
-
-    /* Navigation arrows */
-    .flatpickr-prev-month,
-    .flatpickr-next-month,
-    .flatpickr-prev-month svg,
-    .flatpickr-next-month svg {
-      color: #ffc107 !important;
-      fill: #ffc107 !important;
-    }
-
-    /* Day cells */
-    .flatpickr-day {
-      color: #ffc207 !important;
-      background: #333 !important;
-      border-radius: 8px !important;
-      border: none !important;
-    }
-
-    /* Hover state */
-    .flatpickr-day:not(.flatpickr-disabled):hover {
-      background: #444 !important;
-      color: #ffc207 !important;
-    }
-
-    /* Selected day */
-    .flatpickr-day.selected {
-      background: #ffc207 !important;
-      color: #111 !important;
-      font-weight: bold !important;
-    }
-
-    /* Adjacent month days */
-    .flatpickr-day.prevMonthDay,
-    .flatpickr-day.nextMonthDay {
-      color: #666 !important;
-      background: transparent !important;
-    }
-
-    /* Today */
-    .flatpickr-day.today {
-      border: 1px solid #ffc107 !important;
-    }
-
-    .flatpickr-day.today.flatpickr-disabled {
-      background: #333 !important;
-      color: #fff !important;
-      border-color: #E64A19 !important;
-    }
-
-    .flatpickr-day.today.selected {
-      background: #388E3C !important;
-      color: #fff !important;
-    }
-
-    /* Disabled days */
-    .flatpickr-day.flatpickr-disabled,
-    .flatpickr-day.flatpickr-disabled:hover,
-    .prev-day-disabled {
-      background: #333 !important;
-      color: #666 !important;
-      opacity: 0.4 !important;
-      cursor: not-allowed !important;
-      pointer-events: none !important;
-    }
-
-    /* Time input */
-    .flatpickr-time input,
-    .flatpickr-time .flatpickr-time-separator,
-    .flatpickr-time .flatpickr-am-pm {
-      color: #ffc207 !important;
-    }
+    .flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }
+    .flatpickr-months, .flatpickr-weekdays { background: #222 !important; }
+    .flatpickr-month, .flatpickr-weekday { color: #ffc207 !important; }
+    .flatpickr-prev-month, .flatpickr-next-month, .flatpickr-prev-month svg, .flatpickr-next-month svg { color: #ffc107 !important; fill: #ffc107 !important; }
+    .flatpickr-day { color: #ffc207 !important; background: #333 !important; border-radius: 8px !important; border: none !important; }
+    .flatpickr-day:hover { background: #444 !important; color: #ffc207 !important; }
+    .flatpickr-day.selected { background: #ffc207 !important; color: #111 !important; font-weight: bold !important; }
+    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #666 !important; background: transparent !important; }
+    .flatpickr-day.today { border: 1px solid #ffc107 !important; }
+    .flatpickr-day.flatpickr-disabled, .prev-day-disabled { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+    .flatpickr-time input, .flatpickr-time .flatpickr-time-separator, .flatpickr-time .flatpickr-am-pm { color: #ffc207 !important; }
   `;
   document.head.appendChild(style);
 
-  // Trip type change handler
   document.getElementById('tripType').addEventListener('change', function() {
     selectedTripType = this.value;
     updateSummary();
   });
 
-  // Form submission handler
   document.getElementById('submitBtn').addEventListener('click', submitForm);
 
-  // Initialize user authentication
+  // Initialize currency integration FIRST
+  initCurrencyIntegration();
+
   auth.onAuthStateChanged((user) => {
     if (user) {
       currentUserUid = user.uid;
@@ -1172,13 +988,7 @@ window.onload = async function () {
     }
   });
 
-  // Initialize components
-  await Promise.all([
-    populateForm(),
-    fetchExchangeRate(),
-    fetchAllTripData()
-  ]);
-  
-  // Set initial summary values
+  await populateForm();
+  await fetchAllTripData();
   updateSummary();
 };
