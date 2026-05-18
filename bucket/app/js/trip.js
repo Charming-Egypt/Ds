@@ -7,24 +7,24 @@ let tripData = {};
 let currentTrip = {};
 let tourTypes = {};
 let selectedTripType = "";
-let iti; // For phone input
+let iti;
 const refNumber = generateReference();
 let currentUserUid = '';
 let tripOwnerId = '';
 const MAX_PER_TYPE = 10;
 const MAX_INFANTS_PER_ADULT = 2;
 const MAX_TOTAL_INFANTS = 10;
-const FIXED_FEE = 3; // Fixed 3 EGP fee
-const TAX_RATE = 0.03; // 3% tax
-const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
+const FIXED_FEE = 3;
+const TAX_RATE = 0.03;
+const TAX_ON_TAX_RATE = 0.14;
 let currentStep = 0;
 
-// Currency variables (will be updated from header)
+// Currency variables (from header)
 let currentCurrency = 'EGP';
 let exchangeRates = { EGP: 1 };
 let ratesLoaded = false;
 
-// Get trip name from URL parameter
+// Get trip ID from URL
 function getTripIdFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('trip-id');
@@ -32,10 +32,9 @@ function getTripIdFromURL() {
 const tripPName = getTripIdFromURL();
 
 // ========================================
-// CURRENCY FUNCTIONS - Get rates from header
+// CURRENCY FUNCTIONS
 // ========================================
 
-// Get current currency from header system
 function getCurrentCurrencyFromHeader() {
   if (window.SharmCurrency && typeof window.SharmCurrency.get === 'function') {
     return window.SharmCurrency.get();
@@ -43,7 +42,6 @@ function getCurrentCurrencyFromHeader() {
   return localStorage.getItem('preferredCurrency') || 'EGP';
 }
 
-// Get exchange rates from header system
 function getExchangeRatesFromHeader() {
   if (window.SharmCurrency && window.SharmCurrency.rates) {
     return window.SharmCurrency.rates;
@@ -51,53 +49,8 @@ function getExchangeRatesFromHeader() {
   return null;
 }
 
-// Listen for currency changes from header
-function listenToCurrencyChanges() {
-  window.addEventListener('currencyChanged', function(event) {
-    if (event.detail && event.detail.currency) {
-      currentCurrency = event.detail.currency;
-      if (event.detail.rates) {
-        exchangeRates = event.detail.rates;
-        ratesLoaded = true;
-      }
-      // Update all price displays
-      updatePriceDisplay();
-      updateSummary();
-      updateTripTypeDropdownPrices();
-    }
-  });
-}
-
-// Initialize currency from header
-function initCurrencyFromHeader() {
-  currentCurrency = getCurrentCurrencyFromHeader();
-  const headerRates = getExchangeRatesFromHeader();
-  
-  if (headerRates) {
-    exchangeRates = headerRates;
-    ratesLoaded = true;
-  } else {
-    // If header rates not available yet, wait for them
-    ratesLoaded = false;
-    var checkInterval = setInterval(function() {
-      var rates = getExchangeRatesFromHeader();
-      if (rates) {
-        exchangeRates = rates;
-        ratesLoaded = true;
-        clearInterval(checkInterval);
-        updatePriceDisplay();
-        updateSummary();
-      }
-    }, 500);
-  }
-  
-  // Listen for future changes
-  listenToCurrencyChanges();
-}
-
-// Format price based on current currency
 function formatPrice(priceEGP) {
-  if (currentCurrency === 'EGP' || !ratesLoaded) {
+  if (!ratesLoaded || currentCurrency === 'EGP') {
     return Math.round(priceEGP) + ' EGP';
   }
   
@@ -112,13 +65,79 @@ function formatPrice(priceEGP) {
   return symbol + converted.toFixed(2);
 }
 
-// Get currency symbol only
 function getCurrencySymbol() {
-  if (currentCurrency === 'EGP' || !ratesLoaded) return 'EGP';
+  if (currentCurrency === 'EGP') return 'EGP';
   if (currentCurrency === 'USD') return '$';
   if (currentCurrency === 'EUR') return '€';
   if (currentCurrency === 'GBP') return '£';
   return 'EGP';
+}
+
+function updatePriceDisplay() {
+  const priceElement = document.getElementById('tourPrice');
+  if (priceElement && currentTrip.basePrice) {
+    const totalPrice = calculateTotalWithTaxes();
+    const formattedPrice = formatPrice(totalPrice);
+    priceElement.innerHTML = formattedPrice;
+    priceElement.setAttribute('data-price-egp', totalPrice);
+    priceElement.setAttribute('data-currency', currentCurrency);
+  }
+}
+
+function updateTripTypeDropdownPrices() {
+  const tripTypeSelect = document.getElementById('tripType');
+  if (!tripTypeSelect) return;
+  
+  for (var i = 0; i < tripTypeSelect.options.length; i++) {
+    var option = tripTypeSelect.options[i];
+    var priceEGP = option.getAttribute('data-price-egp');
+    if (priceEGP) {
+      var key = option.value;
+      if (key && tourTypes[key]) {
+        option.textContent = `${key} - ${formatPrice(parseFloat(priceEGP))} (per person)`;
+      }
+    }
+  }
+}
+
+function initCurrencyFromHeader() {
+  currentCurrency = getCurrentCurrencyFromHeader();
+  const headerRates = getExchangeRatesFromHeader();
+  
+  if (headerRates) {
+    exchangeRates = headerRates;
+    ratesLoaded = true;
+  }
+  
+  var checkInterval = setInterval(function() {
+    var rates = getExchangeRatesFromHeader();
+    if (rates) {
+      exchangeRates = rates;
+      ratesLoaded = true;
+      clearInterval(checkInterval);
+      updatePriceDisplay();
+      updateSummary();
+      updateTripTypeDropdownPrices();
+    }
+  }, 500);
+  
+  window.addEventListener('currencyChanged', function(event) {
+    if (event.detail && event.detail.currency) {
+      currentCurrency = event.detail.currency;
+      if (event.detail.rates) {
+        exchangeRates = event.detail.rates;
+        ratesLoaded = true;
+      }
+      updatePriceDisplay();
+      updateSummary();
+      updateTripTypeDropdownPrices();
+    }
+  });
+  
+  setTimeout(function() {
+    updatePriceDisplay();
+    updateSummary();
+  }, 100);
 }
 
 // ========================================
@@ -163,9 +182,7 @@ function showToast(message, type = 'success') {
   toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
+  setTimeout(() => toast.remove(), 4000);
 }
 
 function showSpinner() {
@@ -183,7 +200,7 @@ function hideSpinner() {
 }
 
 // ========================================
-// Form Navigation Functions
+// Form Navigation
 // ========================================
 
 function updateProgressBar() {
@@ -241,8 +258,7 @@ async function fetchAllTripData() {
     const allTripsData = snapshot.val();
     
     if (!allTripsData) {
-      console.warn("No trip data found in Firebase.");
-      showToast("No trips available at the moment. Please check back later.", 'error');
+      showToast("No trips available at the moment.", 'error');
       return {};
     }
     
@@ -266,26 +282,16 @@ async function fetchAllTripData() {
       
       updatePriceDisplay();
     } else {
-      showToast("Trip not found. Please check the URL.", 'error');
-      console.error("Trip not found:", tripPName);
+      showToast("Trip not found.", 'error');
     }
     
     return allTripsData;
   } catch (error) {
     console.error("Error fetching trip data:", error);
-    showToast("Failed to load trip data. Please refresh the page.", 'error');
+    showToast("Failed to load trip data.", 'error');
     throw error;
   } finally {
     hideSpinner();
-  }
-}
-
-function updatePriceDisplay() {
-  const priceElement = document.getElementById('tourPrice');
-  if (priceElement && currentTrip.basePrice) {
-    const totalPrice = calculateTotalWithTaxes();
-    priceElement.innerHTML = formatPrice(totalPrice);
-    priceElement.setAttribute('data-price-egp', totalPrice);
   }
 }
 
@@ -338,17 +344,11 @@ function loadMediaContent(mediaData) {
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="price-tag notranslate">
-            ${formattedPrice}
-          </div>
+          <div class="price-tag notranslate">${formattedPrice}</div>
           <div class="tour-title-overlay">
             <div class="tour-meta">
-              <span class="tour-meta-item">
-                <i class="fas fa-star"></i> ${currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9'}
-              </span>
-              <span class="tour-meta-item">
-                <i class="fas fa-clock"></i> ${currentTrip.duration || ''}
-              </span>
+              <span class="tour-meta-item"><i class="fas fa-star"></i> ${currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9'}</span>
+              <span class="tour-meta-item"><i class="fas fa-clock"></i> ${currentTrip.duration || ''}</span>
             </div>
           </div>
         `;
@@ -381,9 +381,7 @@ function loadMediaContent(mediaData) {
       slide.dataset.videoUrl = video.videoUrl;
       slide.innerHTML = `
         <img src="${video.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-        <div class="play-button">
-          <i class="fas fa-play"></i>
-        </div>
+        <div class="play-button"><i class="fas fa-play"></i></div>
       `;
       swiperWrapper.appendChild(slide);
       
@@ -524,7 +522,7 @@ function loadTimeline(timelineData) {
   if (!timelineContainer || !timelineData) return;
   
   timelineContainer.innerHTML = '';
-  timelineData.forEach((item, index) => {
+  timelineData.forEach((item) => {
     const timelineItem = document.createElement('div');
     timelineItem.className = 'timeline-item';
     timelineItem.innerHTML = `
@@ -582,36 +580,16 @@ function populateTripTypeDropdown(tourTypes) {
   }
 }
 
-function updateTripTypeDropdownPrices() {
-  const tripTypeSelect = document.getElementById('tripType');
-  if (!tripTypeSelect) return;
-  
-  for (var i = 0; i < tripTypeSelect.options.length; i++) {
-    var option = tripTypeSelect.options[i];
-    var priceEGP = option.getAttribute('data-price-egp');
-    if (priceEGP) {
-      var key = option.value;
-      if (key && tourTypes[key]) {
-        option.textContent = `${key} - ${formatPrice(parseFloat(priceEGP))} (per person)`;
-      }
-    }
-  }
-}
-
 function displayTripInfo(tripInfo) {
   const tripTitle = document.getElementById('tourTitle');
   const tripName = document.getElementById('tripName');
   
-  if (tripTitle && tripInfo.name) {
-    tripTitle.textContent = tripInfo.name;
-  }
-  if (tripName && tripInfo.name) {
-    tripName.value = tripInfo.name;
-  }
+  if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
+  if (tripName && tripInfo.name) tripName.value = tripInfo.name;
 }
 
 // ========================================
-// Price Calculation Functions (All in EGP)
+// Price Calculation (All in EGP)
 // ========================================
 
 function calculateBaseTotal() {
@@ -846,7 +824,6 @@ async function submitForm() {
       owner: tripOwnerId
     };
 
-    // Generate payment hash with EGP amount
     const response = await fetch('https://www.discover-sharm.com/hash', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -893,13 +870,13 @@ async function submitForm() {
     
   } catch (error) {
     console.error('Submission Error:', error);
-    showToast(`Error: ${error.message || 'Failed to process booking. Please try again.'}`, 'error');
+    showToast(`Error: ${error.message || 'Failed to process booking.'}`, 'error');
     hideSpinner();
   }
 }
 
 // ========================================
-// Initialize Number Controls
+// Number Controls
 // ========================================
 
 function initNumberControls() {
@@ -909,7 +886,6 @@ function initNumberControls() {
   if (adultsPlus && adultsMinus) {
     adultsPlus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('adults');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -918,12 +894,10 @@ function initNumberControls() {
         updateInfantsMax();
         updateSummary();
       }
-      return false;
     });
     
     adultsMinus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('adults');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -932,7 +906,6 @@ function initNumberControls() {
         updateInfantsMax();
         updateSummary();
       }
-      return false;
     });
   }
 
@@ -942,7 +915,6 @@ function initNumberControls() {
   if (childrenPlus && childrenMinus) {
     childrenPlus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('childrenUnder12');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -950,12 +922,10 @@ function initNumberControls() {
         input.value = currentValue + 1;
         updateSummary();
       }
-      return false;
     });
     
     childrenMinus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('childrenUnder12');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -963,7 +933,6 @@ function initNumberControls() {
         input.value = currentValue - 1;
         updateSummary();
       }
-      return false;
     });
   }
 
@@ -973,7 +942,6 @@ function initNumberControls() {
   if (infantsPlus && infantsMinus) {
     infantsPlus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('infants');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -981,12 +949,10 @@ function initNumberControls() {
         input.value = currentValue + 1;
         updateSummary();
       }
-      return false;
     });
     
     infantsMinus.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       const input = document.getElementById('infants');
       if (!input) return;
       const currentValue = parseInt(input.value);
@@ -994,7 +960,6 @@ function initNumberControls() {
         input.value = currentValue - 1;
         updateSummary();
       }
-      return false;
     });
   }
 }
@@ -1005,11 +970,11 @@ function initNumberControls() {
 
 window.onload = async function () {
   if (!tripPName) {
-    showToast("No trip specified. Please access this page through a valid trip link.", 'error');
+    showToast("No trip specified.", 'error');
     return;
   }
 
-  // Initialize currency from header FIRST
+  // Initialize currency from header
   initCurrencyFromHeader();
 
   // Initialize phone input
@@ -1045,7 +1010,7 @@ window.onload = async function () {
     onChange: updateSummary
   });
 
-  // Inject CSS for date picker
+  // Date picker styles
   const style = document.createElement('style');
   style.textContent = `
     .flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }
@@ -1057,7 +1022,7 @@ window.onload = async function () {
     .flatpickr-day.selected { background: #ffc207 !important; color: #111 !important; font-weight: bold !important; }
     .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #666 !important; background: transparent !important; }
     .flatpickr-day.today { border: 1px solid #ffc107 !important; }
-    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; }
     .flatpickr-time input, .flatpickr-time .flatpickr-time-separator, .flatpickr-time .flatpickr-am-pm { color: #ffc207 !important; }
   `;
   document.head.appendChild(style);
@@ -1080,4 +1045,16 @@ window.onload = async function () {
 
   await fetchAllTripData();
   updateSummary();
+  
+  // Extra updates to ensure price displays correctly
+  setTimeout(function() {
+    updatePriceDisplay();
+    updateSummary();
+    updateTripTypeDropdownPrices();
+  }, 500);
+  
+  setTimeout(function() {
+    updatePriceDisplay();
+    updateSummary();
+  }, 1500);
 };
