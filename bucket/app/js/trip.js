@@ -730,15 +730,51 @@ function calculateNetTotal() {
 }
 
 function calculateTotalWithTaxes() {
-  const netTotal = calculateNetTotal();
-  const baseTax = netTotal * TAX_RATE;
-  const taxOnTax = baseTax * TAX_ON_TAX_RATE;
-  const totalTax = baseTax + taxOnTax + FIXED_FEE;
-  const subtotalWithTax = netTotal + totalTax;
-  // const commissionRate = currentTrip.commissionRate || 0.10;
-  // const commission = subtotalWithTax * commissionRate;
-  // return subtotalWithTax + commission;
-  return subtotalWithTax; // رجع السعر بدون كوميشن
+    // 1. نحسب إجمالي المبلغ (أساسي + خدمات إضافية)
+    const adults = parseInt(document.getElementById('adults').value) || 0;
+    const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+    
+    // السعر الأساسي للبالغين
+    let baseTotal = 0;
+    if (currentTrip.basePrice) {
+        baseTotal += adults * parseFloat(currentTrip.basePrice);
+    }
+    
+    // سعر الأطفال (لو موجود)
+    if (currentTrip.cprice) {
+        baseTotal += childrenUnder12 * parseFloat(currentTrip.cprice);
+    } else if (currentTrip.basePrice) {
+        baseTotal += childrenUnder12 * (parseFloat(currentTrip.basePrice) * 0.5);
+    }
+    
+    // الخدمات الإضافية
+    let extraServicesTotal = 0;
+    if (selectedTripType && tourTypes[selectedTripType]) {
+        const servicePrice = parseFloat(tourTypes[selectedTripType]);
+        extraServicesTotal = (adults + childrenUnder12) * servicePrice;
+    }
+    
+    // الإجمالي قبل الضريبة = الأساسي + الخدمات
+    const totalBeforeTax = baseTotal + extraServicesTotal;
+    
+    // 2. نفس معادلة صفحة البطاقات بالضبط، لكن مطبقة على totalBeforeTax
+    const threePercent = totalBeforeTax * 0.03;           // 3% من الإجمالي
+    const fourteenPercentOfThreePercent = threePercent * 0.14;  // 14% من الـ 3%
+    const fixedFee = 3;                                  // 3 جنيه ثابت
+    
+    const finalPrice = totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee;
+    
+    console.log("💰 Price breakdown (same as cards page):", {
+        baseTotal: baseTotal,
+        extraServices: extraServicesTotal,
+        totalBeforeTax: totalBeforeTax,
+        threePercent: threePercent,
+        fourteenPercent: fourteenPercentOfThreePercent,
+        fixedFee: fixedFee,
+        finalPrice: finalPrice
+    });
+    
+    return finalPrice;
 }
 
 function updateInfantsMax() {
