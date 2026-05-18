@@ -100,6 +100,28 @@ function updateTripTypeDropdownPrices() {
   }
 }
 
+function updateSelectedServiceText() {
+  const textSpan = document.getElementById('selectedServiceText');
+  if (textSpan) {
+    if (selectedTripType && tourTypes[selectedTripType]) {
+      const priceEGP = tourTypes[selectedTripType];
+      const formattedPrice = formatPrice(priceEGP);
+      textSpan.textContent = `${selectedTripType} (+${formattedPrice})`;
+    } else {
+      textSpan.textContent = 'No extra services';
+    }
+  }
+}
+
+function updateServiceTextOnCurrencyChange() {
+  const textSpan = document.getElementById('selectedServiceText');
+  if (textSpan && selectedTripType && tourTypes[selectedTripType]) {
+    const priceEGP = tourTypes[selectedTripType];
+    const formattedPrice = formatPrice(priceEGP);
+    textSpan.textContent = `${selectedTripType} (+${formattedPrice})`;
+  }
+}
+
 function initCurrencyFromHeader() {
   currentCurrency = getCurrentCurrencyFromHeader();
   const headerRates = getExchangeRatesFromHeader();
@@ -118,6 +140,8 @@ function initCurrencyFromHeader() {
       updatePriceDisplay();
       updateSummary();
       updateTripTypeDropdownPrices();
+      updateSelectedServiceText();
+      updateServiceTextOnCurrencyChange();
     }
   }, 500);
   
@@ -131,6 +155,8 @@ function initCurrencyFromHeader() {
       updatePriceDisplay();
       updateSummary();
       updateTripTypeDropdownPrices();
+      updateSelectedServiceText();
+      updateServiceTextOnCurrencyChange();
     }
   });
   
@@ -138,6 +164,92 @@ function initCurrencyFromHeader() {
     updatePriceDisplay();
     updateSummary();
   }, 100);
+}
+
+// ========================================
+// Extra Services Popup Functions
+// ========================================
+
+let tempSelectedService = '';
+
+function openServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  const content = document.getElementById('servicesPopupContent');
+  
+  if (!popup || !content) return;
+  
+  content.innerHTML = '';
+  tempSelectedService = selectedTripType;
+  
+  const noServiceDiv = document.createElement('div');
+  noServiceDiv.className = `service-option ${tempSelectedService === '' ? 'selected' : ''}`;
+  noServiceDiv.setAttribute('data-value', '');
+  noServiceDiv.innerHTML = `
+    <div class="service-option-info">
+      <div class="service-option-name">No extra services</div>
+      <div class="service-option-price">Free</div>
+    </div>
+    <div class="service-option-check"></div>
+  `;
+  noServiceDiv.onclick = function() { selectServiceInPopup(''); };
+  content.appendChild(noServiceDiv);
+  
+  if (tourTypes && typeof tourTypes === 'object') {
+    Object.keys(tourTypes).forEach(key => {
+      const priceEGP = tourTypes[key];
+      const formattedPrice = formatPrice(priceEGP);
+      const serviceDiv = document.createElement('div');
+      serviceDiv.className = `service-option ${tempSelectedService === key ? 'selected' : ''}`;
+      serviceDiv.setAttribute('data-value', key);
+      serviceDiv.setAttribute('data-price-egp', priceEGP);
+      serviceDiv.innerHTML = `
+        <div class="service-option-info">
+          <div class="service-option-name">${key}</div>
+          <div class="service-option-price">${formattedPrice} (per person)</div>
+        </div>
+        <div class="service-option-check"></div>
+      `;
+      serviceDiv.onclick = function() { selectServiceInPopup(key); };
+      content.appendChild(serviceDiv);
+    });
+  }
+  
+  popup.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function selectServiceInPopup(value) {
+  tempSelectedService = value;
+  
+  const options = document.querySelectorAll('#servicesPopupContent .service-option');
+  options.forEach(opt => {
+    if (opt.getAttribute('data-value') === value) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+}
+
+function confirmServiceSelection() {
+  selectedTripType = tempSelectedService;
+  
+  const tripTypeSelect = document.getElementById('tripType');
+  if (tripTypeSelect) {
+    tripTypeSelect.value = selectedTripType;
+  }
+  
+  updateSelectedServiceText();
+  updateSummary();
+  closeServicesPopup();
+}
+
+function closeServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  if (popup) {
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 }
 
 // ========================================
@@ -334,9 +446,6 @@ function loadMediaContent(mediaData) {
   if (swiperWrapper) swiperWrapper.innerHTML = '';
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
-  const totalPrice = calculateTotalWithTaxes();
-  const formattedPrice = formatPrice(totalPrice);
-
   if (mediaData.images && mediaData.images.length > 0) {
     mediaData.images.forEach((imageUrl, index) => {
       const slide = document.createElement('div');
@@ -344,7 +453,6 @@ function loadMediaContent(mediaData) {
       if (index === 0) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="price-tag notranslate">${formattedPrice}</div>
           <div class="tour-title-overlay">
             <div class="tour-meta">
               <span class="tour-meta-item"><i class="fas fa-star"></i> ${currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9'}</span>
@@ -561,23 +669,26 @@ function populateTripTypeDropdown(tourTypes) {
   const tripTypeSelect = document.getElementById('tripType');
   if (!tripTypeSelect) return;
   
-  tripTypeSelect.innerHTML = '';
-  const defaultOption = document.createElement('option');
-  defaultOption.value = '';
-  defaultOption.textContent = 'No extra services needed';
-  defaultOption.selected = true;
-  tripTypeSelect.appendChild(defaultOption);
+  tripTypeSelect.style.display = 'none';
   
-  if (tourTypes && typeof tourTypes === 'object') {
-    Object.keys(tourTypes).forEach(key => {
-      const option = document.createElement('option');
-      option.value = key;
-      const priceEGP = tourTypes[key];
-      option.textContent = `${key} - ${formatPrice(priceEGP)} (per person)`;
-      option.setAttribute('data-price-egp', priceEGP);
-      tripTypeSelect.appendChild(option);
-    });
-  }
+  const existingButton = document.getElementById('openServicesBtn');
+  if (existingButton) existingButton.remove();
+  
+  const selectButton = document.createElement('button');
+  selectButton.id = 'openServicesBtn';
+  selectButton.type = 'button';
+  selectButton.className = 'form-control';
+  selectButton.style.cssText = 'display: flex; align-items: center; justify-content: space-between; cursor: pointer;';
+  selectButton.innerHTML = `
+    <span id="selectedServiceText">No extra services</span>
+    <i class="fas fa-chevron-down"></i>
+  `;
+  
+  selectButton.onclick = openServicesPopup;
+  tripTypeSelect.parentNode.insertBefore(selectButton, tripTypeSelect.nextSibling);
+  
+  selectedTripType = '';
+  updateSelectedServiceText();
 }
 
 function displayTripInfo(tripInfo) {
@@ -606,10 +717,9 @@ function calculateBaseTotal() {
 function calculateExtraServicesTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-  const selectedService = document.getElementById('tripType').value;
   
-  if (selectedService && tourTypes[selectedService]) {
-    const servicePrice = parseFloat(tourTypes[selectedService]);
+  if (selectedTripType && tourTypes[selectedTripType]) {
+    const servicePrice = parseFloat(tourTypes[selectedTripType]);
     return (adults + childrenUnder12) * servicePrice;
   }
   return 0;
@@ -650,7 +760,6 @@ function updateSummary() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   const infants = parseInt(document.getElementById('infants').value) || 0;
-  const selectedService = document.getElementById('tripType').value;
   
   const summaryDate = document.getElementById("summaryDate");
   const summaryHotel = document.getElementById("summaryHotel");
@@ -674,8 +783,8 @@ function updateSummary() {
     if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Child${childrenUnder12 !== 1 ? 'ren' : ''}`;
     if (summaryInfants) summaryInfants.textContent = `${infants} Infant${infants !== 1 ? 's' : ''}`;
     
-    if (selectedService && tourTypes[selectedService]) {
-      if (summaryService) summaryService.textContent = selectedService;
+    if (selectedTripType && tourTypes[selectedTripType]) {
+      if (summaryService) summaryService.textContent = selectedTripType;
     } else {
       if (summaryService) summaryService.textContent = 'None';
     }
@@ -974,10 +1083,8 @@ window.onload = async function () {
     return;
   }
 
-  // Initialize currency from header
   initCurrencyFromHeader();
 
-  // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
     try {
@@ -1010,7 +1117,6 @@ window.onload = async function () {
     onChange: updateSummary
   });
 
-  // Date picker styles
   const style = document.createElement('style');
   style.textContent = `
     .flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }
@@ -1027,12 +1133,14 @@ window.onload = async function () {
   `;
   document.head.appendChild(style);
 
-  document.getElementById('tripType').addEventListener('change', function() {
-    selectedTripType = this.value;
-    updateSummary();
-  });
-
   document.getElementById('submitBtn').addEventListener('click', submitForm);
+
+  document.getElementById('cancelServicesBtn')?.addEventListener('click', closeServicesPopup);
+  document.getElementById('confirmServicesBtn')?.addEventListener('click', confirmServiceSelection);
+  document.getElementById('closeServicesPopup')?.addEventListener('click', closeServicesPopup);
+  document.getElementById('extraServicesPopup')?.addEventListener('click', function(e) {
+    if (e.target === this) closeServicesPopup();
+  });
 
   auth.onAuthStateChanged((user) => {
     if (user) {
@@ -1046,11 +1154,11 @@ window.onload = async function () {
   await fetchAllTripData();
   updateSummary();
   
-  // Extra updates to ensure price displays correctly
   setTimeout(function() {
     updatePriceDisplay();
     updateSummary();
     updateTripTypeDropdownPrices();
+    updateSelectedServiceText();
   }, 500);
   
   setTimeout(function() {
