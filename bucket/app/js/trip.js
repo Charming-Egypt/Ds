@@ -735,9 +735,10 @@ function calculateTotalWithTaxes() {
   const taxOnTax = baseTax * TAX_ON_TAX_RATE;
   const totalTax = baseTax + taxOnTax + FIXED_FEE;
   const subtotalWithTax = netTotal + totalTax;
-  const commissionRate = currentTrip.commissionRate || 0.10;
-  const commission = subtotalWithTax * commissionRate;
-  return subtotalWithTax + commission;
+  // const commissionRate = currentTrip.commissionRate || 0.10;
+  // const commission = subtotalWithTax * commissionRate;
+  // return subtotalWithTax + commission;
+  return subtotalWithTax; // رجع السعر بدون كوميشن
 }
 
 function updateInfantsMax() {
