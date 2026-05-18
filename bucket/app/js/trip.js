@@ -19,104 +19,10 @@ const TAX_RATE = 0.03; // 3% tax
 const TAX_ON_TAX_RATE = 0.14; // 14% on the 3%
 let currentStep = 0;
 
-// ========================================
-// CURRENCY INTEGRATION (No fixed rates, no Firebase rates)
-// ========================================
-
-// Get current currency from header system
-function getCurrentCurrency() {
-    if (window.SharmCurrency && window.SharmCurrency.get) {
-        return window.SharmCurrency.get();
-    }
-    return 'EGP'; // Default fallback
-}
-
-// Get exchange rates from header system
-function getExchangeRates() {
-    if (window.SharmCurrency && window.SharmCurrency.rates) {
-        return window.SharmCurrency.rates;
-    }
-    return null;
-}
-
-// Format price based on selected currency from header
-function formatPriceWithCurrency(priceEGP) {
-    var currency = getCurrentCurrency();
-    
-    if (currency === 'EGP') {
-        return Math.round(priceEGP) + ' EGP';
-    }
-    
-    var rates = getExchangeRates();
-    if (rates && rates[currency]) {
-        var converted = priceEGP * rates[currency];
-        var symbol = '';
-        if (currency === 'USD') symbol = '$';
-        else if (currency === 'EUR') symbol = '€';
-        else if (currency === 'GBP') symbol = '£';
-        else return Math.round(priceEGP) + ' EGP';
-        
-        return symbol + converted.toFixed(2);
-    }
-    
-    // Fallback to EGP if rates not available
-    return Math.round(priceEGP) + ' EGP';
-}
-
-// Get currency symbol only
-function getCurrencySymbol() {
-    var currency = getCurrentCurrency();
-    if (currency === 'USD') return '$';
-    if (currency === 'EUR') return '€';
-    if (currency === 'GBP') return '£';
-    return 'EGP';
-}
-
-// Get exchange rate value for calculations
-function getExchangeRateValue() {
-    var currency = getCurrentCurrency();
-    if (currency === 'EGP') return 1;
-    var rates = getExchangeRates();
-    if (rates && rates[currency]) {
-        return rates[currency];
-    }
-    return 1;
-}
-
-// Listen for currency changes from header
-function listenToCurrencyChanges() {
-    window.addEventListener('currencyChanged', function(event) {
-        // Update all price displays
-        updatePriceDisplay();
-        updateSummary();
-        
-        // Update trip type dropdown prices
-        if (tourTypes && Object.keys(tourTypes).length > 0) {
-            populateTripTypeDropdown(tourTypes);
-        }
-    });
-}
-
-// Initialize currency from header
-function initCurrencyIntegration() {
-    // Wait for header currency system to be ready
-    var checkInterval = setInterval(function() {
-        if (window.SharmCurrency && window.SharmCurrency.get) {
-            clearInterval(checkInterval);
-            console.log('Currency system connected. Current currency:', getCurrentCurrency());
-            listenToCurrencyChanges();
-            updatePriceDisplay();
-        }
-    }, 100);
-    
-    // Timeout after 5 seconds
-    setTimeout(function() {
-        clearInterval(checkInterval);
-        if (!window.SharmCurrency) {
-            console.log('Currency system not available, using EGP only');
-        }
-    }, 5000);
-}
+// Currency variables (will be updated from header)
+let currentCurrency = 'EGP';
+let exchangeRates = { EGP: 1 };
+let ratesLoaded = false;
 
 // Get trip name from URL parameter
 function getTripIdFromURL() {
@@ -125,7 +31,100 @@ function getTripIdFromURL() {
 }
 const tripPName = getTripIdFromURL();
 
+// ========================================
+// CURRENCY FUNCTIONS - Get rates from header
+// ========================================
+
+// Get current currency from header system
+function getCurrentCurrencyFromHeader() {
+  if (window.SharmCurrency && typeof window.SharmCurrency.get === 'function') {
+    return window.SharmCurrency.get();
+  }
+  return localStorage.getItem('preferredCurrency') || 'EGP';
+}
+
+// Get exchange rates from header system
+function getExchangeRatesFromHeader() {
+  if (window.SharmCurrency && window.SharmCurrency.rates) {
+    return window.SharmCurrency.rates;
+  }
+  return null;
+}
+
+// Listen for currency changes from header
+function listenToCurrencyChanges() {
+  window.addEventListener('currencyChanged', function(event) {
+    if (event.detail && event.detail.currency) {
+      currentCurrency = event.detail.currency;
+      if (event.detail.rates) {
+        exchangeRates = event.detail.rates;
+        ratesLoaded = true;
+      }
+      // Update all price displays
+      updatePriceDisplay();
+      updateSummary();
+      updateTripTypeDropdownPrices();
+    }
+  });
+}
+
+// Initialize currency from header
+function initCurrencyFromHeader() {
+  currentCurrency = getCurrentCurrencyFromHeader();
+  const headerRates = getExchangeRatesFromHeader();
+  
+  if (headerRates) {
+    exchangeRates = headerRates;
+    ratesLoaded = true;
+  } else {
+    // If header rates not available yet, wait for them
+    ratesLoaded = false;
+    var checkInterval = setInterval(function() {
+      var rates = getExchangeRatesFromHeader();
+      if (rates) {
+        exchangeRates = rates;
+        ratesLoaded = true;
+        clearInterval(checkInterval);
+        updatePriceDisplay();
+        updateSummary();
+      }
+    }, 500);
+  }
+  
+  // Listen for future changes
+  listenToCurrencyChanges();
+}
+
+// Format price based on current currency
+function formatPrice(priceEGP) {
+  if (currentCurrency === 'EGP' || !ratesLoaded) {
+    return Math.round(priceEGP) + ' EGP';
+  }
+  
+  var converted = priceEGP * exchangeRates[currentCurrency];
+  var symbol = '';
+  
+  if (currentCurrency === 'USD') symbol = '$';
+  else if (currentCurrency === 'EUR') symbol = '€';
+  else if (currentCurrency === 'GBP') symbol = '£';
+  else return Math.round(priceEGP) + ' EGP';
+  
+  return symbol + converted.toFixed(2);
+}
+
+// Get currency symbol only
+function getCurrencySymbol() {
+  if (currentCurrency === 'EGP' || !ratesLoaded) return 'EGP';
+  if (currentCurrency === 'USD') return '$';
+  if (currentCurrency === 'EUR') return '€';
+  if (currentCurrency === 'GBP') return '£';
+  return 'EGP';
+}
+
+// ========================================
 // Utility Functions
+// ========================================
+
 function generateReference() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let result = '';
@@ -183,7 +182,10 @@ function hideSpinner() {
   if (submitBtn) submitBtn.disabled = false;
 }
 
+// ========================================
 // Form Navigation Functions
+// ========================================
+
 function updateProgressBar() {
   const progressPercentage = (currentStep + 1) * 25;
   document.getElementById('progressBar').style.width = `${progressPercentage}%`;
@@ -224,12 +226,14 @@ function prevStep() {
   document.getElementById(`step${currentStep + 1}`).classList.remove('active');
   currentStep--;
   document.getElementById(`step${currentStep + 1}`).classList.add('active');
-  
   document.getElementById('submitBtn').classList.add('hidden');
   updateProgressBar();
 }
 
+// ========================================
 // Trip Data Functions
+// ========================================
+
 async function fetchAllTripData() {
   try {
     showSpinner();
@@ -278,9 +282,9 @@ async function fetchAllTripData() {
 
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
-  if (priceElement && currentTrip.price) {
+  if (priceElement && currentTrip.basePrice) {
     const totalPrice = calculateTotalWithTaxes();
-    priceElement.innerHTML = formatPriceWithCurrency(totalPrice);
+    priceElement.innerHTML = formatPrice(totalPrice);
     priceElement.setAttribute('data-price-egp', totalPrice);
   }
 }
@@ -293,6 +297,7 @@ function updateRating(ratingData) {
   
   if (ratingStars && ratingCount) {
     ratingStars.innerHTML = '';
+    
     const averageRating = ratingData.average || 0;
     const reviewCount = ratingData.count || 0;
     
@@ -324,6 +329,7 @@ function loadMediaContent(mediaData) {
   if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
 
   const totalPrice = calculateTotalWithTaxes();
+  const formattedPrice = formatPrice(totalPrice);
 
   if (mediaData.images && mediaData.images.length > 0) {
     mediaData.images.forEach((imageUrl, index) => {
@@ -333,12 +339,12 @@ function loadMediaContent(mediaData) {
         slide.innerHTML = `
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="price-tag notranslate">
-            ${formatPriceWithCurrency(totalPrice)}
+            ${formattedPrice}
           </div>
           <div class="tour-title-overlay">
             <div class="tour-meta">
               <span class="tour-meta-item">
-                <i class="fas fa-star"></i> ${currentTrip.rating?.toFixed(1) || '4.9'}
+                <i class="fas fa-star"></i> ${currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9'}
               </span>
               <span class="tour-meta-item">
                 <i class="fas fa-clock"></i> ${currentTrip.duration || ''}
@@ -356,10 +362,12 @@ function loadMediaContent(mediaData) {
       thumb.alt = `Thumbnail ${index + 1}`;
       thumb.className = 'thumbnail';
       thumb.dataset.index = index;
+      
       thumb.addEventListener('click', () => {
         swiper.slideTo(index);
         updateActiveThumbnail(index);
       });
+      
       thumbnailsContainer.appendChild(thumb);
     });
   }
@@ -367,6 +375,7 @@ function loadMediaContent(mediaData) {
   if (mediaData.videos && mediaData.videos.length > 0) {
     mediaData.videos.forEach((video, index) => {
       const videoIndex = mediaData.images ? mediaData.images.length + index : index;
+      
       const slide = document.createElement('div');
       slide.className = 'swiper-slide swiper-slide-video';
       slide.dataset.videoUrl = video.videoUrl;
@@ -383,10 +392,12 @@ function loadMediaContent(mediaData) {
       thumb.alt = `Video ${index + 1}`;
       thumb.className = 'thumbnail';
       thumb.dataset.index = videoIndex;
+      
       thumb.addEventListener('click', () => {
         swiper.slideTo(videoIndex);
         updateActiveThumbnail(videoIndex);
       });
+      
       thumbnailsContainer.appendChild(thumb);
     });
   }
@@ -448,6 +459,7 @@ function playVideo(slide) {
   
   const thumbnail = slide.querySelector('img').src;
   slide.dataset.thumbnail = thumbnail;
+  
   const videoUrl = slide.dataset.videoUrl;
   let videoId;
   
@@ -457,12 +469,11 @@ function playVideo(slide) {
     videoId = (match && match[2].length === 11) ? match[2] : null;
     
     if (videoId) {
-      slide.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      slide.innerHTML = `
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      `;
       currentVideoSlide = slide;
     }
-  } else {
-    slide.innerHTML = `<video width="100%" height="100%" controls autoplay><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
-    currentVideoSlide = slide;
   }
 }
 
@@ -485,8 +496,11 @@ function loadIncludedNotIncluded(tripData) {
     includedContainer.innerHTML = '';
     tripData.included.forEach(item => {
       const itemElement = document.createElement('div');
-      itemElement.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px';
-      itemElement.innerHTML = `<i class="fas fa-check" style="color:#4CAF50;"></i><span>${item}</span>`;
+      itemElement.style.display = 'flex';
+      itemElement.style.alignItems = 'center';
+      itemElement.style.gap = '10px';
+      itemElement.style.marginBottom = '10px';
+      itemElement.innerHTML = `<i class="fas fa-check" style="color: #4CAF50;"></i><span>${item}</span>`;
       includedContainer.appendChild(itemElement);
     });
   }
@@ -495,8 +509,11 @@ function loadIncludedNotIncluded(tripData) {
     notIncludedContainer.innerHTML = '';
     tripData.notIncluded.forEach(item => {
       const itemElement = document.createElement('div');
-      itemElement.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px';
-      itemElement.innerHTML = `<i class="fas fa-times" style="color:#F44336;"></i><span>${item}</span>`;
+      itemElement.style.display = 'flex';
+      itemElement.style.alignItems = 'center';
+      itemElement.style.gap = '10px';
+      itemElement.style.marginBottom = '10px';
+      itemElement.innerHTML = `<i class="fas fa-times" style="color: #F44336;"></i><span>${item}</span>`;
       notIncludedContainer.appendChild(itemElement);
     });
   }
@@ -507,7 +524,7 @@ function loadTimeline(timelineData) {
   if (!timelineContainer || !timelineData) return;
   
   timelineContainer.innerHTML = '';
-  timelineData.forEach((item) => {
+  timelineData.forEach((item, index) => {
     const timelineItem = document.createElement('div');
     timelineItem.className = 'timeline-item';
     timelineItem.innerHTML = `
@@ -518,7 +535,8 @@ function loadTimeline(timelineData) {
       </div>
     `;
     if (item.time) {
-      timelineItem.querySelector('.timeline-time').setAttribute('title', item.time);
+      const timeElement = timelineItem.querySelector('.timeline-time');
+      timeElement.setAttribute('title', item.time);
     }
     timelineContainer.appendChild(timelineItem);
   });
@@ -531,8 +549,12 @@ function loadWhatToBring(whatToBringData) {
   whatToBringList.innerHTML = '';
   whatToBringData.forEach(item => {
     const li = document.createElement('li');
-    li.style.cssText = 'padding:8px 0;border-bottom:1px dashed #64748b;display:flex;align-items:center;gap:10px';
-    li.innerHTML = `<i class="fas fa-check" style="color:#f59e0b;"></i> ${item}`;
+    li.style.padding = '8px 0';
+    li.style.borderBottom = '1px dashed #64748b';
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.gap = '10px';
+    li.innerHTML = `<i class="fas fa-check" style="color: #f59e0b;"></i> ${item}`;
     whatToBringList.appendChild(li);
   });
 }
@@ -550,30 +572,56 @@ function populateTripTypeDropdown(tourTypes) {
   
   if (tourTypes && typeof tourTypes === 'object') {
     Object.keys(tourTypes).forEach(key => {
-      const priceEGP = parseInt(tourTypes[key]);
-      const formattedPrice = formatPriceWithCurrency(priceEGP);
       const option = document.createElement('option');
       option.value = key;
-      option.textContent = `${key} - ${formattedPrice} (per person)`;
+      const priceEGP = tourTypes[key];
+      option.textContent = `${key} - ${formatPrice(priceEGP)} (per person)`;
+      option.setAttribute('data-price-egp', priceEGP);
       tripTypeSelect.appendChild(option);
     });
+  }
+}
+
+function updateTripTypeDropdownPrices() {
+  const tripTypeSelect = document.getElementById('tripType');
+  if (!tripTypeSelect) return;
+  
+  for (var i = 0; i < tripTypeSelect.options.length; i++) {
+    var option = tripTypeSelect.options[i];
+    var priceEGP = option.getAttribute('data-price-egp');
+    if (priceEGP) {
+      var key = option.value;
+      if (key && tourTypes[key]) {
+        option.textContent = `${key} - ${formatPrice(parseFloat(priceEGP))} (per person)`;
+      }
+    }
   }
 }
 
 function displayTripInfo(tripInfo) {
   const tripTitle = document.getElementById('tourTitle');
   const tripName = document.getElementById('tripName');
-  if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
-  if (tripName) tripName.value = tripInfo.name;
+  
+  if (tripTitle && tripInfo.name) {
+    tripTitle.textContent = tripInfo.name;
+  }
+  if (tripName && tripInfo.name) {
+    tripName.value = tripInfo.name;
+  }
 }
 
-// Price Calculation Functions (ALL in EGP)
+// ========================================
+// Price Calculation Functions (All in EGP)
+// ========================================
+
 function calculateBaseTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+  
   if (!currentTrip.basePrice) return 0;
-  const basePrice = parseInt(currentTrip.basePrice);
-  const childPrice = parseInt(currentTrip.cprice) || Math.round(basePrice * 0.5);
+  
+  const basePrice = parseFloat(currentTrip.basePrice);
+  const childPrice = parseFloat(currentTrip.cprice) || basePrice * 0.5;
   return (adults * basePrice) + (childrenUnder12 * childPrice);
 }
 
@@ -581,8 +629,9 @@ function calculateExtraServicesTotal() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
   const selectedService = document.getElementById('tripType').value;
+  
   if (selectedService && tourTypes[selectedService]) {
-    const servicePrice = parseInt(tourTypes[selectedService]);
+    const servicePrice = parseFloat(tourTypes[selectedService]);
     return (adults + childrenUnder12) * servicePrice;
   }
   return 0;
@@ -606,11 +655,16 @@ function calculateTotalWithTaxes() {
 function updateInfantsMax() {
   const adultsInput = document.getElementById('adults');
   const infantsInput = document.getElementById('infants');
+  
   if (!adultsInput || !infantsInput) return;
+  
   const adults = parseInt(adultsInput.value) || 0;
   const currentInfants = parseInt(infantsInput.value) || 0;
   const maxInfants = Math.min(adults * MAX_INFANTS_PER_ADULT, MAX_TOTAL_INFANTS);
-  if (currentInfants > maxInfants) infantsInput.value = maxInfants;
+  
+  if (currentInfants > maxInfants) {
+    infantsInput.value = maxInfants;
+  }
   infantsInput.max = maxInfants;
 }
 
@@ -637,23 +691,32 @@ function updateSummary() {
   if (summaryRef) summaryRef.textContent = refNumber;
   
   if (currentTrip.basePrice) {
-    if (summaryTour) summaryTour.textContent = `${currentTrip.name}`;
+    if (summaryTour) summaryTour.textContent = currentTrip.name;
     if (summaryAdults) summaryAdults.textContent = `${adults} Adult${adults !== 1 ? 's' : ''}`;
     if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Child${childrenUnder12 !== 1 ? 'ren' : ''}`;
     if (summaryInfants) summaryInfants.textContent = `${infants} Infant${infants !== 1 ? 's' : ''}`;
     
     if (selectedService && tourTypes[selectedService]) {
-      if (summaryService) summaryService.textContent = `${selectedService}`;
+      if (summaryService) summaryService.textContent = selectedService;
     } else {
       if (summaryService) summaryService.textContent = 'None';
     }
     
-    const total = calculateTotalWithTaxes();
+    const totalEGP = calculateTotalWithTaxes();
+    const formattedTotal = formatPrice(totalEGP);
+    
     if (totalPriceDisplay) {
-      totalPriceDisplay.innerHTML = formatPriceWithCurrency(total);
+      totalPriceDisplay.innerHTML = `
+        <div class="font-bold text-xl notranslate">${formattedTotal}</div>
+        <div class="text-xs text-gray-500 mt-1">all taxes included</div>
+      `;
     }
   }
 }
+
+// ========================================
+// Form Validation & Submission
+// ========================================
 
 async function populateForm() {
   const user = auth.currentUser;
@@ -664,9 +727,15 @@ async function populateForm() {
     const userData = userSnapshot.val();
 
     if (userData) {
-      if (document.getElementById("username")) document.getElementById("username").value = userData.username || "";
-      if (document.getElementById("customerEmail")) document.getElementById("customerEmail").value = userData.email || "";
-      if (document.getElementById("uid")) document.getElementById("uid").value = user.uid || "";
+      if (document.getElementById("username")) {
+        document.getElementById("username").value = userData.username || "";
+      }
+      if (document.getElementById("customerEmail")) {
+        document.getElementById("customerEmail").value = userData.email || "";
+      }
+      if (document.getElementById("uid")) {
+        document.getElementById("uid").value = user.uid || "";
+      }
       if (userData.phone && iti && document.getElementById("phone")) {
         document.getElementById("phone").value = userData.phone;
         iti.setNumber(userData.phone);
@@ -684,14 +753,22 @@ function validateCurrentStep() {
     const username = document.getElementById("username")?.value.trim();
     const email = document.getElementById("customerEmail")?.value.trim();
     
-    if (!username) { showError('username', 'Please enter your full name'); isValid = false; }
-    else { clearError('username'); }
+    if (!username) {
+      showError('username', 'Please enter your full name');
+      isValid = false;
+    } else {
+      clearError('username');
+    }
     
-    if (!email) { showError('customerEmail', 'Please enter your email address'); isValid = false; }
-    else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
+    if (!email) {
+      showError('customerEmail', 'Please enter your email address');
+      isValid = false;
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(String(email).toLowerCase())) {
       showError('customerEmail', 'Please enter a valid email address');
       isValid = false;
-    } else { clearError('customerEmail'); }
+    } else {
+      clearError('customerEmail');
+    }
     
     const phoneNumber = iti?.getNumber();
     if (!phoneNumber || !iti?.isValidNumber()) {
@@ -699,43 +776,51 @@ function validateCurrentStep() {
       isValid = false;
     } else {
       clearError('phone');
-      if (document.getElementById("phone")) document.getElementById("phone").value = phoneNumber;
+      if (document.getElementById("phone")) {
+        document.getElementById("phone").value = phoneNumber;
+      }
     }
   } else if (currentStep === 1) {
     const tripDate = document.getElementById("tripDate")?.value.trim();
     const hotelName = document.getElementById("hotelName")?.value.trim();
     const roomNumber = document.getElementById("roomNumber")?.value.trim();
     
-    if (!tripDate) { showError('tripDate', 'Please select a trip date'); isValid = false; }
-    else { clearError('tripDate'); }
+    if (!tripDate) {
+      showError('tripDate', 'Please select a trip date');
+      isValid = false;
+    } else {
+      clearError('tripDate');
+    }
     
-    if (!hotelName) { showError('hotelName', 'Please enter your hotel name'); isValid = false; }
-    else { clearError('hotelName'); }
+    if (!hotelName) {
+      showError('hotelName', 'Please enter your hotel name');
+      isValid = false;
+    } else {
+      clearError('hotelName');
+    }
     
-    if (!roomNumber) { showError('roomNumber', 'Please enter your room number'); isValid = false; }
-    else { clearError('roomNumber'); }
+    if (!roomNumber) {
+      showError('roomNumber', 'Please enter your room number');
+      isValid = false;
+    } else {
+      clearError('roomNumber');
+    }
   }
   
   return isValid;
 }
 
-// Form Submission
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
   
   try {
     const user = auth.currentUser;
-    if (!user) throw new Error('Please sign in to complete your booking');
+    if (!user) {
+      throw new Error('Please sign in to complete your booking');
+    }
 
-    const total = calculateTotalWithTaxes();
-    const netTotal = calculateNetTotal();
-    const baseTax = netTotal * TAX_RATE;
-    const taxOnTax = baseTax * TAX_ON_TAX_RATE;
-    const totalTax = baseTax + taxOnTax + FIXED_FEE;
-    const subtotalWithTax = netTotal + totalTax;
-    const commissionRate = currentTrip.commissionRate || 0.10;
-    const commission = subtotalWithTax * commissionRate;
+    const totalEGP = calculateTotalWithTaxes();
 
     const formData = {
       refNumber,
@@ -754,22 +839,21 @@ async function submitForm() {
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
-      total: total.toFixed(2),
-      netTotal: netTotal,
-      totalTax: totalTax.toFixed(2),
+      totalEGP: totalEGP.toFixed(2),
+      currency: currentCurrency,
+      exchangeRate: ratesLoaded ? exchangeRates[currentCurrency] : null,
       uid: user.uid,
-      owner: tripOwnerId,
-      currency: getCurrentCurrency(),
-      currencyRate: getExchangeRateValue()
+      owner: tripOwnerId
     };
 
+    // Generate payment hash with EGP amount
     const response = await fetch('https://www.discover-sharm.com/hash', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: formData.total,
+        amount: totalEGP.toFixed(2),
         currency: 'EGP',
       }),
     });
@@ -784,7 +868,7 @@ async function submitForm() {
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: formData.total,
+      amount: totalEGP.toFixed(2),
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
@@ -814,7 +898,10 @@ async function submitForm() {
   }
 }
 
+// ========================================
 // Initialize Number Controls
+// ========================================
+
 function initNumberControls() {
   const adultsPlus = document.getElementById('adultsPlus');
   const adultsMinus = document.getElementById('adultsMinus');
@@ -912,13 +999,20 @@ function initNumberControls() {
   }
 }
 
-// Initialize the application
+// ========================================
+// Application Initialization
+// ========================================
+
 window.onload = async function () {
   if (!tripPName) {
     showToast("No trip specified. Please access this page through a valid trip link.", 'error');
     return;
   }
 
+  // Initialize currency from header FIRST
+  initCurrencyFromHeader();
+
+  // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
     try {
@@ -927,7 +1021,6 @@ window.onload = async function () {
         preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
         separateDialCode: true,
         initialCountry: "eg",
-        customPlaceholder: (selectedCountryPlaceholder, selectedCountryData) => "e.g. " + selectedCountryPlaceholder
       });
     } catch (error) {
       console.error("intlTelInput initialization failed:", error);
@@ -952,7 +1045,7 @@ window.onload = async function () {
     onChange: updateSummary
   });
 
-  // Add styles
+  // Inject CSS for date picker
   const style = document.createElement('style');
   style.textContent = `
     .flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }
@@ -960,11 +1053,11 @@ window.onload = async function () {
     .flatpickr-month, .flatpickr-weekday { color: #ffc207 !important; }
     .flatpickr-prev-month, .flatpickr-next-month, .flatpickr-prev-month svg, .flatpickr-next-month svg { color: #ffc107 !important; fill: #ffc107 !important; }
     .flatpickr-day { color: #ffc207 !important; background: #333 !important; border-radius: 8px !important; border: none !important; }
-    .flatpickr-day:hover { background: #444 !important; color: #ffc207 !important; }
+    .flatpickr-day:not(.flatpickr-disabled):hover { background: #444 !important; color: #ffc207 !important; }
     .flatpickr-day.selected { background: #ffc207 !important; color: #111 !important; font-weight: bold !important; }
     .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #666 !important; background: transparent !important; }
     .flatpickr-day.today { border: 1px solid #ffc107 !important; }
-    .flatpickr-day.flatpickr-disabled, .prev-day-disabled { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
+    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important; }
     .flatpickr-time input, .flatpickr-time .flatpickr-time-separator, .flatpickr-time .flatpickr-am-pm { color: #ffc207 !important; }
   `;
   document.head.appendChild(style);
@@ -976,9 +1069,6 @@ window.onload = async function () {
 
   document.getElementById('submitBtn').addEventListener('click', submitForm);
 
-  // Initialize currency integration FIRST
-  initCurrencyIntegration();
-
   auth.onAuthStateChanged((user) => {
     if (user) {
       currentUserUid = user.uid;
@@ -988,7 +1078,6 @@ window.onload = async function () {
     }
   });
 
-  await populateForm();
   await fetchAllTripData();
   updateSummary();
 };
