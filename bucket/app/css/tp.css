@@ -302,25 +302,38 @@
     }
 
 
- @media (max-width: 640px) {
-      .timeline-item {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .timeline-time {
-      position: absolute;
-      left: 0;
-        right:2;
-      top: 0;
-      width: 30%;
-      height: 20px;
-      border-radius: 0% 36% 51% 0%;
-      background-color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      }
- }
+
+      @media (max-width: 640px) {
+  .timeline-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative; /* Context for absolute positioning if needed */
+    padding-top: 35px;  /* Leaves room so the absolute badge doesn't overlap text */
+  }
+
+  .timeline-time {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: auto;         /* Let it shrinkwrap the text */
+    padding: 4px 16px;   /* Gives the badge nice breathing room */
+    height: auto;        /* Dynamic height based on padding */
+    
+    /* A cleaner, modern pill-shape border radius */
+    border-radius: 0 0 12px 0; 
+    
+    background-color: var(--primary);
+    color: #fff;         /* Ensures text is readable against the primary bg */
+    font-size: 0.85rem;
+    font-weight: 600;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 
     
     
