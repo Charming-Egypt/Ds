@@ -309,8 +309,8 @@
       }
       .timeline-time {
       position: absolute;
-      righ: -2;
-      bottom: -8;
+      left: 0;
+      top: 0;
       width: 30%;
       height: 20px;
       border-radius: 0% 36% 51% 0%;
