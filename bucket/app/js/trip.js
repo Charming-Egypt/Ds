@@ -633,7 +633,7 @@ function loadTimeline(timelineData) {
     const timelineItem = document.createElement('div');
     timelineItem.className = 'timeline-item';
     timelineItem.innerHTML = `
-      <div class="timeline-time"></div>
+      <div class="timeline-time">${item.time}</div>
       <div class="timeline-content">
         <div class="timeline-title">${item.title}</div>
         <div class="timeline-description">${item.description}</div>
