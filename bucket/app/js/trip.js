@@ -455,8 +455,7 @@ function loadMediaContent(mediaData) {
           <img src="${imageUrl}" alt="${currentTrip.name}">
           <div class="tour-title-overlay">
             <div class="tour-meta">
-              <span class="tour-meta-item"><i class="fas fa-star"></i> ${currentTrip.rating ? currentTrip.rating.toFixed(1) : '4.9'}</span>
-              <span class="tour-meta-item"><i class="fas fa-clock"></i> ${currentTrip.duration || ''}</span>
+               <span class="tour-meta-item"><i class="fas fa-clock"></i> ${currentTrip.duration || ''}</span>
             </div>
           </div>
         `;
