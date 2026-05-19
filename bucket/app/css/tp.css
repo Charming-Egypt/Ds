@@ -300,7 +300,18 @@
       align-items: center;
       justify-content: center;
     }
-    
+
+
+ @media (max-width: 640px) {
+      .timeline-item {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .timeline-time {
+        width: 50%;
+      }
+ }
+
     
     
     .timeline-content {
