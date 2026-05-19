@@ -312,6 +312,55 @@ function hideSpinner() {
 }
 
 // ========================================
+// NOTIFICATION FUNCTIONS (ADDED)
+// ========================================
+
+/**
+ * Sends a booking notification to the trip supplier.
+ * @param {Object} bookingData - The booking data (username, totalAmount, adults, childrenUnder12, infants, tripDate, bookingId)
+ * @param {Object} tripInfo - The trip information (name, supplierId, etc.)
+ */
+async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
+  // Check if supplierId exists
+  if (!tripInfo.supplierId || tripInfo.supplierId === '') {
+    console.warn("No supplierId found for this trip. Notification not sent.");
+    return;
+  }
+
+  const notificationId = Date.now().toString();
+  const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
+
+  // Prepare notification data
+  const notificationData = {
+    id: notificationId,
+    title: `New Booking: ${tripInfo.name}`,
+    message: `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants.`,
+    totalAmount: bookingData.totalAmount,
+    currency: currentCurrency || 'EGP',
+    bookingId: bookingData.bookingId,
+    tripId: tripPName,
+    tripName: tripInfo.name,
+    userName: bookingData.userName,
+    userEmail: bookingData.userEmail,
+    phone: bookingData.phone,
+    adults: bookingData.adults,
+    children: bookingData.childrenUnder12,
+    infants: bookingData.infants,
+    tripDate: bookingData.tripDate,
+    read: false,
+    timestamp: Date.now(),
+    type: 'new_booking'
+  };
+
+  try {
+    await notificationRef.set(notificationData);
+    console.log("Notification sent to supplier:", tripInfo.supplierId);
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+}
+
+// ========================================
 // Form Navigation
 // ========================================
 
@@ -382,6 +431,9 @@ async function fetchAllTripData() {
       currentTrip.commissionRate = currentTrip.commission || 0.15;
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
+      
+      // ADD supplierId to currentTrip for easy access
+      currentTrip.supplierId = tripOwnerId;
       
       populateTripTypeDropdown(tourTypes);
       displayTripInfo(currentTrip);
@@ -1005,6 +1057,23 @@ async function submitForm() {
       ...formData,
       paymenturl: kashierUrl,
     });
+
+    // ========================================
+    // SEND NOTIFICATION TO SUPPLIER (ADDED)
+    // ========================================
+    const bookingDataForNotification = {
+      bookingId: refNumber,
+      userName: formData.username,
+      userEmail: formData.email,
+      phone: formData.phone,
+      totalAmount: totalEGP.toFixed(2),
+      adults: formData.adults,
+      childrenUnder12: formData.childrenUnder12,
+      infants: formData.infants,
+      tripDate: formData.tripDate
+    };
+    
+    await sendBookingNotificationToSupplier(bookingDataForNotification, currentTrip);
 
     sessionStorage.setItem("username", formData.username);
     sessionStorage.setItem("email", formData.email);
