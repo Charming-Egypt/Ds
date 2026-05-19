@@ -306,29 +306,29 @@
       @media (max-width: 640px) {
   .timeline-item {
     display: grid;
-    /* Two rows: top row fits the time, bottom row fits the description */
     grid-template-rows: auto auto; 
     gap: 12px;
   }
 
   .timeline-time {
-    /* REMOVED: position: absolute */
-    grid-row: 1; /* Forces it to the top row */
-    justify-self: start; /* Aligns it to the left side */
+    grid-row: 1; 
+    justify-self: end; /* Flips the badge to the right side */
     
     padding: 6px 16px;
     width: auto;
-    border-radius: 0 0 12px 0; /* Modern ribbon shape */
+    
+    /* Mirrored radius: curves the bottom-left corner instead */
+    border-radius: 0 0 0 12px; 
     
     background-color: var(--primary);
     color: #fff;
   }
   
-  /* Target the text container inside your timeline item */
   .timeline-content {
-    grid-row: 2; /* Forces it to the second row, safely below the time */
+    grid-row: 2; 
   }
 }
+
 
 
 
