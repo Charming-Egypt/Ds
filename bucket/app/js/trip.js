@@ -654,7 +654,7 @@ function loadWhatToBring(whatToBringData) {
   whatToBringList.innerHTML = '';
   whatToBringData.forEach(item => {
     const li = document.createElement('li');
-    li.style.padding = '8px 0';
+    
     li.style.borderBottom = '1px dashed #64748b';
     li.style.display = 'flex';
     li.style.alignItems = 'center';
