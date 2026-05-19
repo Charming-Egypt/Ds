@@ -318,6 +318,7 @@ function hideSpinner() {
 /**
  * Sends a booking notification to the trip supplier.
  * Calculation: Total amount → remove taxes → remove 5% commission → send net amount to supplier
+ * Style: Simple, no calculation details shown
  */
 async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   // تحقق من وجود supplierId
@@ -333,60 +334,28 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const totalAmountWithTax = parseFloat(bookingData.totalAmount);
   
   // ========================================
-  // الخطوة 1: حساب الضرائب وإزالتها
+  // حساب الضرائب وإزالتها
+  // المعادلة: totalBeforeTax = (totalWithTax - 3) / 1.0342
   // ========================================
-  // المعادلة الأصلية: totalWithTax = totalBeforeTax * 1.0342 + 3
-  // إذن: totalBeforeTax = (totalWithTax - 3) / 1.0342
-  
   const amountAfterTax = (totalAmountWithTax - 3) / 1.0342;
-  const taxesAmount = totalAmountWithTax - amountAfterTax;
   
   // ========================================
-  // الخطوة 2: خصم 5% عمولة من المبلغ بعد الضرائب
+  // خصم 5% عمولة من المبلغ بعد الضرائب
   // ========================================
-  const commissionRate = 0.05; // 5%
-  const netAmountForSupplier = amountAfterTax * (1 - commissionRate);
+  const netAmountForSupplier = amountAfterTax * 0.95; // (1 - 0.05)
   
-  // تقريب النتائج إلى منزلتين عشريتين
-  const roundedTotalWithTax = Math.round(totalAmountWithTax * 100) / 100;
-  const roundedAmountAfterTax = Math.round(amountAfterTax * 100) / 100;
-  const roundedTaxes = Math.round(taxesAmount * 100) / 100;
-  const roundedCommission = Math.round((amountAfterTax * commissionRate) * 100) / 100;
+  // تقريب المبلغ النهائي إلى منزلتين عشريتين
   const roundedNetAmount = Math.round(netAmountForSupplier * 100) / 100;
 
-  // بناء نص الإشعار المفصل
-  const notificationMessage = `📊 New Booking Received!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👤 Customer: ${bookingData.userName}
-👥 ${bookingData.adults} Adults, ${bookingData.childrenUnder12} Children, ${bookingData.infants} Infants
-📅 Date: ${bookingData.tripDate}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💰 Payment Breakdown:
-• Total (with taxes): ${roundedTotalWithTax.toFixed(2)} EGP
-• Taxes (3% + 14% of 3% + 3 EGP): -${roundedTaxes.toFixed(2)} EGP
-• Amount after taxes: ${roundedAmountAfterTax.toFixed(2)} EGP
-• Commission (5%): -${roundedCommission.toFixed(2)} EGP
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✨ Your Net Amount: ${roundedNetAmount.toFixed(2)} EGP
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔑 Booking ID: ${bookingData.bookingId}
-🏷️ Trip: ${tripInfo.name}`;
+  // بناء نص الإشعار بنفس الستايل القديم (بدون تفاصيل الحساب)
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${roundedNetAmount.toFixed(2)} EGP`;
 
   // بيانات الإشعار
   const notificationData = {
     id: notificationId,
-    title: `💰 New Booking: ${tripInfo.name}`,
+    title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    // المبلغ الصافي الذي سيحصل عليه المورد (بعد الضرائب والعمولة)
-    netAmount: roundedNetAmount,
-    // تفاصيل إضافية للتوثيق
-    totalAmountWithTax: roundedTotalWithTax,
-    amountAfterTax: roundedAmountAfterTax,
-    taxesAmount: roundedTaxes,
-    commissionAmount: roundedCommission,
-    commissionRate: commissionRate * 100, // 5
+    totalAmount: roundedNetAmount,
     currency: 'EGP',
     bookingId: bookingData.bookingId,
     tripId: tripPName,
@@ -405,8 +374,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   try {
     await notificationRef.set(notificationData);
-    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId}`);
-    console.log(`📊 Net amount for supplier: ${roundedNetAmount.toFixed(2)} EGP (after taxes and 5% commission)`);
+    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net amount: ${roundedNetAmount.toFixed(2)} EGP`);
   } catch (error) {
     console.error("Error sending notification:", error);
   }
@@ -867,7 +835,7 @@ function calculateTotalWithTaxes() {
     
     const finalPrice = totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee;
     
-    console.log("💰 Price breakdown (same as cards page):", {
+    console.log("💰 Price breakdown:", {
         baseTotal: baseTotal,
         extraServices: extraServicesTotal,
         totalBeforeTax: totalBeforeTax,
