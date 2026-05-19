@@ -310,6 +310,7 @@
       .timeline-time {
       position: absolute;
       left: 0;
+        right:2;
       top: 0;
       width: 30%;
       height: 20px;
