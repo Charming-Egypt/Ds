@@ -305,29 +305,25 @@
 
       @media (max-width: 640px) {
   .timeline-item {
-    display: grid;
-    grid-template-rows: auto auto; 
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .timeline-time {
-    grid-row: 1; 
-    justify-self: end; /* Flips the badge to the right side */
+    align-self: flex-end; /* Flips the badge to the right side */
+    display: inline-flex;
     
-    padding: 6px 16px;
-    width: auto;
+    padding: 4px 12px;
+    width: max-content;
     
-    /* Mirrored radius: curves the bottom-left corner instead */
-    border-radius: 0 0 0 12px; 
-    
+    border-radius: 4px; 
     background-color: var(--primary);
     color: #fff;
-  }
-  
-  .timeline-content {
-    grid-row: 2; 
+    font-size: 0.85rem;
   }
 }
+
 
 
 
