@@ -88,8 +88,7 @@ input[readonly] {
     .tour-booking-container {
   display: flex;
   gap: 2rem;
-  padding: 1.75rem;
-  margin-top: 0rem;
+  padding: 5px;
   margin-bottom: 2rem;
 }
 
