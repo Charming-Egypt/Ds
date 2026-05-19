@@ -67,24 +67,28 @@ input[readonly] {
 /* ==========================================================================
    3. Main Page & Columns Layout
    ========================================================================== */
-.tour-booking-container {
-  display: flex;
-  gap: 2rem;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-.tour-details {
-  flex: 1;
-  min-width: 0; /* Prevents flex items from breaking layout on long text */
-}
-
-.booking-form-container {
-  flex: 0 0 380px;
-  background-color: var(--dark-800);
-  border: 1px solid var(--dark-700);
-  padding: 1.75rem;
-  border-radius: var(--radius-lg);
+/* Tour Booking Container */
+    .tour-booking-container {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      max-width: 100%;
+      overflow-x: hidden;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    /* Left Column - Main Content */
+    .tour-details {
+      flex: 1;
+      min-width: 300px;
+      padding: 5px;
+    }
+    
+    /* Right Column - Booking Form */
+    .booking-form-container {
+      flex: 0 0 350px;
+      padding: 15px;
+    
+      border-radius: 1rem;
   height: max-content;
   position: sticky;
   top: 2rem; /* Sticks to top when scrolling content on desktop */
