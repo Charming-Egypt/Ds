@@ -312,16 +312,15 @@ function hideSpinner() {
 }
 
 // ========================================
-// NOTIFICATION FUNCTIONS (ADDED)
+// NOTIFICATION FUNCTIONS
 // ========================================
 
 /**
  * Sends a booking notification to the trip supplier.
- * @param {Object} bookingData - The booking data (username, totalAmount, adults, childrenUnder12, infants, tripDate, bookingId)
- * @param {Object} tripInfo - The trip information (name, supplierId, etc.)
+ * Calculation: Total amount → remove taxes → remove 5% commission → send net amount to supplier
  */
 async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
-  // Check if supplierId exists
+  // تحقق من وجود supplierId
   if (!tripInfo.supplierId || tripInfo.supplierId === '') {
     console.warn("No supplierId found for this trip. Notification not sent.");
     return;
@@ -330,13 +329,65 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  // Prepare notification data
+  // المبلغ الكلي (بعد الضرائب) - من bookingData.totalAmount
+  const totalAmountWithTax = parseFloat(bookingData.totalAmount);
+  
+  // ========================================
+  // الخطوة 1: حساب الضرائب وإزالتها
+  // ========================================
+  // المعادلة الأصلية: totalWithTax = totalBeforeTax * 1.0342 + 3
+  // إذن: totalBeforeTax = (totalWithTax - 3) / 1.0342
+  
+  const amountAfterTax = (totalAmountWithTax - 3) / 1.0342;
+  const taxesAmount = totalAmountWithTax - amountAfterTax;
+  
+  // ========================================
+  // الخطوة 2: خصم 5% عمولة من المبلغ بعد الضرائب
+  // ========================================
+  const commissionRate = 0.05; // 5%
+  const netAmountForSupplier = amountAfterTax * (1 - commissionRate);
+  
+  // تقريب النتائج إلى منزلتين عشريتين
+  const roundedTotalWithTax = Math.round(totalAmountWithTax * 100) / 100;
+  const roundedAmountAfterTax = Math.round(amountAfterTax * 100) / 100;
+  const roundedTaxes = Math.round(taxesAmount * 100) / 100;
+  const roundedCommission = Math.round((amountAfterTax * commissionRate) * 100) / 100;
+  const roundedNetAmount = Math.round(netAmountForSupplier * 100) / 100;
+
+  // بناء نص الإشعار المفصل
+  const notificationMessage = `📊 New Booking Received!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👤 Customer: ${bookingData.userName}
+👥 ${bookingData.adults} Adults, ${bookingData.childrenUnder12} Children, ${bookingData.infants} Infants
+📅 Date: ${bookingData.tripDate}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 Payment Breakdown:
+• Total (with taxes): ${roundedTotalWithTax.toFixed(2)} EGP
+• Taxes (3% + 14% of 3% + 3 EGP): -${roundedTaxes.toFixed(2)} EGP
+• Amount after taxes: ${roundedAmountAfterTax.toFixed(2)} EGP
+• Commission (5%): -${roundedCommission.toFixed(2)} EGP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ Your Net Amount: ${roundedNetAmount.toFixed(2)} EGP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 Booking ID: ${bookingData.bookingId}
+🏷️ Trip: ${tripInfo.name}`;
+
+  // بيانات الإشعار
   const notificationData = {
     id: notificationId,
-    title: `New Booking: ${tripInfo.name}`,
-    message: `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants.`,
-    totalAmount: bookingData.totalAmount,
-    currency: currentCurrency || 'EGP',
+    title: `💰 New Booking: ${tripInfo.name}`,
+    message: notificationMessage,
+    // المبلغ الصافي الذي سيحصل عليه المورد (بعد الضرائب والعمولة)
+    netAmount: roundedNetAmount,
+    // تفاصيل إضافية للتوثيق
+    totalAmountWithTax: roundedTotalWithTax,
+    amountAfterTax: roundedAmountAfterTax,
+    taxesAmount: roundedTaxes,
+    commissionAmount: roundedCommission,
+    commissionRate: commissionRate * 100, // 5
+    currency: 'EGP',
     bookingId: bookingData.bookingId,
     tripId: tripPName,
     tripName: tripInfo.name,
@@ -354,7 +405,8 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   try {
     await notificationRef.set(notificationData);
-    console.log("Notification sent to supplier:", tripInfo.supplierId);
+    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId}`);
+    console.log(`📊 Net amount for supplier: ${roundedNetAmount.toFixed(2)} EGP (after taxes and 5% commission)`);
   } catch (error) {
     console.error("Error sending notification:", error);
   }
@@ -432,7 +484,7 @@ async function fetchAllTripData() {
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
       
-      // ADD supplierId to currentTrip for easy access
+      // Add supplierId to currentTrip for easy access
       currentTrip.supplierId = tripOwnerId;
       
       populateTripTypeDropdown(tourTypes);
@@ -1021,6 +1073,9 @@ async function submitForm() {
       owner: tripOwnerId
     };
 
+    // ========================================
+    // KASHIER PAYMENT (UNCHANGED)
+    // ========================================
     const response = await fetch('https://www.discover-sharm.com/hash', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
