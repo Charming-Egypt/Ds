@@ -18,7 +18,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "npm run generate && npm run github:build"
+    "build": "npm run generate && npm run github:build",
     "check": "biome check .",
     "check:fix": "biome check --write .",
     "check:types": "tsc --noEmit",
