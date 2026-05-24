@@ -9,8 +9,8 @@
   "orientation": "portrait",
   "start_url": "/",
   "scope": "/",
-  "display": "browser",
-  "prefer_related_applications": true,
+  "display": "standalone",
+  "prefer_related_applications": false,
   "background_color": "#1E1E1E",
   "theme_color": "#1E1E1E",
   "icons": [
