@@ -1,1 +1,1343 @@
-test
+<html> 
+<head>
+  <meta charset="UTF-8"></meta>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+  <title>Discover Sharm - Book Your Trip</title>
+  <!-- CSS Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"></link>
+  <link href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" rel="stylesheet"></link>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet"></link>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" rel="stylesheet"></link>
+<link href="/app/css/tp.css" rel="stylesheet"></link>
+  <style>
+    /* ========================================
+       Custom CSS for Tour Booking Page
+       Compatible with Light/Dark Mode
+    ======================================== */
+    
+    /* Base Styles */
+    :root {
+      --bg-primary: #fdfcff;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #08102b;
+      --text-secondary: #64748b;
+      --text-muted: #989b9f;
+      --border-color: #e6e6e6;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
+      --accent-color: #ff990a;
+      --accent-hover: #e88a00;
+      --button-text: #ffffff;
+    }
+    
+    .drK {
+      --bg-primary: #1e1e1e;
+      --bg-secondary: #252526;
+      --bg-card: #2d2d30;
+      --text-primary: #fffdfc;
+      --text-secondary: #a0a0a0;
+      --text-muted: #989b9f;
+      --border-color: #3a3a3a;
+      --input-bg: #2d2d30;
+      --input-border: #404045;
+      --accent-color: #ffa630;
+      --accent-hover: #ffb84d;
+    }
+    
+    
+    
+    
+    
+    
+    
+    /* Gallery */
+    .tour-gallery {
+      
+      border-radius: 16px;
+      
+      background: var(--bg-card);
+    }
+    
+    .swiper {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      backdrop-filter: blur(4px);
+    }
+    
+    .swiper-button-next:after,
+    .swiper-button-prev:after {
+      font-size: 18px;
+    }
+    
+    .swiper-pagination-bullet {
+      background: rgba(255, 255, 255, 0.6);
+      opacity: 1;
+    }
+    
+    .swiper-pagination-bullet-active {
+      background: var(--accent-color);
+    }
+    
+    .thumbnail-gallery {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    
+    .thumbnail-gallery img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+    
+    .thumbnail-gallery img:hover,
+    .thumbnail-gallery img.active {
+      opacity: 1;
+      border-color: var(--accent-color);
+    }
+    
+    /* Rating Container */
+    .rating-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    /* Timeline */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .timeline-time {
+      width:200px;
+      font-weight: 600;
+      
+    }
+    
+    .timeline-content h4 {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .timeline-content p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+   
+    
+    /* Included/Excluded Lists */
+    .included-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    
+    .included-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    
+    .included-item i {
+      color: var(--accent-color);
+      width: 20px;
+    }
+    
+    .what-to-bring-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      list-style: none;
+    }
+    
+    .what-to-bring-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border-radius: 30px;
+      font-size: 13px;
+    }
+    
+    .what-to-bring-list li i {
+      color: var(--accent-color);
+    }
+    
+    /* Booking Form Container */
+    .booking-form-container {
+      background: var(--bg-secondary);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      position: sticky;
+      top: 5px;
+      height: fit-content;
+    }
+    
+    @media (max-width: 1024px) {
+      .booking-form-container {
+        position: static;
+        top: auto;
+      }
+    }
+    
+    /* Form Steps */
+    .form-step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .form-step.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(255, 153, 10, 0.2);
+    }
+    
+    select.form-control {
+      cursor: pointer;
+    }
+    
+    /* Number Container (Guests) */
+    .number-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .number-box {
+      flex: 1;
+      min-width: 100px;
+      text-align: center;
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: 16px;
+    }
+    
+    .number-box label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .bb {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--accent-color);
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .bb:hover {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+    
+    .button-container input {
+      width: 50px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #FF6B35, #FFA630);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--bg-card);
+    }
+    
+    /* Summary Sections */
+    .summary-section {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+    
+    .summary-item:last-child {
+      border-bottom: none;
+    }
+    
+    .summary-label {
+      color: var(--text-secondary);
+    }
+    
+    .summary-value {
+      font-weight: 500;
+      color: var(--text-primary);
+      word-break: break-word;
+      text-align: right;
+    }
+    
+    /* Progress Bar */
+    #progressBar {
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Reviews Section */
+    #reviewsListContainer::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    #reviewsListContainer::-webkit-scrollbar-track {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+    
+    #reviewsListContainer::-webkit-scrollbar-thumb {
+      background: var(--accent-color);
+      border-radius: 10px;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 640px) {
+      .number-container {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .number-box {
+        padding: 12px;
+      }
+      
+      .button-container {
+        gap: 20px;
+      }
+      
+      .included-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-item {
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .summary-value {
+        text-align: left;
+      }
+    }
+    
+    /* Flatpickr Overrides */
+    .flatpickr-calendar {
+      background: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .flatpickr-day {
+      color: var(--text-primary) !important;
+    }
+    
+    .flatpickr-day.selected {
+      background: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+    }
+    
+    .flatpickr-day.today {
+      border-color: var(--accent-color) !important;
+    }
+    
+    .flatpickr-months .flatpickr-month,
+    .flatpickr-weekdays {
+      color: var(--text-primary) !important;
+    }
+    
+    /* intl-tel-input Overrides */
+    .iti__country-list {
+      background: var(--bg-secondary) !important;
+      border-color: var(--border-color) !important;
+    }
+    
+    .iti__country {
+      color: var(--text-primary) !important;
+    }
+    
+    .iti__country:hover {
+      background: var(--bg-card) !important;
+    }
+    
+    /* Spinner */
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="tour-booking-container">
+    <!-- Left Column - Main Content -->
+    <div class="tour-details">
+      <!-- Gallery Section with Swiper -->
+      <div class="tour-gallery" style="border-radius: 8px; height: 400px; overflow: hidden;">
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            <!-- Slides will be loaded dynamically -->
+          </div>
+          <div class="swiper-pagination !bottom-0 !left-auto !right-5 !w-auto space-x-2"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+        
+        <!-- Thumbnail Gallery -->
+        <div class="thumbnail-gallery" id="thumbnailsContainer">
+          <!-- Thumbnails will be loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- Tour Header -->
+      <div>
+        <h1 id="tourTitle" style="font-size: clamp(24px, 3vw, 32px); font-weight: 700; margin-bottom: 5px;">Loading...</h1>
+        
+        <!-- Rating -->
+        <div class="rating-container">
+          <div class="flex items-center gap-1" id="avgStars">
+            <i class="fas fa-star text-yellow-500"></i>
+            <i class="fas fa-star text-yellow-500"></i>
+            <i class="fas fa-star text-yellow-500"></i>
+            <i class="fas fa-star text-yellow-500"></i>
+            <i class="fas fa-star-half-alt text-yellow-500"></i>
+          </div>
+          <span class="text-gray-400 text-sm" id="reviewsCountText">(0 reviews)</span>
+        </div>
+      </div>
+      
+      <div class="notranslate" id="tourPrice" style="color: var(--accent-color); font-size: clamp(28px, 4vw, 36px); font-weight: 700; margin: 10px 0;">EGP 0.00</div>
+      <div style="color: var(--text-secondary); font-size: 14px;">per person</div>
+
+      <!-- Included/Excluded Section -->
+      <div style="border-bottom: 1px solid var(--border-color); padding: 20px 0;">
+        <h2 style="align-items: center; display: flex; font-size: clamp(18px, 2vw, 22px); font-weight: 600; gap: 10px; margin-bottom: 15px;">
+          <i class="fas fa-check-circle" style="color: var(--accent-color);"></i> What's Included
+        </h2>
+        <div class="included-grid" id="includedItems"></div>
+        
+        <h2 style="align-items: center; display: flex; font-size: clamp(18px, 2vw, 22px); font-weight: 600; gap: 10px; margin: 20px 0 15px 0;">
+          <i class="fas fa-times-circle" style="color: var(--accent-color);"></i> Not Included
+        </h2>
+        <div class="included-grid" id="notIncludedItems"></div>
+      </div>
+
+      <!-- Timeline Section -->
+      <div style="border-bottom: 1px solid var(--border-color); padding: 20px 0;">
+        <h2 style="align-items: center; display: flex; font-size: clamp(18px, 2vw, 22px); font-weight: 600; gap: 10px; margin-bottom: 15px;">
+          <i class="fas fa-clock" style="color: var(--accent-color);"></i> Itinerary
+        </h2>
+        <div class="timeline-container" id="timelineContainer"></div>
+      </div>
+
+      <!-- What to Bring Section -->
+      <div style="padding: 20px 0;">
+        <h2 style="align-items: center; display: flex; font-size: clamp(18px, 2vw, 22px); font-weight: 600; gap: 10px; margin-bottom: 15px;">
+          <i class="fas fa-suitcase" style="color: var(--accent-color);"></i> What to Bring
+        </h2>
+        <ul class="what-to-bring-list" id="whatToBringList"></ul>
+      </div>
+    
+      <!-- REVIEWS SYSTEM -->
+      <div class="w-full mt-12 border-t border-gray-700 pt-8">
+        <div class="flex flex-wrap justify-between items-center mb-6">
+          <div class="flex items-center gap-4">
+            <i class="fas fa-star text-yellow-500 text-2xl"></i>
+            <h3 class="text-xl font-bold" style="color: var(--text-primary);">Reviews</h3>
+          </div>
+          <button class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-5 py-2 rounded-full transition-all duration-300 flex items-center gap-2 font-medium" id="openReviewBtn">
+            <i class="fas fa-pen-alt"></i>
+            <span>Write a Review</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2" id="reviewsListContainer">
+          <div class="text-center py-10" style="color: var(--text-secondary);">
+            <i class="fas fa-star text-5xl mb-3 opacity-30"></i>
+            <p>No reviews yet</p>
+            <p class="text-sm mt-1">Be the first to review this trip</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Booking Form -->
+    <div class="booking-form-container">
+      <h2 class="flex items-center justify-center gap-2 text-2xl font-bold" style="color: var(--accent-color); margin-bottom: 20px;">
+        <i class="fas fa-ticket-alt"></i> Book Your Trip
+      </h2>
+      
+      <div class="mb-6">
+        <div class="w-full h-2 rounded-full overflow-hidden" style="background: var(--border-color);">
+          <div class="h-full transition-all duration-500" id="progressBar" style="background: var(--accent-color); width: 0%;"></div>
+        </div>
+        <div class="flex justify-between text-xs mt-2">
+          <div class="text-gray-500 data-[active=true]:text-yellow-500 notranslate" data-active="true" id="step1Indicator">Your Info</div>
+          <div class="text-gray-500 data-[active=true]:text-yellow-500 notranslate" data-active="false" id="step2Indicator">Details</div>
+          <div class="text-gray-500 data-[active=true]:text-yellow-500 notranslate" data-active="false" id="step3Indicator">Guests</div>
+          <div class="text-gray-500 data-[active=true]:text-yellow-500 notranslate" data-active="false" id="step4Indicator">Summary</div>
+        </div>
+      </div>
+      
+      <form id="bookingForm">
+        <!-- Step 1: Personal Information -->
+        <div class="form-step active" id="step1">
+          <div class="form-group">
+            <input id="tripName" type="hidden" />
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="username" style="color: var(--text-primary);">
+              <i class="fas fa-user" style="color: var(--accent-color);"></i> Full Name
+            </label>
+            <input aria-label="Full Name" class="form-control" id="username" name="username" required="" type="text" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="usernameError">Please enter your full name</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="customerEmail" style="color: var(--text-primary);">
+              <i class="fas fa-envelope" style="color: var(--accent-color);"></i> Email
+            </label>
+            <input aria-label="Email" class="form-control" id="customerEmail" name="customerEmail" required="" type="email" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="customerEmailError">Please enter a valid email address</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="phone" style="color: var(--text-primary);">
+              <i class="fas fa-phone" style="color: var(--accent-color);"></i> WhatsApp Number
+            </label>
+            <input aria-label="WhatsApp Number" class="form-control" id="phone" name="phone" required="" type="tel" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="phoneError">Please enter a valid phone number</div>
+          </div>
+          
+          <input aria-label="user id" hidden="" id="uid" name="uid" type="text" />
+          
+          <div class="flex justify-between gap-3" dir="ltr">
+            <button class="btn btn-primary w-full flex items-center justify-center gap-2" onclick="nextStep()" type="button">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 2: Trip Details -->
+        <div class="form-step" id="step2">
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="tripDate" style="color: var(--text-primary);">
+              <i class="fas fa-calendar-alt" style="color: var(--accent-color);"></i> Trip Date
+            </label>
+            <input aria-label="Trip Date" class="form-control" id="tripDate" name="tripDate" placeholder="Pick a date" required="" type="text" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="tripDateError">Please select a trip date</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="tripType" style="color: var(--text-primary);">
+              <i class="fas fa-map-marked-alt" style="color: var(--accent-color);"></i> Extra Services (Optional)
+            </label>
+            <select aria-label="Trip Type" class="form-control" id="tripType" name="tripType"></select>
+          </div>
+          
+          <!-- Popup for Extra Services -->
+          <div class="services-popup" id="extraServicesPopup" style="display: none;">
+            <div class="services-popup-overlay"></div>
+            <div class="services-popup-container">
+              <div class="services-popup-header">
+                <h3><i class="fas fa-gem"></i> Extra Services</h3>
+                <button class="close-popup-btn" id="closeServicesPopup">×</button>
+              </div>
+              <div class="services-popup-content" id="servicesPopupContent"></div>
+              <div class="services-popup-footer">
+                <button class="btn btn-secondary w-full flex items-center justify-center gap-2" id="cancelServicesBtn">Cancel</button>
+                <button class="btn btn-primary w-full flex items-center justify-center gap-2" id="confirmServicesBtn">Confirm</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="hotelName" style="color: var(--text-primary);">
+              <i class="fas fa-hotel" style="color: var(--accent-color);"></i> Hotel Name
+            </label>
+            <input aria-label="Hotel Name" class="form-control" id="hotelName" name="hotelName" required="" type="text" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="hotelNameError">Please enter your hotel name</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="flex items-center gap-2 text-sm font-bold mb-2" for="roomNumber" style="color: var(--text-primary);">
+              <i class="fas fa-door-closed" style="color: var(--accent-color);"></i> Room Number
+            </label>
+            <input aria-label="Room Number" class="form-control" id="roomNumber" name="roomNumber" required="" type="number" />
+            <div class="text-red-500 text-xs mt-1 hidden" id="roomNumberError">Please enter your room number</div>
+          </div>
+          
+          <div class="flex justify-between gap-3" dir="ltr">
+            <button class="btn btn-secondary w-full flex items-center justify-center gap-2" onclick="prevStep()" type="button">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="btn btn-primary w-full flex items-center justify-center gap-2" onclick="nextStep()" type="button">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 3: Guests Number -->
+        <div class="form-step" id="step3">
+          <div class="number-container">
+            <div class="number-box">
+              <label>Adults (+12)<br />(Max 10)</label>
+              <div class="button-container">
+                <button class="bb" id="adultsMinus">-</button>
+                <input id="adults" readonly="" type="text" value="1" />
+                <button class="bb" id="adultsPlus">+</button>
+              </div>
+            </div>
+            
+            <div class="number-box">
+              <label>Children (5-12) <br />(Max 10)</label>
+              <div class="button-container">
+                <button class="bb" id="childrenUnder12Minus">-</button>
+                <input id="childrenUnder12" readonly="" type="text" value="0" />
+                <button class="bb" id="childrenUnder12Plus">+</button>
+              </div>
+            </div>
+            
+            <div class="number-box">
+              <label>Infants (Free) <br />(Max 2 per 2 adults)</label>
+              <div class="button-container">
+                <button class="bb" id="infantsMinus">-</button>
+                <input id="infants" readonly="" type="text" value="0" />
+                <button class="bb" id="infantsPlus">+</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-between gap-3" dir="ltr">
+            <button class="btn btn-secondary w-full flex items-center justify-center gap-2" onclick="prevStep()" type="button">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="btn btn-primary w-full flex items-center justify-center gap-2" onclick="nextStep()" type="button">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 4: Summary & Payment -->
+        <div class="form-step" id="step4">
+          <div class="summary-section">
+            <h3 class="flex items-center gap-2 text-lg font-bold mb-3" style="color: var(--accent-color);">
+              <i class="fas fa-receipt"></i> Booking Summary
+            </h3>
+            <div class="summary-item">
+              <span class="summary-label">Order:</span>
+              <span class="summary-value notranslate" id="summaryRef">DS_XXXXXXXXXX</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Trip:</span>
+              <span class="summary-value notranslate" id="summaryTour">N/A</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Date:</span>
+              <span class="summary-value notranslate" id="summaryDate">Not specified</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Hotel:</span>
+              <span class="summary-value notranslate" id="summaryHotel">Not specified yet</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Room Number:</span>
+              <span class="summary-value notranslate" id="summaryRoom">Not specified yet</span>
+            </div>
+          </div>
+          
+          <div class="summary-section">
+            <h3 class="flex items-center gap-2 text-lg font-bold mb-3" style="color: var(--accent-color);">
+              <i class="fas fa-ticket-alt"></i> Tickets
+            </h3>
+            <div class="summary-item">
+              <span class="summary-label">Adults (+12):</span>
+              <span class="summary-value notranslate" id="summaryAdults">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Children (5-12):</span>
+              <span class="summary-value notranslate" id="summaryChildrenUnder12">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Infants:</span>
+              <span class="summary-value notranslate" id="summaryInfants">0</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Extra Service:</span>
+              <span class="summary-value notranslate" id="summaryService">None</span>
+            </div>
+          </div>
+          
+          <div class="text-center rounded-lg p-4 mb-5" style="background: var(--bg-card);">
+            <div class="flex items-center justify-center gap-2" style="color: var(--text-primary);">
+              <i class="fas fa-credit-card"></i> Total Amount
+            </div>
+            <div class="text-2xl font-bold" id="totalPriceDisplay" style="color: var(--accent-color);">0.00 EGP</div>
+          </div>
+          
+          <div class="flex justify-between gap-3" dir="ltr">
+            <button class="btn btn-secondary w-full flex items-center justify-center gap-2" onclick="prevStep()" type="button">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="btn btn-primary w-full flex items-center justify-center gap-2" id="submitBtn" type="button">
+              <i class="fas fa-credit-card"></i> Pay Now
+            </button>
+          </div>
+        </div>
+      </form>
+      
+      <div class="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50" id="spinner">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="/app/js/cof.js"></script>
+  <script src="/app/js/trip.js"></script>
+
+  <!-- Reviews System Script (kept intact as requested) -->
+  <script>
+    // Reviews System (preserved with original functionality)
+    let tripReviews = [];
+    let currentUserReview = null;
+    let selectedRating = 0;
+
+    async function loadReviews() {
+        const tripId = typeof tripPName !== 'undefined' ? tripPName : null;
+        if (!tripId) return;
+        
+        try {
+            const snapshot = await db.ref(`trip-reviews/${tripId}`).once('value');
+            const data = snapshot.val();
+            
+            if (data && data.reviews) {
+                tripReviews = Object.entries(data.reviews).map(([id, review]) => ({ id, ...review }))
+                    .filter(r => r.approved === true)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                updateStarsSummary(data.average || 0, data.count || 0);
+                renderReviews();
+            } else {
+                updateStarsSummary(0, 0);
+                renderReviews();
+            }
+            
+            const user = auth.currentUser;
+            if (user) {
+                currentUserReview = tripReviews.find(r => r.userId === user.uid);
+                const btn = document.getElementById('openReviewBtn');
+                if (btn && currentUserReview) {
+                    btn.innerHTML = '<i class="fas fa-edit"></i><span>Edit Your Review</span>';
+                }
+            }
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+        }
+    }
+
+    function updateStarsSummary(average, count) {
+        const container = document.getElementById('avgStars');
+        const countSpan = document.getElementById('reviewsCountText');
+        
+        if (container) {
+            container.innerHTML = '';
+            const full = Math.floor(average);
+            const half = (average % 1) >= 0.5;
+            
+            for (let i = 0; i < full; i++) {
+                container.innerHTML += '<i class="fas fa-star text-yellow-500"></i>';
+            }
+            if (half) {
+                container.innerHTML += '<i class="fas fa-star-half-alt text-yellow-500"></i>';
+            }
+            for (let i = container.children.length; i < 5; i++) {
+                container.innerHTML += '<i class="far fa-star text-yellow-500"></i>';
+            }
+        }
+        
+        if (countSpan) {
+            countSpan.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
+        }
+    }
+
+    function renderReviews() {
+        const container = document.getElementById('reviewsListContainer');
+        if (!container) return;
+        
+        if (tripReviews.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-10" style="color: var(--text-secondary);">
+                    <i class="fas fa-star text-5xl mb-3 opacity-30"></i>
+                    <p>No reviews yet</p>
+                    <p class="text-sm mt-1">Be the first to review this trip</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = tripReviews.map(review => {
+            const date = new Date(review.date);
+            const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            
+            return `
+                <div class="rounded-xl p-4 transition" style="background: var(--bg-card);">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold" style="background: var(--accent-color); color: var(--button-text);">
+                                ${escapeHtml2(review.userName?.charAt(0).toUpperCase() || 'U')}
+                            </div>
+                            <div>
+                                <div class="font-semibold" style="color: var(--text-primary);">${escapeHtml2(review.userName || 'User')}</div>
+                                <div class="flex gap-0.5 text-xs mt-1">
+                                    ${Array(5).fill().map((_, i) => 
+                                        i < review.rating ? '<i class="fas fa-star text-yellow-500 text-xs"></i>' : '<i class="far fa-star text-gray-600 text-xs"></i>'
+                                    ).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-xs" style="color: var(--text-muted);">${formattedDate}</span>
+                    </div>
+                    <p class="text-sm mt-2 leading-relaxed" style="color: var(--text-secondary);">${escapeHtml2(review.comment)}</p>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function escapeHtml2(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Modal HTML (kept with proper styling)
+    const reviewModalHtml = `
+    <div id="reviewModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center" style="backdrop-filter: blur(4px);">
+      <div class="rounded-2xl w-full max-w-md mx-4 shadow-2xl" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+        <div class="flex justify-between items-center p-5 border-b" style="border-color: var(--border-color);">
+          <h3 class="text-xl font-bold flex items-center gap-2" style="color: var(--text-primary);">
+            <i class="fas fa-star text-yellow-500"></i>
+            <span id="modalTitle">Write a Review</span>
+          </h3>
+          <button id="closeModalBtn" class="text-gray-400 hover:text-white text-3xl leading-none transition">&times;</button>
+        </div>
+        <div class="p-5">
+          <div class="mb-5">
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">
+              <i class="fas fa-ticket-alt text-yellow-500 mr-1"></i> Booking Voucher Number
+            </label>
+            <input type="text" id="voucherInput" class="w-full rounded-lg p-3 focus:outline-none focus:border-yellow-500 placeholder-gray-400" style="background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" placeholder="Example: DS_XXXXXXXXXX">
+            <p class="text-xs mt-2" style="color: var(--text-muted);">Found in your confirmation email</p>
+          </div>
+          <div class="mb-5">
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Your Rating</label>
+            <div class="flex gap-2 text-3xl" id="starSelector">
+              <i class="far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition" data-rating="1"></i>
+              <i class="far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition" data-rating="2"></i>
+              <i class="far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition" data-rating="3"></i>
+              <i class="far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition" data-rating="4"></i>
+              <i class="far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition" data-rating="5"></i>
+            </div>
+            <input type="hidden" id="ratingValue" value="0">
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Your Review</label>
+            <textarea id="commentInput" rows="4" class="w-full rounded-lg p-3 focus:outline-none focus:border-yellow-500 placeholder-gray-400 resize-none" style="background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-primary);" placeholder="Share your experience with this trip..."></textarea>
+            <div class="text-right text-xs mt-1" style="color: var(--text-muted);"><span id="charCount">0</span>/500</div>
+          </div>
+          <div class="flex gap-3">
+            <button id="cancelReviewBtn" class="flex-1 py-2.5 text-center rounded-lg transition font-medium" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary);">Cancel</button>
+            <button id="submitReviewBtn" class="flex-1 py-2.5 rounded-lg transition font-medium flex items-center justify-center gap-2" style="background: var(--accent-color); color: var(--button-text);"><i class="fas fa-paper-plane"></i> Submit Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', reviewModalHtml);
+
+    async function verifyVoucher(voucherNumber) {
+        const user = auth.currentUser;
+        if (!user) {
+            alert('Please login first');
+            return false;
+        }
+        try {
+            const snapshot = await db.ref(`trip-bookings/${voucherNumber}`).once('value');
+            const booking = snapshot.val();
+            if (!booking) { alert('Invalid voucher number'); return false; }
+            if (booking.uid !== user.uid) { alert('This voucher belongs to another user'); return false; }
+            if (booking.id !== (typeof tripPName !== 'undefined' ? tripPName : null) && booking.tour !== (typeof currentTrip !== 'undefined' ? currentTrip?.name : null)) { 
+                alert('This voucher is for a different trip'); return false; 
+            }
+            return true;
+        } catch (error) { alert('Error verifying voucher'); return false; }
+    }
+
+    async function submitReviewHandler() {
+        const voucher = document.getElementById('voucherInput').value.trim().toUpperCase();
+        if (!voucher) { alert('Please enter your voucher number'); return; }
+        const rating = parseInt(document.getElementById('ratingValue').value);
+        if (rating === 0) { alert('Please select a rating'); return; }
+        const comment = document.getElementById('commentInput').value.trim();
+        if (!comment) { alert('Please write your review'); return; }
+        if (comment.length < 5) { alert('Review must be at least 5 characters'); return; }
+        
+        const isValid = await verifyVoucher(voucher);
+        if (!isValid) return;
+        
+        const submitBtn = document.getElementById('submitReviewBtn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        submitBtn.disabled = true;
+        
+        try {
+            const user = auth.currentUser;
+            const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
+            const userData = userSnapshot.val();
+            const userName = userData?.username || user.email?.split('@')[0] || 'Traveler';
+            
+            const reviewData = {
+                userId: user.uid,
+                userName: userName,
+                rating: rating,
+                comment: comment,
+                date: new Date().toISOString(),
+                approved: true,
+                voucher: voucher
+            };
+            
+            const tripId = typeof tripPName !== 'undefined' ? tripPName : null;
+            const reviewsRef = db.ref(`trip-reviews/${tripId}`);
+            const snapshot = await reviewsRef.once('value');
+            const current = snapshot.val() || { reviews: {}, count: 0, average: 0 };
+            
+            let newCount = current.count || 0;
+            let totalRating = (current.average || 0) * newCount;
+            
+            if (currentUserReview) {
+                const oldRating = current.reviews[currentUserReview.id]?.rating || 0;
+                totalRating = totalRating - oldRating + rating;
+                await reviewsRef.child(`reviews/${currentUserReview.id}`).update(reviewData);
+            } else {
+                const newId = Date.now().toString();
+                await reviewsRef.child(`reviews/${newId}`).set(reviewData);
+                newCount++;
+                totalRating += rating;
+            }
+            
+            const newAverage = totalRating / newCount;
+            await reviewsRef.update({ count: newCount, average: parseFloat(newAverage.toFixed(1)) });
+            
+            document.getElementById('reviewModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            
+            document.getElementById('voucherInput').value = '';
+            document.getElementById('ratingValue').value = '0';
+            document.getElementById('commentInput').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.querySelectorAll('#starSelector i').forEach(s => {
+                s.className = 'far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition';
+            });
+            
+            await loadReviews();
+            if (typeof updateRatingDisplay === 'function') {
+                updateRatingDisplay({ average: newAverage, count: newCount });
+            }
+            
+            alert(currentUserReview ? 'Review updated successfully!' : 'Thank you for your review!');
+            
+        } catch (error) {
+            console.error(error);
+            alert('Error submitting review');
+        } finally {
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Review';
+            submitBtn.disabled = false;
+        }
+    }
+
+    function setupReviewModal() {
+        const openBtn = document.getElementById('openReviewBtn');
+        const modal = document.getElementById('reviewModal');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelReviewBtn');
+        const submitBtn = document.getElementById('submitReviewBtn');
+        const commentInput = document.getElementById('commentInput');
+        const charCount = document.getElementById('charCount');
+        const stars = document.querySelectorAll('#starSelector i');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.dataset.rating);
+                document.getElementById('ratingValue').value = rating;
+                stars.forEach((s, i) => {
+                    if (i < rating) {
+                        s.className = 'fas fa-star cursor-pointer text-yellow-500';
+                    } else {
+                        s.className = 'far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition';
+                    }
+                });
+            });
+        });
+        
+        if (commentInput && charCount) {
+            commentInput.addEventListener('input', () => {
+                charCount.textContent = commentInput.value.length;
+                if (commentInput.value.length > 500) {
+                    commentInput.value = commentInput.value.substring(0, 500);
+                    charCount.textContent = 500;
+                }
+            });
+        }
+        
+        if (openBtn) {
+            openBtn.addEventListener('click', () => {
+                if (!auth.currentUser) {
+                    alert('Please login first');
+                    return;
+                }
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                if (currentUserReview) {
+                    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Your Review';
+                    document.getElementById('voucherInput').value = currentUserReview.voucher || '';
+                    document.getElementById('commentInput').value = currentUserReview.comment;
+                    document.getElementById('ratingValue').value = currentUserReview.rating;
+                    document.getElementById('charCount').textContent = currentUserReview.comment.length;
+                    stars.forEach((s, i) => {
+                        if (i < currentUserReview.rating) {
+                            s.className = 'fas fa-star cursor-pointer text-yellow-500';
+                        } else {
+                            s.className = 'far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition';
+                        }
+                    });
+                } else {
+                    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-star"></i> Write a Review';
+                }
+            });
+        }
+        
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            document.getElementById('voucherInput').value = '';
+            if (!currentUserReview) {
+                document.getElementById('ratingValue').value = '0';
+                document.getElementById('commentInput').value = '';
+                document.getElementById('charCount').textContent = '0';
+                stars.forEach(s => {
+                    s.className = 'far fa-star cursor-pointer text-gray-500 hover:text-yellow-500 transition';
+                });
+            }
+        };
+        
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        if (submitBtn) submitBtn.addEventListener('click', submitReviewHandler);
+    }
+
+    setTimeout(() => {
+        if (typeof tripPName !== 'undefined' && tripPName) {
+            setupReviewModal();
+            loadReviews();
+        }
+    }, 1500);
+  </script>
+  
+  <style>
+    /* Additional popup styles for extra services (preserved) */
+    .services-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 99990000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .services-popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+    
+    .services-popup-container {
+      position: relative;
+      width: 90%;
+      max-width: 500px;
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.3);
+      z-index: 10001;
+      overflow: hidden;
+      animation: popupSlideIn 0.3s ease;
+    }
+    
+    @keyframes popupSlideIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .services-popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px;
+      background: linear-gradient(135deg, #FF6B35, #FFA630);
+      color: white;
+    }
+    
+    .services-popup-header h3 {
+      margin: 0;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .close-popup-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    
+    .close-popup-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .services-popup-content {
+      padding: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .service-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+    
+    .service-option:hover {
+      background: var(--border-color);
+      transform: translateX(5px);
+    }
+    
+    .service-option.selected {
+      border-color: #FF6B35;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 166, 48, 0.1));
+    }
+    
+    .service-option-info {
+      flex: 1;
+    }
+    
+    .service-option-name {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+    
+    .service-option-price {
+      font-size: 13px;
+      color: #FFA630;
+    }
+    
+    .service-option-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .service-option.selected .service-option-check {
+      background: #FF6B35;
+      border-color: #FF6B35;
+    }
+    
+    .service-option.selected .service-option-check::after {
+      content: '🔥';
+      color: white;
+      font-size: 14px;
+    }
+    
+    .services-popup-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .services-popup-footer button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+  </style>
+</body>
+</html>
