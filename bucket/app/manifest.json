@@ -9,7 +9,7 @@
   "orientation": "portrait",
   "start_url": "/",
   "scope": "/",
-  "display": "fullscreen",
+  "display": "browser",
   "prefer_related_applications": true,
   "background_color": "#1E1E1E",
   "theme_color": "#1E1E1E",
