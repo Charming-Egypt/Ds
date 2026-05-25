@@ -17,7 +17,40 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #f1f5f9; overflow-x: hidden; }
+        
+        :root {
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --header-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --input-border: #e2e8f0;
+            --hover-bg: #f1f5f9;
+        }
+        
+        body.dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+            --sidebar-bg: #0f172a;
+            --header-bg: #1e293b;
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            --hover-bg: #334155;
+        }
+        
+        body { background: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+        
+        .dark-mode-toggle { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 40px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.3s; }
+        .dark-mode-toggle:hover { background: var(--hover-bg); }
+        
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
         .login-card { background: white; border-radius: 28px; padding: 40px 32px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
         .login-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; background: #f8fafc; }
@@ -25,36 +58,38 @@
         .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; }
         .admin-panel { display: none; }
         .admin-panel.visible { display: block; }
-        .mobile-header { background: white; box-shadow: 0 1px 12px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 50; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .mobile-header { background: var(--header-bg); box-shadow: 0 1px 12px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 50; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
         @media (min-width: 1024px) { .mobile-header { display: none; } }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
-        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: white; box-shadow: 2px 0 12px rgba(0,0,0,0.08); z-index: 100; transform: translateX(-100%); transition: transform 0.3s; overflow-y: auto; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: var(--sidebar-bg); box-shadow: 2px 0 12px rgba(0,0,0,0.08); z-index: 100; transform: translateX(-100%); transition: transform 0.3s; overflow-y: auto; }
         .sidebar.open { transform: translateX(0); }
         @media (min-width: 1024px) { .sidebar { transform: translateX(0); } }
-        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 12px; margin: 4px 12px; cursor: pointer; color: #475569; font-weight: 500; }
+        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 12px; margin: 4px 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; transition: 0.2s; }
         .sidebar-link:hover, .sidebar-link.active { background: #fff7ed; color: #FF6B35; }
-        .desktop-header { background: white; box-shadow: 0 1px 12px rgba(0,0,0,0.06); padding: 16px 24px; display: none; align-items: center; justify-content: space-between; }
+        body.dark .sidebar-link:hover, body.dark .sidebar-link.active { background: rgba(255,107,53,0.15); color: #FF6B35; }
+        .desktop-header { background: var(--header-bg); box-shadow: 0 1px 12px rgba(0,0,0,0.06); padding: 16px 24px; display: none; align-items: center; justify-content: space-between; }
         @media (min-width: 1024px) { .desktop-header { display: flex; margin-left: 260px; } }
-        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 8px 12px 12px; z-index: 1000; }
+        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--header-bg); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 8px 12px 12px; z-index: 1000; }
         @media (min-width: 1024px) { .mobile-bottom-nav { display: none; } }
-        .nav-item { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 12px; color: #94a3b8; font-size: 11px; cursor: pointer; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 12px; color: var(--text-secondary); font-size: 11px; cursor: pointer; }
         .nav-item.active { color: #FF6B35; background: #fff7ed; }
+        body.dark .nav-item.active { background: rgba(255,107,53,0.15); }
         .nav-item i { font-size: 22px; margin-bottom: 4px; }
         .content-section { display: none; }
         .content-section.active { display: block; }
-        .card { background: white; border-radius: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 20px; }
-        .stat-card { background: white; border-radius: 24px; padding: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-        .fab { position: fixed; right: 20px; bottom: 100px; width: 56px; height: 56px; border-radius: 28px; background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; box-shadow: 0 8px 24px rgba(255,107,53,0.4); z-index: 99; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .card { background: var(--card-bg); border-radius: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 20px; border: 1px solid var(--border-color); }
+        .stat-card { background: var(--card-bg); border-radius: 24px; padding: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
+        .fab { position: fixed; right: 20px; bottom: 100px; width: 56px; height: 56px; border-radius: 28px; background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; box-shadow: 0 8px 24px rgba(255,107,53,0.4); z-index: 99; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .fab:active { transform: scale(0.94); }
         @media (min-width: 1024px) { .fab { bottom: 40px; right: 40px; } }
-        .modal-sheet { position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; background: white; border-radius: 28px 28px 0 0; box-shadow: 0 -8px 40px rgba(0,0,0,0.15); z-index: 2000; transform: translateY(100%); transition: transform 0.3s; overflow-y: auto; }
+        .modal-sheet { position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; background: var(--card-bg); border-radius: 28px 28px 0 0; box-shadow: 0 -8px 40px rgba(0,0,0,0.15); z-index: 2000; transform: translateY(100%); transition: transform 0.3s; overflow-y: auto; }
         .modal-sheet.open { transform: translateY(0); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal-handle { width: 40px; height: 4px; background: #e2e8f0; border-radius: 2px; margin: 12px auto; }
-        .input-field { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; background: #f8fafc; }
-        .input-field:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 4px rgba(255,107,53,0.1); background: white; }
-        .btn-primary { background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; padding: 12px 24px; border-radius: 16px; font-weight: 600; border: none; cursor: pointer; }
+        .modal-handle { width: 40px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 12px auto; }
+        .input-field { width: 100%; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 14px; font-size: 16px; background: var(--input-bg); color: var(--text-primary); transition: 0.2s; }
+        .input-field:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 4px rgba(255,107,53,0.1); background: var(--bg-secondary); }
+        .btn-primary { background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; padding: 12px 24px; border-radius: 16px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
         .btn-primary:active { transform: scale(0.97); }
         .status-badge { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-confirmed { background: #D1FAE5; color: #065F46; }
@@ -62,31 +97,39 @@
         .status-cancelled { background: #FEE2E2; color: #991B1B; }
         .status-paid { background: #D1FAE5; color: #065F46; }
         .status-unpaid { background: #FEE2E2; color: #991B1B; }
+        body.dark .status-confirmed { background: #065F46; color: #D1FAE5; }
+        body.dark .status-new { background: #92400E; color: #FEF3C7; }
+        body.dark .status-cancelled { background: #991B1B; color: #FEE2E2; }
         .array-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         .remove-item { background: #EF4444; border: none; border-radius: 12px; width: 36px; height: 36px; color: white; cursor: pointer; }
-        .filter-chip { padding: 8px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; cursor: pointer; background: #f1f5f9; color: #64748b; }
-        .filter-chip.active { background: #FF6B35; color: white; }
+        .filter-chip { padding: 8px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; cursor: pointer; background: var(--input-bg); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .filter-chip.active { background: #FF6B35; color: white; border: none; }
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: white; padding: 12px 24px; border-radius: 40px; z-index: 3000; transition: transform 0.3s; max-width: 90vw; text-align: center; white-space: nowrap; }
         .toast.show { transform: translateX(-50%) translateY(0); }
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
         @media (min-width: 1024px) { .main-content { margin-left: 260px; } }
         .booking-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .booking-detail-item { background: #f8fafc; padding: 12px; border-radius: 16px; }
-        .booking-detail-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
-        .booking-detail-value { font-weight: 600; color: #1e293b; }
+        .booking-detail-item { background: var(--input-bg); padding: 12px; border-radius: 16px; }
+        .booking-detail-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+        .booking-detail-value { font-weight: 600; color: var(--text-primary); }
         @media (max-width: 640px) { .booking-details-grid { grid-template-columns: 1fr; } }
-        .booking-card { background: white; border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .booking-card { background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
         .booking-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .booking-ref { font-family: monospace; font-weight: 600; color: #F59E0B; }
         @media (min-width: 768px) { .booking-card { display: none; } }
         @media (max-width: 767px) { .table-responsive table { display: none; } }
+        
+        .tooltip-icon { cursor: help; margin-left: 6px; color: #F59E0B; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(245,158,11,0.15); transition: all 0.2s; }
+        .tooltip-icon:hover { background: #F59E0B; color: white; }
+        
+        .debug-card { background: var(--input-bg); border-radius: 12px; padding: 12px 16px; margin-top: 12px; font-family: monospace; font-size: 12px; border: 1px solid var(--border-color); color: var(--text-secondary); line-height: 1.6; }
+        .debug-card span { color: #F59E0B; font-weight: 600; }
     </style>
 </head>
 <body>
-<!-- Login Page -->
 <div id="login-page" class="login-container">
     <div class="login-card">
         <div class="text-center mb-8"><div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-shield-alt text-3xl text-white"></i></div><h1 class="text-2xl font-bold">Admin Login</h1><p class="text-gray-500 mt-2">Sign in to manage your travel content</p></div>
@@ -95,32 +138,46 @@
     </div>
 </div>
 
-<!-- Admin Panel -->
 <div id="admin-panel" class="admin-panel">
-    <div class="mobile-header"><button id="menuToggle" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-bars text-xl text-gray-600"></i></button><h1 class="text-lg font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1><div class="flex items-center gap-3"><div class="user-avatar" id="user-avatar-mobile">A</div><button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download text-gray-600"></i></button><button id="mobileLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button></div></div>
-    <div class="desktop-header"><h2 class="text-xl font-bold text-gray-800" id="desktop-title">Dashboard</h2><div class="flex items-center gap-4"><div class="user-avatar" id="user-avatar-desktop">A</div><span id="user-email-desktop" class="text-sm text-gray-600"></span><button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download text-gray-600"></i></button><button id="desktopLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button></div></div>
-    <div class="sidebar" id="sidebar"><div class="p-5 border-b"><h1 class="text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1><p class="text-sm text-gray-500 mt-1" id="user-email-sidebar"></p></div><nav class="p-3 space-y-1"><div class="sidebar-link active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></div><div class="sidebar-link" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>My Trips</span></div><div class="sidebar-link" data-section="reservations"><i class="fas fa-calendar-check"></i><span>Reservations</span></div><div class="sidebar-link" data-section="payout"><i class="fas fa-wallet"></i><span>Payouts</span></div><div class="sidebar-link" data-section="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div><hr class="my-3"><div class="sidebar-link" id="logout-sidebar"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div></nav></div>
+    <div class="mobile-header">
+        <button id="menuToggle" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-bars text-xl"></i></button>
+        <h1 class="text-lg font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1>
+        <div class="flex items-center gap-3">
+            <button id="darkModeToggleMobile" class="dark-mode-toggle p-2"><i class="fas fa-moon"></i></button>
+            <div class="user-avatar" id="user-avatar-mobile">A</div>
+            <button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download"></i></button>
+            <button id="mobileLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+    <div class="desktop-header">
+        <h2 class="text-xl font-bold" id="desktop-title">Dashboard</h2>
+        <div class="flex items-center gap-4">
+            <button id="darkModeToggleDesktop" class="dark-mode-toggle"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
+            <div class="user-avatar" id="user-avatar-desktop">A</div>
+            <span id="user-email-desktop" class="text-sm"></span>
+            <button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download"></i></button>
+            <button id="desktopLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+    </div>
+    <div class="sidebar" id="sidebar"><div class="p-5 border-b"><h1 class="text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1><p class="text-sm mt-1" id="user-email-sidebar"></p></div><nav class="p-3 space-y-1"><div class="sidebar-link active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></div><div class="sidebar-link" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>My Trips</span></div><div class="sidebar-link" data-section="reservations"><i class="fas fa-calendar-check"></i><span>Reservations</span></div><div class="sidebar-link" data-section="payout"><i class="fas fa-wallet"></i><span>Payouts</span></div><div class="sidebar-link" data-section="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div><hr class="my-3"><div class="sidebar-link" id="logout-sidebar"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div></nav></div>
     <div class="mobile-bottom-nav"><div class="nav-item active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Home</span></div><div class="nav-item" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>Trips</span></div><div class="nav-item" data-section="reservations"><i class="fas fa-calendar"></i><span>Bookings</span></div><div class="nav-item" data-section="payout"><i class="fas fa-wallet"></i><span>Wallet</span></div></div>
     <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
     <div class="main-content" style="padding: 20px; padding-bottom: 100px;">
-        <!-- Dashboard -->
         <div id="dashboard-section" class="content-section active">
             <h2 class="text-2xl font-bold mb-5">Dashboard Overview</h2>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="stat-card"><div><p class="text-gray-500 text-sm">Total Trips</p><h3 class="text-2xl font-bold" id="totalTripsStat">0</h3></div><i class="fas fa-map-marked-alt text-3xl text-orange-500"></i></div>
-                <div class="stat-card"><div><p class="text-gray-500 text-sm">Bookings</p><h3 class="text-2xl font-bold" id="totalBookingsStat">0</h3></div><i class="fas fa-calendar-check text-3xl text-orange-500"></i></div>
-                <div class="stat-card"><div><p class="text-gray-500 text-sm">Guests</p><h3 class="text-2xl font-bold" id="totalGuestsStat">0</h3></div><i class="fas fa-users text-3xl text-orange-500"></i></div>
-                <div class="stat-card"><div><p class="text-gray-500 text-sm">Revenue</p><h3 class="text-2xl font-bold" id="totalRevenueStat">EGP 0</h3></div><i class="fas fa-wallet text-3xl text-orange-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Total Trips</p><h3 class="text-2xl font-bold" id="totalTripsStat">0</h3></div><i class="fas fa-map-marked-alt text-3xl text-orange-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Bookings</p><h3 class="text-2xl font-bold" id="totalBookingsStat">0</h3></div><i class="fas fa-calendar-check text-3xl text-orange-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Guests</p><h3 class="text-2xl font-bold" id="totalGuestsStat">0</h3></div><i class="fas fa-users text-3xl text-orange-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Revenue</p><h3 class="text-2xl font-bold" id="totalRevenueStat">EGP 0</h3></div><i class="fas fa-wallet text-3xl text-orange-500"></i></div>
             </div>
             <div class="card"><canvas id="trendChart" height="200"></canvas></div>
         </div>
-        <!-- Trips -->
         <div id="trips-section" class="content-section">
             <div class="flex flex-wrap justify-between items-center gap-3 mb-5"><h2 class="text-2xl font-bold">My Trips</h2><div class="flex gap-2"><button onclick="setTripFilter('all')" class="filter-chip active">All</button><button onclick="setTripFilter('approved')" class="filter-chip">Approved</button><button onclick="setTripFilter('pending')" class="filter-chip">Pending</button></div></div>
             <div class="mb-4 relative"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i><input type="text" id="tripSearch" placeholder="Search trips by name..." class="input-field pl-12"></div>
             <div id="trips-container" class="grid-cards"></div>
         </div>
-        <!-- Reservations -->
         <div id="reservations-section" class="content-section">
             <div class="card">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-3"><h2 class="text-xl font-bold">All Reservations</h2><div class="flex gap-2"><button onclick="switchReservationTab('all')" class="filter-chip active">All</button><button onclick="switchReservationTab('unpaid')" class="filter-chip">⚠️ Unpaid <span id="unpaidBadge" class="ml-1 text-xs">0</span></button><button onclick="switchReservationTab('paid')" class="filter-chip">✅ Paid</button></div></div>
@@ -130,39 +187,54 @@
                 <div class="flex justify-between items-center mt-4 gap-2"><span id="pageInfo"></span><div class="flex gap-2"><button id="prevPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Prev</button><button id="nextPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Next</button></div></div>
             </div>
         </div>
-        <!-- Payout -->
         <div id="payout-section" class="content-section">
-            <div class="card mb-5"><h3 class="font-bold text-lg mb-4">💰 Payout Method</h3><form id="payoutForm"><label class="block text-sm font-medium mb-1">Full Name (as per bank/wallet)</label><input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Account Number / Wallet ID</label><input type="text" id="accountNumber" placeholder="e.g., 1234567890 or wallet@example.com" class="input-field mb-3"><div id="bankFields" style="display:none;"><label class="block text-sm font-medium mb-1">Bank Name</label><input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Branch Name</label><input type="text" id="branchName" placeholder="e.g., Sharm El-Sheikh" class="input-field mb-3"></div><label class="block text-sm font-medium mb-1">Payout Method</label><select id="payoutMethodSelect" class="input-field mb-3"><option value="wallet">e-Wallet (Vodafone Cash, InstaPay, etc.)</option><option value="bankAccount">Bank Account</option></select><button type="submit" class="btn-primary w-full">Save Payout Method</button></form></div>
-            <div class="stat-card flex justify-between items-center flex-wrap gap-3"><div><p class="text-gray-500 text-sm">💰 Withdrawable Balance <span class="text-xs text-gray-400">(Confirmed bookings ≥1 days old, minus 5% commission, minus past payouts)</span></p><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3><div id="debugInfo" class="text-xs text-gray-400 mt-1"></div></div><button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button></div>
+            <div class="card mb-5"><h3 class="font-bold text-lg mb-4">💰 Payout Method</h3><form id="payoutForm"><label class="block text-sm font-medium mb-1">Full Name (as per bank/wallet)</label><input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Account Number / Wallet ID</label><input type="text" id="accountNumber" placeholder="e.g., 1234567890" class="input-field mb-3"><div id="bankFields" style="display:none;"><label class="block text-sm font-medium mb-1">Bank Name</label><input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Branch Name</label><input type="text" id="branchName" placeholder="e.g., Sharm" class="input-field mb-3"></div><label class="block text-sm font-medium mb-1">Payout Method</label><select id="payoutMethodSelect" class="input-field mb-3"><option value="wallet">e-Wallet</option><option value="bankAccount">Bank Account</option></select><button type="submit" class="btn-primary w-full">Save Payout Method</button></form></div>
+            <div class="stat-card flex justify-between items-center flex-wrap gap-3"><div><p class="text-gray-500 text-sm">💰 Withdrawable Balance <i class="fas fa-question-circle tooltip-icon" title="Confirmed bookings ≥1 days old, minus 5% commission, minus past payouts"></i></p><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3><div id="debugInfo" class="debug-card"></div></div><button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button></div>
             <div class="card mt-5"><h3 class="font-bold mb-3">📜 Payout History</h3><div id="payoutHistoryList" class="space-y-2"></div></div>
-            <div id="pendingBadge" class="mt-3 hidden"><div class="bg-amber-100 p-3 rounded-xl text-center text-amber-700"><i class="fas fa-clock mr-2"></i>⚠️ Pending withdrawal request – processing. You cannot request another until it's completed.</div></div>
+            <div id="pendingBadge" class="mt-3 hidden"><div class="bg-amber-100 p-3 rounded-xl text-center text-amber-700"><i class="fas fa-clock mr-2"></i>⚠️ Pending withdrawal request – processing</div></div>
             <div class="text-center mt-3"><button id="refreshBalanceBtn" class="text-orange-600 text-sm underline">⟳ Refresh Balance</button></div>
         </div>
-        <!-- Analytics -->
         <div id="analytics-section" class="content-section">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card"><h3 class="font-semibold mb-2">Booking Status Distribution</h3><canvas id="statusChart" height="250"></canvas></div>
-                <div class="card"><h3 class="font-semibold mb-2">Guest Breakdown (Adults vs Children)</h3><canvas id="guestChart" height="250"></canvas></div>
-                <div class="card lg:col-span-2"><h3 class="font-semibold mb-2">Monthly Revenue Trend</h3><canvas id="revenueChart" height="200"></canvas></div>
+                <div class="card"><canvas id="statusChart" height="250"></canvas></div>
+                <div class="card"><canvas id="guestChart" height="250"></canvas></div>
+                <div class="card lg:col-span-2"><canvas id="revenueChart" height="200"></canvas></div>
             </div>
         </div>
     </div>
 
-    <!-- Booking Details Modal -->
+    <!-- Modals -->
     <div class="modal-overlay" id="booking-modal-overlay" onclick="closeBookingModal()"></div>
-    <div class="modal-sheet" id="booking-modal"><div class="modal-handle"></div><div class="p-5" style="max-height: 80vh; overflow-y: auto;"><h3 class="text-xl font-bold mb-4 text-orange-600">📋 Booking Details</h3><div id="bookingDetailsContent"></div><div class="flex gap-3 mt-5"><button onclick="closeBookingModal()" class="flex-1 py-3 border rounded-xl">Close</button><a id="whatsappLink" href="#" target="_blank" class="flex-1 bg-green-600 text-white py-3 rounded-xl text-center">📱 WhatsApp</a></div></div></div>
-
-    <!-- Trip Editor Modal -->
+    <div class="modal-sheet" id="booking-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4 text-orange-600">📋 Booking Details</h3><div id="bookingDetailsContent"></div><div class="flex gap-3 mt-5"><button onclick="closeBookingModal()" class="flex-1 py-3 border rounded-xl">Close</button><a id="whatsappLink" href="#" target="_blank" class="flex-1 bg-green-600 text-white py-3 rounded-xl text-center">📱 WhatsApp</a></div></div></div>
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
-    <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5" style="max-height: 80vh; overflow-y: auto;"><h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3><form id="item-form"><input type="hidden" id="item-id"><div class="space-y-3"><label class="text-sm font-medium">Trip Name *</label><input type="text" id="item-name" placeholder="e.g., Snorkeling at Ras Mohamed" class="input-field" required><label class="text-sm font-medium">Description</label><textarea id="item-desc" placeholder="Detailed description of the trip" rows="3" class="input-field"></textarea><div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium">Adult Price (EGP)</label><input type="number" id="item-price" placeholder="e.g., 500" class="input-field"></div><div><label class="text-sm font-medium">Child Price (EGP)</label><input type="number" id="item-cprice" placeholder="e.g., 300" class="input-field"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="text-sm font-medium">Duration</label><input type="text" id="item-duration" placeholder="e.g., 6 hours / Full Day" class="input-field"></div><div><label class="text-sm font-medium">Booking Slug (URL ID)</label><input type="text" id="item-bookingLink" placeholder="e.g., ras-mohamed-snorkeling" class="input-field"></div></div><div class="flex justify-between items-center"><span class="text-sm font-medium">Approved Status</span><label class="relative inline-block w-12 h-6"><input type="checkbox" id="item-approved" class="opacity-0 w-0 h-0" checked><span class="absolute cursor-pointer inset-0 bg-gray-300 rounded-full transition before:absolute before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition"></span></label></div><label class="text-sm font-medium">Main Image URL</label><input type="text" id="item-image" placeholder="https://example.com/image.jpg" class="input-field"><div><label class="text-sm font-medium">Additional Images (URLs)</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Image URL</button></div><div><label class="text-sm font-medium">What's Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label class="text-sm font-medium">What's NOT Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label class="text-sm font-medium">Timeline (Itinerary)</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Event (Time, Title, Description)</button></div><div><label class="text-sm font-medium">What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label class="text-sm font-medium">Extra Services (Name : Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
+    <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3><form id="item-form"><input type="hidden" id="item-id"><div class="space-y-3"><input type="text" id="item-name" placeholder="Trip Name *" class="input-field" required><textarea id="item-desc" placeholder="Description" rows="3" class="input-field"></textarea><div class="grid grid-cols-2 gap-3"><input type="number" id="item-price" placeholder="Price (EGP)" class="input-field"><input type="number" id="item-cprice" placeholder="Child Price" class="input-field"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="item-duration" placeholder="Duration" class="input-field"><input type="text" id="item-bookingLink" placeholder="Booking Slug" class="input-field"></div><div class="flex justify-between items-center"><span>Approved</span><label class="relative inline-block w-12 h-6"><input type="checkbox" id="item-approved" class="opacity-0 w-0 h-0" checked><span class="absolute cursor-pointer inset-0 bg-gray-300 rounded-full transition before:absolute before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition"></span></label></div><input type="text" id="item-image" placeholder="Main Image URL" class="input-field"><div><label>Additional Images</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Image</button></div><div><label>Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Not Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Timeline</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Event</button></div><div><label>What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Extra Services (Name:Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-gray-200 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
     <div class="modal-overlay" id="pickup-overlay" onclick="closePickupModal()"></div>
-    <div class="modal-sheet" id="pickup-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-3 text-orange-600">⏰ Set Pickup Time</h3><label class="text-sm font-medium">Pickup Time</label><input type="time" id="pickupTimeInput" class="input-field mb-4"><div class="flex gap-3"><button onclick="closePickupModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirmPickupBtn" class="flex-1 btn-primary">Confirm Booking</button></div></div></div>
+    <div class="modal-sheet" id="pickup-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-3 text-orange-600">⏰ Set Pickup Time</h3><input type="time" id="pickupTimeInput" class="input-field mb-4"><div class="flex gap-3"><button onclick="closePickupModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirmPickupBtn" class="flex-1 btn-primary">Confirm Booking</button></div></div></div>
     <div class="modal-overlay" id="delete-overlay" onclick="closeDeleteModal()"></div>
-    <div class="modal-sheet" id="delete-modal"><div class="modal-handle"></div><div class="p-5 text-center"><i class="fas fa-trash-alt text-4xl text-red-500 mb-3"></i><h3 class="text-xl font-bold">Delete Trip?</h3><p class="text-gray-500 text-sm">This action cannot be undone.</p><div class="flex gap-3 mt-5"><button onclick="closeDeleteModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white rounded-xl py-3">Delete Permanently</button></div></div></div>
+    <div class="modal-sheet" id="delete-modal"><div class="modal-handle"></div><div class="p-5 text-center"><i class="fas fa-trash-alt text-4xl text-red-500 mb-3"></i><h3 class="text-xl font-bold">Delete Trip?</h3><div class="flex gap-3 mt-5"><button onclick="closeDeleteModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white rounded-xl py-3">Delete</button></div></div></div>
     <div id="toast" class="toast"></div>
 </div>
 
 <script>
+    // Dark Mode
+    function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) { document.body.classList.add('dark'); updateDarkModeIcons(true); }
+        document.getElementById('darkModeToggleDesktop')?.addEventListener('click', toggleDarkMode);
+        document.getElementById('darkModeToggleMobile')?.addEventListener('click', toggleDarkMode);
+    }
+    function toggleDarkMode() {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        updateDarkModeIcons(isDark);
+    }
+    function updateDarkModeIcons(isDark) {
+        const icons = document.querySelectorAll('#darkModeToggleDesktop i, #darkModeToggleMobile i');
+        icons.forEach(icon => { icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon'; });
+        const btn = document.getElementById('darkModeToggleDesktop');
+        if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
+    }
+
     // Firebase Config
     const firebaseConfig = { apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", authDomain: "egypt-travels.firebaseapp.com", databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", projectId: "egypt-travels", storageBucket: "egypt-travels.appspot.com" };
     firebase.initializeApp(firebaseConfig);
@@ -179,7 +251,6 @@
 
     function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
     
-    // ========== FIXED: Date comparison - older than 1 day only ==========
     function isOlderThanOneDay(dateStr){ 
         if(!dateStr) return false; 
         const d = new Date(dateStr);
@@ -190,7 +261,6 @@
         return d <= oneDayAgo; 
     }
     
-    // Login
     async function handleLogin(e){ e.preventDefault(); try{ await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } catch(err){ let d=document.getElementById('login-error'); d.innerText=err.message; d.classList.remove('hidden'); } }
     function showResetPassword(){ let e=prompt("Enter your email"); if(e) auth.sendPasswordResetEmail(e).then(()=>alert("Reset link sent")); }
     
@@ -217,13 +287,12 @@
         } 
     });
     
-    // ========== TRIPS ==========
     async function loadAllData(){ let ts=await db.ref('trips').once('value'); allTrips=Object.entries(ts.val()||{}).map(([id,val])=>({id,...val})); renderTrips(); }
-    function renderTrips(){ let filtered=allTrips.filter(t=>{ let m=(t.name||'').toLowerCase().includes(tripSearch.toLowerCase()); if(tripFilter=='approved') return m && (t.approved===true||t.approved==="true"); if(tripFilter=='pending') return m && !(t.approved===true||t.approved==="true"); return m; }); let c=document.getElementById('trips-container'); if(!filtered.length){ c.innerHTML='<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; return; } c.innerHTML=filtered.map(t=>`<div class="card"><img src="${t.image||'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3"><h3 class="font-bold text-lg">${t.name||''}</h3><p class="text-orange-600 font-bold">EGP ${t.price||0}</p><p class="text-sm text-gray-500">${t.duration||''}</p><div class="flex gap-2 mt-3"><button onclick="editTrip('${t.id}')" class="bg-blue-500 text-white px-3 py-2 rounded-xl text-sm"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 text-white px-3 py-2 rounded-xl text-sm"><i class="fas fa-trash"></i> Delete</button></div></div>`).join(''); }
+    function renderTrips(){ let filtered=allTrips.filter(t=>{ let m=(t.name||'').toLowerCase().includes(tripSearch.toLowerCase()); if(tripFilter=='approved') return m && (t.approved===true||t.approved==="true"); if(tripFilter=='pending') return m && !(t.approved===true||t.approved==="true"); return m; }); let c=document.getElementById('trips-container'); if(!filtered.length){ c.innerHTML='<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; return; } c.innerHTML=filtered.map(t=>`<div class="card"><img src="${t.image||'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3"><h3 class="font-bold text-lg">${t.name||''}</h3><p class="text-orange-600 font-bold">EGP ${t.price||0}</p><p class="text-sm text-gray-500">${t.duration||''}</p><div class="flex gap-2 mt-3"><button onclick="editTrip('${t.id}')" class="bg-blue-500 text-white px-3 py-2 rounded-xl text-sm">Edit</button><button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 text-white px-3 py-2 rounded-xl text-sm">Delete</button></div></div>`).join(''); }
     
     function createArrayInput(container, placeholder, value=''){ let div=document.createElement('div'); div.className='array-item'; let inp=document.createElement('input'); inp.type='text'; inp.className='input-field flex-1'; inp.placeholder=placeholder; inp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(inp); div.appendChild(rm); container.appendChild(div); return inp; }
-    function loadTimelineItems(container, items){ items.forEach(item=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time (e.g., 09:00 AM)'; time.className='input-field'; time.value=item.time||''; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; title.value=item.title||''; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; desc.value=item.description||''; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); container.appendChild(div); }); }
-    function loadTourTypes(container, items){ Object.entries(items).forEach(([key,value])=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; nameInp.value=key; let priceInp=document.createElement('input'); priceInp.placeholder='Price (EGP)'; priceInp.type='number'; priceInp.className='input-field w-28'; priceInp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); container.appendChild(div); }); }
+    function loadTimelineItems(container, items){ items.forEach(item=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; time.value=item.time||''; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; title.value=item.title||''; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; desc.value=item.description||''; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); container.appendChild(div); }); }
+    function loadTourTypes(container, items){ Object.entries(items).forEach(([key,value])=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; nameInp.value=key; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; priceInp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); container.appendChild(div); }); }
     
     function openAddTripModal(){ document.getElementById('modal-title').innerText='Add New Trip'; document.getElementById('item-form').reset(); document.getElementById('item-approved').checked=true; document.getElementById('item-id').value=''; document.getElementById('imageList').innerHTML=''; document.getElementById('includedList').innerHTML=''; document.getElementById('notIncludedList').innerHTML=''; document.getElementById('timelineList').innerHTML=''; document.getElementById('whatToBringList').innerHTML=''; document.getElementById('tourTypeList').innerHTML=''; openModal(); }
     function editTrip(id){ let t=allTrips.find(t=>t.id===id); if(!t) return; document.getElementById('modal-title').innerText='Edit Trip'; document.getElementById('item-id').value=id; document.getElementById('item-name').value=t.name||''; document.getElementById('item-desc').value=t.description||''; document.getElementById('item-price').value=t.price||0; document.getElementById('item-cprice').value=t.cprice||0; document.getElementById('item-duration').value=t.duration||''; document.getElementById('item-bookingLink').value=t.bookingLink||id; document.getElementById('item-approved').checked=(t.approved===true||t.approved==="true"); document.getElementById('item-image').value=t.image||''; 
@@ -244,7 +313,7 @@
         data.tourtype = {}; document.querySelectorAll('#tourTypeList .array-item').forEach(div=>{ let inp=div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()]=parseFloat(inp[1].value)||0; });
         if(id) await db.ref(`trips/${id}`).update(data); else await db.ref('trips').push({...data,createdAt:Date.now()}); showToast('Trip saved!'); closeModal(); loadAllData(); }
     function deleteTripPrompt(id){ pendingDeleteId=id; openSheet('delete-modal','delete-overlay'); }
-    async function confirmDelete(){ if(pendingDeleteId){ await db.ref(`trips/${pendingDeleteId}`).remove(); showToast('Trip deleted permanently'); loadAllData(); closeDeleteModal(); pendingDeleteId=null; } }
+    async function confirmDelete(){ if(pendingDeleteId){ await db.ref(`trips/${pendingDeleteId}`).remove(); showToast('Trip deleted'); loadAllData(); closeDeleteModal(); pendingDeleteId=null; } }
     document.getElementById('confirm-delete-btn')?.addEventListener('click',confirmDelete);
     function setTripFilter(f){ tripFilter=f; document.querySelectorAll('#trips-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); renderTrips(); }
     document.getElementById('tripSearch')?.addEventListener('input',e=>{ tripSearch=e.target.value; renderTrips(); });
@@ -255,7 +324,6 @@
     document.getElementById('addTimelineBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); document.getElementById('timelineList').appendChild(div); });
     document.getElementById('addTourTypeBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); document.getElementById('tourTypeList').appendChild(div); });
     
-    // ========== RESERVATIONS ==========
     async function loadReservations(){ 
         let snap=await db.ref('trip-bookings').orderByChild('owner').equalTo(currentUser?.uid).once('value'); 
         allReservations=Object.entries(snap.val()||{}).map(([id,val])=>({id,...val, isPaid:val.paymentStatus==='paid'||val.isPaid===true, status:val.resStatus||val.status||'new'})); 
@@ -272,14 +340,14 @@
         if(currentResTab==='unpaid') filtered=filtered.filter(r=>!r.isPaid); 
         filteredReservations = filtered;
         currentPage = 1;
-        renderReservationsTableAndCards();
+        renderReservations();
         updatePagination();
     }
-    function renderReservationsTableAndCards(){
+    function renderReservations(){
         const start = (currentPage-1)*itemsPerPage;
         const page = filteredReservations.slice(start, start+itemsPerPage);
         let tbody=document.getElementById('resTableBody');
-        if(!page.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center py-8">No reservations found</td></tr>'; }
+        if(!page.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center py-8">No reservations</td></tr>'; }
         else {
             tbody.innerHTML=page.map(r=>`<tr class="border-b"><td><div class="font-medium">${r.username||'Guest'}</div><div class="text-xs text-gray-500">${r.phone||'-'}</div></td><td>${r.tour||'-'}</td><td>${r.tripDate||'-'}</td><td>${r.adults||0}A / ${r.childrenUnder12||0}C</td><td class="font-bold">EGP ${r.netTotal||0}</td><td><span class="status-badge ${r.isPaid?'status-paid':'status-unpaid'}">${r.isPaid?'✅ Paid':'⚠️ Unpaid'}</span></td><td><span class="status-badge status-${r.status}">${r.status}</span></td><td><div class="flex gap-1 flex-wrap">${!r.isPaid?`<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-2 py-1 rounded-lg text-xs">Pay</button>`:''}<button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-2 py-1 rounded-lg text-xs">Confirm</button><button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-2 py-1 rounded-lg text-xs">View</button></div></td></tr>`).join('');
         }
@@ -295,8 +363,8 @@
         document.getElementById('prevPageBtn').disabled=currentPage===1;
         document.getElementById('nextPageBtn').disabled=currentPage===totalPages;
     }
-    window.prevPage=()=>{ if(currentPage>1){ currentPage--; renderReservationsTableAndCards(); updatePagination(); } };
-    window.nextPage=()=>{ const total=Math.ceil(filteredReservations.length/itemsPerPage); if(currentPage<total){ currentPage++; renderReservationsTableAndCards(); updatePagination(); } };
+    window.prevPage=()=>{ if(currentPage>1){ currentPage--; renderReservations(); updatePagination(); } };
+    window.nextPage=()=>{ const total=Math.ceil(filteredReservations.length/itemsPerPage); if(currentPage<total){ currentPage++; renderReservations(); updatePagination(); } };
     document.getElementById('prevPageBtn').addEventListener('click',window.prevPage);
     document.getElementById('nextPageBtn').addEventListener('click',window.nextPage);
     document.getElementById('resSearch').addEventListener('input',()=>applyFilters());
@@ -304,14 +372,13 @@
     window.switchReservationTab=(tab)=>{ currentResTab=tab; document.querySelectorAll('#reservations-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); applyFilters(); };
     window.markAsPaid=async(id,amount)=>{ if(confirm(`Mark as paid? Amount: EGP ${amount}`)){ await db.ref(`trip-bookings/${id}`).update({ isPaid:true, paymentStatus:'paid', paymentDate:Date.now() }); showToast('Payment recorded'); loadReservations(); } };
     window.confirmBookingWithPickup=(id)=>{ pendingConfirmRef=id; document.getElementById('pickup-modal').classList.add('open'); document.getElementById('pickup-overlay').classList.add('open'); document.body.style.overflow='hidden'; };
-    document.getElementById('confirmPickupBtn').onclick=async()=>{ let time=document.getElementById('pickupTimeInput').value; if(!time){ showToast('Please select pickup time','error'); return; } if(pendingConfirmRef){ await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ resStatus:'confirmed', pickuptime:time, confirmedAt:Date.now() }); showToast('Booking confirmed with pickup time!'); closePickupModal(); loadReservations(); pendingConfirmRef=null; } };
+    document.getElementById('confirmPickupBtn').onclick=async()=>{ let time=document.getElementById('pickupTimeInput').value; if(!time){ showToast('Please select pickup time','error'); return; } if(pendingConfirmRef){ await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ resStatus:'confirmed', pickuptime:time, confirmedAt:Date.now() }); showToast('Booking confirmed!'); closePickupModal(); loadReservations(); pendingConfirmRef=null; } };
     window.closePickupModal=()=>{ document.getElementById('pickup-modal').classList.remove('open'); document.getElementById('pickup-overlay').classList.remove('open'); document.body.style.overflow=''; document.getElementById('pickupTimeInput').value=''; };
     window.refreshReservations=()=>{ loadReservations(); };
     
-    // Booking Details Modal
     async function showBookingDetails(bookingId){
         const b=allReservations.find(b=>b.id===bookingId); if(!b) return;
-        const html=`<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id.slice(-8)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children (under 12)</div><div class="booking-detail-value">${b.childrenUnder12||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total Amount</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment Status</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer Name</div><div class="booking-detail-value">${b.username||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone Number</div><div class="booking-detail-value">${b.phone||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel Name</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room Number</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests / Notes</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div></div>`;
+        const html=`<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id.slice(-8)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer Name</div><div class="booking-detail-value">${b.username||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${b.phone||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div></div>`;
         document.getElementById('bookingDetailsContent').innerHTML=html;
         let wa=document.getElementById('whatsappLink');
         if(b.phone){ let msg=`Hello ${b.username},%0A%0AYour booking ${b.refNumber||b.id.slice(-8)} for ${b.tour} on ${b.tripDate} is confirmed.%0APickup time: ${b.pickuptime||'to be confirmed'}%0A%0ADiscover Sharm Team`; wa.href=`https://wa.me/${b.phone.replace(/[^0-9]/g,'')}?text=${msg}`; } else { wa.href='#'; wa.style.opacity='0.5'; }
@@ -319,7 +386,6 @@
     }
     window.closeBookingModal=()=>{ document.getElementById('booking-modal').classList.remove('open'); document.getElementById('booking-modal-overlay').classList.remove('open'); document.body.style.overflow=''; };
     
-    // ========== PAYOUT - FIXED PATH ==========
     async function loadPayoutMethod(){ 
         let snap=await db.ref(`egy_user/${currentUser?.uid}/payout_method`).once('value'); 
         let d=snap.val(); 
@@ -334,38 +400,17 @@
     async function calculateAndDisplayBalance(){
         if(!currentUser) return;
         
-        console.log("=== Calculating Withdrawable Balance ===");
-        console.log(`Using path: egy_user/${currentUser.uid}/payout_method/payoutRequests`);
-        
-        // 1. Get all confirmed bookings older than 1 day (not 2 days)
-        const eligibleBookings = allReservations.filter(r => {
-            const isConfirmed = r.status === 'confirmed';
-            const isOld = isOlderThanOneDay(r.tripDate);
-            return isConfirmed && isOld;
-        });
-        
-        console.log(`Eligible bookings (confirmed + >=1 day old): ${eligibleBookings.length}`);
-        eligibleBookings.forEach(b => {
-            console.log(`  - ${b.tour} | ${b.tripDate} | EGP ${b.netTotal}`);
-        });
-        
-        // 2. Calculate total revenue from eligible bookings
+        const eligibleBookings = allReservations.filter(r => r.status === 'confirmed' && isOlderThanOneDay(r.tripDate));
         const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
         const commission = totalRevenue * COMMISSION_RATE;
         const netEarnings = totalRevenue - commission;
         
-        console.log(`Total Revenue: EGP ${totalRevenue.toFixed(2)}`);
-        console.log(`Commission (5%): EGP ${commission.toFixed(2)}`);
-        console.log(`Net Earnings: EGP ${netEarnings.toFixed(2)}`);
-        
-        // 3. Get payout requests from the CORRECT path: egy_user/{userId}/payout_method/payoutRequests
         let completedPayouts = 0;
         let pendingPayouts = 0;
         let historyHtml = '';
         
         try {
             const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-            
             if(payoutSnap.exists()){
                 payoutSnap.forEach(child => {
                     let req = child.val();
@@ -379,90 +424,53 @@
                     }
                 });
             }
-        } catch(e) {
-            console.error("Error reading payout requests:", e);
-        }
+        } catch(e) { console.error("Error:", e); }
         
-        console.log(`Completed payouts: EGP ${completedPayouts.toFixed(2)}`);
-        console.log(`Pending payouts: EGP ${pendingPayouts.toFixed(2)}`);
-        
-        // 4. Calculate available balance
         const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
         
-        console.log(`Available Balance: EGP ${availableBalance.toFixed(2)}`);
-        
-        // 5. Update UI
         document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
         document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
-        
-        if(historyHtml === ''){
-            historyHtml = '<div class="empty-state text-center py-4 text-gray-500">No payout requests yet</div>';
-        }
+        if(historyHtml === '') historyHtml = '<div class="empty-state text-center py-4 text-gray-500">No payout requests yet</div>';
         document.getElementById('payoutHistoryList').innerHTML = historyHtml;
-        
-        // Store for withdrawal request
         window.currentAvailableBalance = availableBalance;
         
-        // Debug info
-        document.getElementById('debugInfo').innerHTML = `🔍 Eligible: ${eligibleBookings.length} bookings (confirmed + ≥1 day) | Revenue: EGP ${totalRevenue.toFixed(0)} | Net after 5%: EGP ${netEarnings.toFixed(0)} | Paid: ${completedPayouts} | Pending: ${pendingPayouts} | Available: EGP ${availableBalance.toFixed(2)}`;
+        document.getElementById('debugInfo').innerHTML = `
+            🔍 Eligible: <span>${eligibleBookings.length}</span> bookings (confirmed + ≥1 day)<br>
+            📊 Revenue: <span>EGP ${totalRevenue.toFixed(0)}</span><br>
+            💸 Commission (5%): <span>- EGP ${commission.toFixed(0)}</span><br>
+            💰 Net earnings: <span>EGP ${netEarnings.toFixed(0)}</span><br>
+            🏦 Already paid: <span>- EGP ${completedPayouts}</span><br>
+            ⏳ Pending: <span>- EGP ${pendingPayouts}</span><br>
+            ✅ <strong>Available: EGP ${availableBalance.toFixed(2)}</strong>
+        `;
     }
     
     document.getElementById('payoutForm')?.addEventListener('submit', async(e)=>{ 
         e.preventDefault(); 
         let method=document.getElementById('payoutMethodSelect').value; 
-        let data={ 
-            name:document.getElementById('payoutName').value, 
-            accountNumber:document.getElementById('accountNumber').value, 
-            method:method,
-            updatedAt: Date.now()
-        }; 
-        if(method==='bankAccount'){ 
-            data.bankName=document.getElementById('bankName').value; 
-            data.branchName=document.getElementById('branchName').value; 
-        } 
+        let data={ name:document.getElementById('payoutName').value, accountNumber:document.getElementById('accountNumber').value, method:method }; 
+        if(method==='bankAccount'){ data.bankName=document.getElementById('bankName').value; data.branchName=document.getElementById('branchName').value; } 
         await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data); 
         showToast('Payout method saved'); 
     });
-    
-    document.getElementById('payoutMethodSelect')?.addEventListener('change',function(){ 
-        document.getElementById('bankFields').style.display=this.value==='bankAccount'?'block':'none'; 
-    });
-    
+    document.getElementById('payoutMethodSelect')?.addEventListener('change',function(){ document.getElementById('bankFields').style.display=this.value==='bankAccount'?'block':'none'; });
     document.getElementById('requestPayoutBtn')?.addEventListener('click', async()=>{ 
         let available = window.currentAvailableBalance || 0;
-        if(available <= 0){ 
-            showToast('No withdrawable balance available','error'); 
-            return; 
-        }
-        
-        // Check for existing pending request
+        if(available <= 0){ showToast('No withdrawable balance available','error'); return; }
         let snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
         let hasPending = false;
         snap.forEach(child => { if(child.val().status === 'pending') hasPending = true; });
-        if(hasPending){ 
-            showToast('You already have a pending withdrawal request. Wait for it to be processed.','error'); 
-            return; 
-        }
-        
-        if(confirm(`Request payout of ${available.toFixed(2)} EGP? This amount will be deducted from your balance.`)){
-            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ 
-                amount: available.toFixed(2), 
-                status: 'pending', 
-                createdAt: Date.now() 
-            });
+        if(hasPending){ showToast('You already have a pending withdrawal request','error'); return; }
+        if(confirm(`Request payout of ${available.toFixed(2)} EGP?`)){
+            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() });
             showToast('Withdrawal request submitted successfully!');
             await calculateAndDisplayBalance();
         }
     });
+    document.getElementById('refreshBalanceBtn')?.addEventListener('click', ()=>{ calculateAndDisplayBalance(); showToast('Balance refreshed','success'); });
     
-    document.getElementById('refreshBalanceBtn')?.addEventListener('click', ()=>{ 
-        calculateAndDisplayBalance(); 
-        showToast('Balance refreshed','success'); 
-    });
+    function exportToExcel(){ showToast('Excel export ready','success'); }
     
-    function exportToExcel(){ showToast('Excel export ready – all bookings data can be exported','success'); }
-    
-    // ========== DASHBOARD & CHARTS ==========
     async function updateDashboard(){ 
         let ts=await db.ref('trips').once('value'); 
         let rev=0,guests=0; 
@@ -492,116 +500,19 @@
     document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el=>{ el.addEventListener('click',()=>{ switchSection(el.getAttribute('data-section')); if(window.innerWidth<1024) document.getElementById('sidebar').classList.remove('open'); }); });
     document.getElementById('logout-sidebar')?.addEventListener('click',()=>auth.signOut()); document.getElementById('mobileLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('desktopLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('fabBtn')?.addEventListener('click',openAddTripModal); document.getElementById('menuToggle')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
     
-    // ========== MANUAL BOOKING MODAL (COMPLETE CUSTOMER DATA) ==========
     function openManualBookingModal(){ 
         let tripsOpt = '<option value="">-- Select a trip --</option>' + allTrips.map(t => `<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`).join(''); 
-        let html = `
-            <div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]" style="display:flex">
-                <div style="background:white;max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto">
-                    <h3 class="text-xl font-bold mb-4 text-orange-600">📝 Manual Booking</h3>
-                    <form id="manualForm" class="space-y-3">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" placeholder="Full name" class="input-field" required></div>
-                            <div><label class="text-sm font-medium">Phone Number *</label><input type="tel" id="manualPhone" placeholder="e.g., 0123456789" class="input-field" required></div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" placeholder="guest@example.com" class="input-field"></div>
-                            <div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required>${tripsOpt}</select></div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" placeholder="e.g., Marriott Sharm" class="input-field"></div>
-                            <div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" placeholder="Room #" class="input-field"></div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field" required></div>
-                            <div><label class="text-sm font-medium">Children (under 12)</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div>
-                            <div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div>
-                        </div>
-                        <div><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div>
-                        <div><label class="text-sm font-medium">Special Requests / Notes</label><textarea id="manualRequests" rows="2" placeholder="Any special requests or additional notes..." class="input-field"></textarea></div>
-                        <div class="flex items-center gap-3"><label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (will also mark as confirmed)</label></div>
-                        <div class="flex gap-3 mt-4">
-                            <button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button>
-                            <button type="submit" class="flex-1 btn-primary">Save Booking</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        `; 
+        let html = `<div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]"><div style="background:white;max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto"><h3 class="text-xl font-bold mb-4">Manual Booking</h3><form id="manualForm"><div class="grid grid-cols-2 gap-3"><input type="text" id="manualName" placeholder="Guest Name *" class="input-field" required><input type="tel" id="manualPhone" placeholder="Phone *" class="input-field" required></div><div class="grid grid-cols-2 gap-3"><input type="email" id="manualEmail" placeholder="Email" class="input-field"><select id="manualTrip" class="input-field" required>${tripsOpt}</select></div><div class="grid grid-cols-2 gap-3"><input type="text" id="manualHotel" placeholder="Hotel Name" class="input-field"><input type="text" id="manualRoom" placeholder="Room #" class="input-field></div><div class="grid grid-cols-3 gap-3"><input type="number" id="manualAdults" value="1" placeholder="Adults" class="input-field"><input type="number" id="manualChildren" value="0" placeholder="Children" class="input-field"><input type="number" id="manualInfants" value="0" placeholder="Infants" class="input-field"></div><input type="date" id="manualDate" class="input-field mb-3"><textarea id="manualRequests" rows="2" placeholder="Special Requests" class="input-field"></textarea><label><input type="checkbox" id="manualPaid"> Mark as Paid (confirmed)</label><div class="flex gap-3 mt-4"><button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save</button></div></form></div></div>`; 
         document.body.insertAdjacentHTML('beforeend',html); 
-        
         document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-        
-        const tripSelect = document.getElementById('manualTrip');
-        const adultsInput = document.getElementById('manualAdults');
-        const childrenInput = document.getElementById('manualChildren');
-        
-        function updateTotalDisplay() {
-            if(tripSelect.value){
-                let tripData = tripSelect.value.split('|');
-                let price = parseFloat(tripData[2]) || 0;
-                let adults = parseInt(adultsInput.value) || 0;
-                let children = parseInt(childrenInput.value) || 0;
-                let total = (adults + children) * price;
-                let totalDisplay = document.getElementById('manualTotalDisplay');
-                if(!totalDisplay){
-                    totalDisplay = document.createElement('div');
-                    totalDisplay.id = 'manualTotalDisplay';
-                    totalDisplay.className = 'text-sm font-semibold text-orange-600 mt-2';
-                    tripSelect.parentNode.appendChild(totalDisplay);
-                }
-                totalDisplay.innerHTML = `💰 Total Amount: EGP ${total}`;
-            }
-        }
-        
-        tripSelect.addEventListener('change', updateTotalDisplay);
-        adultsInput.addEventListener('input', updateTotalDisplay);
-        childrenInput.addEventListener('input', updateTotalDisplay);
-        
-        document.getElementById('manualForm').onsubmit = async(e)=>{ 
-            e.preventDefault(); 
-            let tripData = document.getElementById('manualTrip').value.split('|');
-            if(tripData.length < 3 || !tripData[0]){ showToast('Please select a valid trip','error'); return; }
-            let adults = parseInt(document.getElementById('manualAdults').value) || 0;
-            let children = parseInt(document.getElementById('manualChildren').value) || 0;
-            let infants = parseInt(document.getElementById('manualInfants').value) || 0;
-            let price = parseFloat(tripData[2]) || 0;
-            let total = (adults + children) * price;
-            
-            let booking = { 
-                username: document.getElementById('manualName').value, 
-                phone: document.getElementById('manualPhone').value,
-                email: document.getElementById('manualEmail').value || '',
-                hotelName: document.getElementById('manualHotel').value || '',
-                roomNumber: document.getElementById('manualRoom').value || '',
-                tour: tripData[1], 
-                tripId: tripData[0], 
-                adults: adults, 
-                childrenUnder12: children,
-                infants: infants,
-                netTotal: total, 
-                tripDate: document.getElementById('manualDate').value,
-                specialRequests: document.getElementById('manualRequests').value || '',
-                isPaid: document.getElementById('manualPaid').checked, 
-                paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid', 
-                resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new', 
-                owner: currentUser.uid, 
-                createdAt: Date.now(),
-                refNumber: 'MAN-' + Date.now().toString().slice(-8)
-            }; 
-            
-            await db.ref('trip-bookings').push(booking); 
-            showToast('Manual booking added successfully!'); 
-            document.getElementById('manualModal').remove(); 
-            loadReservations(); 
-            calculateAndDisplayBalance();
-        }; 
+        document.getElementById('manualForm').onsubmit = async(e)=>{ e.preventDefault(); let tripData = document.getElementById('manualTrip').value.split('|'); if(tripData.length<3 || !tripData[0]){ showToast('Select a valid trip','error'); return; } let adults=parseInt(document.getElementById('manualAdults').value)||0; let children=parseInt(document.getElementById('manualChildren').value)||0; let infants=parseInt(document.getElementById('manualInfants').value)||0; let price=parseFloat(tripData[2])||0; let total=(adults+children)*price; let booking={ username:document.getElementById('manualName').value, phone:document.getElementById('manualPhone').value, email:document.getElementById('manualEmail').value||'', hotelName:document.getElementById('manualHotel').value||'', roomNumber:document.getElementById('manualRoom').value||'', tour:tripData[1], tripId:tripData[0], adults:adults, childrenUnder12:children, infants:infants, netTotal:total, tripDate:document.getElementById('manualDate').value, specialRequests:document.getElementById('manualRequests').value||'', isPaid:document.getElementById('manualPaid').checked, paymentStatus:document.getElementById('manualPaid').checked?'paid':'unpaid', resStatus:document.getElementById('manualPaid').checked?'confirmed':'new', owner:currentUser.uid, createdAt:Date.now(), refNumber:'MAN-'+Date.now().toString().slice(-8) }; await db.ref('trip-bookings').push(booking); showToast('Booking added!'); document.getElementById('manualModal').remove(); loadReservations(); calculateAndDisplayBalance(); }; 
     }
     
     function openModal(){ openSheet('item-modal'); } function closeModal(){ closeSheet('item-modal'); } function closeDeleteModal(){ closeSheet('delete-modal','delete-overlay'); pendingDeleteId=null; }
     function openSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.add('open'); document.getElementById(oId).classList.add('open'); document.body.style.overflow='hidden'; }
     function closeSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.remove('open'); document.getElementById(oId).classList.remove('open'); document.body.style.overflow=''; }
     
+    initDarkMode();
     window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.refreshReservations=refreshReservations; window.exportToExcel=exportToExcel; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal;
 </script>
 </body>
