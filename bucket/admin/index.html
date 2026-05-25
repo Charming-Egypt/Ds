@@ -133,7 +133,7 @@
         <!-- Payout -->
         <div id="payout-section" class="content-section">
             <div class="card mb-5"><h3 class="font-bold text-lg mb-4">💰 Payout Method</h3><form id="payoutForm"><label class="block text-sm font-medium mb-1">Full Name (as per bank/wallet)</label><input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Account Number / Wallet ID</label><input type="text" id="accountNumber" placeholder="e.g., 1234567890 or wallet@example.com" class="input-field mb-3"><div id="bankFields" style="display:none;"><label class="block text-sm font-medium mb-1">Bank Name</label><input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Branch Name</label><input type="text" id="branchName" placeholder="e.g., Sharm El-Sheikh" class="input-field mb-3"></div><label class="block text-sm font-medium mb-1">Payout Method</label><select id="payoutMethodSelect" class="input-field mb-3"><option value="wallet">e-Wallet (Vodafone Cash, InstaPay, etc.)</option><option value="bankAccount">Bank Account</option></select><button type="submit" class="btn-primary w-full">Save Payout Method</button></form></div>
-            <div class="stat-card flex justify-between items-center flex-wrap gap-3"><div><p class="text-gray-500 text-sm">💰 Withdrawable Balance <span class="text-xs text-gray-400">(Confirmed bookings ≥2 days old, minus 5% commission, minus past payouts)</span></p><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3><div id="debugInfo" class="text-xs text-gray-400 mt-1"></div></div><button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button></div>
+            <div class="stat-card flex justify-between items-center flex-wrap gap-3"><div><p class="text-gray-500 text-sm">💰 Withdrawable Balance <span class="text-xs text-gray-400">(Confirmed bookings ≥1 days old, minus 5% commission, minus past payouts)</span></p><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3><div id="debugInfo" class="text-xs text-gray-400 mt-1"></div></div><button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button></div>
             <div class="card mt-5"><h3 class="font-bold mb-3">📜 Payout History</h3><div id="payoutHistoryList" class="space-y-2"></div></div>
             <div id="pendingBadge" class="mt-3 hidden"><div class="bg-amber-100 p-3 rounded-xl text-center text-amber-700"><i class="fas fa-clock mr-2"></i>⚠️ Pending withdrawal request – processing. You cannot request another until it's completed.</div></div>
             <div class="text-center mt-3"><button id="refreshBalanceBtn" class="text-orange-600 text-sm underline">⟳ Refresh Balance</button></div>
@@ -178,7 +178,17 @@
     let filteredReservations = [];
 
     function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
-    function isOlderThanTwoDays(dateStr){ if(!dateStr) return false; const d = new Date(dateStr); const twoDaysAgo = new Date(); twoDaysAgo.setDate(twoDaysAgo.getDate()-2); twoDaysAgo.setHours(0,0,0,0); d.setHours(0,0,0,0); return d < twoDaysAgo; }
+    
+    // ========== FIXED: Date comparison - older than 1 day only ==========
+    function isOlderThanOneDay(dateStr){ 
+        if(!dateStr) return false; 
+        const d = new Date(dateStr);
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(0, 0, 0, 0);
+        d.setHours(0, 0, 0, 0);
+        return d <= oneDayAgo; 
+    }
     
     // Login
     async function handleLogin(e){ e.preventDefault(); try{ await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } catch(err){ let d=document.getElementById('login-error'); d.innerText=err.message; d.classList.remove('hidden'); } }
@@ -301,7 +311,7 @@
     // Booking Details Modal
     async function showBookingDetails(bookingId){
         const b=allReservations.find(b=>b.id===bookingId); if(!b) return;
-        const html=`<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber||b.id.slice(-8)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer Name</div><div class="booking-detail-value">${b.username||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${b.phone||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div></div>`;
+        const html=`<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id.slice(-8)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children (under 12)</div><div class="booking-detail-value">${b.childrenUnder12||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total Amount</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment Status</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer Name</div><div class="booking-detail-value">${b.username||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone Number</div><div class="booking-detail-value">${b.phone||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel Name</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room Number</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests / Notes</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div></div>`;
         document.getElementById('bookingDetailsContent').innerHTML=html;
         let wa=document.getElementById('whatsappLink');
         if(b.phone){ let msg=`Hello ${b.username},%0A%0AYour booking ${b.refNumber||b.id.slice(-8)} for ${b.tour} on ${b.tripDate} is confirmed.%0APickup time: ${b.pickuptime||'to be confirmed'}%0A%0ADiscover Sharm Team`; wa.href=`https://wa.me/${b.phone.replace(/[^0-9]/g,'')}?text=${msg}`; } else { wa.href='#'; wa.style.opacity='0.5'; }
@@ -309,7 +319,7 @@
     }
     window.closeBookingModal=()=>{ document.getElementById('booking-modal').classList.remove('open'); document.getElementById('booking-modal-overlay').classList.remove('open'); document.body.style.overflow=''; };
     
-    // ========== PAYOUT - FIXED BALANCE CALCULATION ==========
+    // ========== PAYOUT - FIXED PATH ==========
     async function loadPayoutMethod(){ 
         let snap=await db.ref(`egy_user/${currentUser?.uid}/payout_method`).once('value'); 
         let d=snap.val(); 
@@ -325,17 +335,18 @@
         if(!currentUser) return;
         
         console.log("=== Calculating Withdrawable Balance ===");
+        console.log(`Using path: egy_user/${currentUser.uid}/payout_method/payoutRequests`);
         
-        // 1. Get all confirmed bookings older than 2 days
+        // 1. Get all confirmed bookings older than 1 day (not 2 days)
         const eligibleBookings = allReservations.filter(r => {
             const isConfirmed = r.status === 'confirmed';
-            const isOld = isOlderThanTwoDays(r.tripDate);
+            const isOld = isOlderThanOneDay(r.tripDate);
             return isConfirmed && isOld;
         });
         
-        console.log(`Eligible bookings (confirmed + >2 days): ${eligibleBookings.length}`);
+        console.log(`Eligible bookings (confirmed + >=1 day old): ${eligibleBookings.length}`);
         eligibleBookings.forEach(b => {
-            console.log(`  - ${b.tour} | Date: ${b.tripDate} | Amount: ${b.netTotal}`);
+            console.log(`  - ${b.tour} | ${b.tripDate} | EGP ${b.netTotal}`);
         });
         
         // 2. Calculate total revenue from eligible bookings
@@ -343,32 +354,42 @@
         const commission = totalRevenue * COMMISSION_RATE;
         const netEarnings = totalRevenue - commission;
         
-        console.log(`Total Revenue: ${totalRevenue}, Commission (5%): ${commission}, Net: ${netEarnings}`);
+        console.log(`Total Revenue: EGP ${totalRevenue.toFixed(2)}`);
+        console.log(`Commission (5%): EGP ${commission.toFixed(2)}`);
+        console.log(`Net Earnings: EGP ${netEarnings.toFixed(2)}`);
         
-        // 3. Get all payout requests (completed + pending)
-        let payoutSnap = await db.ref(`payoutRequests/${currentUser.uid}`).once('value');
+        // 3. Get payout requests from the CORRECT path: egy_user/{userId}/payout_method/payoutRequests
         let completedPayouts = 0;
         let pendingPayouts = 0;
         let historyHtml = '';
         
-        payoutSnap.forEach(child => {
-            let req = child.val();
-            let amount = parseFloat(req.amount) || 0;
-            if(req.status === 'completed'){
-                completedPayouts += amount;
-                historyHtml += `<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">completed</span></div>`;
-            } else if(req.status === 'pending'){
-                pendingPayouts += amount;
-                historyHtml += `<div class="flex justify-between p-2 bg-amber-50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">pending</span></div>`;
+        try {
+            const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
+            
+            if(payoutSnap.exists()){
+                payoutSnap.forEach(child => {
+                    let req = child.val();
+                    let amount = parseFloat(req.amount) || 0;
+                    if(req.status === 'completed'){
+                        completedPayouts += amount;
+                        historyHtml += `<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">completed</span></div>`;
+                    } else if(req.status === 'pending'){
+                        pendingPayouts += amount;
+                        historyHtml += `<div class="flex justify-between p-2 bg-amber-50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">pending</span></div>`;
+                    }
+                });
             }
-        });
+        } catch(e) {
+            console.error("Error reading payout requests:", e);
+        }
         
-        console.log(`Completed payouts: ${completedPayouts}, Pending payouts: ${pendingPayouts}`);
+        console.log(`Completed payouts: EGP ${completedPayouts.toFixed(2)}`);
+        console.log(`Pending payouts: EGP ${pendingPayouts.toFixed(2)}`);
         
         // 4. Calculate available balance
         const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
         
-        console.log(`Available Balance: ${availableBalance}`);
+        console.log(`Available Balance: EGP ${availableBalance.toFixed(2)}`);
         
         // 5. Update UI
         document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
@@ -383,7 +404,7 @@
         window.currentAvailableBalance = availableBalance;
         
         // Debug info
-        document.getElementById('debugInfo').innerHTML = `🔍 Eligible: ${eligibleBookings.length} bookings | Revenue: EGP ${totalRevenue.toFixed(0)} | Net after 5%: EGP ${netEarnings.toFixed(0)} | Paid: ${completedPayouts} | Pending: ${pendingPayouts}`;
+        document.getElementById('debugInfo').innerHTML = `🔍 Eligible: ${eligibleBookings.length} bookings (confirmed + ≥1 day) | Revenue: EGP ${totalRevenue.toFixed(0)} | Net after 5%: EGP ${netEarnings.toFixed(0)} | Paid: ${completedPayouts} | Pending: ${pendingPayouts} | Available: EGP ${availableBalance.toFixed(2)}`;
     }
     
     document.getElementById('payoutForm')?.addEventListener('submit', async(e)=>{ 
@@ -415,7 +436,7 @@
         }
         
         // Check for existing pending request
-        let snap = await db.ref(`payoutRequests/${currentUser.uid}`).once('value');
+        let snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
         let hasPending = false;
         snap.forEach(child => { if(child.val().status === 'pending') hasPending = true; });
         if(hasPending){ 
@@ -424,7 +445,7 @@
         }
         
         if(confirm(`Request payout of ${available.toFixed(2)} EGP? This amount will be deducted from your balance.`)){
-            await db.ref(`payoutRequests/${currentUser.uid}`).push({ 
+            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ 
                 amount: available.toFixed(2), 
                 status: 'pending', 
                 createdAt: Date.now() 
@@ -471,12 +492,110 @@
     document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el=>{ el.addEventListener('click',()=>{ switchSection(el.getAttribute('data-section')); if(window.innerWidth<1024) document.getElementById('sidebar').classList.remove('open'); }); });
     document.getElementById('logout-sidebar')?.addEventListener('click',()=>auth.signOut()); document.getElementById('mobileLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('desktopLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('fabBtn')?.addEventListener('click',openAddTripModal); document.getElementById('menuToggle')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
     
-    // Manual Booking Modal
+    // ========== MANUAL BOOKING MODAL (COMPLETE CUSTOMER DATA) ==========
     function openManualBookingModal(){ 
-        let tripsOpt=allTrips.map(t=>`<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`).join(''); 
-        let html=`<div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]" style="display:flex"><div style="background:white;max-width:500px;width:90%;border-radius:28px;padding:24px;max-height:80vh;overflow-y:auto"><h3 class="text-xl font-bold mb-3">Manual Booking</h3><form id="manualForm"><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" placeholder="Full name" class="input-field mb-3" required><label class="text-sm font-medium">Phone Number</label><input type="tel" id="manualPhone" placeholder="e.g., 0123456789" class="input-field mb-3"><label class="text-sm font-medium">Select Trip</label><select id="manualTrip" class="input-field mb-3">${tripsOpt}</select><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Adults</label><input type="number" id="manualAdults" value="1" class="input-field"></div><div><label class="text-sm font-medium">Children (under 12)</label><input type="number" id="manualChildren" value="0" class="input-field"></div></div><label class="text-sm font-medium">Trip Date</label><input type="date" id="manualDate" class="input-field mb-3"><div class="flex items-center gap-3 mb-4"><label><input type="checkbox" id="manualPaid"> Mark as Paid (will also mark as confirmed)</label></div><div class="flex gap-3"><button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Booking</button></div></form></div></div>`; 
+        let tripsOpt = '<option value="">-- Select a trip --</option>' + allTrips.map(t => `<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`).join(''); 
+        let html = `
+            <div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]" style="display:flex">
+                <div style="background:white;max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto">
+                    <h3 class="text-xl font-bold mb-4 text-orange-600">📝 Manual Booking</h3>
+                    <form id="manualForm" class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" placeholder="Full name" class="input-field" required></div>
+                            <div><label class="text-sm font-medium">Phone Number *</label><input type="tel" id="manualPhone" placeholder="e.g., 0123456789" class="input-field" required></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" placeholder="guest@example.com" class="input-field"></div>
+                            <div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required>${tripsOpt}</select></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" placeholder="e.g., Marriott Sharm" class="input-field"></div>
+                            <div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" placeholder="Room #" class="input-field"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field" required></div>
+                            <div><label class="text-sm font-medium">Children (under 12)</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div>
+                            <div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div>
+                        </div>
+                        <div><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div>
+                        <div><label class="text-sm font-medium">Special Requests / Notes</label><textarea id="manualRequests" rows="2" placeholder="Any special requests or additional notes..." class="input-field"></textarea></div>
+                        <div class="flex items-center gap-3"><label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (will also mark as confirmed)</label></div>
+                        <div class="flex gap-3 mt-4">
+                            <button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button>
+                            <button type="submit" class="flex-1 btn-primary">Save Booking</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `; 
         document.body.insertAdjacentHTML('beforeend',html); 
-        document.getElementById('manualForm').onsubmit=async(e)=>{ e.preventDefault(); let tripData=document.getElementById('manualTrip').value.split('|'); let adults=parseInt(document.getElementById('manualAdults').value)||0; let children=parseInt(document.getElementById('manualChildren').value)||0; let price=parseFloat(tripData[2])||0; let total=(adults+children)*price; let booking={ username:document.getElementById('manualName').value, phone:document.getElementById('manualPhone').value, tour:tripData[1], tripId:tripData[0], adults:adults, childrenUnder12:children, netTotal:total, tripDate:document.getElementById('manualDate').value||new Date().toISOString().split('T')[0], isPaid:document.getElementById('manualPaid').checked, paymentStatus:document.getElementById('manualPaid').checked?'paid':'unpaid', resStatus:document.getElementById('manualPaid').checked?'confirmed':'new', owner:currentUser.uid, createdAt:Date.now() }; await db.ref('trip-bookings').push(booking); showToast('Manual booking added!'); document.getElementById('manualModal').remove(); loadReservations(); }; 
+        
+        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+        
+        const tripSelect = document.getElementById('manualTrip');
+        const adultsInput = document.getElementById('manualAdults');
+        const childrenInput = document.getElementById('manualChildren');
+        
+        function updateTotalDisplay() {
+            if(tripSelect.value){
+                let tripData = tripSelect.value.split('|');
+                let price = parseFloat(tripData[2]) || 0;
+                let adults = parseInt(adultsInput.value) || 0;
+                let children = parseInt(childrenInput.value) || 0;
+                let total = (adults + children) * price;
+                let totalDisplay = document.getElementById('manualTotalDisplay');
+                if(!totalDisplay){
+                    totalDisplay = document.createElement('div');
+                    totalDisplay.id = 'manualTotalDisplay';
+                    totalDisplay.className = 'text-sm font-semibold text-orange-600 mt-2';
+                    tripSelect.parentNode.appendChild(totalDisplay);
+                }
+                totalDisplay.innerHTML = `💰 Total Amount: EGP ${total}`;
+            }
+        }
+        
+        tripSelect.addEventListener('change', updateTotalDisplay);
+        adultsInput.addEventListener('input', updateTotalDisplay);
+        childrenInput.addEventListener('input', updateTotalDisplay);
+        
+        document.getElementById('manualForm').onsubmit = async(e)=>{ 
+            e.preventDefault(); 
+            let tripData = document.getElementById('manualTrip').value.split('|');
+            if(tripData.length < 3 || !tripData[0]){ showToast('Please select a valid trip','error'); return; }
+            let adults = parseInt(document.getElementById('manualAdults').value) || 0;
+            let children = parseInt(document.getElementById('manualChildren').value) || 0;
+            let infants = parseInt(document.getElementById('manualInfants').value) || 0;
+            let price = parseFloat(tripData[2]) || 0;
+            let total = (adults + children) * price;
+            
+            let booking = { 
+                username: document.getElementById('manualName').value, 
+                phone: document.getElementById('manualPhone').value,
+                email: document.getElementById('manualEmail').value || '',
+                hotelName: document.getElementById('manualHotel').value || '',
+                roomNumber: document.getElementById('manualRoom').value || '',
+                tour: tripData[1], 
+                tripId: tripData[0], 
+                adults: adults, 
+                childrenUnder12: children,
+                infants: infants,
+                netTotal: total, 
+                tripDate: document.getElementById('manualDate').value,
+                specialRequests: document.getElementById('manualRequests').value || '',
+                isPaid: document.getElementById('manualPaid').checked, 
+                paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid', 
+                resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new', 
+                owner: currentUser.uid, 
+                createdAt: Date.now(),
+                refNumber: 'MAN-' + Date.now().toString().slice(-8)
+            }; 
+            
+            await db.ref('trip-bookings').push(booking); 
+            showToast('Manual booking added successfully!'); 
+            document.getElementById('manualModal').remove(); 
+            loadReservations(); 
+            calculateAndDisplayBalance();
+        }; 
     }
     
     function openModal(){ openSheet('item-modal'); } function closeModal(){ closeSheet('item-modal'); } function closeDeleteModal(){ closeSheet('delete-modal','delete-overlay'); pendingDeleteId=null; }
