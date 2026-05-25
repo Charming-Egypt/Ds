@@ -600,12 +600,6 @@
     initDarkMode();
     window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.closeManualModal=closeManualModal; window.refreshReservations=refreshReservations; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal; window.openExportModal=openExportModal; window.closeExportModal=closeExportModal;
 
-
-
-
-
-
-<script>
 // 🔧 FINAL PATCH - Apply all remaining fixes
 
 // 1. Fix filter chip active state with closest()
@@ -691,7 +685,6 @@ showBookingDetails = async function(bookingId) {
     const b = allReservations.find(b => b.id === bookingId); 
     if(!b) return;
     
-    // ... existing details HTML generation ...
     const html = `<div class="booking-details-grid">
         <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id?.slice(-8) || '-'}</div></div>
         <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
@@ -762,12 +755,6 @@ Object.assign(window, {
 });
 
 console.log('✅ All patches applied - Dashboard ready!');
-</script>
-
-
-
-
-
 </script>
 </body>
 </html>
