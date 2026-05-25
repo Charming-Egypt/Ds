@@ -293,24 +293,7 @@
 </div>
 
 <script>
-    // Dark Mode
-    function initDarkMode() {
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) { document.body.classList.add('dark'); updateDarkModeIcons(true); }
-        document.getElementById('darkModeToggleDesktop')?.addEventListener('click', toggleDarkMode);
-        document.getElementById('darkModeToggleMobile')?.addEventListener('click', toggleDarkMode);
-    }
-    function toggleDarkMode() {
-        const isDark = document.body.classList.toggle('dark');
-        localStorage.setItem('darkMode', isDark);
-        updateDarkModeIcons(isDark);
-    }
-    function updateDarkModeIcons(isDark) {
-        const desktopBtn = document.getElementById('darkModeToggleDesktop');
-        const mobileBtn = document.getElementById('darkModeToggleMobile');
-        if(desktopBtn) desktopBtn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
-        if(mobileBtn) mobileBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    }
+    
 
     // Firebase Config
     const firebaseConfig = { apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", authDomain: "egypt-travels.firebaseapp.com", databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", projectId: "egypt-travels", storageBucket: "egypt-travels.appspot.com" };
