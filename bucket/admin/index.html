@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Discover Sharm | Complete Admin Dashboard</title>
+    <title>Discover Sharm | Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +17,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
         :root {
             --bg-primary: #f1f5f9;
             --bg-secondary: #ffffff;
@@ -31,7 +30,6 @@
             --input-border: #e2e8f0;
             --hover-bg: #f1f5f9;
         }
-        
         body.dark {
             --bg-primary: #0f172a;
             --bg-secondary: #1e293b;
@@ -45,12 +43,9 @@
             --input-border: #334155;
             --hover-bg: #334155;
         }
-        
         body { background: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-        
-        .dark-mode-toggle { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 40px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.3s; }
+        .dark-mode-toggle { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 40px; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
         .dark-mode-toggle:hover { background: var(--hover-bg); }
-        
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
         .login-card { background: white; border-radius: 28px; padding: 40px 32px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
         .login-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; background: #f8fafc; }
@@ -79,7 +74,7 @@
         .content-section.active { display: block; }
         .card { background: var(--card-bg); border-radius: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 20px; border: 1px solid var(--border-color); }
         .stat-card { background: var(--card-bg); border-radius: 24px; padding: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid var(--border-color); }
-        .fab { position: fixed; right: 20px; bottom: 100px; width: 56px; height: 56px; border-radius: 28px; background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; box-shadow: 0 8px 24px rgba(255,107,53,0.4); z-index: 99; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .fab { position: fixed; right: 20px; bottom: 100px; width: 56px; height: 56px; border-radius: 28px; background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; box-shadow: 0 8px 24px rgba(255,107,53,0.4); z-index: 99; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .fab:active { transform: scale(0.94); }
         @media (min-width: 1024px) { .fab { bottom: 40px; right: 40px; } }
         .modal-sheet { position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; background: var(--card-bg); border-radius: 28px 28px 0 0; box-shadow: 0 -8px 40px rgba(0,0,0,0.15); z-index: 2000; transform: translateY(100%); transition: transform 0.3s; overflow-y: auto; }
@@ -89,7 +84,7 @@
         .modal-handle { width: 40px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 12px auto; }
         .input-field { width: 100%; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 14px; font-size: 16px; background: var(--input-bg); color: var(--text-primary); transition: 0.2s; }
         .input-field:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 4px rgba(255,107,53,0.1); background: var(--bg-secondary); }
-        .btn-primary { background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; padding: 12px 24px; border-radius: 16px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; padding: 12px 24px; border-radius: 16px; font-weight: 600; border: none; cursor: pointer; }
         .btn-primary:active { transform: scale(0.97); }
         .status-badge { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .status-confirmed { background: #D1FAE5; color: #065F46; }
@@ -121,19 +116,23 @@
         .booking-ref { font-family: monospace; font-weight: 600; color: #F59E0B; }
         @media (min-width: 768px) { .booking-card { display: none; } }
         @media (max-width: 767px) { .table-responsive table { display: none; } }
-        
         .tooltip-icon { cursor: help; margin-left: 6px; color: #F59E0B; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(245,158,11,0.15); transition: all 0.2s; }
         .tooltip-icon:hover { background: #F59E0B; color: white; }
-        
         .debug-card { background: var(--input-bg); border-radius: 12px; padding: 12px 16px; margin-top: 12px; font-family: monospace; font-size: 12px; border: 1px solid var(--border-color); color: var(--text-secondary); line-height: 1.6; }
         .debug-card span { color: #F59E0B; font-weight: 600; }
+        .extra-service-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--input-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .extra-service-item:hover { background: var(--hover-bg); }
+        .extra-service-item.selected { background: rgba(245,158,11,0.2); border: 1px solid #F59E0B; }
+        .price-summary { background: linear-gradient(135deg, #FF6B35, #FFA630); color: white; padding: 12px; border-radius: 12px; text-align: center; }
+        .filter-checkbox { display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 12px; background: var(--input-bg); cursor: pointer; transition: all 0.2s; }
+        .filter-checkbox:hover { background: var(--hover-bg); }
     </style>
 </head>
 <body>
 <div id="login-page" class="login-container">
     <div class="login-card">
         <div class="text-center mb-8"><div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-shield-alt text-3xl text-white"></i></div><h1 class="text-2xl font-bold">Admin Login</h1><p class="text-gray-500 mt-2">Sign in to manage your travel content</p></div>
-        <form id="login-form" class="space-y-4"><input type="email" id="login-email" required class="login-input" placeholder="Email Address"><input type="password" id="login-password" required class="login-input" placeholder="Password"><div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg text-sm"></div><button type="submit" class="login-btn">Sign In</button></form>
+        <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)"><input type="email" id="login-email" required class="login-input" placeholder="Email Address"><input type="password" id="login-password" required class="login-input" placeholder="Password"><div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg text-sm"></div><button type="submit" class="login-btn">Sign In</button></form>
         <div class="mt-6 text-center"><button onclick="showResetPassword()" class="text-sm text-purple-600 font-medium">Forgot password?</button></div>
     </div>
 </div>
@@ -145,7 +144,6 @@
         <div class="flex items-center gap-3">
             <button id="darkModeToggleMobile" class="dark-mode-toggle p-2"><i class="fas fa-moon"></i></button>
             <div class="user-avatar" id="user-avatar-mobile">A</div>
-            <button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download"></i></button>
             <button id="mobileLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </div>
@@ -155,7 +153,6 @@
             <button id="darkModeToggleDesktop" class="dark-mode-toggle"><i class="fas fa-moon mr-2"></i> Dark Mode</button>
             <div class="user-avatar" id="user-avatar-desktop">A</div>
             <span id="user-email-desktop" class="text-sm"></span>
-            <button onclick="exportToExcel()" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-download"></i></button>
             <button id="desktopLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </div>
@@ -180,30 +177,35 @@
         </div>
         <div id="reservations-section" class="content-section">
             <div class="card">
-                <div class="flex flex-wrap justify-between items-center mb-4 gap-3"><h2 class="text-xl font-bold">All Reservations</h2><div class="flex gap-2"><button onclick="switchReservationTab('all')" class="filter-chip active">All</button><button onclick="switchReservationTab('unpaid')" class="filter-chip">⚠️ Unpaid <span id="unpaidBadge" class="ml-1 text-xs">0</span></button><button onclick="switchReservationTab('paid')" class="filter-chip">✅ Paid</button></div></div>
-                <div class="flex flex-wrap gap-3 mb-4"><input type="text" id="resSearch" placeholder="Search by name or trip..." class="input-field flex-1"><select id="statusFilter" class="input-field w-36"><option value="all">All Status</option><option value="new">New</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select><button onclick="refreshReservations()" class="btn-primary px-4"><i class="fas fa-sync-alt"></i> Refresh</button><button onclick="openManualBookingModal()" class="bg-green-600 text-white px-4 py-3 rounded-xl"><i class="fas fa-plus"></i> Manual Booking</button></div>
-                <div class="table-responsive"><table class="w-full"><thead><tr><th>Guest</th><th>Trip</th><th>Date</th><th>Pax</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="resTableBody"><tr><td colspan="8" class="text-center py-8">Loading...</td></tr></tbody></table></div>
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3"><h2 class="text-xl font-bold">All Reservations</h2><button onclick="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl flex items-center gap-2"><i class="fas fa-file-excel"></i> Export</button></div>
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3"><div class="flex gap-2"><button onclick="switchReservationTab('all')" class="filter-chip active">All</button><button onclick="switchReservationTab('unpaid')" class="filter-chip">⚠️ Unpaid <span id="unpaidBadge" class="ml-1 text-xs">0</span></button><button onclick="switchReservationTab('paid')" class="filter-chip">✅ Paid</button></div><button onclick="openManualBookingModal()" class="bg-green-600 text-white px-4 py-2 rounded-xl"><i class="fas fa-plus"></i> Manual Booking</button></div>
+                <div class="flex flex-wrap gap-3 mb-4"><input type="text" id="resSearch" placeholder="Search by name or trip..." class="input-field flex-1"><select id="statusFilter" class="input-field w-36"><option value="all">All Status</option><option value="new">New</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select><button onclick="refreshReservations()" class="btn-primary px-4"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+                <div class="table-responsive"><table class="w-full"><thead><tr class="border-b"><th>Guest</th><th>Trip</th><th>Date</th><th>Pax</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="resTableBody"><tr><td colspan="8" class="text-center py-8">Loading...</td></tr></tbody></table></div>
                 <div id="resCardsContainer" class="space-y-3"></div>
                 <div class="flex justify-between items-center mt-4 gap-2"><span id="pageInfo"></span><div class="flex gap-2"><button id="prevPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Prev</button><button id="nextPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Next</button></div></div>
             </div>
         </div>
         <div id="payout-section" class="content-section">
-            <div class="card mb-5"><h3 class="font-bold text-lg mb-4">💰 Payout Method</h3><form id="payoutForm"><label class="block text-sm font-medium mb-1">Full Name (as per bank/wallet)</label><input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Account Number / Wallet ID</label><input type="text" id="accountNumber" placeholder="e.g., 1234567890" class="input-field mb-3"><div id="bankFields" style="display:none;"><label class="block text-sm font-medium mb-1">Bank Name</label><input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Branch Name</label><input type="text" id="branchName" placeholder="e.g., Sharm" class="input-field mb-3"></div><label class="block text-sm font-medium mb-1">Payout Method</label><select id="payoutMethodSelect" class="input-field mb-3"><option value="wallet">e-Wallet</option><option value="bankAccount">Bank Account</option></select><button type="submit" class="btn-primary w-full">Save Payout Method</button></form></div>
+            <div class="card mb-5"><h3 class="font-bold text-lg mb-4">💰 Payout Method</h3><form id="payoutForm"><label class="block text-sm font-medium mb-1">Full Name</label><input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Account Number</label><input type="text" id="accountNumber" placeholder="e.g., 1234567890" class="input-field mb-3"><div id="bankFields" style="display:none;"><label class="block text-sm font-medium mb-1">Bank Name</label><input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3"><label class="block text-sm font-medium mb-1">Branch Name</label><input type="text" id="branchName" placeholder="e.g., Sharm" class="input-field mb-3"></div><label class="block text-sm font-medium mb-1">Payout Method</label><select id="payoutMethodSelect" class="input-field mb-3"><option value="wallet">e-Wallet</option><option value="bankAccount">Bank Account</option></select><button type="submit" class="btn-primary w-full">Save Payout Method</button></form></div>
             <div class="stat-card flex justify-between items-center flex-wrap gap-3"><div><p class="text-gray-500 text-sm">💰 Withdrawable Balance <i class="fas fa-question-circle tooltip-icon" title="Confirmed bookings ≥1 days old, minus 5% commission, minus past payouts"></i></p><h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3><div id="debugInfo" class="debug-card"></div></div><button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button></div>
             <div class="card mt-5"><h3 class="font-bold mb-3">📜 Payout History</h3><div id="payoutHistoryList" class="space-y-2"></div></div>
             <div id="pendingBadge" class="mt-3 hidden"><div class="bg-amber-100 p-3 rounded-xl text-center text-amber-700"><i class="fas fa-clock mr-2"></i>⚠️ Pending withdrawal request – processing</div></div>
             <div class="text-center mt-3"><button id="refreshBalanceBtn" class="text-orange-600 text-sm underline">⟳ Refresh Balance</button></div>
         </div>
         <div id="analytics-section" class="content-section">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card"><canvas id="statusChart" height="250"></canvas></div>
-                <div class="card"><canvas id="guestChart" height="250"></canvas></div>
-                <div class="card lg:col-span-2"><canvas id="revenueChart" height="200"></canvas></div>
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card"><canvas id="statusChart" height="250"></canvas></div><div class="card"><canvas id="guestChart" height="250"></canvas></div><div class="card lg:col-span-2"><canvas id="revenueChart" height="200"></canvas></div></div>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="export-overlay" onclick="closeExportModal()"></div>
+    <div class="modal-sheet" id="export-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4 text-orange-600">📊 Export Reservations</h3><div class="space-y-4"><div><label class="block text-sm font-medium mb-2">Export Range</label><div class="grid grid-cols-2 gap-2"><button id="exportAllBtn" class="filter-chip active">All Bookings</button><button id="exportFilteredBtn" class="filter-chip">Current Filter</button></div></div><div><label class="block text-sm font-medium mb-2">Select Columns</label><div class="grid grid-cols-2 gap-2"><label class="filter-checkbox"><input type="checkbox" value="refNumber" checked> Reference #</label><label class="filter-checkbox"><input type="checkbox" value="username" checked> Customer Name</label><label class="filter-checkbox"><input type="checkbox" value="phone" checked> Phone</label><label class="filter-checkbox"><input type="checkbox" value="email"> Email</label><label class="filter-checkbox"><input type="checkbox" value="tour" checked> Trip Name</label><label class="filter-checkbox"><input type="checkbox" value="tripDate" checked> Trip Date</label><label class="filter-checkbox"><input type="checkbox" value="adults" checked> Adults</label><label class="filter-checkbox"><input type="checkbox" value="childrenUnder12" checked> Children</label><label class="filter-checkbox"><input type="checkbox" value="infants"> Infants</label><label class="filter-checkbox"><input type="checkbox" value="netTotal" checked> Amount (EGP)</label><label class="filter-checkbox"><input type="checkbox" value="paymentStatus" checked> Payment Status</label><label class="filter-checkbox"><input type="checkbox" value="status" checked> Booking Status</label><label class="filter-checkbox"><input type="checkbox" value="pickuptime"> Pickup Time</label><label class="filter-checkbox"><input type="checkbox" value="hotelName"> Hotel Name</label><label class="filter-checkbox"><input type="checkbox" value="roomNumber"> Room Number</label><label class="filter-checkbox"><input type="checkbox" value="specialRequests"> Special Requests</label></div></div><div class="flex gap-3 mt-5"><button onclick="closeExportModal()" class="flex-1 py-2 border rounded-xl">Cancel</button><button id="confirmExportBtn" class="flex-1 btn-primary">Export to Excel</button></div></div></div></div>
+
+    <!-- Manual Booking Modal -->
+    <div class="modal-overlay" id="manualModalOverlay" onclick="closeManualModal()"></div>
+    <div class="modal-sheet" id="manual-modal"><div class="modal-handle"></div><div class="p-5" style="max-height: 85vh; overflow-y: auto;"><h3 class="text-xl font-bold mb-4 text-orange-600">📝 Manual Booking</h3><form id="manualForm"><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" class="input-field" required></div><div><label class="text-sm font-medium">Phone *</label><input type="tel" id="manualPhone" class="input-field" required></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" class="input-field"></div><div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required><option value="">-- Select Trip --</option></select></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" class="input-field"></div><div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" class="input-field"></div></div><div class="grid grid-cols-3 gap-3 mb-3"><div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field"></div><div><label class="text-sm font-medium">Children</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div><div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div></div><div class="mb-3"><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div><div class="mb-3"><label class="text-sm font-medium">Special Requests</label><textarea id="manualRequests" rows="2" class="input-field"></textarea></div><div id="extraServicesContainer" class="mb-3" style="display:none;"><label class="text-sm font-medium mb-2 block">✨ Extra Services</label><div id="extraServicesList" class="space-y-2"></div></div><div id="priceSummary" class="price-summary mb-3" style="display:none;"><div class="flex justify-between"><span>Base Price:</span><span id="basePriceDisplay">EGP 0</span></div><div id="extraServicesTotalDisplay" class="flex justify-between"><span>Extra Services:</span><span>EGP 0</span></div><div class="flex justify-between font-bold pt-2 border-t border-white/30 mt-2"><span>Total:</span><span id="totalPriceDisplay">EGP 0</span></div></div><div class="flex items-center gap-3 mb-4"><label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (confirmed)</label></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeManualModal()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Booking</button></div></form></div></div>
+
+    <!-- Other Modals -->
     <div class="modal-overlay" id="booking-modal-overlay" onclick="closeBookingModal()"></div>
     <div class="modal-sheet" id="booking-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4 text-orange-600">📋 Booking Details</h3><div id="bookingDetailsContent"></div><div class="flex gap-3 mt-5"><button onclick="closeBookingModal()" class="flex-1 py-3 border rounded-xl">Close</button><a id="whatsappLink" href="#" target="_blank" class="flex-1 bg-green-600 text-white py-3 rounded-xl text-center">📱 WhatsApp</a></div></div></div>
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
@@ -229,10 +231,10 @@
         updateDarkModeIcons(isDark);
     }
     function updateDarkModeIcons(isDark) {
-        const icons = document.querySelectorAll('#darkModeToggleDesktop i, #darkModeToggleMobile i');
-        icons.forEach(icon => { icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon'; });
-        const btn = document.getElementById('darkModeToggleDesktop');
-        if(btn) btn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
+        const desktopBtn = document.getElementById('darkModeToggleDesktop');
+        const mobileBtn = document.getElementById('darkModeToggleMobile');
+        if(desktopBtn) desktopBtn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
+        if(mobileBtn) mobileBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     }
 
     // Firebase Config
@@ -250,16 +252,7 @@
     let filteredReservations = [];
 
     function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
-    
-    function isOlderThanOneDay(dateStr){ 
-        if(!dateStr) return false; 
-        const d = new Date(dateStr);
-        const oneDayAgo = new Date();
-        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-        oneDayAgo.setHours(0, 0, 0, 0);
-        d.setHours(0, 0, 0, 0);
-        return d <= oneDayAgo; 
-    }
+    function isOlderThanOneDay(dateStr){ if(!dateStr) return false; const d = new Date(dateStr); const oneDayAgo = new Date(); oneDayAgo.setDate(oneDayAgo.getDate() - 1); oneDayAgo.setHours(0,0,0,0); d.setHours(0,0,0,0); return d <= oneDayAgo; }
     
     async function handleLogin(e){ e.preventDefault(); try{ await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } catch(err){ let d=document.getElementById('login-error'); d.innerText=err.message; d.classList.remove('hidden'); } }
     function showResetPassword(){ let e=prompt("Enter your email"); if(e) auth.sendPasswordResetEmail(e).then(()=>alert("Reset link sent")); }
@@ -399,77 +392,177 @@
     
     async function calculateAndDisplayBalance(){
         if(!currentUser) return;
-        
         const eligibleBookings = allReservations.filter(r => r.status === 'confirmed' && isOlderThanOneDay(r.tripDate));
         const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
         const commission = totalRevenue * COMMISSION_RATE;
         const netEarnings = totalRevenue - commission;
-        
-        let completedPayouts = 0;
-        let pendingPayouts = 0;
-        let historyHtml = '';
-        
+        let completedPayouts = 0, pendingPayouts = 0, historyHtml = '';
         try {
             const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
             if(payoutSnap.exists()){
                 payoutSnap.forEach(child => {
                     let req = child.val();
                     let amount = parseFloat(req.amount) || 0;
-                    if(req.status === 'completed'){
-                        completedPayouts += amount;
-                        historyHtml += `<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">completed</span></div>`;
-                    } else if(req.status === 'pending'){
-                        pendingPayouts += amount;
-                        historyHtml += `<div class="flex justify-between p-2 bg-amber-50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">pending</span></div>`;
-                    }
+                    if(req.status === 'completed'){ completedPayouts += amount; historyHtml += `<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">completed</span></div>`;
+                    } else if(req.status === 'pending'){ pendingPayouts += amount; historyHtml += `<div class="flex justify-between p-2 bg-amber-50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">pending</span></div>`; }
                 });
             }
         } catch(e) { console.error("Error:", e); }
-        
         const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
-        
         document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
         document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
         if(historyHtml === '') historyHtml = '<div class="empty-state text-center py-4 text-gray-500">No payout requests yet</div>';
         document.getElementById('payoutHistoryList').innerHTML = historyHtml;
         window.currentAvailableBalance = availableBalance;
-        
-        document.getElementById('debugInfo').innerHTML = `
-            🔍 Eligible: <span>${eligibleBookings.length}</span> bookings (confirmed + ≥1 day)<br>
-            📊 Revenue: <span>EGP ${totalRevenue.toFixed(0)}</span><br>
-            💸 Commission (5%): <span>- EGP ${commission.toFixed(0)}</span><br>
-            💰 Net earnings: <span>EGP ${netEarnings.toFixed(0)}</span><br>
-            🏦 Already paid: <span>- EGP ${completedPayouts}</span><br>
-            ⏳ Pending: <span>- EGP ${pendingPayouts}</span><br>
-            ✅ <strong>Available: EGP ${availableBalance.toFixed(2)}</strong>
-        `;
+        document.getElementById('debugInfo').innerHTML = `🔍 Eligible: <span>${eligibleBookings.length}</span> bookings | Revenue: <span>EGP ${totalRevenue.toFixed(0)}</span> | Commission (5%): <span>- EGP ${commission.toFixed(0)}</span> | Net: <span>EGP ${netEarnings.toFixed(0)}</span> | Paid: <span>${completedPayouts}</span> | Pending: <span>${pendingPayouts}</span> | ✅ Available: <span>EGP ${availableBalance.toFixed(2)}</span>`;
     }
     
-    document.getElementById('payoutForm')?.addEventListener('submit', async(e)=>{ 
-        e.preventDefault(); 
-        let method=document.getElementById('payoutMethodSelect').value; 
-        let data={ name:document.getElementById('payoutName').value, accountNumber:document.getElementById('accountNumber').value, method:method }; 
-        if(method==='bankAccount'){ data.bankName=document.getElementById('bankName').value; data.branchName=document.getElementById('branchName').value; } 
-        await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data); 
-        showToast('Payout method saved'); 
-    });
+    document.getElementById('payoutForm')?.addEventListener('submit', async(e)=>{ e.preventDefault(); let method=document.getElementById('payoutMethodSelect').value; let data={ name:document.getElementById('payoutName').value, accountNumber:document.getElementById('accountNumber').value, method:method }; if(method==='bankAccount'){ data.bankName=document.getElementById('bankName').value; data.branchName=document.getElementById('branchName').value; } await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data); showToast('Payout method saved'); });
     document.getElementById('payoutMethodSelect')?.addEventListener('change',function(){ document.getElementById('bankFields').style.display=this.value==='bankAccount'?'block':'none'; });
-    document.getElementById('requestPayoutBtn')?.addEventListener('click', async()=>{ 
-        let available = window.currentAvailableBalance || 0;
-        if(available <= 0){ showToast('No withdrawable balance available','error'); return; }
-        let snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-        let hasPending = false;
-        snap.forEach(child => { if(child.val().status === 'pending') hasPending = true; });
-        if(hasPending){ showToast('You already have a pending withdrawal request','error'); return; }
-        if(confirm(`Request payout of ${available.toFixed(2)} EGP?`)){
-            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() });
-            showToast('Withdrawal request submitted successfully!');
-            await calculateAndDisplayBalance();
-        }
-    });
+    document.getElementById('requestPayoutBtn')?.addEventListener('click', async()=>{ let available = window.currentAvailableBalance || 0; if(available <= 0){ showToast('No withdrawable balance available','error'); return; } let snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value'); let hasPending = false; snap.forEach(child => { if(child.val().status === 'pending') hasPending = true; }); if(hasPending){ showToast('You already have a pending withdrawal request','error'); return; } if(confirm(`Request payout of ${available.toFixed(2)} EGP?`)){ await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() }); showToast('Withdrawal request submitted successfully!'); await calculateAndDisplayBalance(); } });
     document.getElementById('refreshBalanceBtn')?.addEventListener('click', ()=>{ calculateAndDisplayBalance(); showToast('Balance refreshed','success'); });
     
-    function exportToExcel(){ showToast('Excel export ready','success'); }
+    // Export Functions
+    function openExportModal() { openSheet('export-modal', 'export-overlay'); }
+    function closeExportModal() { closeSheet('export-modal', 'export-overlay'); }
+    document.getElementById('confirmExportBtn')?.addEventListener('click', async () => {
+        closeExportModal();
+        showToast('Generating Excel file...', 'success');
+        const exportAll = document.getElementById('exportAllBtn').classList.contains('active');
+        const selectedColumns = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked')).map(cb => cb.value);
+        let dataToExport = exportAll ? allReservations : filteredReservations;
+        if(dataToExport.length === 0) { showToast('No data to export', 'error'); return; }
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Reservations');
+        const columnHeaders = { refNumber: 'Reference #', username: 'Customer Name', phone: 'Phone', email: 'Email', tour: 'Trip Name', tripDate: 'Trip Date', adults: 'Adults', childrenUnder12: 'Children', infants: 'Infants', netTotal: 'Amount (EGP)', paymentStatus: 'Payment Status', status: 'Booking Status', pickuptime: 'Pickup Time', hotelName: 'Hotel Name', roomNumber: 'Room Number', specialRequests: 'Special Requests' };
+        worksheet.columns = selectedColumns.map(col => ({ header: columnHeaders[col], key: col, width: 20 }));
+        const headerRow = worksheet.getRow(1);
+        headerRow.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; cell.alignment = { horizontal: 'center', vertical: 'middle' }; });
+        dataToExport.forEach(booking => { const row = {}; selectedColumns.forEach(col => { if(col === 'netTotal') row[col] = booking[col] || 0; else if(col === 'paymentStatus') row[col] = booking.isPaid ? 'Paid' : 'Unpaid'; else if(col === 'status') row[col] = booking.status || 'new'; else row[col] = booking[col] || '-'; }); worksheet.addRow(row); });
+        worksheet.eachRow((row, rowNumber) => { if(rowNumber > 1){ row.eachCell(cell => { cell.alignment = { horizontal: 'center', vertical: 'middle' }; cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }; }); } });
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(blob, `reservations_${new Date().toISOString().slice(0,19)}.xlsx`);
+        showToast('Export completed!', 'success');
+    });
+    document.getElementById('exportAllBtn')?.addEventListener('click', function() { document.getElementById('exportAllBtn').classList.add('active'); document.getElementById('exportFilteredBtn').classList.remove('active'); });
+    document.getElementById('exportFilteredBtn')?.addEventListener('click', function() { document.getElementById('exportFilteredBtn').classList.add('active'); document.getElementById('exportAllBtn').classList.remove('active'); });
+    
+    // Manual Booking with Extra Services
+    let selectedExtraServices = [];
+    let currentTripData = null;
+    
+    function openManualBookingModal() {
+        const modal = document.getElementById('manual-modal');
+        const overlay = document.getElementById('manualModalOverlay');
+        modal.classList.add('open');
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        const tripSelect = document.getElementById('manualTrip');
+        tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
+        allTrips.forEach(trip => { tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${trip.name} - EGP ${trip.price}</option>`; });
+        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+        selectedExtraServices = [];
+        currentTripData = null;
+        document.getElementById('extraServicesContainer').style.display = 'none';
+        document.getElementById('priceSummary').style.display = 'none';
+        document.getElementById('manualForm').reset();
+        document.getElementById('manualAdults').value = 1;
+        document.getElementById('manualChildren').value = 0;
+        document.getElementById('manualInfants').value = 0;
+    }
+    
+    function closeManualModal() {
+        const modal = document.getElementById('manual-modal');
+        const overlay = document.getElementById('manualModalOverlay');
+        modal.classList.remove('open');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    
+    document.getElementById('manualTrip')?.addEventListener('change', async function() {
+        const val = this.value;
+        if(!val) { document.getElementById('extraServicesContainer').style.display = 'none'; document.getElementById('priceSummary').style.display = 'none'; return; }
+        const tripData = val.split('|');
+        const tripId = tripData[0];
+        const tripPrice = parseFloat(tripData[2]);
+        currentTripData = { id: tripId, name: tripData[1], price: tripPrice };
+        const tripSnap = await db.ref(`trips/${tripId}`).once('value');
+        const trip = tripSnap.val();
+        if(trip && trip.tourtype && Object.keys(trip.tourtype).length > 0){
+            document.getElementById('extraServicesContainer').style.display = 'block';
+            const container = document.getElementById('extraServicesList');
+            container.innerHTML = '';
+            selectedExtraServices = [];
+            Object.entries(trip.tourtype).forEach(([name, price]) => {
+                const div = document.createElement('div');
+                div.className = 'extra-service-item';
+                div.innerHTML = `<span>${name}</span><span class="font-bold">EGP ${price}</span>`;
+                div.onclick = () => {
+                    div.classList.toggle('selected');
+                    const service = { name, price: parseFloat(price) };
+                    if(div.classList.contains('selected')){ selectedExtraServices.push(service); }
+                    else { selectedExtraServices = selectedExtraServices.filter(s => s.name !== name); }
+                    updatePriceCalculation();
+                };
+                container.appendChild(div);
+            });
+        } else { document.getElementById('extraServicesContainer').style.display = 'none'; }
+        document.getElementById('priceSummary').style.display = 'block';
+        updatePriceCalculation();
+    });
+    
+    function updatePriceCalculation() {
+        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+        const children = parseInt(document.getElementById('manualChildren').value) || 0;
+        const basePrice = (adults + children) * (currentTripData?.price || 0);
+        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
+        const total = basePrice + extraTotal;
+        document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
+        document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
+        document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
+    }
+    
+    document.getElementById('manualAdults')?.addEventListener('input', updatePriceCalculation);
+    document.getElementById('manualChildren')?.addEventListener('input', updatePriceCalculation);
+    
+    document.getElementById('manualForm').onsubmit = async(e) => {
+        e.preventDefault();
+        if(!currentTripData) { showToast('Please select a trip', 'error'); return; }
+        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+        const children = parseInt(document.getElementById('manualChildren').value) || 0;
+        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
+        const baseTotal = (adults + children) * currentTripData.price;
+        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
+        const total = baseTotal + extraTotal;
+        const booking = {
+            username: document.getElementById('manualName').value,
+            phone: document.getElementById('manualPhone').value,
+            email: document.getElementById('manualEmail').value || '',
+            hotelName: document.getElementById('manualHotel').value || '',
+            roomNumber: document.getElementById('manualRoom').value || '',
+            tour: currentTripData.name,
+            tripId: currentTripData.id,
+            adults: adults,
+            childrenUnder12: children,
+            infants: infants,
+            netTotal: total,
+            tripDate: document.getElementById('manualDate').value,
+            specialRequests: document.getElementById('manualRequests').value || '',
+            extraServices: selectedExtraServices.map(s => `${s.name}: ${s.price}`).join(', '),
+            isPaid: document.getElementById('manualPaid').checked,
+            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
+            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
+            owner: currentUser.uid,
+            createdAt: Date.now(),
+            refNumber: 'MAN-' + Date.now().toString().slice(-8)
+        };
+        await db.ref('trip-bookings').push(booking);
+        showToast('Manual booking added successfully!');
+        closeManualModal();
+        loadReservations();
+        calculateAndDisplayBalance();
+    };
     
     async function updateDashboard(){ 
         let ts=await db.ref('trips').once('value'); 
@@ -500,118 +593,22 @@
     document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el=>{ el.addEventListener('click',()=>{ switchSection(el.getAttribute('data-section')); if(window.innerWidth<1024) document.getElementById('sidebar').classList.remove('open'); }); });
     document.getElementById('logout-sidebar')?.addEventListener('click',()=>auth.signOut()); document.getElementById('mobileLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('desktopLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('fabBtn')?.addEventListener('click',openAddTripModal); document.getElementById('menuToggle')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
     
-    function openManualBookingModal(){ 
-        let tripsOpt = '<option value="">-- Select a trip --</option>' + allTrips.map(t => `<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`).join(''); 
-        let html = `<div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]"><div style="background:white;max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto"><h3 class="text-xl font-bold mb-4">Manual Booking</h3><form id="manualForm"><div class="grid grid-cols-2 gap-3"><input type="text" id="manualName" placeholder="Guest Name *" class="input-field" required><input type="tel" id="manualPhone" placeholder="Phone *" class="input-field" required></div><div class="grid grid-cols-2 gap-3"><input type="email" id="manualEmail" placeholder="Email" class="input-field"><select id="manualTrip" class="input-field" required>${tripsOpt}</select></div><div class="grid grid-cols-2 gap-3"><input type="text" id="manualHotel" placeholder="Hotel Name" class="input-field"><input type="text" id="manualRoom" placeholder="Room #" class="input-field></div><div class="grid grid-cols-3 gap-3"><input type="number" id="manualAdults" value="1" placeholder="Adults" class="input-field"><input type="number" id="manualChildren" value="0" placeholder="Children" class="input-field"><input type="number" id="manualInfants" value="0" placeholder="Infants" class="input-field"></div><input type="date" id="manualDate" class="input-field mb-3"><textarea id="manualRequests" rows="2" placeholder="Special Requests" class="input-field"></textarea><label><input type="checkbox" id="manualPaid"> Mark as Paid (confirmed)</label><div class="flex gap-3 mt-4"><button type="button" onclick="document.getElementById('manualModal').remove()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save</button></div></form></div></div>`; 
-        document.body.insertAdjacentHTML('beforeend',html); 
-        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('manualForm').onsubmit = async(e)=>{ e.preventDefault(); let tripData = document.getElementById('manualTrip').value.split('|'); if(tripData.length<3 || !tripData[0]){ showToast('Select a valid trip','error'); return; } let adults=parseInt(document.getElementById('manualAdults').value)||0; let children=parseInt(document.getElementById('manualChildren').value)||0; let infants=parseInt(document.getElementById('manualInfants').value)||0; let price=parseFloat(tripData[2])||0; let total=(adults+children)*price; let booking={ username:document.getElementById('manualName').value, phone:document.getElementById('manualPhone').value, email:document.getElementById('manualEmail').value||'', hotelName:document.getElementById('manualHotel').value||'', roomNumber:document.getElementById('manualRoom').value||'', tour:tripData[1], tripId:tripData[0], adults:adults, childrenUnder12:children, infants:infants, netTotal:total, tripDate:document.getElementById('manualDate').value, specialRequests:document.getElementById('manualRequests').value||'', isPaid:document.getElementById('manualPaid').checked, paymentStatus:document.getElementById('manualPaid').checked?'paid':'unpaid', resStatus:document.getElementById('manualPaid').checked?'confirmed':'new', owner:currentUser.uid, createdAt:Date.now(), refNumber:'MAN-'+Date.now().toString().slice(-8) }; await db.ref('trip-bookings').push(booking); showToast('Booking added!'); document.getElementById('manualModal').remove(); loadReservations(); calculateAndDisplayBalance(); }; 
-    }
-    
     function openModal(){ openSheet('item-modal'); } function closeModal(){ closeSheet('item-modal'); } function closeDeleteModal(){ closeSheet('delete-modal','delete-overlay'); pendingDeleteId=null; }
     function openSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.add('open'); document.getElementById(oId).classList.add('open'); document.body.style.overflow='hidden'; }
     function closeSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.remove('open'); document.getElementById(oId).classList.remove('open'); document.body.style.overflow=''; }
     
     initDarkMode();
-    window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.refreshReservations=refreshReservations; window.exportToExcel=exportToExcel; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal;
-</script>
+    window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.closeManualModal=closeManualModal; window.refreshReservations=refreshReservations; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal; window.openExportModal=openExportModal; window.closeExportModal=closeExportModal;
 
 
-<!-- Add before </body> -->
+
+
+
+
 <script>
-// 🔧 PATCH: Fix all critical issues
+// 🔧 FINAL PATCH - Apply all remaining fixes
 
-// 1. Fix manual booking modal HTML (replace the entire openManualBookingModal function)
-window.openManualBookingModal = function() {
-    const tripsOpt = '<option value="">-- Select a trip --</option>' + 
-        (allTrips||[]).map(t => `<option value="${t.id||''}|${t.name||''}|${t.price||0}">${t.name||'Untitled'} - EGP ${t.price||0}</option>`).join('');
-    
-    const html = `<div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]">
-        <div style="background:var(--card-bg);max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto;color:var(--text-primary)">
-            <h3 class="text-xl font-bold mb-4">Manual Booking</h3>
-            <form id="manualForm">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="manualName" placeholder="Guest Name *" class="input-field" required>
-                    <input type="tel" id="manualPhone" placeholder="Phone *" class="input-field" required>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="email" id="manualEmail" placeholder="Email" class="input-field">
-                    <select id="manualTrip" class="input-field" required>${tripsOpt}</select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="text" id="manualHotel" placeholder="Hotel Name" class="input-field">
-                    <input type="text" id="manualRoom" placeholder="Room #" class="input-field">
-                </div>
-                <div class="grid grid-cols-3 gap-3">
-                    <input type="number" id="manualAdults" value="1" min="0" placeholder="Adults" class="input-field">
-                    <input type="number" id="manualChildren" value="0" min="0" placeholder="Children" class="input-field">
-                    <input type="number" id="manualInfants" value="0" min="0" placeholder="Infants" class="input-field">
-                </div>
-                <input type="date" id="manualDate" class="input-field mb-3" required>
-                <textarea id="manualRequests" rows="2" placeholder="Special Requests" class="input-field"></textarea>
-                <label class="flex items-center gap-2 mt-2">
-                    <input type="checkbox" id="manualPaid"> 
-                    <span class="text-sm">Mark as Paid & Confirmed</span>
-                </label>
-                <div class="flex gap-3 mt-4">
-                    <button type="button" onclick="document.getElementById('manualModal')?.remove()" class="flex-1 py-2 border rounded-xl">Cancel</button>
-                    <button type="submit" class="flex-1 btn-primary">Save Booking</button>
-                </div>
-            </form>
-        </div>
-    </div>`;
-    
-    document.body.insertAdjacentHTML('beforeend', html);
-    document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-    
-    document.getElementById('manualForm').onsubmit = async(e) => {
-        e.preventDefault();
-        try {
-            const tripData = document.getElementById('manualTrip').value.split('|');
-            if(tripData.length < 3 || !tripData[0]) { 
-                showToast('Please select a valid trip', 'error'); 
-                return; 
-            }
-            
-            const adults = Math.max(0, parseInt(document.getElementById('manualAdults').value) || 0);
-            const children = Math.max(0, parseInt(document.getElementById('manualChildren').value) || 0);
-            const infants = Math.max(0, parseInt(document.getElementById('manualInfants').value) || 0);
-            const price = parseFloat(tripData[2]) || 0;
-            const total = (adults + children) * price;
-            
-            const booking = {
-                username: document.getElementById('manualName').value.trim(),
-                phone: document.getElementById('manualPhone').value.trim(),
-                email: document.getElementById('manualEmail').value?.trim() || '',
-                hotelName: document.getElementById('manualHotel').value?.trim() || '',
-                roomNumber: document.getElementById('manualRoom').value?.trim() || '',
-                tour: tripData[1],
-                tripId: tripData[0],
-                adults, childrenUnder12: children, infants,
-                netTotal: total,
-                tripDate: document.getElementById('manualDate').value,
-                specialRequests: document.getElementById('manualRequests').value?.trim() || '',
-                isPaid: document.getElementById('manualPaid').checked,
-                paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
-                resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
-                owner: currentUser?.uid,
-                createdAt: Date.now(),
-                refNumber: 'MAN-' + Date.now().toString().slice(-8)
-            };
-            
-            await db.ref('trip-bookings').push(booking);
-            showToast('Booking added successfully!', 'success');
-            document.getElementById('manualModal')?.remove();
-            loadReservations();
-            calculateAndDisplayBalance();
-        } catch(err) {
-            console.error(err);
-            showToast('Failed to save booking', 'error');
-        }
-    };
-};
-
-// 2. Fix filter chip active state
+// 1. Fix filter chip active state with closest()
 function setTripFilter(f) {
     tripFilter = f;
     document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active'));
@@ -632,121 +629,93 @@ function switchReservationTab(tab) {
     applyFilters();
 }
 
-// 3. Safe chart destruction
-function safeDestroyChart(chart) {
-    if(chart && typeof chart.destroy === 'function') {
-        try { chart.destroy(); } catch(e) { console.warn('Chart destroy error:', e); }
-    }
-    return null;
-}
-
-// 4. Fixed eligibility check for payouts
+// 2. Fixed payout eligibility
 function isEligibleForPayout(booking) {
     if(booking.status !== 'confirmed') return false;
     const confirmedAt = booking.confirmedAt || booking.createdAt;
     if(!confirmedAt) return false;
-    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    const oneDayAgo = Date.now() - 86400000; // 24h in ms
     return confirmedAt <= oneDayAgo;
 }
 
-// 5. Enhanced payout calculation
-async function calculateAndDisplayBalance() {
+// 3. Safe chart helper
+function safeCreateChart(ctx, config) {
+    try { return new Chart(ctx, config); } 
+    catch(e) { console.error('Chart init error:', e); return null; }
+}
+function safeDestroyChart(chart) {
+    try { if(chart?.destroy) chart.destroy(); } catch(e){}
+    return null;
+}
+
+// 4. Update calculateAndDisplayBalance to use fixed eligibility
+const _originalCalculate = calculateAndDisplayBalance;
+calculateAndDisplayBalance = async function() {
     if(!currentUser) return;
-    
+    // Use fixed eligibility
     const eligibleBookings = allReservations.filter(r => isEligibleForPayout(r));
     const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
     const commission = totalRevenue * COMMISSION_RATE;
     const netEarnings = totalRevenue - commission;
     
-    let completedPayouts = 0;
-    let pendingPayouts = 0;
-    let historyHtml = '';
-    
+    let completedPayouts = 0, pendingPayouts = 0, historyHtml = '';
     try {
         const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-        if(payoutSnap.exists()) {
+        if(payoutSnap.exists()){
             payoutSnap.forEach(child => {
                 const req = child.val();
                 const amount = parseFloat(req.amount) || 0;
                 if(req.status === 'completed') {
                     completedPayouts += amount;
-                    historyHtml += `<div class="flex justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                        <span>${new Date(req.createdAt).toLocaleDateString()}</span>
-                        <span class="font-bold">EGP ${amount.toFixed(2)}</span>
-                        <span class="status-badge status-paid">✓ Completed</span>
-                    </div>`;
+                    historyHtml += `<div class="flex justify-between p-2 bg-slate-100 dark:bg-slate-800 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">✓</span></div>`;
                 } else if(req.status === 'pending') {
                     pendingPayouts += amount;
-                    historyHtml += `<div class="flex justify-between p-3 bg-amber-50 dark:bg-amber-900/30 rounded-xl">
-                        <span>${new Date(req.createdAt).toLocaleDateString()}</span>
-                        <span class="font-bold">EGP ${amount.toFixed(2)}</span>
-                        <span class="status-badge status-new">⏳ Pending</span>
-                    </div>`;
+                    historyHtml += `<div class="flex justify-between p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">⏳</span></div>`;
                 }
             });
         }
-    } catch(e) { 
-        console.error("Payout history error:", e); 
-    }
+    } catch(e) { console.error("Payout error:", e); }
     
     const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
-    
     document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
     document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
-    
-    if(historyHtml === '') {
-        historyHtml = '<div class="text-center py-6 text-gray-500">No payout history yet</div>';
-    }
-    document.getElementById('payoutHistoryList').innerHTML = historyHtml;
-    
+    document.getElementById('payoutHistoryList').innerHTML = historyHtml || '<div class="text-center py-4 text-gray-500">No payout history</div>';
     window.currentAvailableBalance = availableBalance;
     
-    // Debug info (optional - can hide in production)
-    document.getElementById('debugInfo').innerHTML = `
-        <details class="text-xs">
-            <summary class="cursor-pointer font-medium">🔍 Balance Details</summary>
-            <div class="mt-2 space-y-1">
-                ✓ Eligible bookings: <span class="font-bold">${eligibleBookings.length}</span><br>
-                📊 Gross revenue: <span class="font-bold">EGP ${totalRevenue.toFixed(0)}</span><br>
-                💸 Platform fee (5%): <span class="text-red-500">- EGP ${commission.toFixed(0)}</span><br>
-                💰 Net earnings: <span class="font-bold">EGP ${netEarnings.toFixed(0)}</span><br>
-                🏦 Paid out: <span class="text-green-600">- EGP ${completedPayouts.toFixed(0)}</span><br>
-                ⏳ Pending: <span class="text-amber-600">- EGP ${pendingPayouts.toFixed(0)}</span><br>
-                ✅ <strong>Available: EGP ${availableBalance.toFixed(2)}</strong>
-            </div>
-        </details>
-    `;
+    document.getElementById('debugInfo').innerHTML = `<details class="text-xs"><summary class="cursor-pointer">🔍 Details</summary><div class="mt-2">Eligible: ${eligibleBookings.length} • Revenue: EGP ${totalRevenue.toFixed(0)} • Commission: -EGP ${commission.toFixed(0)} • Net: EGP ${netEarnings.toFixed(0)} • Paid: -EGP ${completedPayouts} • Pending: -EGP ${pendingPayouts} • <strong>Available: EGP ${availableBalance.toFixed(2)}</strong></div></details>`;
 }
 
-// 6. WhatsApp link fix
-window.showBookingDetails = async function(bookingId) {
+// 5. Fix WhatsApp link phone formatting
+const _originalShowDetails = showBookingDetails;
+showBookingDetails = async function(bookingId) {
     const b = allReservations.find(b => b.id === bookingId); 
     if(!b) return;
     
+    // ... existing details HTML generation ...
     const html = `<div class="booking-details-grid">
-        <!-- ... existing details grid ... -->
-        <div class="booking-detail-item col-span-2">
-            <div class="booking-detail-label">Contact</div>
-            <div class="booking-detail-value">
-                ${b.phone ? `<a href="tel:${b.phone.replace(/[^0-9+]/g,'')}" class="text-orange-600 hover:underline">📞 ${b.phone}</a>` : '-'}
-                ${b.email ? `<br><a href="mailto:${b.email}" class="text-orange-600 hover:underline">✉️ ${b.email}</a>` : ''}
-            </div>
-        </div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id?.slice(-8) || '-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Guests</div><div class="booking-detail-value">${b.adults||0}A / ${b.childrenUnder12||0}C / ${b.infants||0}I</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Pickup</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Guest</div><div class="booking-detail-value">${b.username||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${b.phone||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div>
+        <div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div>
+        <div class="booking-detail-item col-span-2"><div class="booking-detail-label">Requests</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div>
     </div>`;
     
     document.getElementById('bookingDetailsContent').innerHTML = html;
     
-    // WhatsApp link with proper formatting
+    // Fixed WhatsApp link
     const wa = document.getElementById('whatsappLink');
     if(b.phone) {
         const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
-        const name = b.username || 'Guest';
-        const ref = b.refNumber || b.id?.slice(-8) || 'N/A';
-        const tour = b.tour || 'Selected Trip';
-        const date = b.tripDate || 'TBD';
-        const pickup = b.pickuptime || 'To be confirmed';
-        
-        const msg = `Hello ${name},%0A%0A✅ Your booking *${ref}* for *${tour}* on *${date}* is confirmed!%0A%0A🚐 Pickup time: ${pickup}%0A%0A📍 Please be ready 10 minutes before pickup.%0A%0A*Discover Sharm Team* 🌴`;
+        const msg = `Hello ${b.username},%0A%0A✅ Booking *${b.refNumber||b.id?.slice(-8)}* confirmed%0A🗓️ ${b.tour} on ${b.tripDate}%0A🚐 Pickup: ${b.pickuptime||'TBD'}%0A%0A*Discover Sharm* 🌴`;
         wa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
         wa.style.opacity = '1';
         wa.style.pointerEvents = 'auto';
@@ -754,40 +723,51 @@ window.showBookingDetails = async function(bookingId) {
         wa.href = '#';
         wa.style.opacity = '0.5';
         wa.style.pointerEvents = 'none';
-        wa.onclick = (e) => { e.preventDefault(); showToast('No phone number provided', 'error'); };
+        wa.onclick = (e) => { e.preventDefault(); showToast('No phone number', 'error'); };
     }
     
-    document.getElementById('booking-modal').classList.add('open'); 
-    document.getElementById('booking-modal-overlay').classList.add('open'); 
+    document.getElementById('booking-modal').classList.add('open');
+    document.getElementById('booking-modal-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-};
+}
 
-// 7. Global error handling
-window.addEventListener('error', (e) => {
-    console.error('💥 Global error:', { message: e.message, file: e.filename, line: e.lineno });
-});
-
-window.addEventListener('unhandledrejection', (e) => {
-    console.error('💥 Unhandled promise rejection:', e.reason);
-});
-
-// 8. Initialize with safety checks
-document.addEventListener('DOMContentLoaded', () => {
-    initDarkMode();
-    
-    // Ensure all global functions are properly exposed
-    const globals = {
-        setTripFilter, switchReservationTab, editTrip, deleteTripPrompt, 
-        markAsPaid, confirmBookingWithPickup, openManualBookingModal,
-        refreshReservations, exportToExcel, openAddTripModal, 
-        showBookingDetails, closeBookingModal, prevPage, nextPage
+// 6. Add phone validation to manual booking
+const _originalManualSubmit = document.getElementById('manualForm')?.onsubmit;
+if(document.getElementById('manualForm')) {
+    document.getElementById('manualForm').onsubmit = async(e) => {
+        e.preventDefault();
+        const phone = document.getElementById('manualPhone').value.trim();
+        if(phone && !/^[\d+\s\-\(\)]{8,}$/.test(phone)) {
+            showToast('Please enter a valid phone number', 'error');
+            return;
+        }
+        // Call original logic via the existing handler
+        if(_originalManualSubmit) return _originalManualSubmit(e);
     };
-    
-    Object.assign(window, globals);
+}
+
+// 7. Global error handlers
+window.addEventListener('error', (e) => {
+    console.error('💥 Error:', e.message, '@', e.filename?.split('/').pop() + ':' + e.lineno);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('💥 Promise rejected:', e.reason);
 });
 
-console.log('✅ Discover Sharm Admin Dashboard - All fixes applied');
+// 8. Ensure all functions are globally accessible
+Object.assign(window, {
+    setTripFilter, switchReservationTab, isEligibleForPayout,
+    safeCreateChart, safeDestroyChart, calculateAndDisplayBalance,
+    showBookingDetails
+});
+
+console.log('✅ All patches applied - Dashboard ready!');
 </script>
-  
+
+
+
+
+
+</script>
 </body>
 </html>
