@@ -293,7 +293,24 @@
 </div>
 
 <script>
-    
+    // Dark Mode
+    function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) { document.body.classList.add('dark'); updateDarkModeIcons(true); }
+        document.getElementById('darkModeToggleDesktop')?.addEventListener('click', toggleDarkMode);
+        document.getElementById('darkModeToggleMobile')?.addEventListener('click', toggleDarkMode);
+    }
+    function toggleDarkMode() {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        updateDarkModeIcons(isDark);
+    }
+    function updateDarkModeIcons(isDark) {
+        const desktopBtn = document.getElementById('darkModeToggleDesktop');
+        const mobileBtn = document.getElementById('darkModeToggleMobile');
+        if(desktopBtn) desktopBtn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
+        if(mobileBtn) mobileBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
 
     // Firebase Config
     const firebaseConfig = { apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", authDomain: "egypt-travels.firebaseapp.com", databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", projectId: "egypt-travels", storageBucket: "egypt-travels.appspot.com" };
@@ -355,7 +372,7 @@
         document.getElementById('tourTypeList').innerHTML=''; if(t.tourtype) loadTourTypes(document.getElementById('tourTypeList'), t.tourtype);
         openModal(); }
     async function saveTrip(e){ e.preventDefault(); let id=document.getElementById('item-id').value; let newId = document.getElementById('item-bookingLink').value.toLowerCase().replace(/\s+/g,'-'); let finalId = id || newId;
-        let data={ name:document.getElementById('item-name').value, description:document.getElementById('item-desc').value, price:parseFloat(document.getElementById('item-price').value)||0, cprice:parseFloat(document.getElementById('item-cprice').value)||0, duration:document.getElementById('item-duration').value, bookingLink:finalId, approved:document.getElementById('item-approved').checked?"true":"false", image:document.getElementById('item-image').value, owner:currentUser.uid, uid:currentUser.uid updatedAt:Date.now() };
+        let data={ name:document.getElementById('item-name').value, description:document.getElementById('item-desc').value, price:parseFloat(document.getElementById('item-price').value)||0, cprice:parseFloat(document.getElementById('item-cprice').value)||0, duration:document.getElementById('item-duration').value, bookingLink:finalId, approved:document.getElementById('item-approved').checked?"true":"false", image:document.getElementById('item-image').value, owner:currentUser.uid, updatedAt:Date.now() };
         data.media = { images: [] }; document.querySelectorAll('#imageList input').forEach(inp=>{ if(inp.value.trim()) data.media.images.push(inp.value.trim()); });
         data.included = []; document.querySelectorAll('#includedList input').forEach(inp=>{ if(inp.value.trim()) data.included.push(inp.value.trim()); });
         data.notIncluded = []; document.querySelectorAll('#notIncludedList input').forEach(inp=>{ if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); });
