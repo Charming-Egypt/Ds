@@ -515,5 +515,279 @@
     initDarkMode();
     window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.refreshReservations=refreshReservations; window.exportToExcel=exportToExcel; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal;
 </script>
+
+
+<!-- Add before </body> -->
+<script>
+// 🔧 PATCH: Fix all critical issues
+
+// 1. Fix manual booking modal HTML (replace the entire openManualBookingModal function)
+window.openManualBookingModal = function() {
+    const tripsOpt = '<option value="">-- Select a trip --</option>' + 
+        (allTrips||[]).map(t => `<option value="${t.id||''}|${t.name||''}|${t.price||0}">${t.name||'Untitled'} - EGP ${t.price||0}</option>`).join('');
+    
+    const html = `<div id="manualModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[3000]">
+        <div style="background:var(--card-bg);max-width:550px;width:90%;border-radius:28px;padding:24px;max-height:85vh;overflow-y:auto;color:var(--text-primary)">
+            <h3 class="text-xl font-bold mb-4">Manual Booking</h3>
+            <form id="manualForm">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="manualName" placeholder="Guest Name *" class="input-field" required>
+                    <input type="tel" id="manualPhone" placeholder="Phone *" class="input-field" required>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="email" id="manualEmail" placeholder="Email" class="input-field">
+                    <select id="manualTrip" class="input-field" required>${tripsOpt}</select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="manualHotel" placeholder="Hotel Name" class="input-field">
+                    <input type="text" id="manualRoom" placeholder="Room #" class="input-field">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <input type="number" id="manualAdults" value="1" min="0" placeholder="Adults" class="input-field">
+                    <input type="number" id="manualChildren" value="0" min="0" placeholder="Children" class="input-field">
+                    <input type="number" id="manualInfants" value="0" min="0" placeholder="Infants" class="input-field">
+                </div>
+                <input type="date" id="manualDate" class="input-field mb-3" required>
+                <textarea id="manualRequests" rows="2" placeholder="Special Requests" class="input-field"></textarea>
+                <label class="flex items-center gap-2 mt-2">
+                    <input type="checkbox" id="manualPaid"> 
+                    <span class="text-sm">Mark as Paid & Confirmed</span>
+                </label>
+                <div class="flex gap-3 mt-4">
+                    <button type="button" onclick="document.getElementById('manualModal')?.remove()" class="flex-1 py-2 border rounded-xl">Cancel</button>
+                    <button type="submit" class="flex-1 btn-primary">Save Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+    document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+    
+    document.getElementById('manualForm').onsubmit = async(e) => {
+        e.preventDefault();
+        try {
+            const tripData = document.getElementById('manualTrip').value.split('|');
+            if(tripData.length < 3 || !tripData[0]) { 
+                showToast('Please select a valid trip', 'error'); 
+                return; 
+            }
+            
+            const adults = Math.max(0, parseInt(document.getElementById('manualAdults').value) || 0);
+            const children = Math.max(0, parseInt(document.getElementById('manualChildren').value) || 0);
+            const infants = Math.max(0, parseInt(document.getElementById('manualInfants').value) || 0);
+            const price = parseFloat(tripData[2]) || 0;
+            const total = (adults + children) * price;
+            
+            const booking = {
+                username: document.getElementById('manualName').value.trim(),
+                phone: document.getElementById('manualPhone').value.trim(),
+                email: document.getElementById('manualEmail').value?.trim() || '',
+                hotelName: document.getElementById('manualHotel').value?.trim() || '',
+                roomNumber: document.getElementById('manualRoom').value?.trim() || '',
+                tour: tripData[1],
+                tripId: tripData[0],
+                adults, childrenUnder12: children, infants,
+                netTotal: total,
+                tripDate: document.getElementById('manualDate').value,
+                specialRequests: document.getElementById('manualRequests').value?.trim() || '',
+                isPaid: document.getElementById('manualPaid').checked,
+                paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
+                resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
+                owner: currentUser?.uid,
+                createdAt: Date.now(),
+                refNumber: 'MAN-' + Date.now().toString().slice(-8)
+            };
+            
+            await db.ref('trip-bookings').push(booking);
+            showToast('Booking added successfully!', 'success');
+            document.getElementById('manualModal')?.remove();
+            loadReservations();
+            calculateAndDisplayBalance();
+        } catch(err) {
+            console.error(err);
+            showToast('Failed to save booking', 'error');
+        }
+    };
+};
+
+// 2. Fix filter chip active state
+function setTripFilter(f) {
+    tripFilter = f;
+    document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active'));
+    if(event?.target) {
+        const chip = event.target.closest('.filter-chip');
+        if(chip) chip.classList.add('active');
+    }
+    renderTrips();
+}
+
+function switchReservationTab(tab) {
+    currentResTab = tab;
+    document.querySelectorAll('#reservations-section .filter-chip').forEach(c => c.classList.remove('active'));
+    if(event?.target) {
+        const chip = event.target.closest('.filter-chip');
+        if(chip) chip.classList.add('active');
+    }
+    applyFilters();
+}
+
+// 3. Safe chart destruction
+function safeDestroyChart(chart) {
+    if(chart && typeof chart.destroy === 'function') {
+        try { chart.destroy(); } catch(e) { console.warn('Chart destroy error:', e); }
+    }
+    return null;
+}
+
+// 4. Fixed eligibility check for payouts
+function isEligibleForPayout(booking) {
+    if(booking.status !== 'confirmed') return false;
+    const confirmedAt = booking.confirmedAt || booking.createdAt;
+    if(!confirmedAt) return false;
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    return confirmedAt <= oneDayAgo;
+}
+
+// 5. Enhanced payout calculation
+async function calculateAndDisplayBalance() {
+    if(!currentUser) return;
+    
+    const eligibleBookings = allReservations.filter(r => isEligibleForPayout(r));
+    const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
+    const commission = totalRevenue * COMMISSION_RATE;
+    const netEarnings = totalRevenue - commission;
+    
+    let completedPayouts = 0;
+    let pendingPayouts = 0;
+    let historyHtml = '';
+    
+    try {
+        const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
+        if(payoutSnap.exists()) {
+            payoutSnap.forEach(child => {
+                const req = child.val();
+                const amount = parseFloat(req.amount) || 0;
+                if(req.status === 'completed') {
+                    completedPayouts += amount;
+                    historyHtml += `<div class="flex justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                        <span>${new Date(req.createdAt).toLocaleDateString()}</span>
+                        <span class="font-bold">EGP ${amount.toFixed(2)}</span>
+                        <span class="status-badge status-paid">✓ Completed</span>
+                    </div>`;
+                } else if(req.status === 'pending') {
+                    pendingPayouts += amount;
+                    historyHtml += `<div class="flex justify-between p-3 bg-amber-50 dark:bg-amber-900/30 rounded-xl">
+                        <span>${new Date(req.createdAt).toLocaleDateString()}</span>
+                        <span class="font-bold">EGP ${amount.toFixed(2)}</span>
+                        <span class="status-badge status-new">⏳ Pending</span>
+                    </div>`;
+                }
+            });
+        }
+    } catch(e) { 
+        console.error("Payout history error:", e); 
+    }
+    
+    const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
+    
+    document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
+    document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
+    
+    if(historyHtml === '') {
+        historyHtml = '<div class="text-center py-6 text-gray-500">No payout history yet</div>';
+    }
+    document.getElementById('payoutHistoryList').innerHTML = historyHtml;
+    
+    window.currentAvailableBalance = availableBalance;
+    
+    // Debug info (optional - can hide in production)
+    document.getElementById('debugInfo').innerHTML = `
+        <details class="text-xs">
+            <summary class="cursor-pointer font-medium">🔍 Balance Details</summary>
+            <div class="mt-2 space-y-1">
+                ✓ Eligible bookings: <span class="font-bold">${eligibleBookings.length}</span><br>
+                📊 Gross revenue: <span class="font-bold">EGP ${totalRevenue.toFixed(0)}</span><br>
+                💸 Platform fee (5%): <span class="text-red-500">- EGP ${commission.toFixed(0)}</span><br>
+                💰 Net earnings: <span class="font-bold">EGP ${netEarnings.toFixed(0)}</span><br>
+                🏦 Paid out: <span class="text-green-600">- EGP ${completedPayouts.toFixed(0)}</span><br>
+                ⏳ Pending: <span class="text-amber-600">- EGP ${pendingPayouts.toFixed(0)}</span><br>
+                ✅ <strong>Available: EGP ${availableBalance.toFixed(2)}</strong>
+            </div>
+        </details>
+    `;
+}
+
+// 6. WhatsApp link fix
+window.showBookingDetails = async function(bookingId) {
+    const b = allReservations.find(b => b.id === bookingId); 
+    if(!b) return;
+    
+    const html = `<div class="booking-details-grid">
+        <!-- ... existing details grid ... -->
+        <div class="booking-detail-item col-span-2">
+            <div class="booking-detail-label">Contact</div>
+            <div class="booking-detail-value">
+                ${b.phone ? `<a href="tel:${b.phone.replace(/[^0-9+]/g,'')}" class="text-orange-600 hover:underline">📞 ${b.phone}</a>` : '-'}
+                ${b.email ? `<br><a href="mailto:${b.email}" class="text-orange-600 hover:underline">✉️ ${b.email}</a>` : ''}
+            </div>
+        </div>
+    </div>`;
+    
+    document.getElementById('bookingDetailsContent').innerHTML = html;
+    
+    // WhatsApp link with proper formatting
+    const wa = document.getElementById('whatsappLink');
+    if(b.phone) {
+        const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
+        const name = b.username || 'Guest';
+        const ref = b.refNumber || b.id?.slice(-8) || 'N/A';
+        const tour = b.tour || 'Selected Trip';
+        const date = b.tripDate || 'TBD';
+        const pickup = b.pickuptime || 'To be confirmed';
+        
+        const msg = `Hello ${name},%0A%0A✅ Your booking *${ref}* for *${tour}* on *${date}* is confirmed!%0A%0A🚐 Pickup time: ${pickup}%0A%0A📍 Please be ready 10 minutes before pickup.%0A%0A*Discover Sharm Team* 🌴`;
+        wa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
+        wa.style.opacity = '1';
+        wa.style.pointerEvents = 'auto';
+    } else {
+        wa.href = '#';
+        wa.style.opacity = '0.5';
+        wa.style.pointerEvents = 'none';
+        wa.onclick = (e) => { e.preventDefault(); showToast('No phone number provided', 'error'); };
+    }
+    
+    document.getElementById('booking-modal').classList.add('open'); 
+    document.getElementById('booking-modal-overlay').classList.add('open'); 
+    document.body.style.overflow = 'hidden';
+};
+
+// 7. Global error handling
+window.addEventListener('error', (e) => {
+    console.error('💥 Global error:', { message: e.message, file: e.filename, line: e.lineno });
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('💥 Unhandled promise rejection:', e.reason);
+});
+
+// 8. Initialize with safety checks
+document.addEventListener('DOMContentLoaded', () => {
+    initDarkMode();
+    
+    // Ensure all global functions are properly exposed
+    const globals = {
+        setTripFilter, switchReservationTab, editTrip, deleteTripPrompt, 
+        markAsPaid, confirmBookingWithPickup, openManualBookingModal,
+        refreshReservations, exportToExcel, openAddTripModal, 
+        showBookingDetails, closeBookingModal, prevPage, nextPage
+    };
+    
+    Object.assign(window, globals);
+});
+
+console.log('✅ Discover Sharm Admin Dashboard - All fixes applied');
+</script>
+  
 </body>
 </html>
