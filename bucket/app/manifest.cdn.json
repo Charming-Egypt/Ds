@@ -2,7 +2,7 @@
   "name": "Discover Sharm",
   "id": "/",
   "short_name": "Discover Sharm",
-  "description": "Discover Sharm , your Personal Guide",
+  "description": "Discover Your Next Adventure!",
   "version": "1.0",
   "dir": "auto",
   "lang": "en-US",
@@ -190,8 +190,8 @@
     {
       "name": "Activities",
       "short_name": "Activities",
-      "description": "Discover Sharm with our Activities",
-      "url": "https://www.discover-sharm.com/trips",
+      "description": "Discover your Amazon Next Adventure ",
+      "url": "https://www.discover-sharm.com/p/trips",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
@@ -202,8 +202,8 @@
     {
       "name": "Hotels",
       "short_name": "Hotels",
-      "description": "the Top Recommended Hotels from Discover Sharm",
-      "url": "https://www.discover-sharm.com/hotels",
+      "description": "Discover your Name Amazing Stay",
+      "url": "https://www.discover-sharm.com/p/hotels",
       "icons": [
         {
           "src": "icons/android-chrome-96x96.png",
