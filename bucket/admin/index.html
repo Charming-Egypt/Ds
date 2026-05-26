@@ -944,16 +944,6 @@ if(tripForm) {
     };
 
 
-// تأكد من وجود هذا السطر في نهاية الكود
-const manualForm = document.getElementById('manualForm');
-if(manualForm) {
-    console.log("✅ Manual form found, adding listener");
-    manualForm.onsubmit = async(e) => {
-        // الكود أعلاه
-    };
-} else {
-    console.error("❌ Manual form not found!");
-}
   
     
     async function updateDashboard(){ 
@@ -1263,6 +1253,19 @@ if(snapshot.exists()) {
     };
 }
 
+
+
+// تأكد من وجود هذا السطر في نهاية الكود
+const manualForm = document.getElementById('manualForm');
+if(manualForm) {
+    console.log("✅ Manual form found, adding listener");
+    manualForm.onsubmit = async(e) => {
+        // الكود أعلاه
+    };
+} else {
+    console.error("❌ Manual form not found!");
+}
+  
 // ربط دالة saveTrip بـ form
 const tripForm = document.getElementById('item-form');
 if(tripForm) {
