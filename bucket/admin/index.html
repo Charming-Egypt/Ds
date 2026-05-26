@@ -908,6 +908,20 @@ if(tripForm) {
         const baseTotal = (adults + children) * currentTripData.price;
         const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
         const total = baseTotal + extraTotal;
+      // 1️⃣ إنشاء refNumber أولي
+let refNumber = 'M-DS' + Date.now().toString().slice(-8);
+
+// 2️⃣ 🔴 هنا ضع التحقق من التكرار 🔴
+const snapshot = await db.ref(`trip-bookings/${refNumber}`).once('value');
+if(snapshot.exists()) {
+    // إذا كان الرقم موجوداً، قم بإنشاء رقم جديد مع إضافة أرقام عشوائية
+    refNumber = 'M-DS' + Date.now().toString().slice(-8) + Math.random().toString(36).substring(2, 6);
+    // تحقق مرة أخرى (اختياري للتأكد)
+    const secondCheck = await db.ref(`trip-bookings/${refNumber}`).once('value');
+    if(secondCheck.exists()) {
+        refNumber = 'M-DS' + Date.now().toString().slice(-8) + Date.now().toString().slice(-4);
+    }
+}
         const booking = {
             username: document.getElementById('manualName').value,
             phone: document.getElementById('manualPhone').value,
@@ -930,9 +944,9 @@ if(tripForm) {
             uid: currentUser.uid,
             status: 'pending',
             createdAt: Date.now(),
-            refNumber: 'MAN-' + Date.now().toString().slice(-8)
+            refNumber: refNumber
         };
-        await db.ref('trip-bookings/${refNumber}').push(booking);
+        await db.ref(`trip-bookings/${refNumber}`).set(booking);
         showToast('Manual booking added successfully!');
         closeManualModal();
         loadReservations();
