@@ -355,34 +355,206 @@
         } 
     });
     
-    async function loadAllData(){ let ts=await db.ref('trips').once('value'); allTrips=Object.entries(ts.val()||{}).map(([id,val])=>({id,...val})); renderTrips(); }
-    function renderTrips(){ let filtered=allTrips.filter(t=>{ let m=(t.name||'').toLowerCase().includes(tripSearch.toLowerCase()); if(tripFilter=='approved') return m && (t.approved===true||t.approved==="true"); if(tripFilter=='pending') return m && !(t.approved===true||t.approved==="true"); return m; }); let c=document.getElementById('trips-container'); if(!filtered.length){ c.innerHTML='<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; return; } c.innerHTML=filtered.map(t=>`<div class="card"><img src="${t.image||'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3"><h3 class="font-bold text-lg">${t.name||''}</h3><p class="text-orange-600 font-bold">EGP ${t.price||0}</p><p class="text-sm text-gray-500">${t.duration||''}</p><div class="flex gap-2 mt-3"><button onclick="editTrip('${t.id}')" class="bg-blue-500 text-white px-3 py-2 rounded-xl text-sm">Edit</button><button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 text-white px-3 py-2 rounded-xl text-sm">Delete</button></div></div>`).join(''); }
-    
+      
     function createArrayInput(container, placeholder, value=''){ let div=document.createElement('div'); div.className='array-item'; let inp=document.createElement('input'); inp.type='text'; inp.className='input-field flex-1'; inp.placeholder=placeholder; inp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(inp); div.appendChild(rm); container.appendChild(div); return inp; }
     function loadTimelineItems(container, items){ items.forEach(item=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; time.value=item.time||''; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; title.value=item.title||''; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; desc.value=item.description||''; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); container.appendChild(div); }); }
     function loadTourTypes(container, items){ Object.entries(items).forEach(([key,value])=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; nameInp.value=key; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; priceInp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); container.appendChild(div); }); }
     
-    function openAddTripModal(){ document.getElementById('modal-title').innerText='Add New Trip'; document.getElementById('item-form').reset(); document.getElementById('item-approved').checked=true; document.getElementById('item-id').value=''; document.getElementById('imageList').innerHTML=''; document.getElementById('includedList').innerHTML=''; document.getElementById('notIncludedList').innerHTML=''; document.getElementById('timelineList').innerHTML=''; document.getElementById('whatToBringList').innerHTML=''; document.getElementById('tourTypeList').innerHTML=''; openModal(); }
-    function editTrip(id){ let t=allTrips.find(t=>t.id===id); if(!t) return; document.getElementById('modal-title').innerText='Edit Trip'; document.getElementById('item-id').value=id; document.getElementById('item-name').value=t.name||''; document.getElementById('item-desc').value=t.description||''; document.getElementById('item-price').value=t.price||0; document.getElementById('item-cprice').value=t.cprice||0; document.getElementById('item-duration').value=t.duration||''; document.getElementById('item-bookingLink').value=t.bookingLink||id; document.getElementById('item-approved').checked=(t.approved===true||t.approved==="true"); document.getElementById('item-image').value=t.image||''; 
-        document.getElementById('imageList').innerHTML=''; if(t.media?.images) t.media.images.forEach(img=>createArrayInput(document.getElementById('imageList'),'Image URL',img));
-        document.getElementById('includedList').innerHTML=''; if(t.included) t.included.forEach(item=>createArrayInput(document.getElementById('includedList'),'Included item',item));
-        document.getElementById('notIncludedList').innerHTML=''; if(t.notIncluded) t.notIncluded.forEach(item=>createArrayInput(document.getElementById('notIncludedList'),'Not included item',item));
-        document.getElementById('whatToBringList').innerHTML=''; if(t.whatToBring) t.whatToBring.forEach(item=>createArrayInput(document.getElementById('whatToBringList'),'What to bring',item));
-        document.getElementById('timelineList').innerHTML=''; if(t.timeline) loadTimelineItems(document.getElementById('timelineList'), t.timeline);
-        document.getElementById('tourTypeList').innerHTML=''; if(t.tourtype) loadTourTypes(document.getElementById('tourTypeList'), t.tourtype);
-        openModal(); }
-    async function saveTrip(e){ e.preventDefault(); let id=document.getElementById('item-id').value; let newId = document.getElementById('item-bookingLink').value.toLowerCase().replace(/\s+/g,'-'); let finalId = id || newId;
-        let data={ name:document.getElementById('item-name').value, description:document.getElementById('item-desc').value, price:parseFloat(document.getElementById('item-price').value)||0, cprice:parseFloat(document.getElementById('item-cprice').value)||0, duration:document.getElementById('item-duration').value, bookingLink:finalId, approved:document.getElementById('item-approved').checked?"true":"false", image:document.getElementById('item-image').value, owner:currentUser.uid, updatedAt:Date.now() };
-        data.media = { images: [] }; document.querySelectorAll('#imageList input').forEach(inp=>{ if(inp.value.trim()) data.media.images.push(inp.value.trim()); });
-        data.included = []; document.querySelectorAll('#includedList input').forEach(inp=>{ if(inp.value.trim()) data.included.push(inp.value.trim()); });
-        data.notIncluded = []; document.querySelectorAll('#notIncludedList input').forEach(inp=>{ if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); });
-        data.whatToBring = []; document.querySelectorAll('#whatToBringList input').forEach(inp=>{ if(inp.value.trim()) data.whatToBring.push(inp.value.trim()); });
-        data.timeline = []; document.querySelectorAll('#timelineList .array-item').forEach(div=>{ let inp=div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.timeline.push({ time:inp[0].value, title:inp[1].value, description:inp[2]?.value||'' }); });
-        data.tourtype = {}; document.querySelectorAll('#tourTypeList .array-item').forEach(div=>{ let inp=div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()]=parseFloat(inp[1].value)||0; });
-        if(id) await db.ref(`trips/${id}`).update(data); else await db.ref('trips').push({...data,createdAt:Date.now()}); showToast('Trip saved!'); closeModal(); loadAllData(); }
-    function deleteTripPrompt(id){ pendingDeleteId=id; openSheet('delete-modal','delete-overlay'); }
-    async function confirmDelete(){ if(pendingDeleteId){ await db.ref(`trips/${pendingDeleteId}`).remove(); showToast('Trip deleted'); loadAllData(); closeDeleteModal(); pendingDeleteId=null; } }
+    // ========== تعديل دالة فتح إضافة رحلة جديدة ==========
+function openAddTripModal() { 
+    document.getElementById('modal-title').innerText = 'Add New Trip'; 
+    document.getElementById('item-form').reset(); 
+    // تم إزالة السطر الذي كان يحدد checked=true للتوجل
+    document.getElementById('item-id').value = ''; 
+    document.getElementById('imageList').innerHTML = ''; 
+    document.getElementById('includedList').innerHTML = ''; 
+    document.getElementById('notIncludedList').innerHTML = ''; 
+    document.getElementById('timelineList').innerHTML = ''; 
+    document.getElementById('whatToBringList').innerHTML = ''; 
+    document.getElementById('tourTypeList').innerHTML = ''; 
+    openModal(); 
+}
+
+// ========== تعديل دالة تعديل رحلة ==========
+function editTrip(id) { 
+    let t = allTrips.find(t => t.id === id); 
+    if(!t) return; 
+    document.getElementById('modal-title').innerText = 'Edit Trip'; 
+    document.getElementById('item-id').value = id; 
+    document.getElementById('item-name').value = t.name || ''; 
+    document.getElementById('item-desc').value = t.description || ''; 
+    document.getElementById('item-price').value = t.price || 0; 
+    document.getElementById('item-cprice').value = t.cprice || 0; 
+    document.getElementById('item-duration').value = t.duration || ''; 
+    document.getElementById('item-bookingLink').value = t.bookingLink || id; 
+    // تم إزالة السطر الذي كان يحدد checked للتوجل
+    document.getElementById('item-image').value = t.image || ''; 
+    
+    document.getElementById('imageList').innerHTML = ''; 
+    if(t.media?.images) t.media.images.forEach(img => createArrayInput(document.getElementById('imageList'), 'Image URL', img));
+    document.getElementById('includedList').innerHTML = ''; 
+    if(t.included) t.included.forEach(item => createArrayInput(document.getElementById('includedList'), 'Included item', item));
+    document.getElementById('notIncludedList').innerHTML = ''; 
+    if(t.notIncluded) t.notIncluded.forEach(item => createArrayInput(document.getElementById('notIncludedList'), 'Not included item', item));
+    document.getElementById('whatToBringList').innerHTML = ''; 
+    if(t.whatToBring) t.whatToBring.forEach(item => createArrayInput(document.getElementById('whatToBringList'), 'What to bring', item));
+    document.getElementById('timelineList').innerHTML = ''; 
+    if(t.timeline) loadTimelineItems(document.getElementById('timelineList'), t.timeline);
+    document.getElementById('tourTypeList').innerHTML = ''; 
+    if(t.tourtype) loadTourTypes(document.getElementById('tourTypeList'), t.tourtype);
+    openModal(); 
+}
+
+// ========== تعديل دالة حفظ الرحلة (bookingLink هو المفتاح، approved دائماً false) ==========
+async function saveTrip(e) { 
+    e.preventDefault(); 
+    
+    let bookingLink = document.getElementById('item-bookingLink').value.trim().toLowerCase().replace(/\s+/g, '-');
+    
+    if(!bookingLink) {
+        showToast('Booking Link is required!', 'error');
+        return;
+    }
+    
+    let data = { 
+        name: document.getElementById('item-name').value, 
+        description: document.getElementById('item-desc').value, 
+        price: parseFloat(document.getElementById('item-price').value) || 0, 
+        cprice: parseFloat(document.getElementById('item-cprice').value) || 0, 
+        duration: document.getElementById('item-duration').value, 
+        bookingLink: bookingLink,
+        approved: "false",  // دائماً false
+        image: document.getElementById('item-image').value, 
+        owner: currentUser.uid,
+        updatedAt: Date.now() 
+    };
+    
+    // إضافة createdAt للرحلات الجديدة فقط
+    const isExisting = document.getElementById('item-id').value;
+    if(!isExisting) {
+        data.createdAt = Date.now();
+    }
+    
+    // جمع الصور الإضافية
+    data.media = { images: [] }; 
+    document.querySelectorAll('#imageList input').forEach(inp => { 
+        if(inp.value.trim()) data.media.images.push(inp.value.trim()); 
+    });
+    
+    // جمع الميزات
+    data.included = []; 
+    document.querySelectorAll('#includedList input').forEach(inp => { 
+        if(inp.value.trim()) data.included.push(inp.value.trim()); 
+    });
+    
+    data.notIncluded = []; 
+    document.querySelectorAll('#notIncludedList input').forEach(inp => { 
+        if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); 
+    });
+    
+    data.whatToBring = []; 
+    document.querySelectorAll('#whatToBringList input').forEach(inp => { 
+        if(inp.value.trim()) data.whatToBring.push(inp.value.trim()); 
+    });
+    
+    // جمع الجدول الزمني
+    data.timeline = []; 
+    document.querySelectorAll('#timelineList .array-item').forEach(div => { 
+        let inp = div.querySelectorAll('input'); 
+        if(inp[0]?.value && inp[1]?.value) data.timeline.push({ 
+            time: inp[0].value, 
+            title: inp[1].value, 
+            description: inp[2]?.value || '' 
+        }); 
+    });
+    
+    // جمع الخدمات الإضافية
+    data.tourtype = {}; 
+    document.querySelectorAll('#tourTypeList .array-item').forEach(div => { 
+        let inp = div.querySelectorAll('input'); 
+        if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()] = parseFloat(inp[1].value) || 0; 
+    });
+    
+    try {
+        // استخدام bookingLink كمفتاح رئيسي
+        await db.ref(`trips/${bookingLink}`).set(data);
+        showToast('Trip saved successfully!'); 
+        closeModal(); 
+        loadAllData(); 
+    } catch(error) {
+        console.error("Save trip error:", error);
+        showToast('Error saving trip: ' + error.message, 'error');
+    }
+}
+
+// ========== تعديل دالة عرض الرحلات (بدون زر Approve، بدون status) ==========
+function renderTrips() { 
+    let filtered = allTrips.filter(t => { 
+        let m = (t.name || '').toLowerCase().includes(tripSearch.toLowerCase()); 
+        if(tripFilter == 'all') return m;
+        if(tripFilter == 'approved') return m && (t.approved === true || t.approved === "true");
+        if(tripFilter == 'pending') return m && !(t.approved === true || t.approved === "true");
+        return m;
+    }); 
+    
+    let c = document.getElementById('trips-container'); 
+    if(!filtered.length){ 
+        c.innerHTML = '<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; 
+        return; 
+    } 
+    
+    c.innerHTML = filtered.map(t => {
+        // عرض حالة الرحلة (بدون زر موافقة)
+        const isApproved = t.approved === true || t.approved === "true";
+        const statusBadge = isApproved 
+            ? '<span class="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>Approved</span>'
+            : '<span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>Pending</span>';
+        
+        return `<div class="card">
+            <img src="${t.image || 'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3">
+            <div class="flex justify-between items-start mb-2">
+                <h3 class="font-bold text-lg">${t.name || ''}</h3>
+                ${statusBadge}
+            </div>
+            <p class="text-orange-600 font-bold">EGP ${t.price || 0}</p>
+            <p class="text-sm text-gray-500">${t.duration || ''}</p>
+            <p class="text-xs text-gray-400 mt-1">🔗 bookingLink: ${t.bookingLink || t.id}</p>
+            <div class="flex gap-2 mt-3">
+                <button onclick="editTrip('${t.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-edit mr-1"></i>Edit</button>
+                <button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-trash mr-1"></i>Delete</button>
+            </div>
+        </div>`;
+    }).join(''); 
+}
+
+// ========== دالة تحميل الرحلات ==========
+async function loadAllData() { 
+    let ts = await db.ref('trips').once('value'); 
+    allTrips = Object.entries(ts.val() || {}).map(([id, val]) => ({ 
+        id: id,  // id هو bookingLink نفسه
+        ...val 
+    })); 
+    renderTrips(); 
+}
+
+// ========== دالة حذف الرحلة ==========
+function deleteTripPrompt(id) { 
+    pendingDeleteId = id; 
+    openSheet('delete-modal', 'delete-overlay'); 
+}
+
+async function confirmDelete() { 
+    if(pendingDeleteId) { 
+        await db.ref(`trips/${pendingDeleteId}`).remove(); 
+        showToast('Trip deleted'); 
+        loadAllData(); 
+        closeDeleteModal(); 
+        pendingDeleteId = null; 
+    } 
+}
     document.getElementById('confirm-delete-btn')?.addEventListener('click',confirmDelete);
+
+  
     function setTripFilter(f){ tripFilter=f; document.querySelectorAll('#trips-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); renderTrips(); }
     document.getElementById('tripSearch')?.addEventListener('input',e=>{ tripSearch=e.target.value; renderTrips(); });
     document.getElementById('addImageBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('imageList'),'Image URL'));
