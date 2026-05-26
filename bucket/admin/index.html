@@ -325,6 +325,7 @@
     let currentPage = 1;
     const itemsPerPage = 10;
     let filteredReservations = [];
+    let currentTripData = null;
 
     function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
     function isOlderThanOneDay(dateStr){ if(!dateStr) return false; const d = new Date(dateStr); const oneDayAgo = new Date(); oneDayAgo.setDate(oneDayAgo.getDate() - 1); oneDayAgo.setHours(0,0,0,0); d.setHours(0,0,0,0); return d <= oneDayAgo; }
@@ -697,7 +698,7 @@ async function confirmDelete() {
     
     // Manual Booking with Extra Services
     let selectedExtraServices = [];
-    let currentTripData = null;
+    
     
     function openManualBookingModal() {
         const modal = document.getElementById('manual-modal');
