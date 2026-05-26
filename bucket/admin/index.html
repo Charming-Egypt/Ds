@@ -842,7 +842,110 @@ Object.assign(window, {
 console.log('✅ All patches applied - Dashboard ready!');
 </script>
 
+<script>
+// ========== PATCH: Fix Trip Save and Manual Booking ==========
+// تعديل دالة حفظ الرحلة
+window.saveTrip = async function(e) { 
+    if(e) e.preventDefault(); 
+    let id = document.getElementById('item-id').value; 
+    let newId = document.getElementById('item-bookingLink').value.toLowerCase().replace(/\s+/g,'-'); 
+    let finalId = id || newId;
+    
+    let data = { 
+        name: document.getElementById('item-name').value, 
+        description: document.getElementById('item-desc').value, 
+        price: parseFloat(document.getElementById('item-price').value) || 0, 
+        cprice: parseFloat(document.getElementById('item-cprice').value) || 0, 
+        duration: document.getElementById('item-duration').value, 
+        bookingLink: finalId, 
+        approved: document.getElementById('item-approved').checked ? "true" : "false", 
+        image: document.getElementById('item-image').value, 
+        owner: currentUser.uid,
+        uid: currentUser.uid,
+        status: 'active',
+        createdAt: Date.now(),
+        updatedAt: Date.now() 
+    };
+    
+    data.media = { images: [] }; 
+    document.querySelectorAll('#imageList input').forEach(inp => { if(inp.value.trim()) data.media.images.push(inp.value.trim()); });
+    data.included = []; document.querySelectorAll('#includedList input').forEach(inp => { if(inp.value.trim()) data.included.push(inp.value.trim()); });
+    data.notIncluded = []; document.querySelectorAll('#notIncludedList input').forEach(inp => { if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); });
+    data.whatToBring = []; document.querySelectorAll('#whatToBringList input').forEach(inp => { if(inp.value.trim()) data.whatToBring.push(inp.value.trim()); });
+    data.timeline = []; document.querySelectorAll('#timelineList .array-item').forEach(div => { let inp = div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.timeline.push({ time: inp[0].value, title: inp[1].value, description: inp[2]?.value || '' }); });
+    data.tourtype = {}; document.querySelectorAll('#tourTypeList .array-item').forEach(div => { let inp = div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()] = parseFloat(inp[1].value) || 0; });
+    
+    try {
+        if(id) { await db.ref(`trips/${id}`).update(data); } 
+        else { await db.ref('trips').push(data); }
+        showToast('Trip saved successfully!'); 
+        closeModal(); 
+        loadAllData(); 
+    } catch(error) {
+        console.error("Save trip error:", error);
+        showToast('Error saving trip: ' + error.message, 'error');
+    }
+};
 
+// تعديل دالة الحجز اليدوي
+if(document.getElementById('manualForm')) {
+    document.getElementById('manualForm').onsubmit = async(e) => {
+        e.preventDefault();
+        if(!window.currentTripData) { showToast('Please select a trip', 'error'); return; }
+        
+        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+        const children = parseInt(document.getElementById('manualChildren').value) || 0;
+        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
+        const baseTotal = (adults + children) * window.currentTripData.price;
+        const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
+        const total = baseTotal + extraTotal;
+        
+        const booking = {
+            username: document.getElementById('manualName').value,
+            phone: document.getElementById('manualPhone').value,
+            email: document.getElementById('manualEmail').value || '',
+            hotelName: document.getElementById('manualHotel').value || '',
+            roomNumber: document.getElementById('manualRoom').value || '',
+            tour: window.currentTripData.name,
+            tripId: window.currentTripData.id,
+            adults: adults,
+            childrenUnder12: children,
+            infants: infants,
+            netTotal: total,
+            tripDate: document.getElementById('manualDate').value,
+            specialRequests: document.getElementById('manualRequests').value || '',
+            extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${s.price}`).join(', '),
+            isPaid: document.getElementById('manualPaid').checked,
+            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
+            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
+            owner: currentUser.uid,
+            uid: currentUser.uid,
+            status: 'pending',
+            createdAt: Date.now(),
+            refNumber: 'MAN-' + Date.now().toString().slice(-8)
+        };
+        
+        try {
+            await db.ref('trip-bookings').push(booking);
+            showToast('Manual booking added successfully!');
+            closeManualModal();
+            loadReservations();
+            calculateAndDisplayBalance();
+        } catch(error) {
+            console.error("Manual booking error:", error);
+            showToast('Error adding booking: ' + error.message, 'error');
+        }
+    };
+}
+
+// ربط دالة saveTrip بـ form
+const tripForm = document.getElementById('item-form');
+if(tripForm) {
+    tripForm.onsubmit = window.saveTrip;
+}
+
+console.log('✅ Fixes applied - Trip save and manual booking should work now!');
+</script>
 
 
 
