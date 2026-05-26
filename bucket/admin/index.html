@@ -932,7 +932,7 @@ if(tripForm) {
             createdAt: Date.now(),
             refNumber: 'MAN-' + Date.now().toString().slice(-8)
         };
-        await db.ref(`trip-bookings/${refNumber}`).set(booking);
+        await db.ref('trip-bookings/${refNumber}').push(booking);
         showToast('Manual booking added successfully!');
         closeManualModal();
         loadReservations();
