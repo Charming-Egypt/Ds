@@ -284,21 +284,12 @@
     <div class="modal-overlay" id="booking-modal-overlay" onclick="closeBookingModal()"></div>
     <div class="modal-sheet" id="booking-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4 text-orange-600">📋 Booking Details</h3><div id="bookingDetailsContent"></div><div class="flex gap-3 mt-5"><button onclick="closeBookingModal()" class="flex-1 py-3 border rounded-xl">Close</button><a id="whatsappLink" href="#" target="_blank" class="flex-1 bg-green-600 text-white py-3 rounded-xl text-center">📱 WhatsApp</a></div></div></div>
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal()"></div>
+    <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3><form id="item-form"><input type="hidden" id="item-id"><div class="space-y-3"><input type="text" id="item-name" placeholder="Trip Name *" class="input-field" required><textarea id="item-desc" placeholder="Description" rows="3" class="input-field"></textarea><div class="grid grid-cols-2 gap-3"><input type="number" id="item-price" placeholder="Price (EGP)" class="input-field"><input type="number" id="item-cprice" placeholder="Child Price" class="input-field"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="item-duration" placeholder="Duration" class="input-field"><input type="text" id="item-bookingLink" placeholder="Booking Slug" class="input-field"></div><div class="flex justify-between items-center"><span>Approved</span><label class="relative inline-block w-12 h-6"><input type="checkbox" id="item-approved" class="opacity-0 w-0 h-0" checked><span class="absolute cursor-pointer inset-0 bg-gray-300 rounded-full transition before:absolute before:h-5 before:w-5 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition"></span></label></div><input type="text" id="item-image" placeholder="Main Image URL" class="input-field"><div><label>Additional Images</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Image</button></div><div><label>Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Not Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Timeline</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Event</button></div><div><label>What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Extra Services (Name:Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
     <div class="modal-overlay" id="pickup-overlay" onclick="closePickupModal()"></div>
     <div class="modal-sheet" id="pickup-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-3 text-orange-600">⏰ Set Pickup Time</h3><input type="time" id="pickupTimeInput" class="input-field mb-4"><div class="flex gap-3"><button onclick="closePickupModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirmPickupBtn" class="flex-1 btn-primary">Confirm Booking</button></div></div></div>
     <div class="modal-overlay" id="delete-overlay" onclick="closeDeleteModal()"></div>
     <div class="modal-sheet" id="delete-modal"><div class="modal-handle"></div><div class="p-5 text-center"><i class="fas fa-trash-alt text-4xl text-red-500 mb-3"></i><h3 class="text-xl font-bold">Delete Trip?</h3><div class="flex gap-3 mt-5"><button onclick="closeDeleteModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white rounded-xl py-3">Delete</button></div></div></div>
-    <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3><form id="item-form"><input type="hidden" id="item-id"><div class="space-y-3"><input type="text" id="item-name" placeholder="Trip Name *" class="input-field" required><textarea id="item-desc" placeholder="Description" rows="3" class="input-field"></textarea><div class="grid grid-cols-2 gap-3"><input type="number" id="item-price" placeholder="Price (EGP)" class="input-field"><input type="number" id="item-cprice" placeholder="Child Price" class="input-field"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="item-duration" placeholder="Duration" class="input-field"><input type="text" id="item-bookingLink" placeholder="Booking Slug" class="input-field"></div>
-
-<!-- ====== تم إزالة التوجل واستبداله بهذه الرسالة ====== -->
-<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-center">
-    <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
-    <span class="text-sm">This trip will be saved as <strong class="text-yellow-500">Pending</strong>. It will not be visible until approved by admin.</span>
-</div>
-<!-- ================================================ -->
-
-<input type="text" id="item-image" placeholder="Main Image URL" class="input-field"><div><label>Additional Images</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Image</button></div><div><label>Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Not Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Timeline</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Event</button></div><div><label>What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Extra Services (Name:Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
-  <div id="toast" class="toast"></div>
+    <div id="toast" class="toast"></div>
 </div>
 
 <script>
@@ -708,146 +699,119 @@ async function confirmDelete() {
     let selectedExtraServices = [];
     let currentTripData = null;
     
-  // أعد تعريف دالة الحجز اليدوي بالكامل
-function openManualBookingModal() {
-    const modal = document.getElementById('manual-modal');
-    const overlay = document.getElementById('manualModalOverlay');
-    modal.classList.add('open');
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    function openManualBookingModal() {
+        const modal = document.getElementById('manual-modal');
+        const overlay = document.getElementById('manualModalOverlay');
+        modal.classList.add('open');
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        const tripSelect = document.getElementById('manualTrip');
+        tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
+        allTrips.forEach(trip => { tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${trip.name} - EGP ${trip.price}</option>`; });
+        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+        selectedExtraServices = [];
+        currentTripData = null;
+        document.getElementById('extraServicesContainer').style.display = 'none';
+        document.getElementById('priceSummary').style.display = 'none';
+        document.getElementById('manualForm').reset();
+        document.getElementById('manualAdults').value = 1;
+        document.getElementById('manualChildren').value = 0;
+        document.getElementById('manualInfants').value = 0;
+    }
     
-    // تعبئة قائمة الرحلات
-    const tripSelect = document.getElementById('manualTrip');
-    tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
-    allTrips.forEach(trip => { 
-        tripSelect.innerHTML += `<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`; 
-    });
+    function closeManualModal() {
+        const modal = document.getElementById('manual-modal');
+        const overlay = document.getElementById('manualModalOverlay');
+        modal.classList.remove('open');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
     
-    document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-    
-    // إعادة تعيين
-    window.selectedExtraServices = [];
-    window.currentTripData = null;
-    document.getElementById('extraServicesContainer').style.display = 'none';
-    document.getElementById('priceSummary').style.display = 'none';
-    document.getElementById('manualForm').reset();
-    document.getElementById('manualAdults').value = 1;
-    document.getElementById('manualChildren').value = 0;
-    document.getElementById('manualInfants').value = 0;
-    
-    // إزالة المستمع القديم وإضافة مستمع جديد
-    tripSelect.onchange = async function(e) {
+    document.getElementById('manualTrip')?.addEventListener('change', async function() {
         const val = this.value;
-        console.log("Selected trip value:", val); // للتأكد من أن الحدث يعمل
-        if(!val) { 
-            window.currentTripData = null;
-            document.getElementById('extraServicesContainer').style.display = 'none'; 
-            document.getElementById('priceSummary').style.display = 'none'; 
-            return; 
-        }
-        const parts = val.split('|');
-        window.currentTripData = {
-            id: parts[0],
-            name: parts[1],
-            price: parseFloat(parts[2])
-        };
-        console.log("currentTripData set:", window.currentTripData);
-        
-        // جلب الخدمات الإضافية
-        const tripSnap = await db.ref(`trips/${window.currentTripData.id}`).once('value');
+        if(!val) { document.getElementById('extraServicesContainer').style.display = 'none'; document.getElementById('priceSummary').style.display = 'none'; return; }
+        const tripData = val.split('|');
+        const tripId = tripData[0];
+        const tripPrice = parseFloat(tripData[2]);
+        currentTripData = { id: tripId, name: tripData[1], price: tripPrice };
+        const tripSnap = await db.ref(`trips/${tripId}`).once('value');
         const trip = tripSnap.val();
-        if(trip?.tourtype && Object.keys(trip.tourtype).length > 0) {
+        if(trip && trip.tourtype && Object.keys(trip.tourtype).length > 0){
             document.getElementById('extraServicesContainer').style.display = 'block';
             const container = document.getElementById('extraServicesList');
             container.innerHTML = '';
-            window.selectedExtraServices = [];
+            selectedExtraServices = [];
             Object.entries(trip.tourtype).forEach(([name, price]) => {
                 const div = document.createElement('div');
                 div.className = 'extra-service-item';
                 div.innerHTML = `<span>${name}</span><span class="font-bold">EGP ${price}</span>`;
                 div.onclick = () => {
                     div.classList.toggle('selected');
-                    if(div.classList.contains('selected')) {
-                        window.selectedExtraServices.push({ name, price: parseFloat(price) });
-                    } else {
-                        window.selectedExtraServices = window.selectedExtraServices.filter(s => s.name !== name);
-                    }
-                    updateManualPrice();
+                    const service = { name, price: parseFloat(price) };
+                    if(div.classList.contains('selected')){ selectedExtraServices.push(service); }
+                    else { selectedExtraServices = selectedExtraServices.filter(s => s.name !== name); }
+                    updatePriceCalculation();
                 };
                 container.appendChild(div);
             });
-        } else {
-            document.getElementById('extraServicesContainer').style.display = 'none';
-        }
+        } else { document.getElementById('extraServicesContainer').style.display = 'none'; }
         document.getElementById('priceSummary').style.display = 'block';
-        updateManualPrice();
-    };
-}
-
-function updateManualPrice() {
-    const adults = parseInt(document.getElementById('manualAdults')?.value) || 0;
-    const children = parseInt(document.getElementById('manualChildren')?.value) || 0;
-    const basePrice = (adults + children) * (window.currentTripData?.price || 0);
-    const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
-    const total = basePrice + extraTotal;
-    document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
-    document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
-    document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
-}
-
-// تحديث دالة إرسال النموذج
-document.getElementById('manualForm').onsubmit = async(e) => {
-    e.preventDefault();
+        updatePriceCalculation();
+    });
     
-    console.log("currentTripData on submit:", window.currentTripData); // للتأكد
-    
-    if(!window.currentTripData) { 
-        showToast('Please select a trip first', 'error'); 
-        return; 
+    function updatePriceCalculation() {
+        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+        const children = parseInt(document.getElementById('manualChildren').value) || 0;
+        const basePrice = (adults + children) * (currentTripData?.price || 0);
+        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
+        const total = basePrice + extraTotal;
+        document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
+        document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
+        document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
     }
     
-    const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-    const children = parseInt(document.getElementById('manualChildren').value) || 0;
-    const infants = parseInt(document.getElementById('manualInfants').value) || 0;
-    const baseTotal = (adults + children) * window.currentTripData.price;
-    const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
-    const total = baseTotal + extraTotal;
+    document.getElementById('manualAdults')?.addEventListener('input', updatePriceCalculation);
+    document.getElementById('manualChildren')?.addEventListener('input', updatePriceCalculation);
     
-    const booking = {
-        username: document.getElementById('manualName').value,
-        phone: document.getElementById('manualPhone').value,
-        email: document.getElementById('manualEmail').value || '',
-        hotelName: document.getElementById('manualHotel').value || '',
-        roomNumber: document.getElementById('manualRoom').value || '',
-        tour: window.currentTripData.name,
-        tripId: window.currentTripData.id,
-        adults: adults,
-        childrenUnder12: children,
-        infants: infants,
-        netTotal: total,
-        tripDate: document.getElementById('manualDate').value,
-        specialRequests: document.getElementById('manualRequests').value || '',
-        extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${s.price}`).join(', '),
-        isPaid: document.getElementById('manualPaid').checked,
-        paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
-        resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
-        owner: currentUser.uid,
-        uid: currentUser.uid,
-        createdAt: Date.now(),
-        refNumber: 'MAN-' + Date.now().toString().slice(-8)
-    };
-    
-    try {
+    document.getElementById('manualForm').onsubmit = async(e) => {
+        e.preventDefault();
+        if(!currentTripData) { showToast('Please select a trip', 'error'); return; }
+        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+        const children = parseInt(document.getElementById('manualChildren').value) || 0;
+        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
+        const baseTotal = (adults + children) * currentTripData.price;
+        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
+        const total = baseTotal + extraTotal;
+        const booking = {
+            username: document.getElementById('manualName').value,
+            phone: document.getElementById('manualPhone').value,
+            email: document.getElementById('manualEmail').value || '',
+            hotelName: document.getElementById('manualHotel').value || '',
+            roomNumber: document.getElementById('manualRoom').value || '',
+            tour: currentTripData.name,
+            tripId: currentTripData.id,
+            adults: adults,
+            childrenUnder12: children,
+            infants: infants,
+            netTotal: total,
+            tripDate: document.getElementById('manualDate').value,
+            specialRequests: document.getElementById('manualRequests').value || '',
+            extraServices: selectedExtraServices.map(s => `${s.name}: ${s.price}`).join(', '),
+            isPaid: document.getElementById('manualPaid').checked,
+            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
+            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
+            owner: currentUser.uid,
+            uid: currentUser.uid,
+            status: 'pending',
+            createdAt: Date.now(),
+            refNumber: 'MAN-' + Date.now().toString().slice(-8)
+        };
         await db.ref('trip-bookings').push(booking);
         showToast('Manual booking added successfully!');
         closeManualModal();
         loadReservations();
         calculateAndDisplayBalance();
-    } catch(error) {
-        console.error("Manual booking error:", error);
-        showToast('Error adding booking: ' + error.message, 'error');
-    }
-};
+    };
     
     async function updateDashboard(){ 
         let ts=await db.ref('trips').once('value'); 
@@ -887,6 +851,8 @@ document.getElementById('manualForm').onsubmit = async(e) => {
 
 
 </script>
+
+
 
 
 <script>
@@ -1045,9 +1011,8 @@ Object.assign(window, {
     showBookingDetails
 });
 
-
+console.log('✅ All patches applied - Dashboard ready!');
 </script>
-
 
 <script>
 // ========== PATCH: Fix Trip Save and Manual Booking ==========
@@ -1151,6 +1116,7 @@ if(tripForm) {
     tripForm.onsubmit = window.saveTrip;
 }
 
+console.log('✅ Fixes applied - Trip save and manual booking should work now!');
 </script>
 
 
