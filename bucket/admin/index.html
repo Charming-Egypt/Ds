@@ -708,119 +708,146 @@ async function confirmDelete() {
     let selectedExtraServices = [];
     let currentTripData = null;
     
-    function openManualBookingModal() {
-        const modal = document.getElementById('manual-modal');
-        const overlay = document.getElementById('manualModalOverlay');
-        modal.classList.add('open');
-        overlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        const tripSelect = document.getElementById('manualTrip');
-        tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
-        allTrips.forEach(trip => { tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${trip.name} - EGP ${trip.price}</option>`; });
-        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-        selectedExtraServices = [];
-        currentTripData = null;
-        document.getElementById('extraServicesContainer').style.display = 'none';
-        document.getElementById('priceSummary').style.display = 'none';
-        document.getElementById('manualForm').reset();
-        document.getElementById('manualAdults').value = 1;
-        document.getElementById('manualChildren').value = 0;
-        document.getElementById('manualInfants').value = 0;
-    }
+  // أعد تعريف دالة الحجز اليدوي بالكامل
+function openManualBookingModal() {
+    const modal = document.getElementById('manual-modal');
+    const overlay = document.getElementById('manualModalOverlay');
+    modal.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
     
-    function closeManualModal() {
-        const modal = document.getElementById('manual-modal');
-        const overlay = document.getElementById('manualModalOverlay');
-        modal.classList.remove('open');
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
+    // تعبئة قائمة الرحلات
+    const tripSelect = document.getElementById('manualTrip');
+    tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
+    allTrips.forEach(trip => { 
+        tripSelect.innerHTML += `<option value="${t.id}|${t.name}|${t.price}">${t.name} - EGP ${t.price}</option>`; 
+    });
     
-    document.getElementById('manualTrip')?.addEventListener('change', async function() {
+    document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+    
+    // إعادة تعيين
+    window.selectedExtraServices = [];
+    window.currentTripData = null;
+    document.getElementById('extraServicesContainer').style.display = 'none';
+    document.getElementById('priceSummary').style.display = 'none';
+    document.getElementById('manualForm').reset();
+    document.getElementById('manualAdults').value = 1;
+    document.getElementById('manualChildren').value = 0;
+    document.getElementById('manualInfants').value = 0;
+    
+    // إزالة المستمع القديم وإضافة مستمع جديد
+    tripSelect.onchange = async function(e) {
         const val = this.value;
-        if(!val) { document.getElementById('extraServicesContainer').style.display = 'none'; document.getElementById('priceSummary').style.display = 'none'; return; }
-        const tripData = val.split('|');
-        const tripId = tripData[0];
-        const tripPrice = parseFloat(tripData[2]);
-        currentTripData = { id: tripId, name: tripData[1], price: tripPrice };
-        const tripSnap = await db.ref(`trips/${tripId}`).once('value');
+        console.log("Selected trip value:", val); // للتأكد من أن الحدث يعمل
+        if(!val) { 
+            window.currentTripData = null;
+            document.getElementById('extraServicesContainer').style.display = 'none'; 
+            document.getElementById('priceSummary').style.display = 'none'; 
+            return; 
+        }
+        const parts = val.split('|');
+        window.currentTripData = {
+            id: parts[0],
+            name: parts[1],
+            price: parseFloat(parts[2])
+        };
+        console.log("currentTripData set:", window.currentTripData);
+        
+        // جلب الخدمات الإضافية
+        const tripSnap = await db.ref(`trips/${window.currentTripData.id}`).once('value');
         const trip = tripSnap.val();
-        if(trip && trip.tourtype && Object.keys(trip.tourtype).length > 0){
+        if(trip?.tourtype && Object.keys(trip.tourtype).length > 0) {
             document.getElementById('extraServicesContainer').style.display = 'block';
             const container = document.getElementById('extraServicesList');
             container.innerHTML = '';
-            selectedExtraServices = [];
+            window.selectedExtraServices = [];
             Object.entries(trip.tourtype).forEach(([name, price]) => {
                 const div = document.createElement('div');
                 div.className = 'extra-service-item';
                 div.innerHTML = `<span>${name}</span><span class="font-bold">EGP ${price}</span>`;
                 div.onclick = () => {
                     div.classList.toggle('selected');
-                    const service = { name, price: parseFloat(price) };
-                    if(div.classList.contains('selected')){ selectedExtraServices.push(service); }
-                    else { selectedExtraServices = selectedExtraServices.filter(s => s.name !== name); }
-                    updatePriceCalculation();
+                    if(div.classList.contains('selected')) {
+                        window.selectedExtraServices.push({ name, price: parseFloat(price) });
+                    } else {
+                        window.selectedExtraServices = window.selectedExtraServices.filter(s => s.name !== name);
+                    }
+                    updateManualPrice();
                 };
                 container.appendChild(div);
             });
-        } else { document.getElementById('extraServicesContainer').style.display = 'none'; }
+        } else {
+            document.getElementById('extraServicesContainer').style.display = 'none';
+        }
         document.getElementById('priceSummary').style.display = 'block';
-        updatePriceCalculation();
-    });
+        updateManualPrice();
+    };
+}
+
+function updateManualPrice() {
+    const adults = parseInt(document.getElementById('manualAdults')?.value) || 0;
+    const children = parseInt(document.getElementById('manualChildren')?.value) || 0;
+    const basePrice = (adults + children) * (window.currentTripData?.price || 0);
+    const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
+    const total = basePrice + extraTotal;
+    document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
+    document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
+    document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
+}
+
+// تحديث دالة إرسال النموذج
+document.getElementById('manualForm').onsubmit = async(e) => {
+    e.preventDefault();
     
-    function updatePriceCalculation() {
-        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-        const children = parseInt(document.getElementById('manualChildren').value) || 0;
-        const basePrice = (adults + children) * (currentTripData?.price || 0);
-        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
-        const total = basePrice + extraTotal;
-        document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
-        document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
-        document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
+    console.log("currentTripData on submit:", window.currentTripData); // للتأكد
+    
+    if(!window.currentTripData) { 
+        showToast('Please select a trip first', 'error'); 
+        return; 
     }
     
-    document.getElementById('manualAdults')?.addEventListener('input', updatePriceCalculation);
-    document.getElementById('manualChildren')?.addEventListener('input', updatePriceCalculation);
+    const adults = parseInt(document.getElementById('manualAdults').value) || 0;
+    const children = parseInt(document.getElementById('manualChildren').value) || 0;
+    const infants = parseInt(document.getElementById('manualInfants').value) || 0;
+    const baseTotal = (adults + children) * window.currentTripData.price;
+    const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
+    const total = baseTotal + extraTotal;
     
-    document.getElementById('manualForm').onsubmit = async(e) => {
-        e.preventDefault();
-        if(!currentTripData) { showToast('Please select a trip', 'error'); return; }
-        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-        const children = parseInt(document.getElementById('manualChildren').value) || 0;
-        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
-        const baseTotal = (adults + children) * currentTripData.price;
-        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
-        const total = baseTotal + extraTotal;
-        const booking = {
-            username: document.getElementById('manualName').value,
-            phone: document.getElementById('manualPhone').value,
-            email: document.getElementById('manualEmail').value || '',
-            hotelName: document.getElementById('manualHotel').value || '',
-            roomNumber: document.getElementById('manualRoom').value || '',
-            tour: currentTripData.name,
-            tripId: currentTripData.id,
-            adults: adults,
-            childrenUnder12: children,
-            infants: infants,
-            netTotal: total,
-            tripDate: document.getElementById('manualDate').value,
-            specialRequests: document.getElementById('manualRequests').value || '',
-            extraServices: selectedExtraServices.map(s => `${s.name}: ${s.price}`).join(', '),
-            isPaid: document.getElementById('manualPaid').checked,
-            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
-            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
-            owner: currentUser.uid,
-            uid: currentUser.uid,
-            status: 'pending',
-            createdAt: Date.now(),
-            refNumber: 'MAN-' + Date.now().toString().slice(-8)
-        };
+    const booking = {
+        username: document.getElementById('manualName').value,
+        phone: document.getElementById('manualPhone').value,
+        email: document.getElementById('manualEmail').value || '',
+        hotelName: document.getElementById('manualHotel').value || '',
+        roomNumber: document.getElementById('manualRoom').value || '',
+        tour: window.currentTripData.name,
+        tripId: window.currentTripData.id,
+        adults: adults,
+        childrenUnder12: children,
+        infants: infants,
+        netTotal: total,
+        tripDate: document.getElementById('manualDate').value,
+        specialRequests: document.getElementById('manualRequests').value || '',
+        extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${s.price}`).join(', '),
+        isPaid: document.getElementById('manualPaid').checked,
+        paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
+        resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
+        owner: currentUser.uid,
+        uid: currentUser.uid,
+        createdAt: Date.now(),
+        refNumber: 'MAN-' + Date.now().toString().slice(-8)
+    };
+    
+    try {
         await db.ref('trip-bookings').push(booking);
         showToast('Manual booking added successfully!');
         closeManualModal();
         loadReservations();
         calculateAndDisplayBalance();
-    };
+    } catch(error) {
+        console.error("Manual booking error:", error);
+        showToast('Error adding booking: ' + error.message, 'error');
+    }
+};
     
     async function updateDashboard(){ 
         let ts=await db.ref('trips').once('value'); 
