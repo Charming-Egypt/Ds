@@ -289,14 +289,122 @@
     <div class="modal-overlay" id="delete-overlay" onclick="closeDeleteModal()"></div>
     <div class="modal-sheet" id="delete-modal"><div class="modal-handle"></div><div class="p-5 text-center"><i class="fas fa-trash-alt text-4xl text-red-500 mb-3"></i><h3 class="text-xl font-bold">Delete Trip?</h3><div class="flex gap-3 mt-5"><button onclick="closeDeleteModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button id="confirm-delete-btn" class="flex-1 bg-red-500 text-white rounded-xl py-3">Delete</button></div></div></div>
     <div id="toast" class="toast"></div>
-  <div class="modal-sheet" id="item-modal"><div class="modal-handle"></div><div class="p-5"><h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3><form id="item-form"><input type="hidden" id="item-id"><div class="space-y-3"><input type="text" id="item-name" placeholder="Trip Name *" class="input-field" required><textarea id="item-desc" placeholder="Description" rows="3" class="input-field"></textarea><div class="grid grid-cols-2 gap-3"><input type="number" id="item-price" placeholder="Price (EGP)" class="input-field"><input type="number" id="item-cprice" placeholder="Child Price" class="input-field"></div><div class="grid grid-cols-2 gap-3"><input type="text" id="item-duration" placeholder="Duration" class="input-field"><input type="text" id="item-bookingLink" placeholder="Booking Slug" class="input-field"></div>
-
-<!-- ====== تم إزالة التوجل واستبداله بهذه الرسالة ====== -->
-<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-center">
-    <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
-    <span class="text-sm">This trip will be saved as <strong class="text-yellow-500">Pending</strong>. It will not be visible until approved by admin.</span>
+  <div class="modal-sheet" id="item-modal">
+    <div class="modal-handle"></div>
+    <div class="p-5">
+        <h3 class="text-xl font-bold mb-4" id="modal-title">Add / Edit Trip</h3>
+        <form id="item-form">
+            <input type="hidden" id="item-id">
+            
+            <div class="space-y-4">
+                <!-- Basic Information Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-info-circle"></i> Basic Information
+                    </h4>
+                    <input type="text" id="item-name" placeholder="Trip Name *" class="input-field" required>
+                    <textarea id="item-desc" placeholder="Description" rows="3" class="input-field"></textarea>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="number" id="item-price" placeholder="Price (EGP)" class="input-field">
+                        <input type="number" id="item-cprice" placeholder="Child Price (EGP)" class="input-field">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="item-duration" placeholder="Duration (e.g., 6 hours)" class="input-field">
+                        <input type="text" id="item-bookingLink" placeholder="Booking Slug (e.g., cairo-tour)" class="input-field">
+                    </div>
+                    
+                    <!-- Status Message -->
+                    <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 text-center">
+                        <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
+                        <span class="text-sm">This trip will be saved as <strong class="text-yellow-500">Pending</strong>. It will not be visible until approved by admin.</span>
+                    </div>
+                    
+                    <input type="text" id="item-image" placeholder="Main Image URL" class="input-field">
+                </div>
+                
+                <!-- Media Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-images"></i> Media
+                    </h4>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-2">Additional Images</label>
+                        <div id="imageList" class="space-y-2"></div>
+                        <button type="button" id="addImageBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                            <i class="fas fa-plus mr-1"></i> Add Image
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Included & Not Included Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-list-check"></i> What's Included & Not Included
+                    </h4>
+                    <div>
+                        <label class="text-xs text-slate-400 block mb-2">✅ Included Items</label>
+                        <div id="includedList" class="space-y-2"></div>
+                        <button type="button" id="addIncludedBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                            <i class="fas fa-plus mr-1"></i> Add Item
+                        </button>
+                    </div>
+                    <div class="mt-3">
+                        <label class="text-xs text-slate-400 block mb-2">❌ Not Included Items</label>
+                        <div id="notIncludedList" class="space-y-2"></div>
+                        <button type="button" id="addNotIncludedBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                            <i class="fas fa-plus mr-1"></i> Add Item
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Timeline Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-clock"></i> Timeline / Itinerary
+                    </h4>
+                    <div id="timelineList" class="space-y-3"></div>
+                    <button type="button" id="addTimelineBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                        <i class="fas fa-plus mr-1"></i> Add Event
+                    </button>
+                </div>
+                
+                <!-- What to Bring Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-suitcase"></i> What to Bring
+                    </h4>
+                    <div id="whatToBringList" class="space-y-2"></div>
+                    <button type="button" id="addWhatToBringBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                        <i class="fas fa-plus mr-1"></i> Add Item
+                    </button>
+                </div>
+                
+                <!-- Extra Services Section -->
+                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+                        <i class="fas fa-star"></i> Extra Services (Optional)
+                    </h4>
+                    <div id="tourTypeList" class="space-y-2"></div>
+                    <button type="button" id="addTourTypeBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+                        <i class="fas fa-plus mr-1"></i> Add Service
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-3 mt-6 pt-4 border-t border-slate-700">
+                <button type="button" onclick="closeModal()" class="flex-1 py-3 border border-slate-600 rounded-xl text-slate-300 hover:bg-slate-800 transition">
+                    Cancel
+                </button>
+                <button type="submit" class="flex-1 btn-primary">
+                    <i class="fas fa-save mr-2"></i> Save Trip
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
-<!-- ================================================ -->
 
 <input type="text" id="item-image" placeholder="Main Image URL" class="input-field"><div><label>Additional Images</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Image</button></div><div><label>Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Not Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Timeline</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Event</button></div><div><label>What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Extra Services (Name:Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
 </div>
