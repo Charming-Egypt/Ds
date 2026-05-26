@@ -932,7 +932,7 @@ if(tripForm) {
             createdAt: Date.now(),
             refNumber: 'MAN-' + Date.now().toString().slice(-8)
         };
-        await db.ref('trip-bookings').push(booking);
+        await db.ref('trip-bookings/${refNumber}').push(booking);
         showToast('Manual booking added successfully!');
         closeManualModal();
         loadReservations();
@@ -1137,7 +1137,6 @@ Object.assign(window, {
     showBookingDetails
 });
 
-console.log('✅ All patches applied - Dashboard ready!');
 </script>
 
 <script>
@@ -1242,7 +1241,6 @@ if(tripForm) {
     tripForm.onsubmit = window.saveTrip;
 }
 
-console.log('✅ Fixes applied - Trip save and manual booking should work now!');
 </script>
 
 
