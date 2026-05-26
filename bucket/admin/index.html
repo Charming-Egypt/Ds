@@ -406,8 +406,7 @@
     </div>
 </div>
 
-<input type="text" id="item-image" placeholder="Main Image URL" class="input-field"><div><label>Additional Images</label><div id="imageList"></div><button type="button" id="addImageBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Image</button></div><div><label>Included</label><div id="includedList"></div><button type="button" id="addIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Not Included</label><div id="notIncludedList"></div><button type="button" id="addNotIncludedBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Timeline</label><div id="timelineList"></div><button type="button" id="addTimelineBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Event</button></div><div><label>What to Bring</label><div id="whatToBringList"></div><button type="button" id="addWhatToBringBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Item</button></div><div><label>Extra Services (Name:Price)</label><div id="tourTypeList"></div><button type="button" id="addTourTypeBtn" class="text-xs bg-orange-500 px-3 py-2 rounded-full mt-1">+ Add Service</button></div></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeModal()" class="flex-1 py-3 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Trip</button></div></form></div></div>
-</div>
+
 </div>
 <script>
     // Dark Mode
@@ -685,10 +684,7 @@ async function confirmDelete() {
     document.getElementById('addWhatToBringBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('whatToBringList'),'What to bring'));
     document.getElementById('addTimelineBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); document.getElementById('timelineList').appendChild(div); });
     document.getElementById('addTourTypeBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); document.getElementById('tourTypeList').appendChild(div); });
-const tripForm = document.getElementById('item-form');
-if(tripForm) {
-    tripForm.onsubmit = saveTrip;
-}
+    document.getElementById('item-form').addEventListener('submit', saveTrip);
 
 
   
