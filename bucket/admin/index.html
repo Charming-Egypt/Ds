@@ -672,6 +672,10 @@ async function confirmDelete() {
 }
     document.getElementById('confirm-delete-btn')?.addEventListener('click',confirmDelete);
 
+
+
+
+  
   
     function setTripFilter(f){ tripFilter=f; document.querySelectorAll('#trips-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); renderTrips(); }
     document.getElementById('tripSearch')?.addEventListener('input',e=>{ tripSearch=e.target.value; renderTrips(); });
@@ -681,7 +685,13 @@ async function confirmDelete() {
     document.getElementById('addWhatToBringBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('whatToBringList'),'What to bring'));
     document.getElementById('addTimelineBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); document.getElementById('timelineList').appendChild(div); });
     document.getElementById('addTourTypeBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); document.getElementById('tourTypeList').appendChild(div); });
-    
+const tripForm = document.getElementById('item-form');
+if(tripForm) {
+    tripForm.onsubmit = saveTrip;
+}
+
+
+  
     async function loadReservations(){ 
         let snap=await db.ref('trip-bookings').orderByChild('owner').equalTo(currentUser?.uid).once('value'); 
         allReservations=Object.entries(snap.val()||{}).map(([id,val])=>({id,...val, isPaid:val.paymentStatus==='paid'||val.isPaid===true, status:val.resStatus||val.status||'new'})); 
