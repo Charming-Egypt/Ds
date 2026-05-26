@@ -895,6 +895,8 @@ if(tripForm) {
         document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
         document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
     }
+
+  
     
     document.getElementById('manualAdults')?.addEventListener('input', updatePriceCalculation);
     document.getElementById('manualChildren')?.addEventListener('input', updatePriceCalculation);
@@ -952,6 +954,19 @@ if(snapshot.exists()) {
         loadReservations();
         calculateAndDisplayBalance();
     };
+
+
+// تأكد من وجود هذا السطر في نهاية الكود
+const manualForm = document.getElementById('manualForm');
+if(manualForm) {
+    console.log("✅ Manual form found, adding listener");
+    manualForm.onsubmit = async(e) => {
+        // الكود أعلاه
+    };
+} else {
+    console.error("❌ Manual form not found!");
+}
+  
     
     async function updateDashboard(){ 
         let ts=await db.ref('trips').once('value'); 
