@@ -2098,120 +2098,135 @@ if (manualFormElement) {
     }
 
     function renderCharts() {
-        // Status chart
-        const statusCtx = document.getElementById('statusChart');
-        if (statusCtx) {
-            const counts = { new: 0, confirmed: 0, cancelled: 0 };
-            allReservations.forEach(r => { 
-                const s = r.status; 
-                counts[s] = (counts[s] || 0) + 1; 
-            });
-            
-            if (statusChart) statusChart.destroy();
-            statusChart = new Chart(statusCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['New', 'Confirmed', 'Cancelled'],
-                    datasets: [{ 
-                        data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], 
-                        backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
-                }
-            });
-        }
-        
-        // Guest chart
-        const guestCtx = document.getElementById('guestChart');
-        if (guestCtx) {
-            const adults = allReservations.reduce((a, b) => a + (b.adults || 0), 0);
-            const children = allReservations.reduce((a, b) => a + (b.childrenUnder12 || 0), 0);
-            
-            if (guestChart) guestChart.destroy();
-            guestChart = new Chart(guestCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Adults', 'Children'],
-                    datasets: [{ 
-                        label: 'Total Guests', 
-                        data: [adults, children], 
-                        backgroundColor: ['#3b82f6', '#8b5cf6'],
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-        }
-        
-        // Revenue chart (mock data - replace with real)
-        const revenueCtx = document.getElementById('revenueChart');
-        if (revenueCtx) {
-            if (revenueChart) revenueChart.destroy();
-            revenueChart = new Chart(revenueCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{ 
-                        label: 'Revenue (EGP)', 
-                        data: [1200, 1800, 1500, 2500, 3200, 2800], 
-                        backgroundColor: '#f97316',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-        }
-        
-        // Trend chart (mock data)
-        const trendCtx = document.getElementById('trendChart');
-        if (trendCtx) {
-            if (trendChart) trendChart.destroy();
-            trendChart = new Chart(trendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{ 
-                        label: 'Monthly Bookings', 
-                        data: [5, 9, 7, 12, 15, 10], 
-                        borderColor: '#f97316',
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-        }
+    // ==================== 1. STATUS CHART ====================
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+        const counts = { new: 0, confirmed: 0, cancelled: 0 };
+        allReservations.forEach(r => { 
+            const s = r.status || 'new'; 
+            counts[s] = (counts[s] || 0) + 1; 
+        });
+        if (statusChart) statusChart.destroy();
+        statusChart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['New', 'Confirmed', 'Cancelled'],
+                datasets: [{ data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'], borderWidth: 0 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 20 } } } }
+        });
     }
+
+    // ==================== 2. GUEST CHART ====================
+    const guestCtx = document.getElementById('guestChart');
+    if (guestCtx) {
+        const adults = allReservations.reduce((a, b) => a + (b.adults || 0), 0);
+        const children = allReservations.reduce((a, b) => a + (b.childrenUnder12 || 0), 0);
+        if (guestChart) guestChart.destroy();
+        guestChart = new Chart(guestCtx, {
+            type: 'bar',
+            data: { labels: ['Adults', 'Children'], datasets: [{ label: 'Total Guests', data: [adults, children], backgroundColor: ['#3b82f6', '#8b5cf6'], borderRadius: 8, borderWidth: 0 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
+        });
+    }
+
+    // ==================== 3. 📈 TREND CHART (Monthly Bookings - REAL DATA) ====================
+    const trendCtx = document.getElementById('trendChart');
+    if (trendCtx) {
+        if (trendChart) trendChart.destroy();
+
+        const now = new Date();
+        const labels = [], counts = [];
+
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            labels.push(d.toLocaleString('en-US', { month: 'short' }));
+            const m = d.getMonth(), y = d.getFullYear();
+            
+            // عد الحجوزات اللي اتعملت في الشهر ده (بناءً على createdAt)
+            let c = 0;
+            allReservations.forEach(r => {
+                const dateVal = r.createdAt || r.tripDate;
+                if (dateVal) {
+                    const rDate = new Date(dateVal);
+                    if (rDate.getMonth() === m && rDate.getFullYear() === y) c++;
+                }
+            });
+            counts.push(c);
+        }
+
+        trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Monthly Bookings',
+                    data: counts,
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#1e1e1e',
+                    pointHoverRadius: 7,
+                    pointRadius: 5,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#252525', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: '#333', borderWidth: 1, cornerRadius: 8 } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+                }
+            }
+        });
+    }
+
+    // ==================== 4. 💰 REVENUE CHART (REAL DATA) ====================
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        if (revenueChart) revenueChart.destroy();
+
+        const now = new Date();
+        const labels = [], data = [];
+
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            labels.push(d.toLocaleString('en-US', { month: 'short' }));
+            const m = d.getMonth(), y = d.getFullYear();
+            let rev = 0;
+
+            allReservations.forEach(r => {
+                if (r.isPaid && r.netTotal) {
+                    const dateVal = r.createdAt || r.tripDate;
+                    if (dateVal) {
+                        const rDate = new Date(dateVal);
+                        if (rDate.getMonth() === m && rDate.getFullYear() === y) {
+                            rev += parseFloat(r.netTotal);
+                        }
+                    }
+                }
+            });
+            data.push(rev);
+        }
+
+        revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Revenue (EGP)', data, backgroundColor: '#f97316', borderRadius: 8, borderWidth: 0 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#252525', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: '#333', borderWidth: 1, cornerRadius: 8, callbacks: { label: ctx => `EGP ${ctx.parsed.y.toLocaleString()}` } } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', callback: v => `EGP ${v.toLocaleString()}` } },
+                    x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
+                }
+            }
+        });
+    }
+}
 
     // ==================== SECTION SWITCHING ====================
     function switchSection(section) {
