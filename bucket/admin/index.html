@@ -57,7 +57,6 @@ html, body {
     color: var(--text-primary); 
     overflow-x: hidden; 
 }
-/* تم إزالة body.light نهائياً */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--accent-gradient); border-radius: 4px; }
@@ -77,8 +76,17 @@ html, body {
 .login-btn:active { transform: scale(0.98); }
 .admin-panel { display: none; }
 .admin-panel.visible { display: block; animation: fadeIn 0.5s ease-out; }
-.mobile-header { background: var(--header-bg); backdrop-filter: blur(12px); box-shadow: 0 1px 12px rgba(0,0,0,0.4); position: sticky; top: 0; z-index: 50; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-@media (min-width: 1024px) { .mobile-header { display: none; } }
+
+/* ✅ FIXED HEADER - MOBILE */
+.mobile-header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 50; padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--header-bg); backdrop-filter: blur(12px);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.4);
+}
+
 .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; box-shadow: 0 2px 8px rgba(249,115,22,0.3); }
 .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; overflow-y: auto; box-shadow: 4px 0 24px rgba(0,0,0,0.4); }
 .sidebar.open { transform: translateX(0); }
@@ -89,10 +97,23 @@ html, body {
 .sidebar-link:hover { background: rgba(249,115,22,0.08); color: #f97316; transform: translateX(4px); }
 .sidebar-link.active { background: rgba(249,115,22,0.12); color: #f97316; }
 .sidebar-link.active::before { transform: scaleY(1); }
-.desktop-header { background: var(--header-bg); backdrop-filter: blur(12px); box-shadow: 0 1px 12px rgba(0,0,0,0.3); padding: 16px 24px; display: none; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 40; }
-@media (min-width: 1024px) { .desktop-header { display: flex; margin-left: 280px; } }
+
+/* ✅ FIXED HEADER - DESKTOP */
+.desktop-header {
+    position: fixed; top: 0; left: 280px; right: 0;
+    z-index: 40; padding: 16px 24px;
+    display: none; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--header-bg); backdrop-filter: blur(12px);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.3);
+}
+
 .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--header-bg); backdrop-filter: blur(12px); box-shadow: 0 -4px 20px rgba(0,0,0,0.4); display: flex; justify-content: space-around; padding: 8px 12px 12px; z-index: 1000; border-top: 1px solid var(--border-color); }
-@media (min-width: 1024px) { .mobile-bottom-nav { display: none; } }
+@media (min-width: 1024px) { 
+    .mobile-header { display: none; } 
+    .desktop-header { display: flex; } 
+    .mobile-bottom-nav { display: none; } 
+}
 .nav-item { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 12px; color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all 0.2s; }
 .nav-item:hover { background: rgba(249,115,22,0.08); color: #f97316; }
 .nav-item.active { color: #f97316; background: rgba(249,115,22,0.12); }
@@ -143,7 +164,20 @@ table { width: 100%; border-collapse: collapse; }
 th { padding: 16px 12px; text-align: left; border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; background: var(--bg-tertiary); }
 td { padding: 14px 12px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-primary); transition: background 0.2s; }
 tr:hover td { background: rgba(249,115,22,0.03); }
-@media (min-width: 1024px) { .main-content { margin-left: 280px; } }
+
+/* ✅ CONTENT SPACING FIX */
+.main-content {
+    padding-top: 75px;
+    padding-bottom: 100px;
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        padding-top: 85px;
+        margin-left: 280px;
+    }
+}
+
 .booking-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .booking-detail-item { background: var(--input-bg); padding: 12px; border-radius: 16px; border: 1px solid var(--border-color); transition: all 0.2s; }
 .booking-detail-item:hover { border-color: #f97316; transform: translateY(-2px); }
