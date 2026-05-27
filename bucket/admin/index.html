@@ -1619,9 +1619,9 @@ function renderTripsSkeleton() {
         const debugInfo = getField('debugInfo');
         if (debugInfo) {
             debugInfo.innerHTML = `<details class="text-xs cursor-pointer"><summary class="hover:text-orange-500 transition">🔍 Calculation Details</summary><div class="mt-2 space-y-1 text-gray-300">
-                Eligible bookings: <span class="text-orange-500">${eligibleBookings.length}</span><br>
+                Total bookings: <span class="text-orange-500">${eligibleBookings.length}</span><br>
                 Total revenue: <span class="text-green-500">EGP ${totalRevenue.toFixed(2)}</span><br>
-                Commission (10%): <span class="text-red-500">-EGP ${commission.toFixed(2)}</span><br>
+                
                 Net earnings: <span class="text-blue-500">EGP ${netEarnings.toFixed(2)}</span><br>
                 Completed payouts: <span class="text-gray-400">-EGP ${completedPayouts.toFixed(2)}</span><br>
                 Pending requests: <span class="text-amber-500">-EGP ${pendingPayouts.toFixed(2)}</span><br>
@@ -2052,7 +2052,7 @@ if (manualFormElement) {
                 childrenUnder12: children,
                 infants,
                 netTotal: total,
-                Total: total,
+                total: total,
                 tripDate: manualDate.value,
                 specialRequests: document.getElementById('manualRequests')?.value?.trim() || '',
                 extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${parseFloat(s.price).toFixed(2)}`).join(', '),
