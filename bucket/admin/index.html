@@ -678,82 +678,167 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ==================== TRIP FUNCTIONS ====================
     async function loadAllData() {
     if (!currentUser) return;
+    renderTripsSkeleton(); // ✅ عرضSkeleton قبل الجلب
     try {
-        // ✅ جلب الرحلات الخاصة بالمستخدم الحالي فقط من Firebase
-        const ts = await db.ref('trips')
-            .orderByChild('owner')
-            .equalTo(currentUser.uid)
-            .once('value');
-            
+        let query = db.ref('trips');
+        if (currentUserRole !== 'admin') {
+            query = query.orderByChild('owner').equalTo(currentUser.uid);
+        }
+        const ts = await query.once('value');
         const tripsData = ts.val() || {};
         allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
-        renderTrips();
+        renderTrips(); // ✅ استبدال Skeleton بالبيانات الحقيقية
     } catch (error) {
         console.error('Error loading trips:', error);
         showToast('Failed to load trips', 'error');
+        getField('trips-container').innerHTML = `
+            <div class="col-span-full text-center py-12 text-red-400 bg-red-500/10 rounded-xl border border-red-500/20">
+                <i class="fas fa-exclamation-triangle text-2xl mb-2"></i><br>
+                Failed to load trips. Please check your connection.
+            </div>`;
     }
 }
 
-    function renderTrips() {
-        const container = getField('trips-container');
-        if (!container) return;
-        
-        let filtered = allTrips.filter(t => {
-            const matchesSearch = (t.name || '').toLowerCase().includes(tripSearch.toLowerCase());
-            if (tripFilter === 'approved') return matchesSearch && (t.approved === true || t.approved === "true");
-            if (tripFilter === 'pending') return matchesSearch && !(t.approved === true || t.approved === "true");
-            return matchesSearch;
-        });
 
-        if (!filtered.length) {
-            container.innerHTML = `<div class="col-span-full text-center py-16">
-                <i class="fas fa-inbox text-5xl text-gray-400"></i>
-                <p class="mt-2 text-gray-400">No trips found</p>
-                <button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button>
-            </div>`;
-            return;
-        }
-
-        container.innerHTML = filtered.map(t => {
-            const isApproved = t.approved === true || t.approved === "true";
-            const statusBadge = isApproved
-                ? '<span class="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>Approved</span>'
-                : '<span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>Pending</span>';
-            
-            const canApprove = (currentUserRole === 'admin') && !isApproved;
-            const approveButton = canApprove 
-                ? `<button onclick="approveTrip('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-check mr-1"></i>Approve</button>` 
-                : '';
-            
-            const canEdit = (t.owner === currentUser?.uid) || (currentUserRole === 'admin');
-            const editButton = canEdit 
-                ? `<button onclick="editTrip('${t.id}')" class="action-btn action-btn-edit"><i class="fas fa-edit mr-1"></i>Edit</button>` 
-                : '';
-            
-            const deleteButton = canEdit 
-                ? `<button onclick="deleteTripPrompt('${t.id}')" class="action-btn action-btn-delete"><i class="fas fa-trash mr-1"></i>Delete</button>` 
-                : '';
-
-            return `<div class="trip-card">
-                <img src="${t.image || 'https://placehold.co/400x200/1e293b/64748b?text=No+Image'}" 
-                     class="trip-image" 
-                     onerror="this.src='https://placehold.co/400x200/1e293b/64748b?text=Image+Error'">
-                <div class="trip-content">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="trip-title">${escapeHtml(t.name || 'Unnamed Trip')}</h3>
-                        ${statusBadge}
+function renderTripsSkeleton() {
+    const container = getField('trips-container');
+    if (!container) return;
+    
+    // عدد الكروت الوهمية أثناء التحميل
+    const count = 6;
+    container.innerHTML = Array(count).fill('').map(() => `
+        <div class="trip-card group">
+            <div class="relative overflow-hidden rounded-t-2xl">
+                <div class="h-52 w-full skeleton rounded-t-2xl"></div>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="h-6 w-3/4 skeleton rounded-lg"></div>
+                <div class="h-4 w-1/2 skeleton rounded-lg"></div>
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200/10 dark:border-slate-700/50">
+                    <div class="flex flex-col gap-1">
+                        <div class="h-3 w-16 skeleton rounded"></div>
+                        <div class="h-6 w-24 skeleton rounded-lg"></div>
                     </div>
-                    <p class="trip-price">EGP ${parseFloat(t.price || 0).toFixed(2)}</p>
-                    <p class="text-sm text-gray-400 mt-1">${escapeHtml(t.duration || '')}</p>
-                    <div class="flex gap-2 mt-3 flex-wrap">
-                        ${editButton}
-                        ${approveButton}
-                        ${deleteButton}
+                    <div class="flex gap-2">
+                        <div class="h-9 w-9 skeleton rounded-xl"></div>
+                        <div class="h-9 w-9 skeleton rounded-xl"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+  
+    function renderTrips() {
+    const container = getField('trips-container');
+    if (!container) return;
+
+    let filtered = allTrips.filter(t => {
+        const matchesSearch = (t.name || '').toLowerCase().includes(tripSearch.toLowerCase());
+        if (tripFilter === 'approved') return matchesSearch && (t.approved === true || t.approved === "true");
+        if (tripFilter === 'pending') return matchesSearch && !(t.approved === true || t.approved === "true");
+        return matchesSearch;
+    });
+
+    if (!filtered.length) {
+        container.innerHTML = `
+            <div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                <div class="w-20 h-20 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-map-marked-alt text-4xl text-gray-500"></i>
+                </div>
+                <p class="text-gray-400 text-lg font-medium">No trips found</p>
+                <p class="text-gray-500 text-sm mt-1">Start by adding your first adventure</p>
+                <button onclick="openAddTripModal()" class="btn-primary mt-5 px-6 py-3">
+                    <i class="fas fa-plus mr-2"></i> Add New Trip
+                </button>
             </div>`;
-        }).join('');
+        return;
     }
+
+    container.innerHTML = filtered.map(t => {
+        const isApproved = t.approved === true || t.approved === "true";
+        const statusClass = isApproved ? 'status-confirmed' : 'status-new';
+        const statusIcon = isApproved ? 'fa-check-circle' : 'fa-clock';
+        const statusText = isApproved ? 'Approved' : 'Pending';
+
+        const canApprove = currentUserRole === 'admin' && !isApproved;
+        const canEdit = t.owner === currentUser?.uid || currentUserRole === 'admin';
+        const canDelete = canEdit;
+
+        const approveBtn = canApprove ? `
+            <button onclick="event.stopPropagation(); approveTrip('${t.id}')" class="bg-emerald-500/90 hover:bg-emerald-600 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-emerald-500/20 hover:scale-105 z-20" title="Approve">
+                <i class="fas fa-check text-sm"></i>
+            </button>` : '';
+
+        const editBtn = canEdit ? `
+            <button onclick="event.stopPropagation(); editTrip('${t.id}')" class="bg-blue-500/90 hover:bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-blue-500/20 hover:scale-105 z-20" title="Edit">
+                <i class="fas fa-pen text-sm"></i>
+            </button>` : '';
+
+        const deleteBtn = canDelete ? `
+            <button onclick="event.stopPropagation(); deleteTripPrompt('${t.id}')" class="bg-rose-500/90 hover:bg-rose-600 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-rose-500/20 hover:scale-105 z-20" title="Delete">
+                <i class="fas fa-trash text-sm"></i>
+            </button>` : '';
+
+        // ✨ Quick Preview Overlay
+        const previewOverlay = `
+            <div class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-slate-900/95 backdrop-blur-md p-4 border-t border-slate-700/50 z-10">
+                <p class="text-gray-300 text-xs line-clamp-2 mb-3 leading-relaxed">${escapeHtml(t.description || 'No description available for this trip.')}</p>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="px-2 py-1 bg-orange-500/20 text-orange-400 rounded-lg text-[10px] border border-orange-500/30 font-medium">
+                        ⏱️ ${escapeHtml(t.duration || 'Flexible')}
+                    </span>
+                    ${t.cprice ? `<span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-[10px] border border-blue-500/30 font-medium">👶 Child: EGP ${parseFloat(t.cprice).toLocaleString()}</span>` : ''}
+                    ${t.included?.length ? `<span class="px-2 py-1 bg-green-500/20 text-green-400 rounded-lg text-[10px] border border-green-500/30 font-medium">✅ ${t.included.length} Included</span>` : ''}
+                </div>
+                <button onclick="event.stopPropagation(); editTrip('${t.id}')" class="w-full py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg text-xs font-semibold transition-all shadow-lg shadow-orange-500/20">
+                    <i class="fas fa-edit mr-1"></i> Open & Edit Trip
+                </button>
+            </div>`;
+
+        return `
+        <div class="trip-card group cursor-pointer relative overflow-hidden rounded-2xl" onclick="editTrip('${t.id}')">
+            <!-- Image & Status -->
+            <div class="relative overflow-hidden rounded-t-2xl">
+                <img src="${escapeHtml(t.image || 'https://placehold.co/600x400/1e293b/64748b?text=No+Image')}" 
+                     class="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                     onerror="this.src='https://placehold.co/600x400/1e293b/64748b?text=Image+Error'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                <span class="absolute top-3 right-3 status-badge ${statusClass} px-3 py-1.5 text-xs font-semibold backdrop-blur-md shadow-lg border border-white/10">
+                    <i class="fas ${statusIcon} mr-1.5"></i>${statusText}
+                </span>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-5 space-y-3 relative">
+                <div>
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-gray-50 truncate" title="${escapeHtml(t.name || '')}">${escapeHtml(t.name || 'Unnamed Trip')}</h3>
+                    <div class="flex items-center gap-1.5 mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-clock text-xs"></i>
+                        <span>${escapeHtml(t.duration || 'Duration not specified')}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200/10 dark:border-slate-700/50">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Starting from</span>
+                        <span class="text-xl font-bold text-orange-500">EGP ${parseFloat(t.price || 0).toLocaleString('en-US', {minimumFractionDigits: 0})}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        ${editBtn}
+                        ${approveBtn}
+                        ${deleteBtn}
+                    </div>
+                </div>
+
+                <!-- ✨ Quick Preview (slides up on hover) -->
+                ${previewOverlay}
+            </div>
+        </div>`;
+    }).join('');
+}
 
     async function approveTrip(tripId) {
         if (currentUserRole !== 'admin') {
