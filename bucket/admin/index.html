@@ -125,9 +125,18 @@ html, body {
 .stat-card { background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary)); border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); transition: all 0.3s; position: relative; overflow: hidden; }
 .stat-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%); }
 .stat-card:hover { transform: translateY(-4px); box-shadow: var(--glow-orange); }
-.fab { position: fixed; right: 20px; bottom: 100px; width: 56px; height: 56px; border-radius: 28px; background: var(--accent-gradient); color: white; box-shadow: 0 8px 24px rgba(249,115,22,0.4); z-index: 99; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
-.fab:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 12px 32px rgba(249,115,22,0.5); }
+.fab {
+    position: fixed; right: 20px; bottom: 100px;
+    width: 56px; height: 56px; border-radius: 28px;
+    color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 99; border: none;
+    display: none; /* ✅ مخفي افتراضياً */
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s;
+}
+.fab:hover { transform: scale(1.1); }
 .fab:active { transform: scale(0.95); }
+@media (min-width: 1024px) { .fab { bottom: 40px; right: 40px; } }
 @media (min-width: 1024px) { .fab { bottom: 40px; right: 40px; } }
 .modal-sheet { position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; background: var(--card-bg); border-radius: 28px 28px 0 0; box-shadow: 0 -8px 40px rgba(0,0,0,0.6); z-index: 2000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; border-top: 1px solid var(--border-color); }
 .modal-sheet.open { transform: translateY(0); }
@@ -2263,41 +2272,54 @@ if (manualFormElement) {
 
     // ==================== SECTION SWITCHING ====================
     function switchSection(section) {
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        
-        // Show target section
-        const activeSection = getField(`${section}-section`);
-        if (activeSection) activeSection.classList.add('active');
-        
-        // Update navigation
-        document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active'));
-        
-        // Update header title
-        const desktopTitle = getField('desktop-title');
-        if (desktopTitle) {
-            const titles = {
-                'dashboard': 'Dashboard Overview',
-                'trips': 'Manage Trips',
-                'reservations': 'Reservations',
-                'payout': 'Payouts & Wallet',
-                'analytics': 'Analytics'
-            };
-            desktopTitle.innerText = titles[section] || 'Dashboard';
-        }
-        
-        // Render charts if analytics section
-        if (section === 'analytics') {
-            renderCharts();
-        }
-        
-        // Close mobile sidebar
-        if (window.innerWidth < 1024) {
-            const sidebar = getField('sidebar');
-            if (sidebar) sidebar.classList.remove('open');
-        }
+    // إخفاء كل السكشنات
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    const activeSection = getField(`${section}-section`);
+    if (activeSection) activeSection.classList.add('active');
+    
+    // تحديث النافبار
+    document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active'));
+    
+    // تحديث عنوان الهيدر
+    const desktopTitle = getField('desktop-title');
+    if (desktopTitle) {
+        const titles = { 'dashboard': 'Dashboard Overview', 'trips': 'Manage Trips', 'reservations': 'Reservations', 'payout': 'Payouts & Wallet', 'analytics': 'Analytics' };
+        desktopTitle.innerText = titles[section] || 'Dashboard';
     }
+    
+    // رسم الشارتات لو في صفحة Analytics
+    if (section === 'analytics') renderAnalyticsCharts();
+    
+    // إغلاق السايدبار في الموبايل
+    if (window.innerWidth < 1024) {
+        const sidebar = getField('sidebar');
+        if (sidebar) sidebar.classList.remove('open');
+    }
+
+    // ✅ منطق الـ FAB الذكي (يظهر ويختفي حسب السكشن)
+    const fab = getField('fabBtn');
+    if (fab) {
+        fab.style.display = 'none';
+        fab.onclick = null; // مسح أي أمر قديم
+        
+        if (section === 'trips') {
+            fab.style.display = 'flex';
+            fab.style.background = 'var(--accent-gradient)'; // 🟠 برتقالي
+            fab.style.boxShadow = '0 8px 24px rgba(249,115,22,0.4)';
+            fab.innerHTML = '<i class="fas fa-plus"></i>';
+            fab.onclick = window.openAddTripModal;
+        } 
+        else if (section === 'reservations') {
+            fab.style.display = 'flex';
+            fab.style.background = '#22c55e'; // 🟢 أخضر
+            fab.style.boxShadow = '0 8px 24px rgba(34,197,94,0.4)';
+            fab.innerHTML = '<i class="fas fa-calendar-plus"></i>';
+            fab.onclick = window.openManualBookingModal;
+        }
+        // في أي سكشن تاني (dashboard, payout, analytics) الزر هيفضل مخفي
+    }
+}
 
     // Attach section navigation
     document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el => {
@@ -2423,9 +2445,7 @@ if (manualFormElement) {
     });
 
     // ==================== UI TOGGLES ====================
-    const fabBtn = getField('fabBtn');
-    if (fabBtn) fabBtn.addEventListener('click', openAddTripModal);
-    
+
     const menuToggle = getField('menuToggle');
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
