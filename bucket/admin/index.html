@@ -167,13 +167,12 @@ tr:hover td { background: rgba(249,115,22,0.03); }
 
 /* ✅ CONTENT SPACING FIX */
 .main-content {
-    padding-top: 150px;
-    padding-bottom: 100px;
+    padding: 80px 20px 100px 20px;
 }
 
 @media (min-width: 1024px) {
     .main-content {
-        padding-top: 85px;
+        padding: 90px 24px 100px 24px;
         margin-left: 280px;
     }
 }
@@ -255,7 +254,7 @@ tr:hover td { background: rgba(249,115,22,0.03); }
     <div class="sidebar" id="sidebar"><div class="p-5 border-b"><h1 class="text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Discover Sharm</h1><p class="text-sm mt-1" id="user-email-sidebar"></p></div><nav class="p-3 space-y-1"><div class="sidebar-link active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></div><div class="sidebar-link" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>My Trips</span></div><div class="sidebar-link" data-section="reservations"><i class="fas fa-calendar-check"></i><span>Reservations</span></div><div class="sidebar-link" data-section="payout"><i class="fas fa-wallet"></i><span>Payouts</span></div><div class="sidebar-link" data-section="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div><hr class="my-3"><div class="sidebar-link" id="logout-sidebar"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div></nav></div>
     <div class="mobile-bottom-nav"><div class="nav-item active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Home</span></div><div class="nav-item" data-section="trips"><i class="fas fa-map-marked-alt"></i><span>Trips</span></div><div class="nav-item" data-section="reservations"><i class="fas fa-calendar"></i><span>Bookings</span></div><div class="nav-item" data-section="payout"><i class="fas fa-wallet"></i><span>Wallet</span></div></div>
     <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
-    <div class="main-content" style="padding: 20px; padding-bottom: 100px;">
+    <div class="main-content">
         <div id="dashboard-section" class="content-section active">
             <h2 class="text-2xl font-bold mb-5">Dashboard Overview</h2>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
