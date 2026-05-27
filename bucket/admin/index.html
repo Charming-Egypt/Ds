@@ -278,7 +278,13 @@
 
     <!-- Manual Booking Modal -->
     <div class="modal-overlay" id="manualModalOverlay" onclick="closeManualModal()"></div>
-    <div class="modal-sheet" id="manual-modal"><div class="modal-handle"></div><div class="p-5" style="max-height: 85vh; overflow-y: auto;"><h3 class="text-xl font-bold mb-4 text-orange-600">📝 Manual Booking</h3><form id="manualForm"><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" class="input-field" required></div><div><label class="text-sm font-medium">Phone *</label><input type="tel" id="manualPhone" class="input-field" required></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" class="input-field"></div><div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required><option value="">-- Select Trip --</option></select></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" class="input-field"></div><div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" class="input-field"></div></div><div class="grid grid-cols-3 gap-3 mb-3"><div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field"></div><div><label class="text-sm font-medium">Children</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div><div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div></div><div class="mb-3"><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div><div class="mb-3"><label class="text-sm font-medium">Special Requests</label><textarea id="manualRequests" rows="2" class="input-field"></textarea></div><div id="extraServicesContainer" class="mb-3" style="display:none;"><label class="text-sm font-medium mb-2 block">✨ Extra Services</label><div id="extraServicesList" class="space-y-2"></div></div><div id="priceSummary" class="price-summary mb-3" style="display:none;"><div class="flex justify-between"><span>Base Price:</span><span id="basePriceDisplay">EGP 0</span></div><div id="extraServicesTotalDisplay" class="flex justify-between"><span>Extra Services:</span><span>EGP 0</span></div><div class="flex justify-between font-bold pt-2 border-t border-white/30 mt-2"><span>Total:</span><span id="totalPriceDisplay">EGP 0</span></div></div><div class="flex items-center gap-3 mb-4"><label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (confirmed)</label></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeManualModal()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Booking</button></div></form></div></div>
+    <div class="modal-sheet" id="manual-modal"><div class="modal-handle"></div><div class="p-5" style="max-height: 85vh; overflow-y: auto;"><h3 class="text-xl font-bold mb-4 text-orange-600">📝 Manual Booking</h3><form id="manualForm"><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" class="input-field" required></div><div><label class="text-sm font-medium">Phone *</label><input type="tel" id="manualPhone" class="input-field" required></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" class="input-field"></div><div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required><option value="">-- Select Trip --</option></select></div></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" class="input-field"></div><div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" class="input-field"></div></div><div class="grid grid-cols-3 gap-3 mb-3"><div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field"></div><div><label class="text-sm font-medium">Children</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div><div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div></div><div class="mb-3"><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div><div class="mb-3"><label class="text-sm font-medium">Special Requests</label><textarea id="manualRequests" rows="2" class="input-field"></textarea></div><div id="extraServicesContainer" class="mb-3" style="display:none;"><label class="text-sm font-medium mb-2 block">✨ Extra Services</label><div id="extraServicesList" class="space-y-2"></div></div><div id="priceSummary" class="price-summary mb-3" style="display:none;">
+    <div class="flex justify-between"><span>Base Price:</span><span id="basePriceDisplay">EGP 0</span></div>
+    <!-- ✨ NEW: مكان عرض تفاصيل الخدمات -->
+    <div id="selectedServicesBreakdown" class="mt-2 space-y-1 text-sm border-t border-white/20 pt-2"></div>
+    <div class="flex justify-between mt-1"><span>Extra Services:</span><span id="extraServicesTotalDisplay">EGP 0</span></div>
+    <div class="flex justify-between font-bold pt-2 border-t border-white/30 mt-2"><span>Total:</span><span id="totalPriceDisplay">EGP 0</span></div>
+</div><div class="flex items-center gap-3 mb-4"><label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (confirmed)</label></div><div class="flex gap-3 mt-4"><button type="button" onclick="closeManualModal()" class="flex-1 py-2 border rounded-xl">Cancel</button><button type="submit" class="flex-1 btn-primary">Save Booking</button></div></form></div></div>
 
     <!-- Other Modals -->
     <div class="modal-overlay" id="booking-modal-overlay" onclick="closeBookingModal()"></div>
@@ -408,872 +414,1968 @@
 
 
 </div>
+
 <script>
-    // Dark Mode
-    function initDarkMode() {
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) { document.body.classList.add('dark'); updateDarkModeIcons(true); }
-        document.getElementById('darkModeToggleDesktop')?.addEventListener('click', toggleDarkMode);
-        document.getElementById('darkModeToggleMobile')?.addEventListener('click', toggleDarkMode);
-    }
-    function toggleDarkMode() {
-        const isDark = document.body.classList.toggle('dark');
-        localStorage.setItem('darkMode', isDark);
-        updateDarkModeIcons(isDark);
-    }
-    function updateDarkModeIcons(isDark) {
-        const desktopBtn = document.getElementById('darkModeToggleDesktop');
-        const mobileBtn = document.getElementById('darkModeToggleMobile');
-        if(desktopBtn) desktopBtn.innerHTML = isDark ? '<i class="fas fa-sun mr-2"></i> Light Mode' : '<i class="fas fa-moon mr-2"></i> Dark Mode';
-        if(mobileBtn) mobileBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    }
+// ==================== COMPLETE JAVASCRIPT CODE FOR ADMIN DASHBOARD ====================
+// ✅ Fixed version with manual booking form repair, better error handling, and DOM safety
 
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', async () => {
+    
     // Firebase Config
-    const firebaseConfig = { apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI", authDomain: "egypt-travels.firebaseapp.com", databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com", projectId: "egypt-travels", storageBucket: "egypt-travels.appspot.com" };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(), db = firebase.database();
+    const firebaseConfig = {
+        apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+        authDomain: "egypt-travels.firebaseapp.com",
+        databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+        projectId: "egypt-travels",
+        storageBucket: "egypt-travels.appspot.com"
+    };
 
-    let currentUser = null, allTrips = [], allReservations = [];
-    let tripFilter = 'all', tripSearch = '', currentResTab = 'all';
-    let pendingDeleteId = null, pendingConfirmRef = null;
-    let trendChart = null, revenueChart = null, statusChart = null, guestChart = null;
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // ==================== GLOBAL VARIABLES ====================
+    let currentUser = null;
+    let currentUserRole = 'user';
+    let allTrips = [];
+    let allReservations = [];
+    let tripFilter = 'all';
+    let tripSearch = '';
+    let currentResTab = 'all';
+    let pendingDeleteId = null;
+    let pendingConfirmRef = null;
+    let trendChart = null;
+    let revenueChart = null;
+    let statusChart = null;
+    let guestChart = null;
     const COMMISSION_RATE = 0.10;
     let currentPage = 1;
     const itemsPerPage = 10;
     let filteredReservations = [];
-    let currentTripData = null;
 
-    function showToast(msg, type='success'){ let t=document.getElementById('toast'); t.innerText=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),2500); }
-    function isOlderThanOneDay(dateStr){ if(!dateStr) return false; const d = new Date(dateStr); const oneDayAgo = new Date(); oneDayAgo.setDate(oneDayAgo.getDate() - 1); oneDayAgo.setHours(0,0,0,0); d.setHours(0,0,0,0); return d <= oneDayAgo; }
-    
-    async function handleLogin(e){ e.preventDefault(); try{ await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } catch(err){ let d=document.getElementById('login-error'); d.innerText=err.message; d.classList.remove('hidden'); } }
-    function showResetPassword(){ let e=prompt("Enter your email"); if(e) auth.sendPasswordResetEmail(e).then(()=>alert("Reset link sent")); }
-    
-    auth.onAuthStateChanged(async user=>{ 
-        if(user){ 
-            currentUser=user; 
-            document.getElementById('login-page').style.display='none'; 
-            document.getElementById('admin-panel').classList.add('visible'); 
-            let init=user.email.charAt(0).toUpperCase(); 
-            document.getElementById('user-avatar-mobile').innerText=init; 
-            document.getElementById('user-avatar-desktop').innerText=init; 
-            document.getElementById('user-email-sidebar').innerText=user.email; 
-            document.getElementById('user-name-desktop').innerText=user.username; 
-            await loadAllData();
-            await loadReservations();
-            await loadPayoutMethod();
-            await calculateAndDisplayBalance();
-            await updateDashboard();
-            switchSection('dashboard'); 
-            setInterval(()=>{ loadReservations(); updateDashboard(); calculateAndDisplayBalance(); },30000); 
-        } else { 
-            document.getElementById('login-page').style.display='flex'; 
-            document.getElementById('admin-panel').classList.remove('visible'); 
-        } 
-    });
-    
-      
-    function createArrayInput(container, placeholder, value=''){ let div=document.createElement('div'); div.className='array-item'; let inp=document.createElement('input'); inp.type='text'; inp.className='input-field flex-1'; inp.placeholder=placeholder; inp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(inp); div.appendChild(rm); container.appendChild(div); return inp; }
-    function loadTimelineItems(container, items){ items.forEach(item=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; time.value=item.time||''; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; title.value=item.title||''; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; desc.value=item.description||''; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); container.appendChild(div); }); }
-    function loadTourTypes(container, items){ Object.entries(items).forEach(([key,value])=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; nameInp.value=key; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; priceInp.value=value; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); container.appendChild(div); }); }
-    
-    // ========== تعديل دالة فتح إضافة رحلة جديدة ==========
-function openAddTripModal() { 
-    document.getElementById('modal-title').innerText = 'Add New Trip'; 
-    document.getElementById('item-form').reset(); 
-    // تم إزالة السطر الذي كان يحدد checked=true للتوجل
-    document.getElementById('item-id').value = ''; 
-    document.getElementById('imageList').innerHTML = ''; 
-    document.getElementById('includedList').innerHTML = ''; 
-    document.getElementById('notIncludedList').innerHTML = ''; 
-    document.getElementById('timelineList').innerHTML = ''; 
-    document.getElementById('whatToBringList').innerHTML = ''; 
-    document.getElementById('tourTypeList').innerHTML = ''; 
-    openModal(); 
-}
+    // Manual booking variables
+    window.selectedExtraServices = [];
+    window.currentTripData = null;
 
-// ========== تعديل دالة تعديل رحلة ==========
-function editTrip(id) { 
-    let t = allTrips.find(t => t.id === id); 
-    if(!t) return; 
-    document.getElementById('modal-title').innerText = 'Edit Trip'; 
-    document.getElementById('item-id').value = id; 
-    document.getElementById('item-name').value = t.name || ''; 
-    document.getElementById('item-desc').value = t.description || ''; 
-    document.getElementById('item-price').value = t.price || 0; 
-    document.getElementById('item-cprice').value = t.cprice || 0; 
-    document.getElementById('item-duration').value = t.duration || ''; 
-    document.getElementById('item-bookingLink').value = t.bookingLink || id; 
-    // تم إزالة السطر الذي كان يحدد checked للتوجل
-    document.getElementById('item-image').value = t.image || ''; 
-    
-    document.getElementById('imageList').innerHTML = ''; 
-    if(t.media?.images) t.media.images.forEach(img => createArrayInput(document.getElementById('imageList'), 'Image URL', img));
-    document.getElementById('includedList').innerHTML = ''; 
-    if(t.included) t.included.forEach(item => createArrayInput(document.getElementById('includedList'), 'Included item', item));
-    document.getElementById('notIncludedList').innerHTML = ''; 
-    if(t.notIncluded) t.notIncluded.forEach(item => createArrayInput(document.getElementById('notIncludedList'), 'Not included item', item));
-    document.getElementById('whatToBringList').innerHTML = ''; 
-    if(t.whatToBring) t.whatToBring.forEach(item => createArrayInput(document.getElementById('whatToBringList'), 'What to bring', item));
-    document.getElementById('timelineList').innerHTML = ''; 
-    if(t.timeline) loadTimelineItems(document.getElementById('timelineList'), t.timeline);
-    document.getElementById('tourTypeList').innerHTML = ''; 
-    if(t.tourtype) loadTourTypes(document.getElementById('tourTypeList'), t.tourtype);
-    openModal(); 
-}
-
-// ========== تعديل دالة حفظ الرحلة (bookingLink هو المفتاح، approved دائماً false) ==========
-async function saveTrip(e) { 
-    e.preventDefault(); 
-    
-    let bookingLink = document.getElementById('item-bookingLink').value.trim().toLowerCase().replace(/\s+/g, '-');
-    
-    if(!bookingLink) {
-        showToast('Booking Link is required!', 'error');
-        return;
+    // ==================== HELPER FUNCTIONS ====================
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        if (!toast) {
+            console.log('🔔 Toast:', msg);
+            return;
+        }
+        toast.innerText = msg;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => toast.classList.remove('show'), 3000);
     }
-    
-    let data = { 
-        name: document.getElementById('item-name').value, 
-        description: document.getElementById('item-desc').value, 
-        price: parseFloat(document.getElementById('item-price').value) || 0, 
-        cprice: parseFloat(document.getElementById('item-cprice').value) || 0, 
-        duration: document.getElementById('item-duration').value, 
-        bookingLink: bookingLink,
-        approved: "false",  // دائماً false
-        image: document.getElementById('item-image').value, 
-        owner: currentUser.uid,
-        updatedAt: Date.now() 
+
+    function isOlderThanOneDay(dateStr) {
+        if (!dateStr) return false;
+        const d = new Date(dateStr);
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(0, 0, 0, 0);
+        d.setHours(0, 0, 0, 0);
+        return d <= oneDayAgo;
+    }
+
+    function safeSetInnerText(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (el) el.innerText = value ?? '';
+    }
+
+    function safeSetInnerHTML(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (el) el.innerHTML = value ?? '';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>"']/g, function(m) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return map[m] || m;
+        });
+    }
+
+    function getField(id) {
+        return document.getElementById(id);
+    }
+
+    // ==================== DARK MODE ====================
+    function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark && document.body) {
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+        } else if (document.body) {
+            document.body.classList.remove('dark');
+            document.body.classList.add('light');
+        }
+        updateDarkModeIcons(isDark);
+        
+        const desktopBtn = getField('darkModeToggleDesktop');
+        const mobileBtn = getField('darkModeToggleMobile');
+        if (desktopBtn) desktopBtn.addEventListener('click', toggleDarkMode);
+        if (mobileBtn) mobileBtn.addEventListener('click', toggleDarkMode);
+    }
+
+    function toggleDarkMode() {
+        const isDark = document.body.classList.toggle('dark');
+        document.body.classList.toggle('light');
+        localStorage.setItem('darkMode', isDark);
+        updateDarkModeIcons(isDark);
+    }
+
+    function updateDarkModeIcons(isDark) {
+        const desktopBtn = getField('darkModeToggleDesktop');
+        const mobileBtn = getField('darkModeToggleMobile');
+        if (desktopBtn) {
+            desktopBtn.innerHTML = isDark 
+                ? '<i class="fas fa-sun mr-2"></i> Light Mode' 
+                : '<i class="fas fa-moon mr-2"></i> Dark Mode';
+        }
+        if (mobileBtn) {
+            mobileBtn.innerHTML = isDark 
+                ? '<i class="fas fa-sun"></i>' 
+                : '<i class="fas fa-moon"></i>';
+        }
+    }
+
+    // ==================== LOGIN FUNCTIONS ====================
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = getField('login-email')?.value;
+        const password = getField('login-password')?.value;
+        const errorDiv = getField('login-error');
+        
+        if (errorDiv) errorDiv.classList.add('hidden');
+        
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            showToast('Welcome back! 🎉');
+        } catch (err) {
+            console.error('Login error:', err);
+            if (errorDiv) {
+                errorDiv.innerText = err.message || 'Login failed';
+                errorDiv.classList.remove('hidden');
+            }
+            showToast('Login failed: ' + err.message, 'error');
+        }
+    }
+
+    function showResetPassword() {
+        const email = prompt("Enter your email to receive a reset link:");
+        if (email) {
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert("✅ Password reset link sent! Check your inbox."))
+                .catch(err => {
+                    console.error('Reset error:', err);
+                    alert('❌ Error: ' + err.message);
+                });
+        }
+    }
+
+    // Attach login form handler
+    const loginForm = getField('login-form');
+    if (loginForm) {
+        loginForm.onsubmit = handleLogin;
+    }
+
+    // ==================== ARRAY INPUT HELPERS ====================
+    function createArrayInput(container, placeholder, value = '') {
+        if (!container) return null;
+        const div = document.createElement('div');
+        div.className = 'array-item';
+        
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'input-field flex-1';
+        inp.placeholder = placeholder;
+        inp.value = value || '';
+        
+        const rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'remove-item';
+        rm.innerHTML = '<i class="fas fa-times"></i>';
+        rm.onclick = () => div.remove();
+        
+        div.appendChild(inp);
+        div.appendChild(rm);
+        container.appendChild(div);
+        return inp;
+    }
+
+    function loadTimelineItems(container, items) {
+        if (!container || !items || !Array.isArray(items)) return;
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'array-item flex-col items-stretch gap-2';
+            
+            const time = document.createElement('input');
+            time.placeholder = 'Time (e.g., 09:00 AM)';
+            time.className = 'input-field';
+            time.value = item.time || '';
+            
+            const title = document.createElement('input');
+            title.placeholder = 'Title';
+            title.className = 'input-field';
+            title.value = item.title || '';
+            
+            const desc = document.createElement('input');
+            desc.placeholder = 'Description';
+            desc.className = 'input-field';
+            desc.value = item.description || '';
+            
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'remove-item self-end';
+            rm.innerHTML = '<i class="fas fa-times"></i>';
+            rm.onclick = () => div.remove();
+            
+            div.appendChild(time);
+            div.appendChild(title);
+            div.appendChild(desc);
+            div.appendChild(rm);
+            container.appendChild(div);
+        });
+    }
+
+    function loadTourTypes(container, items) {
+        if (!container || !items || typeof items !== 'object') return;
+        Object.entries(items).forEach(([key, value]) => {
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            
+            const nameInp = document.createElement('input');
+            nameInp.placeholder = 'Service name';
+            nameInp.className = 'input-field flex-1';
+            nameInp.value = key;
+            
+            const priceInp = document.createElement('input');
+            priceInp.placeholder = 'Price (EGP)';
+            priceInp.type = 'number';
+            priceInp.className = 'input-field w-28';
+            priceInp.value = value;
+            
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'remove-item';
+            rm.innerHTML = '<i class="fas fa-times"></i>';
+            rm.onclick = () => div.remove();
+            
+            div.appendChild(nameInp);
+            div.appendChild(priceInp);
+            div.appendChild(rm);
+            container.appendChild(div);
+        });
+    }
+
+    // ==================== TRIP FUNCTIONS ====================
+    async function loadAllData() {
+        try {
+            const ts = await db.ref('trips').once('value');
+            const tripsData = ts.val() || {};
+            allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
+            renderTrips();
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            showToast('Failed to load trips', 'error');
+        }
+    }
+
+    function renderTrips() {
+        const container = getField('trips-container');
+        if (!container) return;
+        
+        let filtered = allTrips.filter(t => {
+            const matchesSearch = (t.name || '').toLowerCase().includes(tripSearch.toLowerCase());
+            if (tripFilter === 'approved') return matchesSearch && (t.approved === true || t.approved === "true");
+            if (tripFilter === 'pending') return matchesSearch && !(t.approved === true || t.approved === "true");
+            return matchesSearch;
+        });
+
+        if (!filtered.length) {
+            container.innerHTML = `<div class="col-span-full text-center py-16">
+                <i class="fas fa-inbox text-5xl text-gray-400"></i>
+                <p class="mt-2 text-gray-400">No trips found</p>
+                <button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button>
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(t => {
+            const isApproved = t.approved === true || t.approved === "true";
+            const statusBadge = isApproved
+                ? '<span class="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>Approved</span>'
+                : '<span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>Pending</span>';
+            
+            const canApprove = (currentUserRole === 'admin') && !isApproved;
+            const approveButton = canApprove 
+                ? `<button onclick="approveTrip('${t.id}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-check mr-1"></i>Approve</button>` 
+                : '';
+            
+            const canEdit = (t.owner === currentUser?.uid) || (currentUserRole === 'admin');
+            const editButton = canEdit 
+                ? `<button onclick="editTrip('${t.id}')" class="action-btn action-btn-edit"><i class="fas fa-edit mr-1"></i>Edit</button>` 
+                : '';
+            
+            const deleteButton = canEdit 
+                ? `<button onclick="deleteTripPrompt('${t.id}')" class="action-btn action-btn-delete"><i class="fas fa-trash mr-1"></i>Delete</button>` 
+                : '';
+
+            return `<div class="trip-card">
+                <img src="${t.image || 'https://placehold.co/400x200/1e293b/64748b?text=No+Image'}" 
+                     class="trip-image" 
+                     onerror="this.src='https://placehold.co/400x200/1e293b/64748b?text=Image+Error'">
+                <div class="trip-content">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="trip-title">${escapeHtml(t.name || 'Unnamed Trip')}</h3>
+                        ${statusBadge}
+                    </div>
+                    <p class="trip-price">EGP ${parseFloat(t.price || 0).toFixed(2)}</p>
+                    <p class="text-sm text-gray-400 mt-1">${escapeHtml(t.duration || '')}</p>
+                    <div class="flex gap-2 mt-3 flex-wrap">
+                        ${editButton}
+                        ${approveButton}
+                        ${deleteButton}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function approveTrip(tripId) {
+        if (currentUserRole !== 'admin') {
+            showToast('Only admin can approve trips', 'error');
+            return;
+        }
+        if (confirm('Approve this trip? It will become visible for manual bookings.')) {
+            try {
+                await db.ref(`trips/${tripId}`).update({ 
+                    approved: "true", 
+                    approvedAt: Date.now(),
+                    updatedAt: Date.now()
+                });
+                showToast('✅ Trip approved successfully!');
+                loadAllData();
+            } catch (error) {
+                console.error('Approve error:', error);
+                showToast('Failed to approve: ' + error.message, 'error');
+            }
+        }
+    }
+
+    async function isBookingSlugExists(slug, excludeId = null) {
+        try {
+            const snapshot = await db.ref(`trips/${slug}`).once('value');
+            if (!snapshot.exists()) return false;
+            if (excludeId && snapshot.val()?.id === excludeId) return false;
+            return true;
+        } catch (error) {
+            console.error('Slug check error:', error);
+            return false; // Fail safe: allow save if check fails
+        }
+    }
+
+    function openAddTripModal() {
+        const titleEl = getField('modal-title');
+        if (titleEl) titleEl.innerText = 'Add New Trip';
+        
+        const formEl = getField('item-form');
+        if (formEl) formEl.reset();
+        
+        // Clear dynamic lists
+        ['imageList', 'includedList', 'notIncludedList', 'timelineList', 'whatToBringList', 'tourTypeList']
+            .forEach(id => safeSetInnerHTML(id, ''));
+        
+        // Reset booking link field
+        const idInput = getField('item-id');
+        const bookingLinkInput = getField('item-bookingLink');
+        if (idInput) idInput.value = '';
+        if (bookingLinkInput) {
+            bookingLinkInput.disabled = false;
+            bookingLinkInput.value = '';
+        }
+        
+        openModal();
+    }
+
+    function editTrip(id) {
+        const t = allTrips.find(trip => trip.id === id);
+        if (!t) {
+            showToast('Trip not found', 'error');
+            return;
+        }
+        
+        if (t.owner !== currentUser?.uid && currentUserRole !== 'admin') {
+            showToast('You do not have permission to edit this trip', 'error');
+            return;
+        }
+        
+        const titleEl = getField('modal-title');
+        if (titleEl) titleEl.innerText = 'Edit Trip';
+        
+        // Populate basic fields
+        const fields = {
+            'item-id': id,
+            'item-name': t.name || '',
+            'item-desc': t.description || '',
+            'item-price': t.price || 0,
+            'item-cprice': t.cprice || 0,
+            'item-duration': t.duration || '',
+            'item-image': t.image || ''
+        };
+        
+        Object.entries(fields).forEach(([fieldId, value]) => {
+            const el = getField(fieldId);
+            if (el) el.value = value;
+        });
+        
+        // Booking link (disabled for editing)
+        const bookingLinkInput = getField('item-bookingLink');
+        if (bookingLinkInput) {
+            bookingLinkInput.value = t.id || t.bookingLink || '';
+            bookingLinkInput.disabled = true;
+        }
+
+        // Load dynamic arrays
+        const imageList = getField('imageList');
+        if (imageList && t.media?.images) {
+            imageList.innerHTML = '';
+            t.media.images.forEach(img => createArrayInput(imageList, 'Image URL', img));
+        }
+        
+        const includedList = getField('includedList');
+        if (includedList && t.included) {
+            includedList.innerHTML = '';
+            t.included.forEach(item => createArrayInput(includedList, 'Included item', item));
+        }
+        
+        const notIncludedList = getField('notIncludedList');
+        if (notIncludedList && t.notIncluded) {
+            notIncludedList.innerHTML = '';
+            t.notIncluded.forEach(item => createArrayInput(notIncludedList, 'Not included item', item));
+        }
+        
+        const whatToBringList = getField('whatToBringList');
+        if (whatToBringList && t.whatToBring) {
+            whatToBringList.innerHTML = '';
+            t.whatToBring.forEach(item => createArrayInput(whatToBringList, 'What to bring', item));
+        }
+        
+        const timelineList = getField('timelineList');
+        if (timelineList && t.timeline) {
+            timelineList.innerHTML = '';
+            loadTimelineItems(timelineList, t.timeline);
+        }
+        
+        const tourTypeList = getField('tourTypeList');
+        if (tourTypeList && t.tourtype) {
+            tourTypeList.innerHTML = '';
+            loadTourTypes(tourTypeList, t.tourtype);
+        }
+        
+        openModal();
+    }
+
+    async function saveTrip(e) {
+        e.preventDefault();
+
+        const bookingSlugInput = getField('item-bookingLink');
+        const isEditingInput = getField('item-id');
+        
+        if (!bookingSlugInput) {
+            showToast('Form error: booking link field not found', 'error');
+            return;
+        }
+        
+        let bookingSlug = bookingSlugInput.value.trim().toLowerCase().replace(/\s+/g, '-');
+        const isEditing = isEditingInput?.value || '';
+
+        if (!bookingSlug) {
+            showToast('Booking Slug is required!', 'error');
+            return;
+        }
+
+        // Check slug uniqueness only for new trips
+        if (!isEditing) {
+            try {
+                const slugExists = await isBookingSlugExists(bookingSlug);
+                if (slugExists) {
+                    showToast('This Booking Slug already exists! Please choose a different one.', 'error');
+                    return;
+                }
+            } catch (err) {
+                console.warn('Slug check failed, proceeding anyway:', err);
+            }
+        }
+
+        // Collect form data
+        const data = {
+            name: getField('item-name')?.value || '',
+            description: getField('item-desc')?.value || '',
+            price: parseFloat(getField('item-price')?.value) || 0,
+            cprice: parseFloat(getField('item-cprice')?.value) || 0,
+            duration: getField('item-duration')?.value || '',
+            bookingLink: bookingSlug,
+            approved: isEditing ? undefined : "false",
+            image: getField('item-image')?.value || '',
+            owner: currentUser?.uid,
+            updatedAt: Date.now()
+        };
+
+        if (!isEditing) {
+            data.createdAt = Date.now();
+        }
+
+        // Collect array fields
+        const collectArray = (containerId) => {
+            const container = getField(containerId);
+            if (!container) return [];
+            return Array.from(container.querySelectorAll('input'))
+                .map(inp => inp.value.trim())
+                .filter(val => val);
+        };
+
+        data.media = { images: collectArray('imageList') };
+        data.included = collectArray('includedList');
+        data.notIncluded = collectArray('notIncludedList');
+        data.whatToBring = collectArray('whatToBringList');
+
+        // Collect timeline items
+        data.timeline = [];
+        const timelineList = getField('timelineList');
+        if (timelineList) {
+            timelineList.querySelectorAll('.array-item').forEach(div => {
+                const inputs = div.querySelectorAll('input');
+                if (inputs[0]?.value && inputs[1]?.value) {
+                    data.timeline.push({
+                        time: inputs[0].value,
+                        title: inputs[1].value,
+                        description: inputs[2]?.value || ''
+                    });
+                }
+            });
+        }
+
+        // Collect tour types (key-value pairs)
+        data.tourtype = {};
+        const tourTypeList = getField('tourTypeList');
+        if (tourTypeList) {
+            tourTypeList.querySelectorAll('.array-item').forEach(div => {
+                const inputs = div.querySelectorAll('input');
+                if (inputs[0]?.value && inputs[1]?.value) {
+                    data.tourtype[inputs[0].value.trim()] = parseFloat(inputs[1].value) || 0;
+                }
+            });
+        }
+
+        try {
+            const ref = db.ref(`trips/${isEditing || bookingSlug}`);
+            if (isEditing) {
+                await ref.update(data);
+                showToast('✅ Trip updated successfully!');
+            } else {
+                await ref.set(data);
+                showToast('✅ New trip saved as Pending!');
+            }
+            closeModal();
+            loadAllData();
+        } catch (error) {
+            console.error("Save error:", error);
+            showToast('Error saving trip: ' + error.message, 'error');
+        }
+    }
+
+    function deleteTripPrompt(id) {
+        const trip = allTrips.find(t => t.id === id);
+        if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') {
+            showToast('You do not have permission to delete this trip', 'error');
+            return;
+        }
+        pendingDeleteId = id;
+        openSheet('delete-modal', 'delete-overlay');
+    }
+
+    async function confirmDelete() {
+        if (!pendingDeleteId) return;
+        
+        const trip = allTrips.find(t => t.id === pendingDeleteId);
+        if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') {
+            showToast('You do not have permission to delete this trip', 'error');
+            closeDeleteModal();
+            pendingDeleteId = null;
+            return;
+        }
+        
+        try {
+            await db.ref(`trips/${pendingDeleteId}`).remove();
+            showToast('✅ Trip deleted');
+            loadAllData();
+        } catch (error) {
+            console.error('Delete error:', error);
+            showToast('Failed to delete: ' + error.message, 'error');
+        } finally {
+            closeDeleteModal();
+            pendingDeleteId = null;
+        }
+    }
+
+    // Attach confirm delete button
+    const confirmDeleteBtn = getField('confirm-delete-btn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.onclick = confirmDelete;
+    }
+
+    function setTripFilter(f) {
+        tripFilter = f;
+        document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active'));
+        if (event?.target) {
+            const chip = event.target.closest('.filter-chip');
+            if (chip) chip.classList.add('active');
+        }
+        renderTrips();
+    }
+
+    const tripSearchInput = getField('tripSearch');
+    if (tripSearchInput) {
+        tripSearchInput.addEventListener('input', e => {
+            tripSearch = e.target.value;
+            renderTrips();
+        });
+    }
+
+    // Button listeners for dynamic arrays
+    const arrayBtns = {
+        'addImageBtn': ['imageList', 'Image URL'],
+        'addIncludedBtn': ['includedList', 'Included item'],
+        'addNotIncludedBtn': ['notIncludedList', 'Not included item'],
+        'addWhatToBringBtn': ['whatToBringList', 'What to bring']
     };
     
-    // إضافة createdAt للرحلات الجديدة فقط
-    const isExisting = document.getElementById('item-id').value;
-    if(!isExisting) {
-        data.createdAt = Date.now();
-    }
-    
-    // جمع الصور الإضافية
-    data.media = { images: [] }; 
-    document.querySelectorAll('#imageList input').forEach(inp => { 
-        if(inp.value.trim()) data.media.images.push(inp.value.trim()); 
+    Object.entries(arrayBtns).forEach(([btnId, [listId, placeholder]]) => {
+        const btn = getField(btnId);
+        if (btn) {
+            btn.onclick = () => createArrayInput(getField(listId), placeholder);
+        }
     });
-    
-    // جمع الميزات
-    data.included = []; 
-    document.querySelectorAll('#includedList input').forEach(inp => { 
-        if(inp.value.trim()) data.included.push(inp.value.trim()); 
-    });
-    
-    data.notIncluded = []; 
-    document.querySelectorAll('#notIncludedList input').forEach(inp => { 
-        if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); 
-    });
-    
-    data.whatToBring = []; 
-    document.querySelectorAll('#whatToBringList input').forEach(inp => { 
-        if(inp.value.trim()) data.whatToBring.push(inp.value.trim()); 
-    });
-    
-    // جمع الجدول الزمني
-    data.timeline = []; 
-    document.querySelectorAll('#timelineList .array-item').forEach(div => { 
-        let inp = div.querySelectorAll('input'); 
-        if(inp[0]?.value && inp[1]?.value) data.timeline.push({ 
-            time: inp[0].value, 
-            title: inp[1].value, 
-            description: inp[2]?.value || '' 
-        }); 
-    });
-    
-    // جمع الخدمات الإضافية
-    data.tourtype = {}; 
-    document.querySelectorAll('#tourTypeList .array-item').forEach(div => { 
-        let inp = div.querySelectorAll('input'); 
-        if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()] = parseFloat(inp[1].value) || 0; 
-    });
-    
-    try {
-        // استخدام bookingLink كمفتاح رئيسي
-        await db.ref(`trips/${bookingLink}`).set(data);
-        showToast('Trip saved successfully!'); 
-        closeModal(); 
-        loadAllData(); 
-    } catch(error) {
-        console.error("Save trip error:", error);
-        showToast('Error saving trip: ' + error.message, 'error');
-    }
-}
 
-// ========== تعديل دالة عرض الرحلات (بدون زر Approve، بدون status) ==========
-function renderTrips() { 
-    let filtered = allTrips.filter(t => { 
-        let m = (t.name || '').toLowerCase().includes(tripSearch.toLowerCase()); 
-        if(tripFilter == 'all') return m;
-        if(tripFilter == 'approved') return m && (t.approved === true || t.approved === "true");
-        if(tripFilter == 'pending') return m && !(t.approved === true || t.approved === "true");
-        return m;
-    }); 
-    
-    let c = document.getElementById('trips-container'); 
-    if(!filtered.length){ 
-        c.innerHTML = '<div class="col-span-full text-center py-16"><i class="fas fa-inbox text-5xl text-gray-300"></i><p class="mt-2">No trips found</p><button onclick="openAddTripModal()" class="btn-primary mt-4">Add Your First Trip</button></div>'; 
-        return; 
-    } 
-    
-    c.innerHTML = filtered.map(t => {
-        // عرض حالة الرحلة (بدون زر موافقة)
-        const isApproved = t.approved === true || t.approved === "true";
-        const statusBadge = isApproved 
-            ? '<span class="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>Approved</span>'
-            : '<span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>Pending</span>';
+    // Timeline button
+    const addTimelineBtn = getField('addTimelineBtn');
+    if (addTimelineBtn) {
+        addTimelineBtn.onclick = () => {
+            const div = document.createElement('div');
+            div.className = 'array-item flex-col items-stretch gap-2';
+            
+            ['Time', 'Title', 'Description'].forEach((ph, i) => {
+                const inp = document.createElement('input');
+                inp.placeholder = ph + (i === 0 ? ' (e.g., 09:00 AM)' : '');
+                inp.className = 'input-field';
+                div.appendChild(inp);
+            });
+            
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'remove-item self-end';
+            rm.innerHTML = '<i class="fas fa-times"></i>';
+            rm.onclick = () => div.remove();
+            div.appendChild(rm);
+            
+            getField('timelineList')?.appendChild(div);
+        };
+    }
+
+    // Tour type button
+    const addTourTypeBtn = getField('addTourTypeBtn');
+    if (addTourTypeBtn) {
+        addTourTypeBtn.onclick = () => {
+            const div = document.createElement('div');
+            div.className = 'array-item';
+            
+            const nameInp = document.createElement('input');
+            nameInp.placeholder = 'Service name';
+            nameInp.className = 'input-field flex-1';
+            
+            const priceInp = document.createElement('input');
+            priceInp.placeholder = 'Price';
+            priceInp.type = 'number';
+            priceInp.className = 'input-field w-28';
+            
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'remove-item';
+            rm.innerHTML = '<i class="fas fa-times"></i>';
+            rm.onclick = () => div.remove();
+            
+            div.appendChild(nameInp);
+            div.appendChild(priceInp);
+            div.appendChild(rm);
+            getField('tourTypeList')?.appendChild(div);
+        };
+    }
+
+    // ==================== RESERVATION FUNCTIONS ====================
+    async function loadReservations() {
+        if (!currentUser) return;
+        try {
+            const snap = await db.ref('trip-bookings')
+                .orderByChild('owner')
+                .equalTo(currentUser.uid)
+                .once('value');
+            
+            const data = snap.val() || {};
+            allReservations = Object.entries(data).map(([id, val]) => ({
+                id, 
+                ...val,
+                isPaid: val.paymentStatus === 'paid' || val.isPaid === true,
+                status: val.resStatus || val.status || 'new'
+            }));
+            
+            const unpaidBadge = getField('unpaidBadge');
+            if (unpaidBadge) {
+                unpaidBadge.innerText = allReservations.filter(r => !r.isPaid).length;
+            }
+            
+            applyFilters();
+            updateDashboard();
+        } catch (error) {
+            console.error('Load reservations error:', error);
+            showToast('Failed to load reservations', 'error');
+        }
+    }
+
+    function applyFilters() {
+        const searchInput = getField('resSearch');
+        const statusFilter = getField('statusFilter');
+        const search = (searchInput?.value || '').toLowerCase();
+        const status = statusFilter?.value || 'all';
         
-        return `<div class="card">
-            <img src="${t.image || 'https://placehold.co/400x200'}" class="h-48 w-full object-cover rounded-xl mb-3">
-            <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-lg">${t.name || ''}</h3>
-                ${statusBadge}
-            </div>
-            <p class="text-orange-600 font-bold">EGP ${t.price || 0}</p>
-            <p class="text-sm text-gray-500">${t.duration || ''}</p>
-            <p class="text-xs text-gray-400 mt-1">🔗 bookingLink: ${t.bookingLink || t.id}</p>
-            <div class="flex gap-2 mt-3">
-                <button onclick="editTrip('${t.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-edit mr-1"></i>Edit</button>
-                <button onclick="deleteTripPrompt('${t.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-sm transition"><i class="fas fa-trash mr-1"></i>Delete</button>
-            </div>
-        </div>`;
-    }).join(''); 
-}
-
-// ========== دالة تحميل الرحلات ==========
-async function loadAllData() { 
-    let ts = await db.ref('trips').once('value'); 
-    allTrips = Object.entries(ts.val() || {}).map(([id, val]) => ({ 
-        id: id,  // id هو bookingLink نفسه
-        ...val 
-    })); 
-    renderTrips(); 
-}
-
-// ========== دالة حذف الرحلة ==========
-function deleteTripPrompt(id) { 
-    pendingDeleteId = id; 
-    openSheet('delete-modal', 'delete-overlay'); 
-}
-
-async function confirmDelete() { 
-    if(pendingDeleteId) { 
-        await db.ref(`trips/${pendingDeleteId}`).remove(); 
-        showToast('Trip deleted'); 
-        loadAllData(); 
-        closeDeleteModal(); 
-        pendingDeleteId = null; 
-    } 
-}
-    document.getElementById('confirm-delete-btn')?.addEventListener('click',confirmDelete);
-
-
-
-
-  
-  
-    function setTripFilter(f){ tripFilter=f; document.querySelectorAll('#trips-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); renderTrips(); }
-    document.getElementById('tripSearch')?.addEventListener('input',e=>{ tripSearch=e.target.value; renderTrips(); });
-    document.getElementById('addImageBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('imageList'),'Image URL'));
-    document.getElementById('addIncludedBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('includedList'),'Included item'));
-    document.getElementById('addNotIncludedBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('notIncludedList'),'Not included item'));
-    document.getElementById('addWhatToBringBtn')?.addEventListener('click',()=>createArrayInput(document.getElementById('whatToBringList'),'What to bring'));
-    document.getElementById('addTimelineBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item flex-col items-stretch gap-2'; let time=document.createElement('input'); time.placeholder='Time'; time.className='input-field'; let title=document.createElement('input'); title.placeholder='Title'; title.className='input-field'; let desc=document.createElement('input'); desc.placeholder='Description'; desc.className='input-field'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item self-end'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(time); div.appendChild(title); div.appendChild(desc); div.appendChild(rm); document.getElementById('timelineList').appendChild(div); });
-    document.getElementById('addTourTypeBtn')?.addEventListener('click',()=>{ let div=document.createElement('div'); div.className='array-item'; let nameInp=document.createElement('input'); nameInp.placeholder='Service name'; nameInp.className='input-field flex-1'; let priceInp=document.createElement('input'); priceInp.placeholder='Price'; priceInp.type='number'; priceInp.className='input-field w-28'; let rm=document.createElement('button'); rm.type='button'; rm.className='remove-item'; rm.innerHTML='<i class="fas fa-times"></i>'; rm.onclick=()=>div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); document.getElementById('tourTypeList').appendChild(div); });
-    const tripForm = document.getElementById('item-form');
-if(tripForm) {
-    tripForm.onsubmit = saveTrip;
-}
-
-  
-    async function loadReservations(){ 
-        let snap=await db.ref('trip-bookings').orderByChild('owner').equalTo(currentUser?.uid).once('value'); 
-        allReservations=Object.entries(snap.val()||{}).map(([id,val])=>({id,...val, isPaid:val.paymentStatus==='paid'||val.isPaid===true, status:val.resStatus||val.status||'new'})); 
-        document.getElementById('unpaidBadge').innerText=allReservations.filter(r=>!r.isPaid).length; 
-        applyFilters(); 
-        updateDashboard(); 
-    }
-    function applyFilters(){
-        let search=document.getElementById('resSearch')?.value.toLowerCase()||''; 
-        let status=document.getElementById('statusFilter')?.value||'all'; 
-        let filtered=allReservations.filter(r=>(r.username||'').toLowerCase().includes(search)||(r.tour||'').toLowerCase().includes(search)); 
-        if(status!=='all') filtered=filtered.filter(r=>r.status===status); 
-        if(currentResTab==='paid') filtered=filtered.filter(r=>r.isPaid===true); 
-        if(currentResTab==='unpaid') filtered=filtered.filter(r=>!r.isPaid); 
+        let filtered = allReservations.filter(r => 
+            (r.username || '').toLowerCase().includes(search) || 
+            (r.tour || '').toLowerCase().includes(search)
+        );
+        
+        if (status !== 'all') {
+            filtered = filtered.filter(r => r.status === status);
+        }
+        if (currentResTab === 'paid') {
+            filtered = filtered.filter(r => r.isPaid === true);
+        }
+        if (currentResTab === 'unpaid') {
+            filtered = filtered.filter(r => !r.isPaid);
+        }
+        
         filteredReservations = filtered;
         currentPage = 1;
         renderReservations();
         updatePagination();
     }
-    function renderReservations(){
-        const start = (currentPage-1)*itemsPerPage;
-        const page = filteredReservations.slice(start, start+itemsPerPage);
-        let tbody=document.getElementById('resTableBody');
-        if(!page.length){ tbody.innerHTML='<tr><td colspan="8" class="text-center py-8">No reservations</td></tr>'; }
-        else {
-            tbody.innerHTML=page.map(r=>`<tr class="border-b"><td><div class="font-medium">${r.username||'Guest'}</div><div class="text-xs text-gray-500">${r.phone||'-'}</div></td><td>${r.tour||'-'}</td><td>${r.tripDate||'-'}</td><td>${r.adults||0}A / ${r.childrenUnder12||0}C</td><td class="font-bold">EGP ${r.netTotal||0}</td><td><span class="status-badge ${r.isPaid?'status-paid':'status-unpaid'}">${r.isPaid?'✅ Paid':'⚠️ Unpaid'}</span></td><td><span class="status-badge status-${r.status}">${r.status}</span></td><td><div class="flex gap-1 flex-wrap">${!r.isPaid?`<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-2 py-1 rounded-lg text-xs">Pay</button>`:''}<button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-2 py-1 rounded-lg text-xs">Confirm</button><button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-2 py-1 rounded-lg text-xs">View</button></div></td></tr>`).join('');
+
+    function renderReservations() {
+        const tbody = getField('resTableBody');
+        const cardsContainer = getField('resCardsContainer');
+        
+        if (!tbody && !cardsContainer) return;
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const page = filteredReservations.slice(start, start + itemsPerPage);
+        
+        const emptyRow = '<tr><td colspan="8" class="text-center py-8 text-gray-400">No reservations found</td></tr>';
+        const emptyCard = '<div class="text-center py-8 text-gray-400">No reservations found</div>';
+        
+        // Table view (desktop)
+        if (tbody) {
+            tbody.innerHTML = page.length ? page.map(r => `<tr class="border-b hover:bg-slate-800/30 transition">
+                <td><div class="font-medium">${escapeHtml(r.username || 'Guest')}</div><div class="text-xs text-gray-400">${escapeHtml(r.phone || '-')}</div></td>
+                <td>${escapeHtml(r.tour || '-')}</td>
+                <td>${r.tripDate || '-'}</td>
+                <td>${r.adults || 0}A / ${r.childrenUnder12 || 0}C</td>
+                <td class="font-bold text-orange-500">EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</td>
+                <td><span class="status-badge ${r.isPaid ? 'status-paid' : 'status-unpaid'}">${r.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></td>
+                <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+                <td><div class="flex gap-1 flex-wrap">
+                    ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg text-xs transition">Pay</button>` : ''}
+                    <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded-lg text-xs transition">Confirm</button>
+                    <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-xs transition">View</button>
+                </div></td>
+            </tr>`).join('') : emptyRow;
         }
-        let cardsContainer=document.getElementById('resCardsContainer');
-        if(!page.length){ cardsContainer.innerHTML='<div class="text-center py-8 text-gray-500">No reservations</div>'; }
-        else {
-            cardsContainer.innerHTML=page.map(r=>`<div class="booking-card"><div class="booking-card-header"><span class="booking-ref">${r.refNumber || r.id.slice(-8)}</span><span class="status-badge status-${r.status}">${r.status}</span></div><div class="font-medium">${r.username||'Guest'}</div><div class="text-sm text-gray-500">${r.tour||'-'} • ${r.tripDate||'-'}</div><div class="flex gap-3 mt-2 text-xs"><span>👥 ${r.adults||0}A / ${r.childrenUnder12||0}C</span><span>💰 EGP ${r.netTotal||0}</span><span>💳 ${r.isPaid?'Paid':'Unpaid'}</span></div><div class="flex gap-2 mt-3">${!r.isPaid?`<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Pay</button>`:''}<button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-3 py-1 rounded-lg text-xs">Confirm</button><button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">View</button></div></div>`).join('');
+        
+        // Card view (mobile)
+        if (cardsContainer) {
+            cardsContainer.innerHTML = page.length ? page.map(r => `<div class="booking-card">
+                <div class="booking-card-header">
+                    <span class="booking-ref">${escapeHtml(r.refNumber || r.id?.slice(-8) || 'N/A')}</span>
+                    <span class="status-badge status-${r.status}">${r.status}</span>
+                </div>
+                <div class="font-medium">${escapeHtml(r.username || 'Guest')}</div>
+                <div class="text-sm text-gray-400">${escapeHtml(r.tour || '-')} • ${r.tripDate || '-'}</div>
+                <div class="flex gap-3 mt-2 text-xs text-gray-300">
+                    <span>👥 ${r.adults || 0}A / ${r.childrenUnder12 || 0}C</span>
+                    <span>💰 EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</span>
+                    <span>💳 ${r.isPaid ? 'Paid' : 'Unpaid'}</span>
+                </div>
+                <div class="flex gap-2 mt-3">
+                    ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Pay</button>` : ''}
+                    <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-3 py-1 rounded-lg text-xs">Confirm</button>
+                    <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">View</button>
+                </div>
+            </div>`).join('') : emptyCard;
         }
     }
-    function updatePagination(){
-        const totalPages=Math.ceil(filteredReservations.length/itemsPerPage);
-        document.getElementById('pageInfo').innerHTML=`Page ${currentPage} of ${totalPages||1}`;
-        document.getElementById('prevPageBtn').disabled=currentPage===1;
-        document.getElementById('nextPageBtn').disabled=currentPage===totalPages;
+
+    function updatePagination() {
+        const pageInfo = getField('pageInfo');
+        const prevBtn = getField('prevPageBtn');
+        const nextBtn = getField('nextPageBtn');
+        const totalPages = Math.ceil(filteredReservations.length / itemsPerPage) || 1;
+        
+        if (pageInfo) pageInfo.innerHTML = `Page ${currentPage} of ${totalPages}`;
+        if (prevBtn) prevBtn.disabled = currentPage === 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
     }
-    window.prevPage=()=>{ if(currentPage>1){ currentPage--; renderReservations(); updatePagination(); } };
-    window.nextPage=()=>{ const total=Math.ceil(filteredReservations.length/itemsPerPage); if(currentPage<total){ currentPage++; renderReservations(); updatePagination(); } };
-    document.getElementById('prevPageBtn').addEventListener('click',window.prevPage);
-    document.getElementById('nextPageBtn').addEventListener('click',window.nextPage);
-    document.getElementById('resSearch').addEventListener('input',()=>applyFilters());
-    document.getElementById('statusFilter').addEventListener('change',()=>applyFilters());
-    window.switchReservationTab=(tab)=>{ currentResTab=tab; document.querySelectorAll('#reservations-section .filter-chip').forEach(c=>c.classList.remove('active')); if(event?.target) event.target.classList.add('active'); applyFilters(); };
-    window.markAsPaid=async(id,amount)=>{ if(confirm(`Mark as paid? Amount: EGP ${amount}`)){ await db.ref(`trip-bookings/${id}`).update({ isPaid:true, paymentStatus:'paid', paymentDate:Date.now() }); showToast('Payment recorded'); loadReservations(); } };
-    window.confirmBookingWithPickup=(id)=>{ pendingConfirmRef=id; document.getElementById('pickup-modal').classList.add('open'); document.getElementById('pickup-overlay').classList.add('open'); document.body.style.overflow='hidden'; };
-    document.getElementById('confirmPickupBtn').onclick=async()=>{ let time=document.getElementById('pickupTimeInput').value; if(!time){ showToast('Please select pickup time','error'); return; } if(pendingConfirmRef){ await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ resStatus:'confirmed', pickuptime:time, confirmedAt:Date.now() }); showToast('Booking confirmed!'); closePickupModal(); loadReservations(); pendingConfirmRef=null; } };
-    window.closePickupModal=()=>{ document.getElementById('pickup-modal').classList.remove('open'); document.getElementById('pickup-overlay').classList.remove('open'); document.body.style.overflow=''; document.getElementById('pickupTimeInput').value=''; };
-    window.refreshReservations=()=>{ loadReservations(); };
+
+    window.prevPage = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderReservations();
+            updatePagination();
+        }
+    };
+
+    window.nextPage = () => {
+        const total = Math.ceil(filteredReservations.length / itemsPerPage);
+        if (currentPage < total) {
+            currentPage++;
+            renderReservations();
+            updatePagination();
+        }
+    };
+
+    // Attach pagination buttons
+    const prevPageBtn = getField('prevPageBtn');
+    const nextPageBtn = getField('nextPageBtn');
+    if (prevPageBtn) prevPageBtn.onclick = window.prevPage;
+    if (nextPageBtn) nextPageBtn.onclick = window.nextPage;
+
+    // Attach search/filter inputs
+    const resSearch = getField('resSearch');
+    if (resSearch) resSearch.addEventListener('input', applyFilters);
     
-    async function showBookingDetails(bookingId){
-        const b=allReservations.find(b=>b.id===bookingId); if(!b) return;
-        const html=`<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id.slice(-8)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer Name</div><div class="booking-detail-value">${b.username||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${b.phone||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div></div>`;
-        document.getElementById('bookingDetailsContent').innerHTML=html;
-        let wa=document.getElementById('whatsappLink');
-        if(b.phone){ let msg=`Hello ${b.username},%0A%0AYour booking ${b.refNumber||b.id.slice(-8)} for ${b.tour} on ${b.tripDate} is confirmed.%0APickup time: ${b.pickuptime||'to be confirmed'}%0A%0ADiscover Sharm Team`; wa.href=`https://wa.me/${b.phone.replace(/[^0-9]/g,'')}?text=${msg}`; } else { wa.href='#'; wa.style.opacity='0.5'; }
-        document.getElementById('booking-modal').classList.add('open'); document.getElementById('booking-modal-overlay').classList.add('open'); document.body.style.overflow='hidden';
+    const statusFilter = getField('statusFilter');
+    if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+
+    window.switchReservationTab = (tab) => {
+        currentResTab = tab;
+        document.querySelectorAll('#reservations-section .filter-chip').forEach(c => c.classList.remove('active'));
+        if (event?.target) event.target.classList.add('active');
+        applyFilters();
+    };
+
+    window.markAsPaid = async (id, amount) => {
+        if (confirm(`Mark booking ${id.slice(-8)} as paid? Amount: EGP ${amount}`)) {
+            try {
+                await db.ref(`trip-bookings/${id}`).update({ 
+                    isPaid: true, 
+                    paymentStatus: 'paid', 
+                    paymentDate: Date.now(),
+                    updatedAt: Date.now()
+                });
+                showToast('✅ Payment recorded');
+                loadReservations();
+            } catch (error) {
+                console.error('Mark paid error:', error);
+                showToast('Failed to update payment: ' + error.message, 'error');
+            }
+        }
+    };
+
+    window.confirmBookingWithPickup = (id) => {
+        pendingConfirmRef = id;
+        const pickupModal = getField('pickup-modal');
+        const pickupOverlay = getField('pickup-overlay');
+        if (pickupModal) pickupModal.classList.add('open');
+        if (pickupOverlay) pickupOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const confirmPickupBtn = getField('confirmPickupBtn');
+    if (confirmPickupBtn) {
+        confirmPickupBtn.onclick = async () => {
+            const timeInput = getField('pickupTimeInput');
+            const time = timeInput?.value;
+            
+            if (!time) {
+                showToast('Please select pickup time', 'error');
+                return;
+            }
+            
+            if (pendingConfirmRef) {
+                try {
+                    await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ 
+                        resStatus: 'confirmed', 
+                        pickuptime: time, 
+                        confirmedAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+                    showToast('✅ Booking confirmed!');
+                    window.closePickupModal();
+                    loadReservations();
+                } catch (error) {
+                    console.error('Confirm error:', error);
+                    showToast('Failed to confirm: ' + error.message, 'error');
+                } finally {
+                    pendingConfirmRef = null;
+                }
+            }
+        };
     }
-    window.closeBookingModal=()=>{ document.getElementById('booking-modal').classList.remove('open'); document.getElementById('booking-modal-overlay').classList.remove('open'); document.body.style.overflow=''; };
-    
-    async function loadPayoutMethod(){ 
-        let snap=await db.ref(`egy_user/${currentUser?.uid}/payout_method`).once('value'); 
-        let d=snap.val(); 
-        if(d){ 
-            document.getElementById('payoutName').value=d.name||''; 
-            document.getElementById('accountNumber').value=d.accountNumber||''; 
-            document.getElementById('payoutMethodSelect').value=d.method||'wallet'; 
-            document.getElementById('bankFields').style.display=d.method==='bankAccount'?'block':'none'; 
-        } 
+
+    window.closePickupModal = () => {
+        const pickupModal = getField('pickup-modal');
+        const pickupOverlay = getField('pickup-overlay');
+        if (pickupModal) pickupModal.classList.remove('open');
+        if (pickupOverlay) pickupOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+        const timeInput = getField('pickupTimeInput');
+        if (timeInput) timeInput.value = '';
+    };
+
+    window.refreshReservations = () => {
+        showToast('🔄 Refreshing...');
+        loadReservations();
+    };
+
+
+
+
+
+
+
+    // ==================== BOOKING DETAILS MODAL ====================
+    async function showBookingDetails(bookingId) {
+        const b = allReservations.find(b => b.id === bookingId);
+        if (!b) {
+            showToast('Booking not found', 'error');
+            return;
+        }
+        
+        const html = `<div class="booking-details-grid">
+            <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value font-mono">${escapeHtml(b.refNumber || b.id?.slice(-8) || 'N/A')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${escapeHtml(b.tour || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate || '-'}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults || 0}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12 || 0}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants || 0}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-500 font-bold">EGP ${parseFloat(b.netTotal || 0).toFixed(2)}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid ? 'status-paid' : 'status-unpaid'}">${b.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime || 'Not set'}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Customer</div><div class="booking-detail-value">${escapeHtml(b.username || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${escapeHtml(b.phone || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${escapeHtml(b.email || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${escapeHtml(b.hotelName || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${escapeHtml(b.roomNumber || '-')}</div></div>
+                    <div class="booking-detail-item col-span-2"><div class="booking-detail-label">✨ Extra Services</div><div class="booking-detail-value text-orange-400 font-medium">${escapeHtml(b.extraServices) || '<span class="text-white">None</span>'}</div></div>
+            <div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${escapeHtml(b.specialRequests || b.tripType || 'None')}</div></div>
+        </div>`;
+        
+        const detailsContent = getField('bookingDetailsContent');
+        if (detailsContent) detailsContent.innerHTML = html;
+        
+        // WhatsApp link
+        const wa = getField('whatsappLink');
+        if (wa) {
+            if (b.phone) {
+                const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
+                const msg = `Hello ${b.username},%0A%0A✅ Booking *${b.refNumber || b.id?.slice(-8)}* confirmed%0A🗓️ ${b.tour} on ${b.tripDate}%0A🚐 Pickup: ${b.pickuptime || 'TBD'}%0A%0A*Discover Sharm* 🌴`;
+                wa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
+                wa.style.opacity = '1';
+                wa.style.pointerEvents = 'auto';
+            } else {
+                wa.href = '#';
+                wa.style.opacity = '0.5';
+                wa.style.pointerEvents = 'none';
+            }
+        }
+        
+        // Open modal
+        const bookingModal = getField('booking-modal');
+        const bookingOverlay = getField('booking-modal-overlay');
+        if (bookingModal) bookingModal.classList.add('open');
+        if (bookingOverlay) bookingOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
     }
-    
-    async function calculateAndDisplayBalance(){
-        if(!currentUser) return;
-        const eligibleBookings = allReservations.filter(r => r.status === 'confirmed' && isOlderThanOneDay(r.tripDate));
+
+    window.closeBookingModal = () => {
+        const bookingModal = getField('booking-modal');
+        const bookingOverlay = getField('booking-modal-overlay');
+        if (bookingModal) bookingModal.classList.remove('open');
+        if (bookingOverlay) bookingOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    };
+
+    // ==================== PAYOUT FUNCTIONS ====================
+    async function loadPayoutMethod() {
+        if (!currentUser) return;
+        try {
+            const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method`).once('value');
+            const d = snap.val();
+            if (d) {
+                const fields = {
+                    'payoutName': d.name || '',
+                    'accountNumber': d.accountNumber || '',
+                    'payoutMethodSelect': d.method || 'wallet'
+                };
+                Object.entries(fields).forEach(([id, val]) => {
+                    const el = getField(id);
+                    if (el) el.value = val;
+                });
+                // Show/hide bank fields
+                const bankFields = getField('bankFields');
+                if (bankFields) {
+                    bankFields.style.display = (d.method === 'bankAccount') ? 'block' : 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Load payout error:', error);
+        }
+    }
+
+    async function calculateAndDisplayBalance() {
+        if (!currentUser) return;
+        
+        const eligibleBookings = allReservations.filter(r => 
+            r.status === 'confirmed' && isOlderThanOneDay(r.tripDate)
+        );
+        
         const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
         const commission = totalRevenue * COMMISSION_RATE;
         const netEarnings = totalRevenue - commission;
+        
         let completedPayouts = 0, pendingPayouts = 0, historyHtml = '';
+        
         try {
             const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-            if(payoutSnap.exists()){
+            if (payoutSnap.exists()) {
                 payoutSnap.forEach(child => {
-                    let req = child.val();
-                    let amount = parseFloat(req.amount) || 0;
-                    if(req.status === 'completed'){ completedPayouts += amount; historyHtml += `<div class="flex justify-between p-2 bg-slate-100 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">completed</span></div>`;
-                    } else if(req.status === 'pending'){ pendingPayouts += amount; historyHtml += `<div class="flex justify-between p-2 bg-amber-50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">pending</span></div>`; }
+                    const req = child.val();
+                    const amount = parseFloat(req.amount) || 0;
+                    if (req.status === 'completed') {
+                        completedPayouts += amount;
+                        historyHtml += `<div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-green-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">✓</span></div>`;
+                    } else if (req.status === 'pending') {
+                        pendingPayouts += amount;
+                        historyHtml += `<div class="flex justify-between p-3 bg-amber-900/30 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-amber-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">⏳</span></div>`;
+                    }
                 });
             }
-        } catch(e) { console.error("Error:", e); }
+        } catch (e) { 
+            console.error("Payout history error:", e); 
+        }
+        
         const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
-        document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
-        document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
-        if(historyHtml === '') historyHtml = '<div class="empty-state text-center py-4 text-gray-500">No payout requests yet</div>';
-        document.getElementById('payoutHistoryList').innerHTML = historyHtml;
+        
+        // Update UI
+        const avpayout = getField('avpayout');
+        if (avpayout) avpayout.innerHTML = `EGP ${availableBalance.toFixed(2)}`;
+        
+        const pendingBadge = getField('pendingBadge');
+        if (pendingBadge) pendingBadge.classList.toggle('hidden', pendingPayouts === 0);
+        
+        const payoutHistoryList = getField('payoutHistoryList');
+        if (payoutHistoryList) {
+            payoutHistoryList.innerHTML = historyHtml || '<div class="empty-state text-center py-4 text-gray-400">No payout requests yet</div>';
+        }
+        
         window.currentAvailableBalance = availableBalance;
-        document.getElementById('debugInfo').innerHTML = `🔍 Eligible: <span>${eligibleBookings.length}</span> bookings | Revenue: <span>EGP ${totalRevenue.toFixed(0)}</span> | Commission (5%): <span>- EGP ${commission.toFixed(0)}</span> | Net: <span>EGP ${netEarnings.toFixed(0)}</span> | Paid: <span>${completedPayouts}</span> | Pending: <span>${pendingPayouts}</span> | ✅ Available: <span>EGP ${availableBalance.toFixed(2)}</span>`;
+        
+        // Debug info
+        const debugInfo = getField('debugInfo');
+        if (debugInfo) {
+            debugInfo.innerHTML = `<details class="text-xs cursor-pointer"><summary class="hover:text-orange-500 transition">🔍 Calculation Details</summary><div class="mt-2 space-y-1 text-gray-300">
+                Eligible bookings: <span class="text-orange-500">${eligibleBookings.length}</span><br>
+                Total revenue: <span class="text-green-500">EGP ${totalRevenue.toFixed(2)}</span><br>
+                Commission (10%): <span class="text-red-500">-EGP ${commission.toFixed(2)}</span><br>
+                Net earnings: <span class="text-blue-500">EGP ${netEarnings.toFixed(2)}</span><br>
+                Completed payouts: <span class="text-gray-400">-EGP ${completedPayouts.toFixed(2)}</span><br>
+                Pending requests: <span class="text-amber-500">-EGP ${pendingPayouts.toFixed(2)}</span><br>
+                <strong class="text-orange-500">Available: EGP ${availableBalance.toFixed(2)}</strong>
+            </div></details>`;
+        }
     }
-    
-    document.getElementById('payoutForm')?.addEventListener('submit', async(e)=>{ e.preventDefault(); let method=document.getElementById('payoutMethodSelect').value; let data={ name:document.getElementById('payoutName').value, accountNumber:document.getElementById('accountNumber').value, method:method }; if(method==='bankAccount'){ data.bankName=document.getElementById('bankName').value; data.branchName=document.getElementById('branchName').value; } await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data); showToast('Payout method saved'); });
-    document.getElementById('payoutMethodSelect')?.addEventListener('change',function(){ document.getElementById('bankFields').style.display=this.value==='bankAccount'?'block':'none'; });
-    document.getElementById('requestPayoutBtn')?.addEventListener('click', async()=>{ let available = window.currentAvailableBalance || 0; if(available <= 0){ showToast('No withdrawable balance available','error'); return; } let snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value'); let hasPending = false; snap.forEach(child => { if(child.val().status === 'pending') hasPending = true; }); if(hasPending){ showToast('You already have a pending withdrawal request','error'); return; } if(confirm(`Request payout of ${available.toFixed(2)} EGP?`)){ await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() }); showToast('Withdrawal request submitted successfully!'); await calculateAndDisplayBalance(); } });
-    document.getElementById('refreshBalanceBtn')?.addEventListener('click', ()=>{ calculateAndDisplayBalance(); showToast('Balance refreshed','success'); });
-    
-    // Export Functions
-    function openExportModal() { openSheet('export-modal', 'export-overlay'); }
-    function closeExportModal() { closeSheet('export-modal', 'export-overlay'); }
-    document.getElementById('confirmExportBtn')?.addEventListener('click', async () => {
-        closeExportModal();
-        showToast('Generating Excel file...', 'success');
-        const exportAll = document.getElementById('exportAllBtn').classList.contains('active');
-        const selectedColumns = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked')).map(cb => cb.value);
-        let dataToExport = exportAll ? allReservations : filteredReservations;
-        if(dataToExport.length === 0) { showToast('No data to export', 'error'); return; }
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Reservations');
-        const columnHeaders = { refNumber: 'Reference #', username: 'Customer Name', phone: 'Phone', email: 'Email', tour: 'Trip Name', tripDate: 'Trip Date', adults: 'Adults', childrenUnder12: 'Children', infants: 'Infants', netTotal: 'Amount (EGP)', paymentStatus: 'Payment Status', status: 'Booking Status', pickuptime: 'Pickup Time', hotelName: 'Hotel Name', roomNumber: 'Room Number', specialRequests: 'Special Requests' };
-        worksheet.columns = selectedColumns.map(col => ({ header: columnHeaders[col], key: col, width: 20 }));
-        const headerRow = worksheet.getRow(1);
-        headerRow.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; cell.alignment = { horizontal: 'center', vertical: 'middle' }; });
-        dataToExport.forEach(booking => { const row = {}; selectedColumns.forEach(col => { if(col === 'netTotal') row[col] = booking[col] || 0; else if(col === 'paymentStatus') row[col] = booking.isPaid ? 'Paid' : 'Unpaid'; else if(col === 'status') row[col] = booking.status || 'new'; else row[col] = booking[col] || '-'; }); worksheet.addRow(row); });
-        worksheet.eachRow((row, rowNumber) => { if(rowNumber > 1){ row.eachCell(cell => { cell.alignment = { horizontal: 'center', vertical: 'middle' }; cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }; }); } });
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(blob, `reservations_${new Date().toISOString().slice(0,19)}.xlsx`);
-        showToast('Export completed!', 'success');
+
+    // Payout form handler
+    const payoutForm = getField('payoutForm');
+    if (payoutForm) {
+        payoutForm.onsubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const method = getField('payoutMethodSelect')?.value || 'wallet';
+                const data = {
+                    name: getField('payoutName')?.value || '',
+                    accountNumber: getField('accountNumber')?.value || '',
+                    method: method,
+                    updatedAt: Date.now()
+                };
+                if (method === 'bankAccount') {
+                    data.bankName = getField('bankName')?.value || '';
+                    data.branchName = getField('branchName')?.value || '';
+                }
+                await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data);
+                showToast('✅ Payout method saved');
+            } catch (error) {
+                console.error('Save payout error:', error);
+                showToast('Failed to save: ' + error.message, 'error');
+            }
+        };
+    }
+
+    // Toggle bank fields
+    const payoutMethodSelect = getField('payoutMethodSelect');
+    if (payoutMethodSelect) {
+        payoutMethodSelect.onchange = function() {
+            const bankFields = getField('bankFields');
+            if (bankFields) {
+                bankFields.style.display = this.value === 'bankAccount' ? 'block' : 'none';
+            }
+        };
+    }
+
+    // Request payout button
+    const requestPayoutBtn = getField('requestPayoutBtn');
+    if (requestPayoutBtn) {
+        requestPayoutBtn.onclick = async () => {
+            const available = window.currentAvailableBalance || 0;
+            if (available <= 0) {
+                showToast('No withdrawable balance available', 'error');
+                return;
+            }
+            
+            try {
+                const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
+                let hasPending = false;
+                snap.forEach(child => { 
+                    if (child.val()?.status === 'pending') hasPending = true; 
+                });
+                
+                if (hasPending) {
+                    showToast('You already have a pending withdrawal request', 'error');
+                    return;
+                }
+                
+                if (confirm(`Request payout of ${available.toFixed(2)} EGP?`)) {
+                    await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({
+                        amount: available.toFixed(2),
+                        status: 'pending',
+                        createdAt: Date.now()
+                    });
+                    showToast('✅ Withdrawal request submitted!');
+                    await calculateAndDisplayBalance();
+                }
+            } catch (error) {
+                console.error('Payout request error:', error);
+                showToast('Failed: ' + error.message, 'error');
+            }
+        };
+    }
+
+    // Refresh balance button
+    const refreshBalanceBtn = getField('refreshBalanceBtn');
+    if (refreshBalanceBtn) {
+        refreshBalanceBtn.onclick = () => {
+            calculateAndDisplayBalance();
+            showToast('🔄 Balance refreshed');
+        };
+    }
+
+    // ==================== EXPORT FUNCTIONS ====================
+    window.openExportModal = () => { openSheet('export-modal', 'export-overlay'); };
+    window.closeExportModal = () => { closeSheet('export-modal', 'export-overlay'); };
+
+    const confirmExportBtn = getField('confirmExportBtn');
+    if (confirmExportBtn) {
+        confirmExportBtn.onclick = async () => {
+            closeExportModal();
+            showToast('🔄 Generating Excel file...');
+            
+            try {
+                const exportAllBtn = getField('exportAllBtn');
+                const exportAll = exportAllBtn?.classList.contains('active') ?? true;
+                
+                const selectedColumns = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
+                
+                let dataToExport = exportAll ? allReservations : filteredReservations;
+                
+                if (dataToExport.length === 0) {
+                    showToast('No data to export', 'error');
+                    return;
+                }
+                
+                // Create workbook
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet('Reservations');
+                
+                const columnHeaders = {
+                    refNumber: 'Reference #', username: 'Customer Name', phone: 'Phone', email: 'Email',
+                    tour: 'Trip Name', tripDate: 'Trip Date', adults: 'Adults', childrenUnder12: 'Children',
+                    infants: 'Infants', netTotal: 'Amount (EGP)', paymentStatus: 'Payment Status',
+                    status: 'Booking Status', pickuptime: 'Pickup Time', hotelName: 'Hotel Name',
+                    roomNumber: 'Room Number', specialRequests: 'Special Requests'
+                };
+                
+                worksheet.columns = selectedColumns.map(col => ({ 
+                    header: columnHeaders[col] || col, 
+                    key: col, 
+                    width: 20 
+                }));
+                
+                // Style header
+                const headerRow = worksheet.getRow(1);
+                headerRow.eachCell(cell => {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } };
+                    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                });
+                
+                // Add data rows
+                dataToExport.forEach(booking => {
+                    const row = {};
+                    selectedColumns.forEach(col => {
+                        if (col === 'netTotal') row[col] = booking[col] || 0;
+                        else if (col === 'paymentStatus') row[col] = booking.isPaid ? 'Paid' : 'Unpaid';
+                        else if (col === 'status') row[col] = booking.status || 'new';
+                        else row[col] = booking[col] || '-';
+                    });
+                    worksheet.addRow(row);
+                });
+                
+                // Style data rows
+                worksheet.eachRow((row, rowNumber) => {
+                    if (rowNumber > 1) {
+                        row.eachCell(cell => {
+                            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                            cell.border = { 
+                                top: { style: 'thin' }, left: { style: 'thin' }, 
+                                bottom: { style: 'thin' }, right: { style: 'thin' } 
+                            };
+                        });
+                    }
+                });
+                
+                // Download
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { 
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+                });
+                saveAs(blob, `reservations_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`);
+                
+                showToast('✅ Export completed!');
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Export failed: ' + error.message, 'error');
+            }
+        };
+    }
+
+    // Export range toggle
+    ['exportAllBtn', 'exportFilteredBtn'].forEach(btnId => {
+        const btn = getField(btnId);
+        if (btn) {
+            btn.onclick = function() {
+                this.classList.add('active');
+                const other = btnId === 'exportAllBtn' ? 'exportFilteredBtn' : 'exportAllBtn';
+                getField(other)?.classList.remove('active');
+            };
+        }
     });
-    document.getElementById('exportAllBtn')?.addEventListener('click', function() { document.getElementById('exportAllBtn').classList.add('active'); document.getElementById('exportFilteredBtn').classList.remove('active'); });
-    document.getElementById('exportFilteredBtn')?.addEventListener('click', function() { document.getElementById('exportFilteredBtn').classList.add('active'); document.getElementById('exportAllBtn').classList.remove('active'); });
-    
-    // Manual Booking with Extra Services
-    let selectedExtraServices = [];
-    
+
+    // ==================== ✅ FIXED: MANUAL BOOKING MODAL & FORM ====================
     
     function openManualBookingModal() {
-        const modal = document.getElementById('manual-modal');
-        const overlay = document.getElementById('manualModalOverlay');
-        modal.classList.add('open');
-        overlay.classList.add('open');
+        const modal = getField('manual-modal');
+        const overlay = getField('manualModalOverlay');
+        if (modal) modal.classList.add('open');
+        if (overlay) overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
-        const tripSelect = document.getElementById('manualTrip');
-        tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
-        allTrips.forEach(trip => { tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${trip.name} - EGP ${trip.price}</option>`; });
-        document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-        selectedExtraServices = [];
-        currentTripData = null;
-        document.getElementById('extraServicesContainer').style.display = 'none';
-        document.getElementById('priceSummary').style.display = 'none';
-        document.getElementById('manualForm').reset();
-        document.getElementById('manualAdults').value = 1;
-        document.getElementById('manualChildren').value = 0;
-        document.getElementById('manualInfants').value = 0;
-    }
-    
-    function closeManualModal() {
-        const modal = document.getElementById('manual-modal');
-        const overlay = document.getElementById('manualModalOverlay');
-        modal.classList.remove('open');
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-    
-    document.getElementById('manualTrip')?.addEventListener('change', async function() {
-        const val = this.value;
-        if(!val) { document.getElementById('extraServicesContainer').style.display = 'none'; document.getElementById('priceSummary').style.display = 'none'; return; }
-        const tripData = val.split('|');
-        const tripId = tripData[0];
-        const tripPrice = parseFloat(tripData[2]);
-        currentTripData = { id: tripId, name: tripData[1], price: tripPrice };
-        const tripSnap = await db.ref(`trips/${tripId}`).once('value');
-        const trip = tripSnap.val();
-        if(trip && trip.tourtype && Object.keys(trip.tourtype).length > 0){
-            document.getElementById('extraServicesContainer').style.display = 'block';
-            const container = document.getElementById('extraServicesList');
-            container.innerHTML = '';
-            selectedExtraServices = [];
-            Object.entries(trip.tourtype).forEach(([name, price]) => {
-                const div = document.createElement('div');
-                div.className = 'extra-service-item';
-                div.innerHTML = `<span>${name}</span><span class="font-bold">EGP ${price}</span>`;
-                div.onclick = () => {
-                    div.classList.toggle('selected');
-                    const service = { name, price: parseFloat(price) };
-                    if(div.classList.contains('selected')){ selectedExtraServices.push(service); }
-                    else { selectedExtraServices = selectedExtraServices.filter(s => s.name !== name); }
-                    updatePriceCalculation();
+        
+        // Populate trip dropdown with approved trips only
+        const tripSelect = getField('manualTrip');
+        if (tripSelect) {
+            tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
+            const approvedTrips = allTrips.filter(trip => 
+                trip.approved === true || trip.approved === "true"
+            );
+            
+            if (approvedTrips.length === 0) {
+                tripSelect.innerHTML = '<option value="">-- No approved trips available --</option>';
+                showToast('⚠️ No approved trips found. Contact admin.', 'error');
+            } else {
+                approvedTrips.forEach(trip => {
+                    tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${escapeHtml(trip.name)} - EGP ${parseFloat(trip.price).toFixed(2)}</option>`;
+                });
+            }
+        }
+        
+        // Set default date to today
+        const manualDate = getField('manualDate');
+        if (manualDate) {
+            manualDate.value = new Date().toISOString().split('T')[0];
+        }
+        
+        // Reset state
+        window.selectedExtraServices = [];
+        window.currentTripData = null;
+        
+        // Hide extra services & price summary initially
+        const extraServicesContainer = getField('extraServicesContainer');
+        const priceSummary = getField('priceSummary');
+        if (extraServicesContainer) extraServicesContainer.style.display = 'none';
+        if (priceSummary) priceSummary.style.display = 'none';
+        
+        // Reset form
+        const manualForm = getField('manualForm');
+        if (manualForm) manualForm.reset();
+        
+        // Set default passenger counts
+        ['manualAdults', 'manualChildren', 'manualInfants'].forEach((id, idx) => {
+            const el = getField(id);
+            if (el) el.value = idx === 0 ? 1 : 0;
+        });
+
+        // Trip selection handler
+        const tripSelectEl = getField('manualTrip');
+        if (tripSelectEl) {
+            tripSelectEl.onchange = async function() {
+                const val = this.value;
+                if (!val) {
+                    window.currentTripData = null;
+                    if (extraServicesContainer) extraServicesContainer.style.display = 'none';
+                    if (priceSummary) priceSummary.style.display = 'none';
+                    return;
+                }
+                
+                const parts = val.split('|');
+                window.currentTripData = {
+                    id: parts[0],
+                    name: parts[1],
+                    price: parseFloat(parts[2]) || 0
                 };
-                container.appendChild(div);
-            });
-        } else { document.getElementById('extraServicesContainer').style.display = 'none'; }
-        document.getElementById('priceSummary').style.display = 'block';
-        updatePriceCalculation();
-    });
-    
-    function updatePriceCalculation() {
-        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-        const children = parseInt(document.getElementById('manualChildren').value) || 0;
-        const basePrice = (adults + children) * (currentTripData?.price || 0);
-        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
-        const total = basePrice + extraTotal;
-        document.getElementById('basePriceDisplay').innerHTML = `EGP ${basePrice}`;
-        document.getElementById('extraServicesTotalDisplay').innerHTML = `EGP ${extraTotal}`;
-        document.getElementById('totalPriceDisplay').innerHTML = `EGP ${total}`;
+                
+                // Load trip details for extra services
+                try {
+                    const tripSnap = await db.ref(`trips/${window.currentTripData.id}`).once('value');
+                    const trip = tripSnap.val();
+                    
+                    const extraServicesList = getField('extraServicesList');
+                    if (trip?.tourtype && Object.keys(trip.tourtype).length > 0 && extraServicesList) {
+                        extraServicesContainer.style.display = 'block';
+                        extraServicesList.innerHTML = '';
+                        window.selectedExtraServices = [];
+                        
+                        Object.entries(trip.tourtype).forEach(([name, price]) => {
+                            const div = document.createElement('div');
+                            div.className = 'extra-service-item';
+                            div.innerHTML = `<span>${escapeHtml(name)}</span><span class="font-bold">EGP ${parseFloat(price).toFixed(2)}</span>`;
+                            div.onclick = () => {
+                                div.classList.toggle('selected');
+                                if (div.classList.contains('selected')) {
+                                    window.selectedExtraServices.push({ name, price: parseFloat(price) });
+                                } else {
+                                    window.selectedExtraServices = window.selectedExtraServices.filter(s => s.name !== name);
+                                }
+                                updateManualPrice();
+                            };
+                            extraServicesList.appendChild(div);
+                        });
+                    } else if (extraServicesContainer) {
+                        extraServicesContainer.style.display = 'none';
+                    }
+                    
+                    if (priceSummary) priceSummary.style.display = 'block';
+                    updateManualPrice();
+                    
+                } catch (error) {
+                    console.error('Load trip details error:', error);
+                    showToast('Failed to load trip details', 'error');
+                }
+            };
+        }
     }
 
-  
-    
-    document.getElementById('manualAdults')?.addEventListener('input', updatePriceCalculation);
-    document.getElementById('manualChildren')?.addEventListener('input', updatePriceCalculation);
-    
-    document.getElementById('manualForm').onsubmit = async(e) => {
-        e.preventDefault();
-        if(!currentTripData) { showToast('Please select a trip', 'error'); return; }
-        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-        const children = parseInt(document.getElementById('manualChildren').value) || 0;
-        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
-        const baseTotal = (adults + children) * currentTripData.price;
-        const extraTotal = selectedExtraServices.reduce((sum, s) => sum + s.price, 0);
-        const total = baseTotal + extraTotal;
-      // 1️⃣ إنشاء refNumber أولي
-
-        const booking = {
-            username: document.getElementById('manualName').value,
-            phone: document.getElementById('manualPhone').value,
-            email: document.getElementById('manualEmail').value || '',
-            hotelName: document.getElementById('manualHotel').value || '',
-            roomNumber: document.getElementById('manualRoom').value || '',
-            tour: currentTripData.name,
-            tripId: currentTripData.id,
-            adults: adults,
-            childrenUnder12: children,
-            infants: infants,
-            netTotal: total,
-            tripDate: document.getElementById('manualDate').value,
-            specialRequests: document.getElementById('manualRequests').value || '',
-            extraServices: selectedExtraServices.map(s => `${s.name}: ${s.price}`).join(', '),
-            isPaid: document.getElementById('manualPaid').checked,
-            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
-            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
-            owner: currentUser.uid,
-            uid: currentUser.uid,
-            status: 'pending',
-            createdAt: Date.now(),
-            refNumber: refNumber
-        };
-        await db.ref(`trip-bookings/${refNumber}`).set(booking);
-        showToast('Manual booking added successfully!');
-        closeManualModal();
-        loadReservations();
-        calculateAndDisplayBalance();
+    window.closeManualModal = () => {
+        const modal = getField('manual-modal');
+        const overlay = getField('manualModalOverlay');
+        if (modal) modal.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
     };
 
-
-  
+    function updateManualPrice() {
+    const adults = parseInt(getField('manualAdults')?.value) || 0;
+    const children = parseInt(getField('manualChildren')?.value) || 0;
+    const basePrice = (adults + children) * (window.currentTripData?.price || 0);
+    const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0);
+    const total = basePrice + extraTotal;
     
-    async function updateDashboard(){ 
-        let ts=await db.ref('trips').once('value'); 
-        let rev=0,guests=0; 
-        allReservations.forEach(r=>{ rev+=(r.netTotal||0); guests+=(r.adults||0)+(r.childrenUnder12||0); }); 
-        document.getElementById('totalTripsStat').innerText=ts.numChildren(); 
-        document.getElementById('totalBookingsStat').innerText=allReservations.length; 
-        document.getElementById('totalGuestsStat').innerText=guests; 
-        document.getElementById('totalRevenueStat').innerHTML=`EGP ${rev.toFixed(0)}`; 
-        if(trendChart)trendChart.destroy(); 
-        trendChart=new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Monthly Bookings',data:[5,9,7,12,15,10],borderColor:'#f97316',tension:0.3}]}}); 
-        if(revenueChart)revenueChart.destroy(); 
-        revenueChart=new Chart(document.getElementById('revenueChart'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Revenue (EGP)',data:[1200,1800,1500,2500,3200,2800],backgroundColor:'#f97316'}]}}); 
-        renderAnalyticsCharts();
+    safeSetInnerText('basePriceDisplay', `EGP ${basePrice.toFixed(2)}`);
+    safeSetInnerText('extraServicesTotalDisplay', `EGP ${extraTotal.toFixed(2)}`);
+    safeSetInnerText('totalPriceDisplay', `EGP ${total.toFixed(2)}`);
+    
+    // ✨ NEW: عرض قائمة الخدمات المختارة ديناميكياً
+    const breakdownEl = getField('selectedServicesBreakdown');
+    if (breakdownEl) {
+        if (window.selectedExtraServices.length === 0) {
+            breakdownEl.innerHTML = '<div class="text-xs text-white/60 italic">No extra services selected</div>';
+        } else {
+            breakdownEl.innerHTML = window.selectedExtraServices.map(s => 
+                `<div class="flex justify-between"><span>${escapeHtml(s.name)}</span><span>EGP ${parseFloat(s.price).toFixed(2)}</span></div>`
+            ).join('');
+        }
     }
-    function renderAnalyticsCharts(){ 
-        let counts={new:0,confirmed:0,cancelled:0}; 
-        allReservations.forEach(r=>{ let s=r.status; counts[s]=(counts[s]||0)+1; }); 
-        if(statusChart)statusChart.destroy(); 
-        statusChart=new Chart(document.getElementById('statusChart'),{type:'doughnut',data:{labels:['New','Confirmed','Cancelled'],datasets:[{data:[counts.new||0,counts.confirmed||0,counts.cancelled||0],backgroundColor:['#f97316','#22c55e','#ef4444']}]}}); 
-        let adults=allReservations.reduce((a,b)=>a+(b.adults||0),0); 
-        let children=allReservations.reduce((a,b)=>a+(b.childrenUnder12||0),0); 
-        if(guestChart)guestChart.destroy(); 
-        guestChart=new Chart(document.getElementById('guestChart'),{type:'bar',data:{labels:['Adults','Children'],datasets:[{label:'Total Guests',data:[adults,children],backgroundColor:'#3b82f6'}]}}); 
+}
+
+    // Passenger count change handlers
+    ['manualAdults', 'manualChildren'].forEach(id => {
+        const el = getField(id);
+        if (el) el.addEventListener('input', updateManualPrice);
+    });
+
+    // Generate unique reference number
+    async function generateUniqueRefNumber() {
+        let isUnique = false;
+        let refNumber = '';
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        while (!isUnique && attempts < maxAttempts) {
+            refNumber = 'M-DS-' + Date.now().toString().slice(-8) + Math.random().toString(36).substring(2, 6).toUpperCase();
+            try {
+                const snapshot = await db.ref(`trip-bookings/${refNumber}`).once('value');
+                if (!snapshot.exists()) {
+                    isUnique = true;
+                }
+            } catch (e) {
+                console.warn('Ref check error:', e);
+                isUnique = true; // Fail safe
+            }
+            attempts++;
+        }
+        return refNumber;
     }
-    
-    function switchSection(section){ document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active')); document.getElementById(`${section}-section`).classList.add('active'); document.querySelectorAll('.sidebar-link, .nav-item').forEach(l=>l.classList.remove('active')); document.querySelectorAll(`[data-section="${section}"]`).forEach(l=>l.classList.add('active')); if(section==='analytics') renderAnalyticsCharts(); }
-    document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el=>{ el.addEventListener('click',()=>{ switchSection(el.getAttribute('data-section')); if(window.innerWidth<1024) document.getElementById('sidebar').classList.remove('open'); }); });
-    document.getElementById('logout-sidebar')?.addEventListener('click',()=>auth.signOut()); document.getElementById('mobileLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('desktopLogout')?.addEventListener('click',()=>auth.signOut()); document.getElementById('fabBtn')?.addEventListener('click',openAddTripModal); document.getElementById('menuToggle')?.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
-    
-    function openModal(){ openSheet('item-modal'); } function closeModal(){ closeSheet('item-modal'); } function closeDeleteModal(){ closeSheet('delete-modal','delete-overlay'); pendingDeleteId=null; }
-    function openSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.add('open'); document.getElementById(oId).classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeSheet(sId,oId='modal-overlay'){ document.getElementById(sId).classList.remove('open'); document.getElementById(oId).classList.remove('open'); document.body.style.overflow=''; }
-    
-    initDarkMode();
-    window.setTripFilter=setTripFilter; window.editTrip=editTrip; window.deleteTripPrompt=deleteTripPrompt; window.markAsPaid=markAsPaid; window.confirmBookingWithPickup=confirmBookingWithPickup; window.switchReservationTab=switchReservationTab; window.openManualBookingModal=openManualBookingModal; window.closeManualModal=closeManualModal; window.refreshReservations=refreshReservations; window.openAddTripModal=openAddTripModal; window.showBookingDetails=showBookingDetails; window.closeBookingModal=closeBookingModal; window.openExportModal=openExportModal; window.closeExportModal=closeExportModal;
 
+    // ✅ FIXED: Manual Booking Form Submit Handler
+// ==================== ✅ FIXED: MANUAL BOOKING FORM (RULES-COMPLIANT) ====================
+const manualFormElement = document.getElementById('manualForm');
+if (manualFormElement) {
+    manualFormElement.onsubmit = null; // Prevent duplicate listeners
+    manualFormElement.onsubmit = async (e) => {
+        e.preventDefault();
 
-</script>
+        const submitBtn = manualFormElement.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn?.innerHTML || '';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+        }
 
+        try {
+            // 1. Auth check with retry
+            let user = auth.currentUser;
+            if (!user) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                user = auth.currentUser;
+            }
+            if (!user) throw new Error('Authentication required. Please log in again.');
 
+            // 2. Validation
+            if (!window.currentTripData) throw new Error('Please select a trip first');
+            const manualName = document.getElementById('manualName');
+            const manualPhone = document.getElementById('manualPhone');
+            const manualDate = document.getElementById('manualDate');
+            
+            if (!manualName?.value.trim()) throw new Error('Guest name is required');
+            if (!manualPhone?.value.trim()) throw new Error('Phone number is required');
+            if (!manualDate?.value) throw new Error('Trip date is required');
 
+            // 3. Calculate pricing
+            const adults = parseInt(document.getElementById('manualAdults')?.value) || 0;
+            const children = parseInt(document.getElementById('manualChildren')?.value) || 0;
+            const infants = parseInt(document.getElementById('manualInfants')?.value) || 0;
+            if (adults + children < 1) throw new Error('At least 1 adult or child is required');
 
-<script>
-// 🔧 FINAL PATCH - Apply all remaining fixes
+            const baseTotal = (adults + children) * window.currentTripData.price;
+            const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + (parseFloat(s.price) || 0), 0);
+            const total = parseFloat((baseTotal + extraTotal).toFixed(2));
 
-// 1. Fix filter chip active state with closest()
-function setTripFilter(f) {
-    tripFilter = f;
-    document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active'));
-    if(event?.target) {
-        const chip = event.target.closest('.filter-chip');
-        if(chip) chip.classList.add('active');
+            // 4. Generate Reference
+            const refNumber = await generateUniqueRefNumber();
+            const finalRef = refNumber;
+
+            // 5. Build booking object 🔑 STRICTLY COMPLIES WITH YOUR RULES
+            const isPaid = document.getElementById('manualPaid')?.checked || false;
+            const booking = {
+                username: manualName.value.trim(),
+                phone: manualPhone.value.trim(),
+                email: document.getElementById('manualEmail')?.value?.trim() || '',
+                hotelName: document.getElementById('manualHotel')?.value?.trim() || '',
+                roomNumber: document.getElementById('manualRoom')?.value?.trim() || '',
+                tour: window.currentTripData.name,
+                tripId: window.currentTripData.id,
+                adults, 
+                childrenUnder12: children,
+                infants,
+                netTotal: total,
+                Total: total,
+                tripDate: manualDate.value,
+                specialRequests: document.getElementById('manualRequests')?.value?.trim() || '',
+                extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${parseFloat(s.price).toFixed(2)}`).join(', '),
+                isPaid: isPaid,
+                paymentStatus: isPaid ? 'paid' : 'unpaid',
+                resStatus: isPaid ? 'confirmed' : 'new',
+                status: 'pending', // 🔑 REQUIRED BY YOUR RULES FOR CREATE OPERATIONS
+                owner: user.uid,
+                uid: user.uid,
+                refNumber: finalRef,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+
+            // 6. CREATE: Satisfies (!data.exists() && uid matches && status === 'pending')
+            await db.ref(`trip-bookings/${finalRef}`).set(booking);
+
+            // 7. UPDATE: If marked paid, immediately set to 'confirmed'
+            // This triggers the data.exists() branch, which allows updates when uid matches
+            if (isPaid) {
+                await db.ref(`trip-bookings/${finalRef}`).update({ status: 'confirmed', updatedAt: Date.now() });
+            }
+
+            showToast('✅ Manual booking added successfully!');
+            closeManualModal();
+            await Promise.all([loadReservations(), calculateAndDisplayBalance()]);
+
+            // 8. Reset form
+            manualFormElement.reset();
+            document.getElementById('manualAdults').value = 1;
+            document.getElementById('manualChildren').value = 0;
+            document.getElementById('manualInfants').value = 0;
+            document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+            const tripSelect = document.getElementById('manualTrip');
+            if (tripSelect) tripSelect.selectedIndex = 0;
+            window.selectedExtraServices = [];
+            window.currentTripData = null;
+            ['extraServicesContainer', 'priceSummary'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            ['basePriceDisplay', 'extraServicesTotalDisplay', 'totalPriceDisplay'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = 'EGP 0';
+            });
+
+        } catch (error) {
+            console.error('❌ Manual booking error:', error);
+            let msg = error.message || 'Failed to save booking';
+            if (error.code === 'PERMISSION_DENIED') {
+                msg = 'Permission denied: Ensure "status" is "pending" on create & "uid" matches logged-in user.';
+            }
+            showToast(msg, 'error');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        }
+    };
+}
+
+    // ==================== DASHBOARD & CHARTS ====================
+    async function updateDashboard() {
+        try {
+            const ts = await db.ref('trips').once('value');
+            let rev = 0, guests = 0;
+            
+            allReservations.forEach(r => {
+                rev += (parseFloat(r.netTotal) || 0);
+                guests += (r.adults || 0) + (r.childrenUnder12 || 0);
+            });
+            
+            safeSetInnerText('totalTripsStat', ts.numChildren() || 0);
+            safeSetInnerText('totalBookingsStat', allReservations.length);
+            safeSetInnerText('totalGuestsStat', guests);
+            safeSetInnerText('totalRevenueStat', `EGP ${rev.toFixed(0)}`);
+            
+            // Initialize charts with mock data (replace with real data from Firebase)
+            renderCharts();
+            
+        } catch (error) {
+            console.error('Dashboard update error:', error);
+        }
     }
-    renderTrips();
-}
 
-function switchReservationTab(tab) {
-    currentResTab = tab;
-    document.querySelectorAll('#reservations-section .filter-chip').forEach(c => c.classList.remove('active'));
-    if(event?.target) {
-        const chip = event.target.closest('.filter-chip');
-        if(chip) chip.classList.add('active');
-    }
-    applyFilters();
-}
-
-// 2. Fixed payout eligibility
-function isEligibleForPayout(booking) {
-    if(booking.status !== 'confirmed') return false;
-    const confirmedAt = booking.confirmedAt || booking.createdAt;
-    if(!confirmedAt) return false;
-    const oneDayAgo = Date.now() - 86400000; // 24h in ms
-    return confirmedAt <= oneDayAgo;
-}
-
-// 3. Safe chart helper
-function safeCreateChart(ctx, config) {
-    try { return new Chart(ctx, config); } 
-    catch(e) { console.error('Chart init error:', e); return null; }
-}
-function safeDestroyChart(chart) {
-    try { if(chart?.destroy) chart.destroy(); } catch(e){}
-    return null;
-}
-
-// 4. Update calculateAndDisplayBalance to use fixed eligibility
-const _originalCalculate = calculateAndDisplayBalance;
-calculateAndDisplayBalance = async function() {
-    if(!currentUser) return;
-    // Use fixed eligibility
-    const eligibleBookings = allReservations.filter(r => isEligibleForPayout(r));
-    const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
-    const commission = totalRevenue * COMMISSION_RATE;
-    const netEarnings = totalRevenue - commission;
-    
-    let completedPayouts = 0, pendingPayouts = 0, historyHtml = '';
-    try {
-        const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-        if(payoutSnap.exists()){
-            payoutSnap.forEach(child => {
-                const req = child.val();
-                const amount = parseFloat(req.amount) || 0;
-                if(req.status === 'completed') {
-                    completedPayouts += amount;
-                    historyHtml += `<div class="flex justify-between p-2 bg-slate-100 dark:bg-slate-800 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">✓</span></div>`;
-                } else if(req.status === 'pending') {
-                    pendingPayouts += amount;
-                    historyHtml += `<div class="flex justify-between p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">⏳</span></div>`;
+    function renderCharts() {
+        // Status chart
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            const counts = { new: 0, confirmed: 0, cancelled: 0 };
+            allReservations.forEach(r => { 
+                const s = r.status; 
+                counts[s] = (counts[s] || 0) + 1; 
+            });
+            
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['New', 'Confirmed', 'Cancelled'],
+                    datasets: [{ 
+                        data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], 
+                        backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
                 }
             });
         }
-    } catch(e) { console.error("Payout error:", e); }
-    
-    const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
-    document.getElementById('avpayout').innerHTML = `EGP ${availableBalance.toFixed(2)}`;
-    document.getElementById('pendingBadge').classList.toggle('hidden', pendingPayouts === 0);
-    document.getElementById('payoutHistoryList').innerHTML = historyHtml || '<div class="text-center py-4 text-gray-500">No payout history</div>';
-    window.currentAvailableBalance = availableBalance;
-    
-    document.getElementById('debugInfo').innerHTML = `<details class="text-xs"><summary class="cursor-pointer">🔍 Details</summary><div class="mt-2">Eligible: ${eligibleBookings.length} • Revenue: EGP ${totalRevenue.toFixed(0)} • Commission: -EGP ${commission.toFixed(0)} • Net: EGP ${netEarnings.toFixed(0)} • Paid: -EGP ${completedPayouts} • Pending: -EGP ${pendingPayouts} • <strong>Available: EGP ${availableBalance.toFixed(2)}</strong></div></details>`;
-}
-
-// 5. Fix WhatsApp link phone formatting
-const _originalShowDetails = showBookingDetails;
-showBookingDetails = async function(bookingId) {
-    const b = allReservations.find(b => b.id === bookingId); 
-    if(!b) return;
-    
-    // ... existing details HTML generation ...
-    const html = `<div class="booking-details-grid">
-        <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value">${b.refNumber || b.id?.slice(-8) || '-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${b.tour||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Guests</div><div class="booking-detail-value">${b.adults||0}A / ${b.childrenUnder12||0}C / ${b.infants||0}I</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-600 font-bold">EGP ${b.netTotal||0}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid?'status-paid':'status-unpaid'}">${b.isPaid?'Paid':'Unpaid'}</span></div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Pickup</div><div class="booking-detail-value">${b.pickuptime||'Not set'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Guest</div><div class="booking-detail-value">${b.username||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${b.phone||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${b.email||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${b.hotelName||'-'}</div></div>
-        <div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${b.roomNumber||'-'}</div></div>
-        <div class="booking-detail-item col-span-2"><div class="booking-detail-label">Requests</div><div class="booking-detail-value">${b.specialRequests||b.tripType||'None'}</div></div>
-    </div>`;
-    
-    document.getElementById('bookingDetailsContent').innerHTML = html;
-    
-    // Fixed WhatsApp link
-    const wa = document.getElementById('whatsappLink');
-    if(b.phone) {
-        const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
-        const msg = `Hello ${b.username},%0A%0A✅ Booking *${b.refNumber||b.id?.slice(-8)}* confirmed%0A🗓️ ${b.tour} on ${b.tripDate}%0A🚐 Pickup: ${b.pickuptime||'TBD'}%0A%0A*Discover Sharm* 🌴`;
-        wa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
-        wa.style.opacity = '1';
-        wa.style.pointerEvents = 'auto';
-    } else {
-        wa.href = '#';
-        wa.style.opacity = '0.5';
-        wa.style.pointerEvents = 'none';
-        wa.onclick = (e) => { e.preventDefault(); showToast('No phone number', 'error'); };
-    }
-    
-    document.getElementById('booking-modal').classList.add('open');
-    document.getElementById('booking-modal-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-// 6. Add phone validation to manual booking
-const _originalManualSubmit = document.getElementById('manualForm')?.onsubmit;
-if(document.getElementById('manualForm')) {
-    document.getElementById('manualForm').onsubmit = async(e) => {
-        e.preventDefault();
-        const phone = document.getElementById('manualPhone').value.trim();
-        if(phone && !/^[\d+\s\-\(\)]{8,}$/.test(phone)) {
-            showToast('Please enter a valid phone number', 'error');
-            return;
-        }
-        // Call original logic via the existing handler
-        if(_originalManualSubmit) return _originalManualSubmit(e);
-    };
-}
-
-// 7. Global error handlers
-window.addEventListener('error', (e) => {
-    console.error('💥 Error:', e.message, '@', e.filename?.split('/').pop() + ':' + e.lineno);
-});
-window.addEventListener('unhandledrejection', (e) => {
-    console.error('💥 Promise rejected:', e.reason);
-});
-
-// 8. Ensure all functions are globally accessible
-Object.assign(window, {
-    setTripFilter, switchReservationTab, isEligibleForPayout,
-    safeCreateChart, safeDestroyChart, calculateAndDisplayBalance,
-    showBookingDetails
-});
-
-</script>
-
-<script>
-// ========== PATCH: Fix Trip Save and Manual Booking ==========
-// تعديل دالة حفظ الرحلة
-window.saveTrip = async function(e) { 
-    if(e) e.preventDefault(); 
-    let id = document.getElementById('item-id').value; 
-    let newId = document.getElementById('item-bookingLink').value.toLowerCase().replace(/\s+/g,'-'); 
-    let finalId = id || newId;
-    
-    let data = { 
-        name: document.getElementById('item-name').value, 
-        description: document.getElementById('item-desc').value, 
-        price: parseFloat(document.getElementById('item-price').value) || 0, 
-        cprice: parseFloat(document.getElementById('item-cprice').value) || 0, 
-        duration: document.getElementById('item-duration').value, 
-        bookingLink: finalId, 
-        approved: document.getElementById('item-approved').checked ? "true" : "false", 
-        image: document.getElementById('item-image').value, 
-        owner: currentUser.uid,
-        uid: currentUser.uid,
-        status: 'active',
-        createdAt: Date.now(),
-        updatedAt: Date.now() 
-    };
-    
-    data.media = { images: [] }; 
-    document.querySelectorAll('#imageList input').forEach(inp => { if(inp.value.trim()) data.media.images.push(inp.value.trim()); });
-    data.included = []; document.querySelectorAll('#includedList input').forEach(inp => { if(inp.value.trim()) data.included.push(inp.value.trim()); });
-    data.notIncluded = []; document.querySelectorAll('#notIncludedList input').forEach(inp => { if(inp.value.trim()) data.notIncluded.push(inp.value.trim()); });
-    data.whatToBring = []; document.querySelectorAll('#whatToBringList input').forEach(inp => { if(inp.value.trim()) data.whatToBring.push(inp.value.trim()); });
-    data.timeline = []; document.querySelectorAll('#timelineList .array-item').forEach(div => { let inp = div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.timeline.push({ time: inp[0].value, title: inp[1].value, description: inp[2]?.value || '' }); });
-    data.tourtype = {}; document.querySelectorAll('#tourTypeList .array-item').forEach(div => { let inp = div.querySelectorAll('input'); if(inp[0]?.value && inp[1]?.value) data.tourtype[inp[0].value.trim()] = parseFloat(inp[1].value) || 0; });
-    
-    try {
-        if(id) { await db.ref(`trips/${id}`).update(data); } 
-        else { await db.ref('trips').push(data); }
-        showToast('Trip saved successfully!'); 
-        closeModal(); 
-        loadAllData(); 
-    } catch(error) {
-        console.error("Save trip error:", error);
-        showToast('Error saving trip: ' + error.message, 'error');
-    }
-};
-
-// تعديل دالة الحجز اليدوي
-if(document.getElementById('manualForm')) {
-    document.getElementById('manualForm').onsubmit = async(e) => {
-        e.preventDefault();
-        if(!window.currentTripData) { showToast('Please select a trip', 'error'); return; }
         
-        const adults = parseInt(document.getElementById('manualAdults').value) || 0;
-        const children = parseInt(document.getElementById('manualChildren').value) || 0;
-        const infants = parseInt(document.getElementById('manualInfants').value) || 0;
-        const baseTotal = (adults + children) * window.currentTripData.price;
-        const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
-        const total = baseTotal + extraTotal;
-      let refNumber = 'M-DS' + Date.now().toString().slice(-8);
-
-// 2️⃣ 🔴 هنا ضع التحقق من التكرار 🔴
-const snapshot = await db.ref(`trip-bookings/${refNumber}`).once('value');
-if(snapshot.exists()) {
-    // إذا كان الرقم موجوداً، قم بإنشاء رقم جديد مع إضافة أرقام عشوائية
-    refNumber = 'M-DS' + Date.now().toString().slice(-8) + Math.random().toString(36).substring(2, 6);
-    // تحقق مرة أخرى (اختياري للتأكد)
-    const secondCheck = await db.ref(`trip-bookings/${refNumber}`).once('value');
-    if(secondCheck.exists()) {
-        refNumber = 'M-DS' + Date.now().toString().slice(-8) + Date.now().toString().slice(-4);
-    }
-}
-        
-        const booking = {
-            username: document.getElementById('manualName').value,
-            phone: document.getElementById('manualPhone').value,
-            email: document.getElementById('manualEmail').value || '',
-            hotelName: document.getElementById('manualHotel').value || '',
-            roomNumber: document.getElementById('manualRoom').value || '',
-            tour: window.currentTripData.name,
-            tripId: window.currentTripData.id,
-            adults: adults,
-            childrenUnder12: children,
-            infants: infants,
-            netTotal: total,
-            tripDate: document.getElementById('manualDate').value,
-            specialRequests: document.getElementById('manualRequests').value || '',
-            extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${s.price}`).join(', '),
-            isPaid: document.getElementById('manualPaid').checked,
-            paymentStatus: document.getElementById('manualPaid').checked ? 'paid' : 'unpaid',
-            resStatus: document.getElementById('manualPaid').checked ? 'confirmed' : 'new',
-            owner: currentUser.uid,
-            uid: currentUser.uid,
-            status: 'pending',
-            createdAt: Date.now(),
-            refNumber: refNumber
-        };
-        await db.ref(`trip-bookings/${refNumber}`).set(booking);
-            showToast('Manual booking added successfully!');
-            closeManualModal();
-            loadReservations();
-            calculateAndDisplayBalance();
-        } catch(error) {
-            console.error("Manual booking error:", error);
-            showToast('Error adding booking: ' + error.message, 'error');
+        // Guest chart
+        const guestCtx = document.getElementById('guestChart');
+        if (guestCtx) {
+            const adults = allReservations.reduce((a, b) => a + (b.adults || 0), 0);
+            const children = allReservations.reduce((a, b) => a + (b.childrenUnder12 || 0), 0);
+            
+            if (guestChart) guestChart.destroy();
+            guestChart = new Chart(guestCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Adults', 'Children'],
+                    datasets: [{ 
+                        label: 'Total Guests', 
+                        data: [adults, children], 
+                        backgroundColor: ['#3b82f6', '#8b5cf6'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
         }
+        
+        // Revenue chart (mock data - replace with real)
+        const revenueCtx = document.getElementById('revenueChart');
+        if (revenueCtx) {
+            if (revenueChart) revenueChart.destroy();
+            revenueChart = new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{ 
+                        label: 'Revenue (EGP)', 
+                        data: [1200, 1800, 1500, 2500, 3200, 2800], 
+                        backgroundColor: '#f97316',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+        
+        // Trend chart (mock data)
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{ 
+                        label: 'Monthly Bookings', 
+                        data: [5, 9, 7, 12, 15, 10], 
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+    }
+
+    // ==================== SECTION SWITCHING ====================
+    function switchSection(section) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        
+        // Show target section
+        const activeSection = getField(`${section}-section`);
+        if (activeSection) activeSection.classList.add('active');
+        
+        // Update navigation
+        document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active'));
+        
+        // Update header title
+        const desktopTitle = getField('desktop-title');
+        if (desktopTitle) {
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'trips': 'Manage Trips',
+                'reservations': 'Reservations',
+                'payout': 'Payouts & Wallet',
+                'analytics': 'Analytics'
+            };
+            desktopTitle.innerText = titles[section] || 'Dashboard';
+        }
+        
+        // Render charts if analytics section
+        if (section === 'analytics') {
+            renderCharts();
+        }
+        
+        // Close mobile sidebar
+        if (window.innerWidth < 1024) {
+            const sidebar = getField('sidebar');
+            if (sidebar) sidebar.classList.remove('open');
+        }
+    }
+
+    // Attach section navigation
+    document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el => {
+        el.addEventListener('click', () => {
+            const section = el.getAttribute('data-section');
+            if (section) switchSection(section);
+        });
+    });
+
+    // ==================== MODAL FUNCTIONS ====================
+    function openModal() { openSheet('item-modal'); }
+    function closeModal() { closeSheet('item-modal'); }
+    function closeDeleteModal() { 
+        closeSheet('delete-modal', 'delete-overlay'); 
+        pendingDeleteId = null; 
+    }
+
+    function openSheet(sId, oId = 'modal-overlay') {
+        const sheet = getField(sId);
+        const overlay = getField(oId);
+        if (sheet) sheet.classList.add('open');
+        if (overlay) overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSheet(sId, oId = 'modal-overlay') {
+        const sheet = getField(sId);
+        const overlay = getField(oId);
+        if (sheet) sheet.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // ==================== AUTH STATE LISTENER ====================
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            currentUser = user;
+            
+            // Show admin panel, hide login
+            const loginPage = getField('login-page');
+            const adminPanel = getField('admin-panel');
+            if (loginPage) loginPage.style.display = 'none';
+            if (adminPanel) adminPanel.classList.add('visible');
+            
+            // Update user avatar & info
+            const init = user.email?.charAt(0).toUpperCase() || 'U';
+            ['user-avatar-mobile', 'user-avatar-desktop'].forEach(id => {
+                const el = getField(id);
+                if (el) el.innerText = init;
+            });
+            
+            const emailSidebar = getField('user-email-sidebar');
+            const nameDesktop = getField('user-name-desktop');
+            if (emailSidebar) emailSidebar.innerText = user.email;
+            if (nameDesktop) nameDesktop.innerText = user.displayName || user.email?.split('@')[0] || 'User';
+            
+            // Load user role
+            try {
+                const userSnap = await db.ref(`egy_user/${user.uid}`).once('value');
+                currentUserRole = userSnap.val()?.role || 'user';
+                const userRoleSpan = getField('userRoleSpan');
+                if (userRoleSpan) {
+                    userRoleSpan.innerText = currentUserRole === 'admin' ? 'Administrator' : 'Moderator';
+                }
+            } catch (error) {
+                console.warn('Role load error:', error);
+                currentUserRole = 'user';
+            }
+            
+            // Load all data
+            await Promise.all([
+                loadAllData(),
+                loadReservations(),
+                loadPayoutMethod(),
+                calculateAndDisplayBalance(),
+                updateDashboard()
+            ]);
+            
+            // Initialize default section
+            switchSection('dashboard');
+            
+            // Auto-refresh every 30 seconds
+            const refreshInterval = setInterval(() => {
+                if (auth.currentUser) {
+                    loadReservations();
+                    updateDashboard();
+                    calculateAndDisplayBalance();
+                }
+            }, 30000);
+            
+            // Store interval ID for cleanup
+            window.authRefreshInterval = refreshInterval;
+            
+        } else {
+            // User logged out
+            currentUser = null;
+            currentUserRole = 'user';
+            
+            const loginPage = getField('login-page');
+            const adminPanel = getField('admin-panel');
+            if (loginPage) loginPage.style.display = 'flex';
+            if (adminPanel) adminPanel.classList.remove('visible');
+            
+            // Clear refresh interval
+            if (window.authRefreshInterval) {
+                clearInterval(window.authRefreshInterval);
+            }
+        }
+    });
+
+    // ==================== LOGOUT ====================
+    ['logout-sidebar', 'mobileLogout', 'desktopLogout'].forEach(id => {
+        const btn = getField(id);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                auth.signOut().then(() => {
+                    showToast('👋 Logged out successfully');
+                }).catch(err => {
+                    console.error('Logout error:', err);
+                });
+            });
+        }
+    });
+
+    // ==================== UI TOGGLES ====================
+    const fabBtn = getField('fabBtn');
+    if (fabBtn) fabBtn.addEventListener('click', openAddTripModal);
+    
+    const menuToggle = getField('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            const sidebar = getField('sidebar');
+            if (sidebar) sidebar.classList.toggle('open');
+        });
+    }
+
+    // ==================== FORM SUBMIT BINDING ====================
+    const tripFormElement = getField('item-form');
+    if (tripFormElement) {
+        tripFormElement.onsubmit = saveTrip;
+    }
+
+    // ==================== FLATPICKR INITIALIZATION ====================
+    if (typeof flatpickr !== 'undefined') {
+        // Date picker for manual booking
+        flatpickr("#manualDate", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disableMobile: true
+        });
+        
+        // Time picker for pickup
+        flatpickr("#pickupTimeInput", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true
+        });
+    }
+
+    // ==================== GLOBAL ERROR HANDLING ====================
+    window.onerror = function(msg, src, line, col, err) {
+        console.error('💥 Global error:', { msg, src, line, col, err });
+        showToast('⚠️ An unexpected error occurred', 'error');
+        return false;
     };
-}
 
+    // ==================== INITIALIZATION ====================
+    initDarkMode();
+    console.log('✅ Discover Sharm Admin Dashboard initialized!');
 
-
-// تأكد من وجود هذا السطر في نهاية الكود
-const manualForm = document.getElementById('manualForm');
-if(manualForm) {
-    console.log("✅ Manual form found, adding listener");
-    manualForm.onsubmit = async(e) => {
-        // الكود أعلاه
-    };
-} else {
-    console.error("❌ Manual form not found!");
-}
-  
-// ربط دالة saveTrip بـ form
-const tripForm = document.getElementById('item-form');
-if(tripForm) {
-    tripForm.onsubmit = window.saveTrip;
-}
-
+    // ==================== EXPOSE GLOBAL FUNCTIONS ====================
+    // Trip functions
+    window.setTripFilter = setTripFilter;
+    window.editTrip = editTrip;
+    window.deleteTripPrompt = deleteTripPrompt;
+    window.approveTrip = approveTrip;
+    window.openAddTripModal = openAddTripModal;
+    window.saveTrip = saveTrip;
+    
+    // Reservation functions
+    window.markAsPaid = markAsPaid;
+    window.confirmBookingWithPickup = confirmBookingWithPickup;
+    window.switchReservationTab = switchReservationTab;
+    window.refreshReservations = refreshReservations;
+    window.showBookingDetails = showBookingDetails;
+    window.closeBookingModal = closeBookingModal;
+    
+    // Manual booking
+    window.openManualBookingModal = openManualBookingModal;
+    window.closeManualModal = closeManualModal;
+    
+    // Export
+    window.openExportModal = openExportModal;
+    window.closeExportModal = closeExportModal;
+    
+    // Modals
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.closeDeleteModal = closeDeleteModal;
+    window.closePickupModal = closePickupModal;
+    
+}); // End DOMContentLoaded
 </script>
-
 
 
 </body>
