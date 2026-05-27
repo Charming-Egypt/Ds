@@ -677,16 +677,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ==================== TRIP FUNCTIONS ====================
     async function loadAllData() {
-        try {
-            const ts = await db.ref('trips').once('value');
-            const tripsData = ts.val() || {};
-            allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
-            renderTrips();
-        } catch (error) {
-            console.error('Error loading trips:', error);
-            showToast('Failed to load trips', 'error');
-        }
+    if (!currentUser) return;
+    try {
+        // ✅ جلب الرحلات الخاصة بالمستخدم الحالي فقط من Firebase
+        const ts = await db.ref('trips')
+            .orderByChild('owner')
+            .equalTo(currentUser.uid)
+            .once('value');
+            
+        const tripsData = ts.val() || {};
+        allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
+        renderTrips();
+    } catch (error) {
+        console.error('Error loading trips:', error);
+        showToast('Failed to load trips', 'error');
     }
+}
 
     function renderTrips() {
         const container = getField('trips-container');
