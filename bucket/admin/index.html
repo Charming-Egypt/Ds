@@ -360,18 +360,28 @@ tr:hover td { background: rgba(249,115,22,0.03); }
                 </div>
                 
                 <!-- Media Section -->
-                <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
-                    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
-                        <i class="fas fa-images"></i> Media
-                    </h4>
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-2">Additional Images</label>
-                        <div id="imageList" class="space-y-2"></div>
-                        <button type="button" id="addImageBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
-                            <i class="fas fa-plus mr-1"></i> Add Image
-                        </button>
-                    </div>
-                </div>
+               <!-- Media Section -->
+<div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
+    <h4 class="font-semibold text-orange-500 text-sm flex items-center gap-2 mb-2">
+        <i class="fas fa-images"></i> Media
+    </h4>
+    <div>
+        <label class="text-xs text-slate-400 block mb-2">🖼️ Additional Images</label>
+        <div id="imageList" class="space-y-2"></div>
+        <button type="button" id="addImageBtn" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-full mt-1 transition">
+            <i class="fas fa-plus mr-1"></i> Add Image
+        </button>
+    </div>
+    
+    <!-- ✅ NEW: Video Section -->
+    <div class="mt-4 pt-4 border-t border-slate-700/50">
+        <label class="text-xs text-slate-400 block mb-2">🎥 Videos (YouTube URL)</label>
+        <div id="videoList" class="space-y-3"></div>
+        <button type="button" id="addVideoBtn" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-full mt-2 transition">
+            <i class="fas fa-video mr-1"></i> Add Video
+        </button>
+    </div>
+</div>
                 
                 <!-- Included & Not Included Section -->
                 <div class="bg-slate-800/30 rounded-xl p-4 space-y-3">
@@ -970,6 +980,10 @@ function renderTripsSkeleton() {
             t.media.images.forEach(img => createArrayInput(imageList, 'Image URL', img));
         }
         
+
+
+        
+        
         const includedList = getField('includedList');
         if (includedList && t.included) {
             includedList.innerHTML = '';
@@ -1000,8 +1014,50 @@ function renderTripsSkeleton() {
             loadTourTypes(tourTypeList, t.tourtype);
         }
         
+        
+        const videoList = getField('videoList');
+if (videoList && t.media?.videos) {
+    videoList.innerHTML = ''; 
+    t.media.videos.forEach(videoObj => {
+        createVideoItem(videoObj.thumbnail || '', videoObj.videoUrl || '');
+    });
+}
+        
         openModal();
     }
+    
+    
+    
+    // ✅ Helper to create Video Input Row
+function createVideoItem(thumbnailUrl = '', videoUrl = '') {
+    const container = getField('videoList');
+    if (!container) return;
+    
+    const div = document.createElement('div');
+    div.className = 'bg-slate-900/50 p-3 rounded-xl border border-slate-700/50';
+    div.innerHTML = `
+        <div class="space-y-2">
+            <input type="text" placeholder="Video URL (e.g., https://youtu.be/...)" class="input-field text-xs" value="${escapeHtml(videoUrl)}">
+            <input type="text" placeholder="Thumbnail URL (Optional)" class="input-field text-xs" value="${escapeHtml(thumbnailUrl)}">
+        </div>
+        <button type="button" class="mt-2 w-full py-1 text-xs text-red-400 hover:text-red-300 flex items-center justify-center gap-1">
+            <i class="fas fa-trash"></i> Remove Video
+        </button>
+    `;
+    
+    // Remove Button Logic
+    div.querySelector('button').onclick = () => div.remove();
+    container.appendChild(div);
+}
+
+// Attach Event to "Add Video" Button
+const addVideoBtn = getField('addVideoBtn');
+if (addVideoBtn) {
+    addVideoBtn.onclick = () => createVideoItem();
+}
+    
+    
+    
 
     async function saveTrip(e) {
         e.preventDefault();
@@ -1043,12 +1099,13 @@ function renderTripsSkeleton() {
             cprice: parseFloat(getField('item-cprice')?.value) || 0,
             duration: getField('item-duration')?.value || '',
             bookingLink: bookingSlug,
+            
             image: getField('item-image')?.value || '',
             owner: currentUser?.uid,
             updatedAt: Date.now()
         };
 
-                if (!isEditing) {
+        if (!isEditing) {
             data.createdAt = Date.now();
             approved = "false";
         }
@@ -1062,7 +1119,31 @@ function renderTripsSkeleton() {
                 .filter(val => val);
         };
 
-        data.media = { images: collectArray('imageList') };
+        // في دالة saveTrip
+
+// جمع الصور
+const images = collectArray('imageList');
+
+// ✅ جمع الفيديوهات
+const videos = [];
+const videoListEl = getField('videoList');
+if (videoListEl) {
+    videoListEl.querySelectorAll('.bg-slate-900\\/50').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        if (inputs[1]?.value) { // نتأكد أن هناك رابط فيديو
+            videos.push({
+                thumbnail: inputs[0]?.value || '', // Thumbnail (Optional)
+                videoUrl: inputs[1]?.value || ''   // Video URL
+            });
+        }
+    });
+}
+
+// تحديث كائن البيانات
+data.media = {
+    images: images,
+    videos: videos // ✅ إضافة مصفوفة الفيديوهات
+};
         data.included = collectArray('includedList');
         data.notIncluded = collectArray('notIncludedList');
         data.whatToBring = collectArray('whatToBringList');
@@ -1509,20 +1590,70 @@ function renderTripsSkeleton() {
         if (detailsContent) detailsContent.innerHTML = html;
         
         // WhatsApp link
-        const wa = getField('whatsappLink');
-        if (wa) {
-            if (b.phone) {
-                const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
-                const msg = `Hello ${b.username},%0A%0A✅ Booking *${b.refNumber || b.id?.slice(-8)}* confirmed%0A🗓️ ${b.tour} on ${b.tripDate}%0A🚐 Pickup: ${b.pickuptime || 'TBD'}%0A%0A*Discover Sharm* 🌴`;
-                wa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
-                wa.style.opacity = '1';
-                wa.style.pointerEvents = 'auto';
-            } else {
-                wa.href = '#';
-                wa.style.opacity = '0.5';
-                wa.style.pointerEvents = 'none';
-            }
-        }
+// WhatsApp link - ✅ رسالة محسّنة ومنسقة
+const wa = getField('whatsappLink');
+if (wa) {
+    if (b.phone) {
+        const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
+        
+        // ✅ رابط صفحة الفاوتشر (عدّل الرابط حسب دومين موقعك)
+        const voucherUrl = `https://yourwebsite.com/voucher?ref=${b.refNumber || b.id}`;
+        
+        // ✅ تنسيق الرسالة باحترافية
+        const msg = 
+`*🌴 Discover Sharm - Booking Confirmation*
+━━━━━━━━━━━━━━━━━━
+*📋 Reference:* ${b.refNumber || b.id?.slice(-8)}
+*👤 Guest:* ${b.username}
+*📱 Phone:* ${b.phone}
+${b.email ? `*📧 Email:* ${b.email}` : ''}
+
+*🗺️ Tour Details*
+━━━━━━━━━━━━━━━━━━
+*🚀 Trip:* ${b.tour}
+*📅 Date:* ${b.tripDate}
+*⏰ Pickup:* ${b.pickuptime || 'TBD'}
+*🏨 Hotel:* ${b.hotelName || 'Not specified'}
+${b.roomNumber ? `*🚪 Room:* ${b.roomNumber}` : ''}
+
+*👥 Guests*
+━━━━━━━━━━━━━━━━━━
+*🧑 Adults:* ${b.adults || 0}
+*🧒 Children:* ${b.childrenUnder12 || 0}
+*👶 Infants:* ${b.infants || 0}
+
+*💰 Payment*
+━━━━━━━━━━━━━━━━━━
+*💵 Total:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
+*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}
+${b.extraServices ? `*✨ Extras:* ${b.extraServices}` : ''}
+
+*📝 Special Requests*
+━━━━━━━━━━━━━━━━━━
+${b.specialRequests ? b.specialRequests : 'None'}
+
+*🎫 View Your Voucher*
+━━━━━━━━━━━━━━━━━━
+🔗 https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}
+
+*📞 Need Help?*
+━━━━━━━━━━━━━━━━━━
+🌐 www.discover-sharm.com
+📧 sales@discover-sharm.com
+💬 Chat: wa.me/201061693679
+
+*Thank you for choosing Discover Sharm!* ✨`;
+
+        wa.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        wa.style.opacity = '1';
+        wa.style.pointerEvents = 'auto';
+    } else {
+        wa.href = '#';
+        wa.style.opacity = '0.5';
+        wa.style.pointerEvents = 'none';
+        wa.title = 'Phone number not available';
+    }
+}
         
         // Open modal
         const bookingModal = getField('booking-modal');
