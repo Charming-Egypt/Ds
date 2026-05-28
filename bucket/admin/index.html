@@ -1043,14 +1043,14 @@ function renderTripsSkeleton() {
             cprice: parseFloat(getField('item-cprice')?.value) || 0,
             duration: getField('item-duration')?.value || '',
             bookingLink: bookingSlug,
-            approved: isEditing ? undefined : "false",
             image: getField('item-image')?.value || '',
             owner: currentUser?.uid,
             updatedAt: Date.now()
         };
 
-        if (!isEditing) {
+                if (!isEditing) {
             data.createdAt = Date.now();
+            approved = "false";
         }
 
         // Collect array fields
