@@ -1597,7 +1597,7 @@ if (wa) {
         const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
         
         // ✅ رابط صفحة الفاوتشر (عدّل الرابط حسب دومين موقعك)
-        const voucherUrl = `https://yourwebsite.com/voucher?ref=${b.refNumber || b.id}`;
+        const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
         
         // ✅ تنسيق الرسالة باحترافية
         const msg = 
@@ -1634,7 +1634,7 @@ ${b.specialRequests ? b.specialRequests : 'None'}
 
 *🎫 View Your Voucher*
 ━━━━━━━━━━━━━━━━━━
-🔗 https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}
+🔗 ${voucherUrl}
 
 *📞 Need Help?*
 ━━━━━━━━━━━━━━━━━━
