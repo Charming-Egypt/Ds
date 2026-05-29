@@ -1035,8 +1035,8 @@ async function submitForm() {
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
       totalEGP: totalEGP.toFixed(2),
+      total:totalEGP.toFixed(2),
       currency: currentCurrency,
-      exchangeRate: ratesLoaded ? exchangeRates[currentCurrency] : null,
       uid: user.uid,
       owner: tripOwnerId
     };
