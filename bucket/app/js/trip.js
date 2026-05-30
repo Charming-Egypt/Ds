@@ -448,7 +448,7 @@ async function fetchAllTripData() {
     if (tripPName && allTripsData[tripPName]) {
       currentTrip = allTripsData[tripPName];
       currentTrip.basePrice = currentTrip.price || 0;
-      currentTrip.commissionRate = currentTrip.commission || 0.15;
+      currentTrip.commissionRate = currentTrip.commission || 0.10;
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
       
@@ -898,12 +898,14 @@ function updateSummary() {
     }
     
     const totalEGP = calculateTotalWithTaxes();
+    const nettotalEGP = calculateNetTotal();
     const formattedTotal = formatPrice(totalEGP);
+    const formatedtax = formatPrice(totalEGP - nettotalEGP);
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
         <div class="font-bold text-xl notranslate">${formattedTotal}</div>
-        <div class="text-xs text-gray-500 mt-1">all taxes included</div>
+        <div class="text-xs text-gray-500 mt-1">taxes ${formatedtax}</div>
       `;
     }
   }
@@ -1016,7 +1018,7 @@ async function submitForm() {
     }
 
     const totalEGP = calculateTotalWithTaxes();
-
+    const nettotalEGP= calculateNetTotal();
     const formData = {
       refNumber,
       username: sanitizeInput(document.getElementById("username").value),
@@ -1034,8 +1036,8 @@ async function submitForm() {
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
-      total: totalBeforeTax,
-      netTotal:totalEGP,
+      total: totalEGP,
+      netTotal: nettotalEGP,
       uid: user.uid,
       owner: tripOwnerId
     };
