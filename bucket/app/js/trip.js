@@ -317,12 +317,12 @@ function hideSpinner() {
 
 /**
  * Sends a booking notification to the trip supplier.
- * Calculation: Total amount → remove taxes → remove 5% commission → send net amount to supplier
+ * Calculation: Total amount with tax → remove taxes → send net amount to supplier (No commission)
  * Style: Simple, no calculation details shown
  */
 async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
-  // تحقق من وجود supplierId
-  if (!tripInfo.supplierId || tripInfo.supplierId === '') {
+  // 1. التحقق من وجود معرف المورد
+  if (!tripInfo || !tripInfo.supplierId) {
     console.warn("No supplierId found for this trip. Notification not sent.");
     return;
   }
@@ -330,34 +330,31 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  // المبلغ الكلي (بعد الضرائب) - من bookingData.totalAmount
-  const totalAmountWithTax = parseFloat(bookingData.totalAmount);
+  // 2. المبلغ الكامل بالضرائب (القادم من الحجز)
+  const totalAmountWithTax = parseFloat(bookingData.totalAmount) || 0;
   
-  // ========================================
-  // حساب الضرائب وإزالتها
-   totalBeforeTax = (totalAmountWithTax - 3) / 1.0342
-  // ========================================
-  const amountAfterTax = (totalAmountWithTax - 3) / 1.0342;
+  // 3. المبلغ الكامل بدون الضرائب (حسب المعادلة الخاصة بك)
+  const totalBeforeTaxRaw = (totalAmountWithTax - 3) / 1.0342;
   
-  // ========================================
-  // خصم 5% عمولة من المبلغ بعد الضرائب
-  // ========================================
-  const netAmountForSupplier = amountAfterTax * 0.95; // (1 - 0.05)
-  
-  // تقريب المبلغ النهائي إلى منزلتين عشريتين
-  const roundedNetAmount = Math.round(netAmountForSupplier * 100) / 100;
+  // تقريب المبالغ لأقرب منزلتين عشريتين لتبسيط العرض
+  const totalAmount = Math.round(totalAmountWithTax * 100) / 100;
+  const totalBeforeTax = Math.round(totalBeforeTaxRaw * 100) / 100;
 
-  // بناء نص الإشعار بنفس الستايل القديم (بدون تفاصيل الحساب)
+  // 4. بناء نص الإشعار المبسط للمورد (يظهر فيه المبلغ بدون ضرائب)
   const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${totalBeforeTax} EGP`;
 
-  // بيانات الإشعار
+  // 5. بيانات الإشعار المرسلة لقاعدة البيانات
   const notificationData = {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    totalAmount: Math.round(totalBeforeTax),
+    
+    // المبالغ مقسمة بوضوح داخل قاعدة البيانات
+       // المبلغ الكامل بدون ضرائب (المستحق للمورد)
+    totalAmount: Math.round(totalBeforeTax), // القيمة القديمة للـ Backward Compatibility
+    
     bookingId: bookingData.bookingId,
-    tripId: tripPName,
+    tripId: bookingData.tripId || tripInfo.id || "unknown", // تم حل مشكلة المتغير غير المعرف
     tripName: tripInfo.name,
     userName: bookingData.userName,
     userEmail: bookingData.userEmail,
@@ -373,11 +370,12 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   try {
     await notificationRef.set(notificationData);
-    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net amount: ${roundedNetAmount} EGP`);
+    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Amount (No Tax): ${totalBeforeTax} EGP`);
   } catch (error) {
-    console.error("Error sending notification:", error);
+    console.error("❌ Error sending notification:", error);
   }
 }
+
 
 // ========================================
 // Form Navigation
