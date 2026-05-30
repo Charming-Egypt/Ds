@@ -327,7 +327,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   
   // 4. بناء نص الإشعار (هيجيب 520 EGP)
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${totalBeforeTax} EGP`;
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${parseFloat(bookingData.totalAmount)} EGP`;
 
   // 5. بيانات الإشعار
   const notificationData = {
@@ -879,8 +879,8 @@ function updateSummary() {
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${formattedTotal}</div>
-        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax}</div>
+        <div class="font-bold text-xl notranslate">${formattedTotal.toFixed(2)}</div>
+        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)}</div>
       `;
     }
   }
