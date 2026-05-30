@@ -1034,9 +1034,8 @@ async function submitForm() {
       adults: parseInt(document.getElementById('adults').value) || 0,
       childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
       infants: parseInt(document.getElementById('infants').value) || 0,
-      totalEGP: totalEGP.toFixed(2),
-      netTotal:totalEGP.toFixed(2),
-      currency: currentCurrency,
+      total: totalBeforeTax,
+      netTotal:totalEGP,
       uid: user.uid,
       owner: tripOwnerId
     };
@@ -1050,7 +1049,7 @@ async function submitForm() {
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: totalEGP.toFixed(2),
+        amount: totalEGP,
         currency: 'EGP',
       }),
     });
@@ -1065,7 +1064,7 @@ async function submitForm() {
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: totalEGP.toFixed(2),
+      amount: totalEGP,
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
@@ -1089,7 +1088,7 @@ async function submitForm() {
       userName: formData.username,
       userEmail: formData.email,
       phone: formData.phone,
-      totalAmount: totalEGP.toFixed(2),
+      totalAmount: totalEGP,
       adults: formData.adults,
       childrenUnder12: formData.childrenUnder12,
       infants: formData.infants,
