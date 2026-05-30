@@ -1090,7 +1090,7 @@ async function submitForm() {
       userName: formData.username,
       userEmail: formData.email,
       phone: formData.phone,
-      totalAmount: totalEGP,
+      totalAmount: nettotalEGP,
       adults: formData.adults,
       childrenUnder12: formData.childrenUnder12,
       infants: formData.infants,
