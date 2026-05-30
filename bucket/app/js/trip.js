@@ -262,7 +262,7 @@ function generateReference() {
   for (let i = 0; i < 10; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  return 'DS_' + result;
+  return 'DS-' + result;
 }
 
 function sanitizeInput(input) {
@@ -335,7 +335,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   
   // ========================================
   // حساب الضرائب وإزالتها
-  // المعادلة: totalBeforeTax = (totalWithTax - 3) / 1.0342
+   totalBeforeTax = (totalWithTax - 3) / 1.0342
   // ========================================
   const amountAfterTax = (totalAmountWithTax - 3) / 1.0342;
   
@@ -348,14 +348,14 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const roundedNetAmount = Math.round(netAmountForSupplier * 100) / 100;
 
   // بناء نص الإشعار بنفس الستايل القديم (بدون تفاصيل الحساب)
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${roundedNetAmount} EGP`;
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${totalBeforeTax} EGP`;
 
   // بيانات الإشعار
   const notificationData = {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    totalAmount: amountAfterTax,
+    totalAmount: Math.round(totalBeforeTax),
     bookingId: bookingData.bookingId,
     tripId: tripPName,
     tripName: tripInfo.name,
