@@ -334,12 +334,9 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    
-    // المبالغ المحفوظة في قاعدة البيانات
-    totalAmount: parseFloat(bookingData.totalAmount),          
-    
+    totalAmount: parseFloat(bookingData.totalAmount),
     bookingId: bookingData.bookingId,
-    tripId: bookingData.tripId || tripInfo.id || "unknown",
+    tripId: bookingData.Id || tripInfo.bookingLink || "unknown",
     tripName: tripInfo.name,
     userName: bookingData.userName,
     userEmail: bookingData.userEmail,
