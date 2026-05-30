@@ -335,7 +335,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   
   // ========================================
   // حساب الضرائب وإزالتها
-   totalBeforeTax = (totalWithTax - 3) / 1.0342
+   totalBeforeTax = (totalAmountWithTax - 3) / 1.0342
   // ========================================
   const amountAfterTax = (totalAmountWithTax - 3) / 1.0342;
   
