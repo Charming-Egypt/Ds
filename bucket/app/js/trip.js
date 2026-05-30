@@ -348,15 +348,14 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const roundedNetAmount = Math.round(netAmountForSupplier * 100) / 100;
 
   // بناء نص الإشعار بنفس الستايل القديم (بدون تفاصيل الحساب)
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${roundedNetAmount.toFixed(2)} EGP`;
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${roundedNetAmount} EGP`;
 
   // بيانات الإشعار
   const notificationData = {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    totalAmount: roundedNetAmount,
-    currency: 'EGP',
+    totalAmount: amountAfterTax,
     bookingId: bookingData.bookingId,
     tripId: tripPName,
     tripName: tripInfo.name,
@@ -374,7 +373,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   try {
     await notificationRef.set(notificationData);
-    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net amount: ${roundedNetAmount.toFixed(2)} EGP`);
+    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net amount: ${roundedNetAmount} EGP`);
   } catch (error) {
     console.error("Error sending notification:", error);
   }
