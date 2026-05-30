@@ -315,11 +315,6 @@ function hideSpinner() {
 // NOTIFICATION FUNCTIONS
 // ========================================
 
-/**
- * Sends a booking notification to the trip supplier.
- * Calculation: Total amount with tax → remove taxes → send net amount to supplier (No commission)
- * Style: Simple, no calculation details shown
- */
 async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   // 1. التحقق من وجود معرف المورد
   if (!tripInfo || !tripInfo.supplierId) {
@@ -330,31 +325,29 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  // 2. المبلغ الكامل بالضرائب (القادم من الحجز)
+  // 2. المبلغ الإجمالي بالضرائب القادم من الحجز (مثال: 540.784)
   const totalAmountWithTax = parseFloat(bookingData.totalAmount) || 0;
   
-  // 3. المبلغ الكامل بدون الضرائب (حسب المعادلة الخاصة بك)
-  const totalBeforeTaxRaw = (totalAmountWithTax - 3) / 1.0342;
-  
-  // تقريب المبالغ لأقرب منزلتين عشريتين لتبسيط العرض
-  const totalAmount = Math.round(totalAmountWithTax * 100) / 100;
-  const totalBeforeTax = Math.round(totalBeforeTaxRaw * 100) / 100;
+  // 3. الحسبة العكسية الدقيقة لإخراج الصافي للمورد (النتيجة هنا لـ 540.784 هتبقي 520 بالظبط)
+  // تم استخدام .toFixed(2) ثم parseFloat لمنع مشاكل الكسور العشرية اللانهائية في جافاسكريبت
+  const totalBeforeTax = parseFloat(((totalAmountWithTax - 3) / 1.0342).toFixed(2));
 
-  // 4. بناء نص الإشعار المبسط للمورد (يظهر فيه المبلغ بدون ضرائب)
+  // 4. بناء نص الإشعار (هيجيب 520 EGP)
   const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${totalBeforeTax} EGP`;
 
-  // 5. بيانات الإشعار المرسلة لقاعدة البيانات
+  // 5. بيانات الإشعار
   const notificationData = {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
     
-    // المبالغ مقسمة بوضوح داخل قاعدة البيانات
-       // المبلغ الكامل بدون ضرائب (المستحق للمورد)
-    totalAmount: Math.round(totalBeforeTax), // القيمة القديمة للـ Backward Compatibility
+    // المبالغ المحفوظة في قاعدة البيانات
+    totalAmountWithTax: totalAmountWithTax, // المبلغ الإجمالي بالضرائب (540.784)
+    totalAmountBeforeTax: totalBeforeTax,   // المبلغ الصافي للمورد (520)
+    totalAmount: totalBeforeTax,            // القيمة الصافية مباشرة بدون Math.round عشان متقلش لـ 500
     
     bookingId: bookingData.bookingId,
-    tripId: bookingData.tripId || tripInfo.id || "unknown", // تم حل مشكلة المتغير غير المعرف
+    tripId: bookingData.tripId || tripInfo.id || "unknown",
     tripName: tripInfo.name,
     userName: bookingData.userName,
     userEmail: bookingData.userEmail,
@@ -370,11 +363,12 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
 
   try {
     await notificationRef.set(notificationData);
-    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Amount (No Tax): ${totalBeforeTax} EGP`);
+    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net: ${totalBeforeTax} EGP`);
   } catch (error) {
     console.error("❌ Error sending notification:", error);
   }
 }
+
 
 
 // ========================================
