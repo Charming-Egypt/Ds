@@ -325,13 +325,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  // 2. المبلغ الإجمالي بالضرائب القادم من الحجز (مثال: 540.784)
-  const totalAmountWithTax = parseFloat(bookingData.totalAmount) || 0;
   
-  // 3. الحسبة العكسية الدقيقة لإخراج الصافي للمورد (النتيجة هنا لـ 540.784 هتبقي 520 بالظبط)
-  // تم استخدام .toFixed(2) ثم parseFloat لمنع مشاكل الكسور العشرية اللانهائية في جافاسكريبت
-  const totalBeforeTax = parseFloat(((totalAmountWithTax - 3) / 1.0342).toFixed(2));
-
   // 4. بناء نص الإشعار (هيجيب 520 EGP)
   const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${totalBeforeTax} EGP`;
 
@@ -342,9 +336,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
     message: notificationMessage,
     
     // المبالغ المحفوظة في قاعدة البيانات
-    totalAmountWithTax: totalAmountWithTax, // المبلغ الإجمالي بالضرائب (540.784)
-    totalAmountBeforeTax: totalBeforeTax,   // المبلغ الصافي للمورد (520)
-    totalAmount: totalBeforeTax,            // القيمة الصافية مباشرة بدون Math.round عشان متقلش لـ 500
+    totalAmount: parseFloat(bookingData.totalAmount),          
     
     bookingId: bookingData.bookingId,
     tripId: bookingData.tripId || tripInfo.id || "unknown",
@@ -826,15 +818,7 @@ function calculateTotalWithTaxes() {
     
     const finalPrice = totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee;
     
-    console.log("💰 Price breakdown:", {
-        baseTotal: baseTotal,
-        extraServices: extraServicesTotal,
-        totalBeforeTax: totalBeforeTax,
-        threePercent: threePercent,
-        fourteenPercent: fourteenPercentOfThreePercent,
-        fixedFee: fixedFee,
-        finalPrice: finalPrice
-    });
+    
     
     return finalPrice;
 }
@@ -890,13 +874,13 @@ function updateSummary() {
     
     const totalEGP = calculateTotalWithTaxes();
     const nettotalEGP = calculateNetTotal();
-    const formattedTotal = formatPrice(totalEGP);
-    const formatedtax = formatPrice(totalEGP - nettotalEGP);
+    const formattedTotal = totalEGP;
+    const formatedtax = totalEGP - nettotalEGP;
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
         <div class="font-bold text-xl notranslate">${formattedTotal}</div>
-        <div class="text-xs text-gray-500 mt-1">taxes ${formatedtax}</div>
+        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax}</div>
       `;
     }
   }
