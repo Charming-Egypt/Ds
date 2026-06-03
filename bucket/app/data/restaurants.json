@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "id": 1780523205270,
+    "name": "Abu Ali",
+    "type": "egyptian",
+    "rating": 4,
+    "reviews": 0,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS0RJFvbtMqyHQNMStmPl6IMNbicOTCSlbsjEkiRnBkHmYjfv9HMIac6cK&s=10",
+    "coordinates": [
+      27.885522,
+      34.29987
+    ],
+    "area": "naama",
+    "phone": "+201094442418",
+    "hours": "24 / Hours",
+    "description": "Reasonable prices and acceptable quality for the price",
+    "fullDescription": "Reasonable prices and acceptable quality for the price",
+    "features": "",
+    "videoUrl": "https://www.youtube.com/watch?v=fSB-tObOauk",
+    "menuContent": "<p>No menu available</p>",
+    "menuFile": "",
+    "ticketsContent": "<p>No tickets required</p>",
+    "eventsContent": "<p>No events information available</p>",
+    "additionalInfo": ""
+  },
+  {
+    "id": 1780523210008,
+    "name": "Zico Fried Chicken",
+    "type": "Fast Food",
+    "rating": 5,
+    "reviews": 0,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFphFm8n_JJlIXzB31DYx5iriRFrs1f0gTlQ&s",
+    "coordinates": [
+      27.884613,
+      34.30286
+    ],
+    "area": "delta",
+    "phone": "+201222150246",
+    "hours": "From 09:00 AM to 03:00 AM",
+    "description": "Best Fried Chicken",
+    "fullDescription": "Best Fried Chicken",
+    "features": "",
+    "videoUrl": "",
+    "menuContent": "<div class=\"menu-photos-gallery\" id=\"gallery-1767564445085wqddoabsy\"><h3>Menu</h3><div style=\"display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;\"><div style=\"flex: 1 0 200px; max-width: 300px; cursor: pointer;\" \n                            onclick=\"openMenuPhotoLightbox(0, 'gallery-1767564445085wqddoabsy')\">\n                    <img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo-8pd0KblQbAdtLxU92cAVvDFBvgi8OOavnnZ9dkNTw&s=10\" \n                         alt=\"Menu Photo 1\" \n                         style=\"width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd; transition: transform 0.3s;\"\n                         onmouseover=\"this.style.transform='scale(1.02)'\"\n                         onmouseout=\"this.style.transform='scale(1)'\">\n                    <div style=\"text-align: center; margin-top: 5px; font-size: 12px; color: #666;\">\n                        <i class=\"fas fa-search-plus\"></i> Click to zoom\n                    </div>\n                </div><div style=\"flex: 1 0 200px; max-width: 300px; cursor: pointer;\" \n                            onclick=\"openMenuPhotoLightbox(1, 'gallery-1767564445085wqddoabsy')\">\n                    <img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt_88OfraHUXBuerulxBJa3N3CrrLXQ4Lgfm5W8h5q9PbKTJjWPVLJmHs&s=10\" \n                         alt=\"Menu Photo 2\" \n                         style=\"width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd; transition: transform 0.3s;\"\n                         onmouseover=\"this.style.transform='scale(1.02)'\"\n                         onmouseout=\"this.style.transform='scale(1)'\">\n                    <div style=\"text-align: center; margin-top: 5px; font-size: 12px; color: #666;\">\n                        <i class=\"fas fa-search-plus\"></i> Click to zoom\n                    </div>\n                </div></div></div>",
+    "menuFile": "",
+    "ticketsContent": "<p>No tickets required</p>",
+    "eventsContent": "<pre style=\"font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-size-adjust: none; font-kerning: auto; font-optical-sizing: auto; font-variant-position: normal; font-variant-emoji: normal; font-stretch: normal; font-size: 13px; line-height: 22px; font-family: Menlo, Monaco, Consolas, &quot;Cascadia Mono&quot;, &quot;Ubuntu Mono&quot;, &quot;DejaVu Sans Mono&quot;, &quot;Liberation Mono&quot;, &quot;JetBrains Mono&quot;, &quot;Fira Code&quot;, Cousine, &quot;Roboto Mono&quot;, &quot;Courier New&quot;, Courier, sans-serif, system-ui; overflow: auto; text-wrap-mode: wrap; word-break: break-all; padding: 16px; color: rgb(249, 250, 251); text-align: start;\"><span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>h3</span><span class=\"token punctuation\">&gt;</span></span>Weekly Schedule<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>h3</span><span class=\"token punctuation\">&gt;</span></span>\n<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>ul</span><span class=\"token punctuation\">&gt;</span></span>\n  <span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>li</span><span class=\"token punctuation\">&gt;</span></span><span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>strong</span><span class=\"token punctuation\">&gt;</span></span>Friday:<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>strong</span><span class=\"token punctuation\">&gt;</span></span> International DJ Martin Garrix<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>li</span><span class=\"token punctuation\">&gt;</span></span>\n  <span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>li</span><span class=\"token punctuation\">&gt;</span></span><span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>strong</span><span class=\"token punctuation\">&gt;</span></span>Saturday:<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>strong</span><span class=\"token punctuation\">&gt;</span></span> Hip Hop Night with special guests<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>li</span><span class=\"token punctuation\">&gt;</span></span>\n  <span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>li</span><span class=\"token punctuation\">&gt;</span></span><span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;</span>strong</span><span class=\"token punctuation\">&gt;</span></span>Sunday:<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>strong</span><span class=\"token punctuation\">&gt;</span></span> Latin Night - Salsa &amp; Bachata<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>li</span><span class=\"token punctuation\">&gt;</span></span>\n<span class=\"token tag\" style=\"color: rgb(102, 204, 204);\"><span class=\"token tag\"><span class=\"token punctuation\">&lt;/</span>ul</span><span class=\"token punctuation\">&gt;</span></span></pre>",
+    "additionalInfo": ""
+  }
+]
