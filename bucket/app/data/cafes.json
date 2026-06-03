@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "id": 1780523206706,
+    "name": "Basata Cafe",
+    "type": "cafe",
+    "rating": 4,
+    "reviews": 0,
+    "image": "https://lh3.googleusercontent.com/p/AF1QipNtEYEIT3GmaMyV1Yzs517dYz6eutwqhERPcop-=s1532-w822-h1532-rw",
+    "coordinates": [
+      27.9158,
+      34.3299
+    ],
+    "area": "sharks-bay",
+    "phone": "",
+    "hours": "",
+    "description": "One of the best Sea View Coffee shops in Sharm El Shikh",
+    "fullDescription": "One of the best Sea View Coffee shops in Sharm El Shikh",
+    "features": "",
+    "videoUrl": "",
+    "menuContent": "",
+    "menuFile": "",
+    "ticketsContent": "",
+    "eventsContent": "",
+    "additionalInfo": ""
+  },
+  {
+    "id": 1780523208702,
+    "name": "Farsha Cafe",
+    "type": "cafe",
+    "rating": 4.5,
+    "reviews": 0,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNQTpeImvcr2chR6bFPDdQLPSaEiaz7_qFrco6KIePtKWeNq1EDzJRMmL8&s=10",
+    "coordinates": [
+      27.849809,
+      34.307536
+    ],
+    "area": "hadaba",
+    "phone": "01061693679",
+    "hours": "",
+    "description": "One of the best Sea View Coffee shops in Sharm El Shikh",
+    "fullDescription": "One of the best Sea View Coffee shops in Sharm El Shikh",
+    "features": "Sea View, Romantic",
+    "videoUrl": "",
+    "menuContent": "<div class=\"menu-photos-gallery\"><h3>Drinks Menu</h3><div style=\"display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;\"><div style=\"flex: 1 0 200px; max-width: 300px;\">\n                        <img src=\"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo-8pd0KblQbAdtLxU92cAVvDFBvgi8OOavnnZ9dkNTw&s=10\" \n                             alt=\"Drinks Menu Photo 1\" \n                             style=\"width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;\">\n                    </div></div></div>",
+    "menuFile": "",
+    "ticketsContent": "",
+    "eventsContent": "",
+    "additionalInfo": ""
+  },
+  {
+    "id": 1780523210415,
+    "name": "Viva Cafe & Beach",
+    "type": "cafe",
+    "rating": 4.5,
+    "reviews": 0,
+    "image": "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxnn0Eq_dgE3YD6AxRJLyuGrtFNsDMXtQAWzL_1Vy2ZFaoMyOpvOZDWGKgIJ5QNgJbFiKehOsuacVuELgOIElOb_VBUViWmyQg_WUJtRcd8ve6fnP_atgLGariMRapGzsJ9N5Gi4Q=s1532-w822-h1532-rw",
+    "coordinates": [
+      27.9158,
+      34.3299
+    ],
+    "area": "naama",
+    "phone": "",
+    "hours": "",
+    "description": "",
+    "fullDescription": "",
+    "features": "",
+    "videoUrl": "",
+    "menuContent": "",
+    "menuFile": "",
+    "ticketsContent": "",
+    "eventsContent": "",
+    "additionalInfo": ""
+  }
+]
