@@ -1624,9 +1624,15 @@ ${b.roomNumber ? `*🚪 Room:* ${b.roomNumber}` : ''}
 
 *💰 Payment*
 ━━━━━━━━━━━━━━━━━━
-*💵 Total:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
 *💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}
-${b.extraServices ? `*✨ Extras:* ${b.extraServices}` : ''}
+*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
+*🪙 Taxes:* ${b.taxes}
+${b.extraServices ? `*✨ Extras:* ${b.extraServices}\n` : ''}
+-------------------------
+*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}
+${!b.isPaid ? `*💸 Payment Links:* ${b.paymenturl}` : ''}
+
+
 
 *📝 Special Requests*
 ━━━━━━━━━━━━━━━━━━
