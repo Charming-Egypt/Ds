@@ -324,13 +324,13 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${parseFloat(bookingData.totalAmount)} EGP`;
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${parseFloat(bookingData.totalAmount).toFixed(2)} EGP`;
 
   const notificationData = {
     id: notificationId,
     title: `New Booking: ${tripInfo.name}`,
     message: notificationMessage,
-    totalAmount: parseFloat(bookingData.totalAmount),
+    totalAmount: parseFloat(parseFloat(bookingData.totalAmount).toFixed(2)),
     bookingId: bookingData.bookingId,
     tripId: bookingData.Id || tripInfo.bookingLink || "unknown",
     tripName: tripInfo.name,
@@ -744,7 +744,7 @@ function displayTripInfo(tripInfo) {
 }
 
 // ========================================
-// Price Calculation (All in EGP)
+// Price Calculation (All in EGP) - Rounded to 2 decimals
 // ========================================
 
 function calculateBaseTotal() {
@@ -755,7 +755,7 @@ function calculateBaseTotal() {
   
   const basePrice = parseFloat(currentTrip.basePrice);
   const childPrice = parseFloat(currentTrip.cprice) || basePrice * 0.5;
-  return (adults * basePrice) + (childrenUnder12 * childPrice);
+  return parseFloat(((adults * basePrice) + (childrenUnder12 * childPrice)).toFixed(2));
 }
 
 function calculateExtraServicesTotal() {
@@ -764,13 +764,13 @@ function calculateExtraServicesTotal() {
   
   if (selectedTripType && tourTypes[selectedTripType]) {
     const servicePrice = parseFloat(tourTypes[selectedTripType]);
-    return (adults + childrenUnder12) * servicePrice;
+    return parseFloat(((adults + childrenUnder12) * servicePrice).toFixed(2));
   }
   return 0;
 }
 
 function calculateNetTotal() {
-  return calculateBaseTotal() + calculateExtraServicesTotal();
+  return parseFloat((calculateBaseTotal() + calculateExtraServicesTotal()).toFixed(2));
 }
 
 function calculateTotalWithTaxes() {
@@ -795,11 +795,11 @@ function calculateTotalWithTaxes() {
     }
     
     const totalBeforeTax = baseTotal + extraServicesTotal;
-    const threePercent = totalBeforeTax * 0.03;
-    const fourteenPercentOfThreePercent = threePercent * 0.14;
+    const threePercent = parseFloat((totalBeforeTax * 0.03).toFixed(2));
+    const fourteenPercentOfThreePercent = parseFloat((threePercent * 0.14).toFixed(2));
     const fixedFee = 3;
     
-    const finalPrice = totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee;
+    const finalPrice = parseFloat((totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee).toFixed(2));
     
     return finalPrice;
 }
@@ -855,12 +855,11 @@ function updateSummary() {
     
     const totalEGP = calculateTotalWithTaxes();
     const nettotalEGP = calculateNetTotal();
-    const formattedTotal = totalEGP;
-    const formatedtax = totalEGP - nettotalEGP;
+    const formatedtax = parseFloat((totalEGP - nettotalEGP).toFixed(2));
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${formattedTotal.toFixed(2)}</div>
+        <div class="font-bold text-xl notranslate">${totalEGP.toFixed(2)}</div>
         <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)}</div>
       `;
     }
@@ -964,7 +963,7 @@ function validateCurrentStep() {
 }
 
 // ========================================
-// ✅ MODIFIED: SUBMIT FORM - MATCHING ADMIN PANEL DATA STRUCTURE
+// SUBMIT FORM - ALL PRICES ROUNDED TO 2 DECIMALS
 // ========================================
 async function submitForm() {
   if (!validateCurrentStep()) return;
@@ -994,7 +993,7 @@ async function submitForm() {
       extraServicesStr = `${selectedTripType}: ${parseFloat(tourTypes[selectedTripType]).toFixed(2)} EGP`;
     }
 
-    // Build booking data matching admin panel expectations
+    // Build booking data - all prices rounded to 2 decimals
     const bookingData = {
       refNumber: refNumber,
       username: username,
@@ -1008,13 +1007,13 @@ async function submitForm() {
       infants: infants,
       hotelName: hotelName,
       roomNumber: roomNumber,
-      baseTotal: calculateBaseTotal(),
-      extraServicesTotal: calculateExtraServicesTotal(),
-      netTotal: nettotalEGP,
-      total: totalEGP,
+      baseTotal: parseFloat(calculateBaseTotal().toFixed(2)),
+      extraServicesTotal: parseFloat(calculateExtraServicesTotal().toFixed(2)),
+      netTotal: parseFloat(nettotalEGP.toFixed(2)),
+      total: parseFloat(totalEGP.toFixed(2)),
       extraServices: extraServicesStr,
       tripType: selectedTripType || 'None',
-      tripTypePrice: selectedTripType ? tourTypes[selectedTripType] : 0,
+      tripTypePrice: selectedTripType ? parseFloat(parseFloat(tourTypes[selectedTripType]).toFixed(2)) : 0,
       specialRequests: specialRequests,
       status: 'pending',
       resStatus: 'new',
@@ -1027,14 +1026,14 @@ async function submitForm() {
       updatedAt: Date.now()
     };
 
-    // Kashier Payment
+    // Kashier Payment - amount rounded to 2 decimals
     const response = await fetch('https://kashier-hash.gm-093.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: totalEGP,
+        amount: parseFloat(totalEGP.toFixed(2)),
         currency: 'EGP',
       }),
     });
@@ -1049,7 +1048,7 @@ async function submitForm() {
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: totalEGP,
+      amount: parseFloat(totalEGP.toFixed(2)),
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
@@ -1072,7 +1071,7 @@ async function submitForm() {
       userName: username,
       userEmail: email,
       phone: phone,
-      totalAmount: nettotalEGP,
+      totalAmount: parseFloat(nettotalEGP.toFixed(2)),
       adults: adults,
       childrenUnder12: childrenUnder12,
       infants: infants,
