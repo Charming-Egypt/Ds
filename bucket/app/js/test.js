@@ -73,13 +73,17 @@ function getCurrencySymbol() {
   return 'EGP';
 }
 
+// ========================================
+// Price Display - WITHOUT TAXES on page
+// ========================================
 function updatePriceDisplay() {
   const priceElement = document.getElementById('tourPrice');
   if (priceElement && currentTrip.basePrice) {
-    const totalPrice = calculateTotalWithTaxes();
-    const formattedPrice = formatPrice(totalPrice);
+    // عرض السعر بدون ضرائب في الصفحة
+    const netTotal = calculateNetTotal();
+    const formattedPrice = formatPrice(netTotal);
     priceElement.innerHTML = formattedPrice;
-    priceElement.setAttribute('data-price-egp', parseFloat(totalPrice).toFixed(2));
+    priceElement.setAttribute('data-price-egp', parseFloat(netTotal).toFixed(2));
     priceElement.setAttribute('data-currency', currentCurrency);
   }
 }
@@ -324,7 +328,7 @@ async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
   const notificationId = Date.now().toString();
   const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
 
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${parseFloat(bookingData.totalAmount).toFixed(2)} EGP`;
+  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Net Total: ${parseFloat(bookingData.totalAmount).toFixed(2)} EGP`;
 
   const notificationData = {
     id: notificationId,
@@ -421,7 +425,7 @@ async function fetchAllTripData() {
     
     if (tripPName && allTripsData[tripPName]) {
       currentTrip = allTripsData[tripPName];
-      currentTrip.basePrice = parseFloat(currentTrip.price || 0).toFixed(2);
+      currentTrip.basePrice = currentTrip.price || 0;
       currentTrip.commissionRate = currentTrip.commission || 0.10;
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
@@ -744,7 +748,7 @@ function displayTripInfo(tripInfo) {
 }
 
 // ========================================
-// Price Calculation (All in EGP) - ALL ROUNDED TO 2 DECIMALS
+// Price Calculation (All in EGP)
 // ========================================
 
 function calculateBaseTotal() {
@@ -769,39 +773,25 @@ function calculateExtraServicesTotal() {
   return 0;
 }
 
+// السعر الصافي بدون ضرائب
 function calculateNetTotal() {
   return parseFloat((calculateBaseTotal() + calculateExtraServicesTotal()).toFixed(2));
 }
 
-function calculateTotalWithTaxes() {
-    const adults = parseInt(document.getElementById('adults').value) || 0;
-    const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-    
-    let baseTotal = 0;
-    if (currentTrip.basePrice) {
-        baseTotal += adults * parseFloat(currentTrip.basePrice);
-    }
-    
-    if (currentTrip.cprice) {
-        baseTotal += childrenUnder12 * parseFloat(currentTrip.cprice);
-    } else if (currentTrip.basePrice) {
-        baseTotal += childrenUnder12 * (parseFloat(currentTrip.basePrice) * 0.5);
-    }
-    
-    let extraServicesTotal = 0;
-    if (selectedTripType && tourTypes[selectedTripType]) {
-        const servicePrice = parseFloat(tourTypes[selectedTripType]);
-        extraServicesTotal = (adults + childrenUnder12) * servicePrice;
-    }
-    
-    const totalBeforeTax = baseTotal + extraServicesTotal;
-    const threePercent = parseFloat((totalBeforeTax * 0.03).toFixed(2));
+// حساب الضرائب فقط
+function calculateTaxesOnly() {
+    const netTotal = calculateNetTotal();
+    const threePercent = parseFloat((netTotal * 0.03).toFixed(2));
     const fourteenPercentOfThreePercent = parseFloat((threePercent * 0.14).toFixed(2));
     const fixedFee = 3;
-    
-    const finalPrice = parseFloat((totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee).toFixed(2));
-    
-    return finalPrice;
+    return parseFloat((threePercent + fourteenPercentOfThreePercent + fixedFee).toFixed(2));
+}
+
+// السعر الإجمالي بالضرائب (للدفع فقط)
+function calculateTotalWithTaxes() {
+    const netTotal = calculateNetTotal();
+    const taxes = calculateTaxesOnly();
+    return parseFloat((netTotal + taxes).toFixed(2));
 }
 
 function updateInfantsMax() {
@@ -820,6 +810,9 @@ function updateInfantsMax() {
   infantsInput.max = maxInfants;
 }
 
+// ========================================
+// Summary - Display WITHOUT taxes + show taxes info
+// ========================================
 function updateSummary() {
   const adults = parseInt(document.getElementById('adults').value) || 0;
   const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
@@ -853,14 +846,38 @@ function updateSummary() {
       if (summaryService) summaryService.textContent = 'None';
     }
     
-    const totalEGP = calculateTotalWithTaxes();
-    const nettotalEGP = calculateNetTotal();
-    const formatedtax = parseFloat((totalEGP - nettotalEGP).toFixed(2));
+    // عرض السعر الصافي بدون ضرائب
+    const netTotal = calculateNetTotal();
+    // حساب الضرائب للعرض فقط
+    const taxes = calculateTaxesOnly();
+    // السعر الإجمالي بالضرائب (للدفع)
+    const totalWithTaxes = calculateTotalWithTaxes();
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${totalEGP.toFixed(2)} EGP</div>
-        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)} EGP</div>
+        <div class="font-bold text-xl notranslate">${formatPrice(netTotal)}</div>
+        <div class="text-xs text-gray-400 mt-2 space-y-1">
+          <div class="flex justify-between">
+            <span>3% Service Fee:</span>
+            <span>${formatPrice(parseFloat((netTotal * 0.03).toFixed(2)))}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>14% Tax on Fee:</span>
+            <span>${formatPrice(parseFloat(((netTotal * 0.03) * 0.14).toFixed(2)))}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Fixed Fee:</span>
+            <span>${formatPrice(3)}</span>
+          </div>
+          <div class="flex justify-between border-t border-gray-600 pt-1 mt-1">
+            <span class="font-semibold">Total Taxes:</span>
+            <span class="font-semibold">${formatPrice(taxes)}</span>
+          </div>
+          <div class="flex justify-between border-t border-orange-500 pt-1 mt-1 text-orange-400">
+            <span class="font-semibold">Total at Payment:</span>
+            <span class="font-semibold">${formatPrice(totalWithTaxes)}</span>
+          </div>
+        </div>
       `;
     }
   }
@@ -963,7 +980,7 @@ function validateCurrentStep() {
 }
 
 // ========================================
-// SUBMIT FORM - ALL PRICES ROUNDED TO 2 DECIMALS
+// SUBMIT FORM - Send price WITH taxes to payment
 // ========================================
 async function submitForm() {
   if (!validateCurrentStep()) return;
@@ -975,8 +992,12 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const totalEGP = calculateTotalWithTaxes();
-    const nettotalEGP = calculateNetTotal();
+    // السعر الصافي (للحفظ في Firebase)
+    const netTotal = calculateNetTotal();
+    // السعر بالضرائب (للدفع فقط)
+    const totalWithTaxes = calculateTotalWithTaxes();
+    const taxes = calculateTaxesOnly();
+    
     const adults = parseInt(document.getElementById('adults').value) || 0;
     const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
     const infants = parseInt(document.getElementById('infants').value) || 0;
@@ -993,7 +1014,7 @@ async function submitForm() {
       extraServicesStr = `${selectedTripType}: ${parseFloat(tourTypes[selectedTripType]).toFixed(2)} EGP`;
     }
 
-    // Build booking data - all prices rounded to 2 decimals
+    // Build booking data - save NET prices (without taxes) + tax details
     const bookingData = {
       refNumber: refNumber,
       username: username,
@@ -1009,8 +1030,15 @@ async function submitForm() {
       roomNumber: roomNumber,
       baseTotal: parseFloat(calculateBaseTotal().toFixed(2)),
       extraServicesTotal: parseFloat(calculateExtraServicesTotal().toFixed(2)),
-      netTotal: parseFloat(nettotalEGP.toFixed(2)),
-      total: parseFloat(totalEGP.toFixed(2)),
+      netTotal: parseFloat(netTotal.toFixed(2)),
+      taxes: parseFloat(taxes.toFixed(2)),
+      total: parseFloat(totalWithTaxes.toFixed(2)),
+      taxBreakdown: {
+        serviceFee: parseFloat((netTotal * 0.03).toFixed(2)),
+        taxOnFee: parseFloat(((netTotal * 0.03) * 0.14).toFixed(2)),
+        fixedFee: 3,
+        totalTaxes: parseFloat(taxes.toFixed(2))
+      },
       extraServices: extraServicesStr,
       tripType: selectedTripType || 'None',
       tripTypePrice: selectedTripType ? parseFloat(parseFloat(tourTypes[selectedTripType]).toFixed(2)) : 0,
@@ -1026,14 +1054,14 @@ async function submitForm() {
       updatedAt: Date.now()
     };
 
-    // Kashier Payment - amount rounded to 2 decimals
+    // Kashier Payment - send price WITH taxes
     const response = await fetch('https://kashier-hash.gm-093.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: parseFloat(totalEGP.toFixed(2)),
+        amount: parseFloat(totalWithTaxes.toFixed(2)),
         currency: 'EGP',
       }),
     });
@@ -1048,7 +1076,7 @@ async function submitForm() {
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: parseFloat(totalEGP.toFixed(2)),
+      amount: parseFloat(totalWithTaxes.toFixed(2)),
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
@@ -1071,7 +1099,7 @@ async function submitForm() {
       userName: username,
       userEmail: email,
       phone: phone,
-      totalAmount: parseFloat(nettotalEGP.toFixed(2)),
+      totalAmount: parseFloat(netTotal.toFixed(2)),
       adults: adults,
       childrenUnder12: childrenUnder12,
       infants: infants,
