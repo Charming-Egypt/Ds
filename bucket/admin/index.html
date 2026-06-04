@@ -1601,10 +1601,10 @@ if (wa) {
         // ✅ تنسيق ديناميكي لجزئية الدفع (تظهر رابط الدفع بشكل مرتب جداً إذا لم يكن مدفوعاً)
         let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
                              `*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n` +
-                             `*🪙 Taxes:* ${b.taxes || '0.00'}\n`;
+                             `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
                              
         if (b.extraServices) {
-            paymentSection += `*✨ Extras:* ${b.extraServicesTotal}\n`;
+            paymentSection += `*✨ Extras:* ${b.extraServices}\n`;
         }
         
         paymentSection += `-------------------------\n` +
