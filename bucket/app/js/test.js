@@ -1021,7 +1021,7 @@ async function submitForm() {
       extraServicesTotal: parseFloat(calculateExtraServicesTotal().toFixed(2)),
       netTotal: parseFloat(netTotal.toFixed(2)),
       total: parseFloat(totalWithTaxes.toFixed(2)),
-      totalTaxes: parseFloat(taxes.toFixed(2)),
+      taxes: parseFloat(taxes.toFixed(2)),
       extraServices: selectedTripType || 'None',
       specialRequests: 'none',
       status: 'pending',
