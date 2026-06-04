@@ -1589,33 +1589,36 @@ data.media = {
         const detailsContent = getField('bookingDetailsContent');
         if (detailsContent) detailsContent.innerHTML = html;
         
-        // WhatsApp link - ✅ رسالة محسّنة ومنسقة ومتوافقة مع نظام الدفع
+        // WhatsApp link - ✅ رسالة محسّنة مع رابط تحويل الدفع الذكي
 const wa = getField('whatsappLink');
 if (wa) {
     if (b.phone) {
         const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
         
-        // ✅ رابط صفحة الفاوتشر
+        // ✅ رابط صفحة الفاوتشر الإلكتروني
         const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
         
-        // ✅ تنسيق ديناميكي لجزئية الدفع (تظهر رابط الدفع بشكل مرتب جداً إذا لم يكن مدفوعاً)
+        // ✅ رابط صفحة التحويل للدفع الذكية التي اقترحتها
+        const payUrl = `https://www.discover-sharm.com/p/pay.html?ref=${b.refNumber}`;
+        
+        // ✅ بناء قسم الدفع ديناميكياً
         let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
                              `*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n` +
-                             `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
+                             `*🪙 Taxes:* ${b.taxes || '0.00'}\n`;
                              
         if (b.extraServices) {
-            paymentSection += `*✨ Extras:* ${b.extraServices}\n`;
+            paymentSection += `*✨ Extras:* ${b.extraServicesTotal}\n`;
         }
         
         paymentSection += `-------------------------\n` +
                           `*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}\n`;
         
-        // إذا كان غير مدفوع، نضع نص صريح ومباشر للدفع بجانب الرابط
-        if (!b.isPaid && b.paymenturl) {
-            paymentSection += `\n*💸 Secure Payment Link:*\n👉 *Pay now:* ${b.paymenturl}\n`;
+        // إذا كان الحجز غير مدفوع، نضع رابط التحويل الجديد بشكل أنيق ومغري للضغط
+        if (!b.isPaid) {
+            paymentSection += `\n*💸 Secure Payment:*\n👉 *Pay Now:* ${payUrl}\n`;
         }
 
-        // ✅ بناء الرسالة النهائية
+        // ✅ بناء نص رسالة الواتساب الكاملة
         const msg = 
 `*🌴 Discover Sharm - Booking Confirmation*
 ━━━━━━━━━━━━━━━━━━
@@ -1668,6 +1671,7 @@ ${b.specialRequests ? b.specialRequests : 'None'}
         wa.title = 'Phone number not available';
     }
 }
+
 
         
         // Open modal
