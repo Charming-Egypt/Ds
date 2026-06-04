@@ -857,20 +857,9 @@ function updateSummary() {
       totalPriceDisplay.innerHTML = `
         <div class="font-bold text-xl notranslate">${formatPrice(netTotal)}</div>
         <div class="text-xs text-gray-400 mt-2 space-y-1">
-          <div class="flex justify-between">
-            <span>3% Service Fee:</span>
-            <span>${formatPrice(parseFloat((netTotal * 0.03).toFixed(2)))}</span>
-          </div>
-          <div class="flex justify-between">
-            <span>14% Tax on Fee:</span>
-            <span>${formatPrice(parseFloat(((netTotal * 0.03) * 0.14).toFixed(2)))}</span>
-          </div>
-          <div class="flex justify-between">
-            <span>Fixed Fee:</span>
-            <span>${formatPrice(3)}</span>
-          </div>
+          
           <div class="flex justify-between border-t border-gray-600 pt-1 mt-1">
-            <span class="font-semibold">Total Taxes:</span>
+            <span class="font-semibold">+ Taxes:</span>
             <span class="font-semibold">${formatPrice(taxes)}</span>
           </div>
           <div class="flex justify-between border-t border-orange-500 pt-1 mt-1 text-orange-400">
