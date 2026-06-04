@@ -51,7 +51,7 @@ function getExchangeRatesFromHeader() {
 
 function formatPrice(priceEGP) {
   if (!ratesLoaded || currentCurrency === 'EGP') {
-    return Math.round(priceEGP) + ' EGP';
+    return parseFloat(priceEGP).toFixed(2) + ' EGP';
   }
   
   var converted = priceEGP * exchangeRates[currentCurrency];
@@ -60,9 +60,9 @@ function formatPrice(priceEGP) {
   if (currentCurrency === 'USD') symbol = '$';
   else if (currentCurrency === 'EUR') symbol = '€';
   else if (currentCurrency === 'GBP') symbol = '£';
-  else return Math.round(priceEGP) + ' EGP';
+  else return parseFloat(priceEGP).toFixed(2) + ' EGP';
   
-  return symbol + converted.toFixed(2);
+  return symbol + parseFloat(converted).toFixed(2);
 }
 
 function getCurrencySymbol() {
@@ -79,7 +79,7 @@ function updatePriceDisplay() {
     const totalPrice = calculateTotalWithTaxes();
     const formattedPrice = formatPrice(totalPrice);
     priceElement.innerHTML = formattedPrice;
-    priceElement.setAttribute('data-price-egp', totalPrice);
+    priceElement.setAttribute('data-price-egp', parseFloat(totalPrice).toFixed(2));
     priceElement.setAttribute('data-currency', currentCurrency);
   }
 }
@@ -421,7 +421,7 @@ async function fetchAllTripData() {
     
     if (tripPName && allTripsData[tripPName]) {
       currentTrip = allTripsData[tripPName];
-      currentTrip.basePrice = currentTrip.price || 0;
+      currentTrip.basePrice = parseFloat(currentTrip.price || 0).toFixed(2);
       currentTrip.commissionRate = currentTrip.commission || 0.10;
       tourTypes = currentTrip.tourtype || {};
       tripOwnerId = currentTrip.owner || '';
@@ -744,7 +744,7 @@ function displayTripInfo(tripInfo) {
 }
 
 // ========================================
-// Price Calculation (All in EGP) - Rounded to 2 decimals
+// Price Calculation (All in EGP) - ALL ROUNDED TO 2 DECIMALS
 // ========================================
 
 function calculateBaseTotal() {
@@ -859,8 +859,8 @@ function updateSummary() {
     
     if (totalPriceDisplay) {
       totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${totalEGP.toFixed(2)}</div>
-        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)}</div>
+        <div class="font-bold text-xl notranslate">${totalEGP.toFixed(2)} EGP</div>
+        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)} EGP</div>
       `;
     }
   }
