@@ -1589,17 +1589,33 @@ data.media = {
         const detailsContent = getField('bookingDetailsContent');
         if (detailsContent) detailsContent.innerHTML = html;
         
-        // WhatsApp link
-// WhatsApp link - ✅ رسالة محسّنة ومنسقة
+        // WhatsApp link - ✅ رسالة محسّنة ومنسقة ومتوافقة مع نظام الدفع
 const wa = getField('whatsappLink');
 if (wa) {
     if (b.phone) {
         const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
         
-        // ✅ رابط صفحة الفاوتشر (عدّل الرابط حسب دومين موقعك)
+        // ✅ رابط صفحة الفاوتشر
         const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
         
-        // ✅ تنسيق الرسالة باحترافية
+        // ✅ تنسيق ديناميكي لجزئية الدفع (تظهر رابط الدفع بشكل مرتب جداً إذا لم يكن مدفوعاً)
+        let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
+                             `*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n` +
+                             `*🪙 Taxes:* ${b.taxes || '0.00'}\n`;
+                             
+        if (b.extraServices) {
+            paymentSection += `*✨ Extras:* ${b.extraServicesTotal}\n`;
+        }
+        
+        paymentSection += `-------------------------\n` +
+                          `*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}\n`;
+        
+        // إذا كان غير مدفوع، نضع نص صريح ومباشر للدفع بجانب الرابط
+        if (!b.isPaid && b.paymenturl) {
+            paymentSection += `\n*💸 Secure Payment Link:*\n👉 *Pay now:* ${b.paymenturl}\n`;
+        }
+
+        // ✅ بناء الرسالة النهائية
         const msg = 
 `*🌴 Discover Sharm - Booking Confirmation*
 ━━━━━━━━━━━━━━━━━━
@@ -1622,23 +1638,15 @@ ${b.roomNumber ? `*🚪 Room:* ${b.roomNumber}` : ''}
 *🧒 Children:* ${b.childrenUnder12 || 0}
 *👶 Infants:* ${b.infants || 0}
 
-*💰 Payment*
+*💰 Payment Overview*
 ━━━━━━━━━━━━━━━━━━
-*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}
-*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
-*🪙 Taxes:* ${b.taxes}
-${b.extraServices ? `*✨ Extras:* ${b.extraServicesTotal}\n` : ''}
--------------------------
-*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}
-${!b.isPaid ? `*💸 Payment Links:* ${b.paymenturl}` : ''}
-
-
+${paymentSection}
 
 *📝 Special Requests*
 ━━━━━━━━━━━━━━━━━━
 ${b.specialRequests ? b.specialRequests : 'None'}
 
-*🎫 View Your Voucher*
+*🎫 View Your Voucher & Ticket*
 ━━━━━━━━━━━━━━━━━━
 🔗 ${voucherUrl}
 
@@ -1660,6 +1668,7 @@ ${b.specialRequests ? b.specialRequests : 'None'}
         wa.title = 'Phone number not available';
     }
 }
+
         
         // Open modal
         const bookingModal = getField('booking-modal');
