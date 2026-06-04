@@ -1627,7 +1627,7 @@ ${b.roomNumber ? `*🚪 Room:* ${b.roomNumber}` : ''}
 *💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}
 *💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
 *🪙 Taxes:* ${b.taxes}
-${b.extraServices ? `*✨ Extras:* ${b.extraServices}\n` : ''}
+${b.extraServices ? `*✨ Extras:* ${b.extraServicesTotal}\n` : ''}
 -------------------------
 *💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}
 ${!b.isPaid ? `*💸 Payment Links:* ${b.paymenturl}` : ''}
