@@ -1605,7 +1605,7 @@ if (wa) {
         let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
                              `*💵 Trip Price:* EGP ${parseFloat(b.baseTotal || 0).toFixed(2)}\n` +
       if (b.extraServices) {
-            paymentSection += `*✨ Extras services:* EGP ${b.extraServicesTotal}\n`;
+            paymentSection += `*✨ ${b.extraServices}:* EGP ${parseFloat(b.extraServicesTotal || 0).toFixed(2)}\n`;
       }
         `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
       
@@ -1646,10 +1646,7 @@ ${paymentSection}
 
 *📝 Special Requests*
 ━━━━━━━━━━━━━━━━━━
-${b.specialRequests ? b.specialRequests : 'None'}
-if (b.extraServices) {
-            paymentSection += `*✨ Extras:* ${b.extraServices}\n`;
-        }
+${b.specialRequests ? b.specialRequests : ''}
         
 *🎫 View Your Voucher & Ticket*
 ━━━━━━━━━━━━━━━━━━
