@@ -1589,7 +1589,7 @@ data.media = {
         const detailsContent = getField('bookingDetailsContent');
         if (detailsContent) detailsContent.innerHTML = html;
         
-        // WhatsApp link - ✅ رسالة محسّنة مع رابط تحويل الدفع الذكي
+                // WhatsApp link - ✅ رسالة محسّنة مع رابط تحويل الدفع الذكي
 const wa = getField('whatsappLink');
 if (wa) {
     if (b.phone) {
@@ -1603,11 +1603,11 @@ if (wa) {
         
         // ✅ بناء قسم الدفع ديناميكياً
         let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
-                             `*💵 Trip Price:* EGP ${parseFloat(b.baseTotal || 0).toFixed(2)}\n` +
-          if (b.extraServices) {
+                             `*💵 Trip Price:* EGP ${parseFloat(b.baseTotal || 0).toFixed(2)}\n`;
+        if (b.extraServices) {
             paymentSection += `*✨ ${b.extraServices}:* EGP ${parseFloat(b.extraServicesTotal || 0).toFixed(2)}\n`;
         }
-                             `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
+        paymentSection += `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
       
         paymentSection += `-------------------------\n` +
                           `*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}\n`;
