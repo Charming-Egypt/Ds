@@ -1,93 +1,132 @@
 /* ==========================================================================
-   DISCOVER SHARM - Tour Booking Stylesheet
-   Clean, Practical, Functional Design
+   DISCOVER SHARM - Complete Stylesheet
+   Two Distinct Layouts: Desktop & Mobile (App-like)
+   Version: 3.0
    ========================================================================== */
 
 /* ==========================================================================
-   1. DESIGN TOKENS & CSS VARIABLES
+   1. CSS VARIABLES & DESIGN TOKENS
    ========================================================================== */
 :root {
+  /* Brand Colors */
   --primary: #f59e0b;
   --primary-dark: #d97706;
-  --primary-light: rgba(245, 158, 11, 0.15);
+  --primary-light: rgba(245, 158, 11, 0.1);
   
-  --dark-900: #0f172a;
-  --dark-800: #1e293b;
-  --dark-700: #334155;
-  --gray-600: #475569;
-  --gray-500: #64748b;
-  --gray-400: #94a3b8;
-  --gray-300: #cbd5e1;
+  /* Background Colors */
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #1a1f2e;
   
-  --radius-sm: 6px;
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Border Colors */
+  --border-color: #1e293b;
+  --border-light: #334155;
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 1rem;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
   
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  
+  /* Transitions */
+  --transition: all 0.25s ease;
+  
+  /* Z-Index Layers */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
 }
 
 /* ==========================================================================
-   2. RESET & BASE
+   2. RESET & BASE STYLES
    ========================================================================== */
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  background-color: var(--dark-900);
-  color: #fff;
-  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  line-height: 1.5;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
 }
 
 /* ==========================================================================
-   3. LAYOUT
+   3. DESKTOP LAYOUT (Default - Above 768px)
    ========================================================================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
 .tour-booking-container {
   display: flex;
-  gap: 2rem;
-  padding: 5px;
-  margin-bottom: 2rem;
+  gap: var(--space-xl);
+  padding: var(--space-md);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
+/* Left Column - Tour Details */
 .tour-details {
   flex: 1;
   min-width: 0;
 }
 
+/* Right Column - Booking Form */
 .booking-form-container {
-  flex: 0 0 350px;
-  padding: 15px;
-  border-radius: 1rem;
-  height: max-content;
+  flex: 0 0 400px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-color);
   position: sticky;
-  top: 2rem;
-  background-color: var(--dark-800);
-  border: 1px solid var(--dark-700);
+  top: var(--space-md);
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 /* ==========================================================================
-   4. SWIPER GALLERY
+   4. DESKTOP - SWIPER GALLERY
    ========================================================================== */
+.tour-gallery {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-lg);
+}
+
 .swiper {
   width: 100%;
   height: 450px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  position: relative;
 }
 
-.swiper-slide img, 
+.swiper-slide img,
 .swiper-slide iframe {
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -97,251 +136,156 @@ body {
 .swiper-button-next,
 .swiper-button-prev {
   color: #fff;
-  background-color: rgba(15, 23, 42, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  backdrop-filter: blur(4px);
   transition: var(--transition);
 }
 
-.swiper-button-next::after,
-.swiper-button-prev::after {
+.swiper-button-next:after,
+.swiper-button-prev:after {
   font-size: 18px;
   font-weight: bold;
 }
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  background-color: var(--primary);
-  color: var(--dark-900);
+  background: var(--primary);
+  color: #000;
 }
 
 /* Pagination */
 .swiper-pagination-bullet {
-  background: #fff;
-  opacity: 0.4;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  width: 10px;
+  height: 10px;
 }
 
 .swiper-pagination-bullet-active {
-  background: var(--primary) !important;
-  opacity: 1;
+  background: var(--primary);
+  width: 24px;
+  border-radius: 5px;
 }
 
-/* ==========================================================================
-   5. THUMBNAIL GALLERY
-   ========================================================================== */
+/* Thumbnails */
 .thumbnail-gallery {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  gap: var(--space-sm);
+  padding: var(--space-md);
   overflow-x: auto;
-  padding-bottom: 4px;
+  background: var(--bg-card);
 }
 
-.thumbnail {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-sm);
-  border: 2px solid transparent;
+.thumbnail-gallery img {
+  width: 72px;
+  height: 54px;
   object-fit: cover;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: var(--transition);
+  border: 2px solid transparent;
   opacity: 0.6;
+  transition: var(--transition);
   flex-shrink: 0;
 }
 
-.thumbnail:hover, 
-.thumbnail.active {
+.thumbnail-gallery img:hover,
+.thumbnail-gallery img.active {
   opacity: 1;
   border-color: var(--primary);
 }
 
 /* ==========================================================================
-   6. TOUR INFO OVERLAYS
-   ========================================================================== */
-.price-tag {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  background-color: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 30px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  z-index: 10;
-}
-
-.tour-title-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2.5rem 1.5rem 1.5rem;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%);
-  z-index: 10;
-}
-
-.tour-title-overlay h1 {
-  font-size: 1.85rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.tour-meta {
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.tour-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: var(--gray-300);
-}
-
-.tour-meta-item i {
-  color: var(--primary);
-}
-
-/* ==========================================================================
-   7. RATINGS
+   5. DESKTOP - TOUR INFO
    ========================================================================== */
 .rating-container {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 12px 0;
-}
-
-.rating-stars {
-  color: #ffc107;
-  font-size: 1rem;
-}
-
-.rating-count {
-  font-size: 0.875rem;
-  color: var(--gray-400);
+  gap: var(--space-sm);
+  margin: var(--space-sm) 0;
 }
 
 /* ==========================================================================
-   8. TIMELINE
+   6. DESKTOP - TIMELINE
    ========================================================================== */
 .timeline-container {
-  margin: 2.5rem 0;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 .timeline-item {
-  position: relative;
-  padding-left: 2.5rem;
-  margin-bottom: 2rem;
-}
-
-.timeline-item:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 24px;
-  bottom: -2rem;
-  width: 2px;
-  background-color: var(--primary);
-  opacity: 0.2;
-}
-
-.timeline-item:last-child::before {
-  display: none;
-}
-
-.timeline-item::after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 4px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-light);
-  z-index: 2;
-}
-
-.timeline-header-block {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-  margin-bottom: 6px;
-}
-
-.timeline-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary);
 }
 
 .timeline-time {
-  background-color: var(--primary-light);
+  min-width: 80px;
+  font-weight: 600;
   color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
+  font-size: 14px;
 }
 
-.timeline-description {
-  color: var(--gray-400);
-  font-size: 0.925rem;
-  line-height: 1.6;
+.timeline-content h4 {
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  font-size: 16px;
+}
+
+.timeline-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 /* ==========================================================================
-   9. INCLUDED / EXCLUDED ITEMS
+   7. DESKTOP - INCLUDED/EXCLUDED ITEMS
    ========================================================================== */
 .included-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-sm);
 }
 
 .included-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  background-color: var(--dark-800);
-  border-radius: 10px;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
   font-size: 14px;
 }
 
 .included-item i {
   color: var(--primary);
   width: 20px;
+  font-size: 16px;
 }
 
+/* ==========================================================================
+   8. DESKTOP - WHAT TO BRING
+   ========================================================================== */
 .what-to-bring-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-sm);
   list-style: none;
 }
 
 .what-to-bring-list li {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background-color: var(--dark-800);
-  border-radius: 30px;
+  gap: var(--space-sm);
+  padding: 6px 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
   font-size: 13px;
 }
 
@@ -350,7 +294,7 @@ body {
 }
 
 /* ==========================================================================
-   10. FORMS
+   9. DESKTOP - FORM ELEMENTS
    ========================================================================== */
 .form-step {
   display: none;
@@ -361,25 +305,31 @@ body {
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-lg);
 }
 
 .form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--gray-300);
-  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.form-group label i {
+  color: var(--primary);
 }
 
 .form-control {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background-color: var(--dark-700);
-  border: 1px solid var(--gray-600);
+  padding: 12px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  color: #fff;
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: 14px;
   transition: var(--transition);
 }
 
@@ -392,160 +342,149 @@ body {
 /* Number Stepper */
 .number-container {
   display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 .number-box {
-  background-color: var(--dark-700);
-  padding: 1rem;
+  flex: 1;
+  text-align: center;
+  background: var(--bg-card);
+  padding: var(--space-md);
   border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .number-box label {
-  margin-bottom: 0;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--gray-300);
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
 }
 
 .button-container {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  background-color: rgba(0, 0, 0, 0.3);
-  padding: 4px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--gray-600);
-}
-
-.button-container input {
-  width: 40px;
-  text-align: center;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+  justify-content: center;
+  gap: var(--space-md);
 }
 
 .bb {
-  width: 2rem;
-  height: 2rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-light);
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--primary);
-  color: var(--dark-900);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-weight: bold;
-  transition: var(--transition);
 }
 
 .bb:hover {
-  background-color: var(--primary-dark);
+  background: var(--primary);
+  color: #000;
+  border-color: var(--primary);
 }
 
-/* ==========================================================================
-   11. BUTTONS
-   ========================================================================== */
+.button-container input {
+  width: 50px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Buttons */
 .btn {
-  display: inline-flex;
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0.85rem 1.75rem;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: var(--transition);
-  width: 100%;
+  gap: var(--space-sm);
 }
 
 .btn-primary {
-  background-color: var(--primary);
-  color: var(--dark-900);
+  background: var(--primary);
+  color: #000;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark);
+  background: var(--primary-dark);
 }
 
 .btn-secondary {
-  background-color: var(--dark-700);
-  color: #fff;
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
 }
 
 .btn-secondary:hover {
-  background-color: var(--gray-600);
+  background: var(--bg-card);
 }
 
 /* ==========================================================================
-   12. PROGRESS BAR
+   10. DESKTOP - PROGRESS BAR
    ========================================================================== */
-.progress-container {
-  margin-bottom: 1.75rem;
-}
-
 .progress-bar {
   width: 100%;
   height: 6px;
-  background-color: var(--dark-700);
-  border-radius: 10px;
+  background: var(--border-light);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: var(--primary);
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--primary);
+  transition: width 0.4s ease;
 }
 
 /* ==========================================================================
-   13. SUMMARY
+   11. DESKTOP - SUMMARY SECTION
    ========================================================================== */
 .summary-section {
-  background-color: rgba(15, 23, 42, 0.3);
-  border: 1px solid var(--dark-700);
+  background: var(--bg-input);
   border-radius: var(--radius-md);
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--dark-700);
-  font-size: 0.95rem;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
 }
 
 .summary-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
   border-bottom: none;
 }
 
 .summary-label {
-  color: var(--gray-400);
+  color: var(--text-secondary);
 }
 
 .summary-value {
-  color: #fff;
-  font-weight: 600;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 /* ==========================================================================
-   14. REVIEWS
+   12. DESKTOP - REVIEWS
    ========================================================================== */
 #reviewsListContainer {
   max-height: 500px;
@@ -562,15 +501,12 @@ body {
 }
 
 /* ==========================================================================
-   15. MODALS & POPUPS
+   13. DESKTOP - POPUPS & MODALS
    ========================================================================== */
 .services-popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
+  inset: 0;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -578,76 +514,136 @@ body {
 
 .services-popup-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
 }
 
 .services-popup-container {
   position: relative;
   width: 90%;
-  max-width: 500px;
-  background-color: var(--dark-800);
-  border-radius: 20px;
-  border: 1px solid var(--dark-700);
+  max-width: 480px;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
   z-index: 1;
+  overflow: hidden;
 }
 
 .services-popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 20px;
-  background-color: var(--primary);
-  color: var(--dark-900);
-  border-radius: 20px 20px 0 0;
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
+  color: #fff;
+}
+
+.services-popup-header h3 {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.close-popup-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.close-popup-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .services-popup-content {
-  padding: 20px;
-  max-height: 400px;
+  padding: var(--space-lg);
+  max-height: 350px;
   overflow-y: auto;
 }
 
 .services-popup-footer {
   display: flex;
-  gap: 12px;
-  padding: 16px 20px;
-  border-top: 1px solid var(--dark-700);
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-color);
 }
 
 .service-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
-  margin-bottom: 10px;
-  background-color: var(--dark-700);
-  border-radius: 12px;
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
   cursor: pointer;
   border: 2px solid transparent;
   transition: var(--transition);
 }
 
 .service-option.selected {
-  border-color: var(--primary);
+  border-color: #FF6B35;
+}
+
+.service-option:hover {
+  background: var(--border-color);
+}
+
+.service-option-info {
+  flex: 1;
+}
+
+.service-option-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.service-option-price {
+  font-size: 13px;
+  color: #FFA630;
+}
+
+.service-option-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.service-option.selected .service-option-check {
+  background: #FF6B35;
+  border-color: #FF6B35;
+}
+
+.service-option.selected .service-option-check::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
 }
 
 /* ==========================================================================
-   16. UTILITIES
+   14. LOADING SPINNER
    ========================================================================== */
-.hidden {
-  display: none !important;
-}
-
-/* Loading Spinner */
 .spinner {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -657,191 +653,367 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background-color: var(--dark-800);
-  border: 1px solid var(--dark-700);
-  color: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: var(--radius-md);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: 360px;
-  animation: slideIn 0.3s ease;
+/* ==========================================================================
+   15. UTILITY CLASSES
+   ========================================================================== */
+.hidden {
+  display: none !important;
 }
 
-.toast-success { border-left: 4px solid #10b981; }
-.toast-error { border-left: 4px solid #ef4444; }
-
-@keyframes slideIn {
-  from { transform: translateY(1rem); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--text-muted); }
 
 /* ==========================================================================
-   17. intl-tel-input OVERRIDES
+   16. THIRD-PARTY OVERRIDES (intl-tel-input, flatpickr)
    ========================================================================== */
-.iti__selected-flag {
-  background-color: var(--primary) !important;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important;
-  color: #333;
-}
-
 .iti__country-list {
-  background-color: var(--dark-800) !important;
-  border: 1px solid var(--dark-700) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
 }
 
 .iti__country {
-  color: #fff !important;
+  color: var(--text-primary) !important;
 }
 
 .iti__country:hover {
-  background-color: var(--dark-700) !important;
+  background: var(--bg-input) !important;
 }
 
-input[readonly] {
-  background-color: var(--dark-800) !important;
-  color: var(--gray-400) !important;
-  cursor: not-allowed !important;
+.flatpickr-calendar {
+  background: var(--bg-card) !important;
+  border-color: var(--border-light) !important;
+}
+
+.flatpickr-day {
+  color: var(--text-primary) !important;
+}
+
+.flatpickr-day.selected {
+  background: var(--primary) !important;
+  color: #000 !important;
+  border-color: var(--primary) !important;
+}
+
+.flatpickr-day.today {
+  border-color: var(--primary) !important;
 }
 
 /* ==========================================================================
-   18. RESPONSIVE - TABLET
+   ==========================================================================
+   MOBILE LAYOUT - APP-LIKE EXPERIENCE (Max 768px)
+   ==========================================================================
    ========================================================================== */
-@media (max-width: 992px) {
-  .tour-booking-container {
-    flex-direction: column;
-    gap: 2.5rem;
-  }
+@media (max-width: 768px) {
   
-  .booking-form-container {
-    flex: 1 1 auto;
+  /* Reset body for app-like feel */
+  body {
+    background: var(--bg-dark);
+    padding-bottom: 70px; /* Space for bottom navigation */
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+
+  /* ==========================================================================
+     17. MOBILE - MAIN CONTAINER
+     ========================================================================== */
+  .tour-booking-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .tour-details {
     width: 100%;
-    position: static;
-  }
-}
-
-/* ==========================================================================
-   19. RESPONSIVE - MOBILE
-   ========================================================================== */
-@media (max-width: 640px) {
-  .container {
-    padding: 0 1rem;
+    padding: 0 0 var(--space-md) 0;
   }
 
-  /* Swiper */
-  .swiper {
-    height: 280px;
+  /* Booking form becomes a card at bottom */
+  .booking-form-container {
+    flex: none;
+    width: 100%;
+    position: relative;
+    top: auto;
+    max-height: none;
+    overflow-y: visible;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: var(--space-lg) var(--space-md);
+    margin: 0;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    background: var(--bg-card);
+  }
+
+  /* ==========================================================================
+     18. MOBILE - SWIPER (Full Width)
+     ========================================================================== */
+  .tour-gallery {
     border-radius: 0;
-    margin-left: -16px;
-    margin-right: -16px;
-    width: calc(100% + 32px);
+    margin: 0;
+    background: transparent;
   }
 
+  .swiper {
+    height: 300px;
+    border-radius: 0;
+  }
+
+  /* Always visible navigation */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 36px;
-    height: 36px;
-    background-color: rgba(15, 23, 42, 0.7);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 1;
   }
 
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
     font-size: 16px;
   }
 
   .swiper-button-next {
-    right: 8px;
+    right: 12px;
   }
 
   .swiper-button-prev {
-    left: 8px;
+    left: 12px;
   }
 
+  /* Floating pagination pill */
   .swiper-pagination {
-    bottom: 15px !important;
-    left: auto !important;
-    right: 15px !important;
+    bottom: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
     width: auto !important;
-    background-color: rgba(15, 23, 42, 0.5);
-    padding: 6px 14px;
-    border-radius: 20px;
-    display: inline-flex;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
     gap: 6px;
   }
 
   .swiper-pagination-bullet {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     margin: 0 2px !important;
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .swiper-pagination-bullet-active {
     width: 20px;
-    border-radius: 10px;
+    border-radius: 3px;
+    background: var(--primary);
   }
 
-  /* Thumbnails */
-  .thumbnail {
-    width: 56px;
+  /* Thumbnails below swiper */
+  .thumbnail-gallery {
+    padding: var(--space-md);
+    background: transparent;
+    gap: var(--space-sm);
+  }
+
+  .thumbnail-gallery img {
+    width: 64px;
     height: 48px;
+    border-radius: var(--radius-sm);
   }
 
-  /* Tour overlay */
-  .tour-title-overlay {
-    padding: 2rem 1rem 1rem;
+  /* ==========================================================================
+     19. MOBILE - TOUR INFO SECTION
+     ========================================================================== */
+  .tour-details > div {
+    padding: 0 var(--space-md);
   }
 
-  .tour-title-overlay h1 {
-    font-size: 1.4rem;
+  .rating-container {
+    margin: var(--space-sm) 0;
   }
 
-  .price-tag {
-    top: 1rem;
-    right: 1rem;
-    font-size: 1rem;
-    padding: 6px 14px;
-  }
-
-  /* Timeline */
+  /* ==========================================================================
+     20. MOBILE - TIMELINE
+     ========================================================================== */
   .timeline-item {
-    padding-left: 2rem;
-  }
-
-  .timeline-header-block {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    gap: var(--space-xs);
+    padding: var(--space-md);
   }
 
-  /* Grids */
+  .timeline-time {
+    min-width: auto;
+  }
+
+  /* ==========================================================================
+     21. MOBILE - INCLUDED/EXCLUDED
+     ========================================================================== */
   .included-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-sm);
   }
 
-  /* Summary */
+  /* ==========================================================================
+     22. MOBILE - NUMBER STEPPER
+     ========================================================================== */
+  .number-container {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .number-box {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+  }
+
+  .number-box label {
+    margin-bottom: 0;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  /* ==========================================================================
+     23. MOBILE - FORM ELEMENTS
+     ========================================================================== */
+  .form-group {
+    margin-bottom: var(--space-md);
+  }
+
+  .form-control {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevent iOS zoom on focus */
+  }
+
+  /* ==========================================================================
+     24. MOBILE - SUMMARY
+     ========================================================================== */
   .summary-item {
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    padding: var(--space-sm) 0;
   }
 
   .summary-value {
     text-align: left;
   }
 
-  /* Toast */
-  .toast {
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
+  /* ==========================================================================
+     25. MOBILE - BUTTONS
+     ========================================================================== */
+  .btn {
+    padding: 16px 24px;
+    font-size: 15px;
+  }
+
+  /* ==========================================================================
+     26. MOBILE - REVIEWS
+     ========================================================================== */
+  #reviewsListContainer {
+    max-height: 350px;
+  }
+
+  /* ==========================================================================
+     27. MOBILE - POPUPS
+     ========================================================================== */
+  .services-popup-container {
+    width: 95%;
     max-width: none;
+    margin: var(--space-md);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .services-popup-content {
+    max-height: none;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .services-popup-footer {
+    padding: var(--space-md);
+  }
+
+  .services-popup-footer button {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  /* ==========================================================================
+     28. MOBILE - BOTTOM SHEET MODAL
+     ========================================================================== */
+  #reviewModal > div {
+    margin: 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+}
+
+/* ==========================================================================
+   29. TABLET BREAKPOINT (769px - 1024px)
+   ========================================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tour-booking-container {
+    flex-direction: column;
+    padding: var(--space-md);
+  }
+
+  .booking-form-container {
+    position: static;
+    max-height: none;
+    flex: none;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .swiper {
+    height: 380px;
+  }
+
+  .included-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   30. LARGE DESKTOP OPTIMIZATION
+   ========================================================================== */
+@media (min-width: 1400px) {
+  .tour-booking-container {
+    padding: var(--space-xl);
+    gap: var(--space-2xl);
+  }
+
+  .swiper {
+    height: 520px;
+  }
+}
+
+/* ==========================================================================
+   31. PRINT STYLES
+   ========================================================================== */
+@media print {
+  .booking-form-container,
+  .swiper-button-next,
+  .swiper-button-prev,
+  .swiper-pagination,
+  .thumbnail-gallery {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
   }
 }
