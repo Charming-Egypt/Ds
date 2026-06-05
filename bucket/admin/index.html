@@ -1604,11 +1604,7 @@ if (wa) {
         // ✅ بناء قسم الدفع ديناميكياً
         let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
                              `*💵 Price:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n` +
-                             `*🪙 Taxes:* ${b.taxes || '0.00'}\n`;
-                             
-        if (b.extraServices) {
-            paymentSection += `*✨ Extras:* ${b.extraServicesTotal}\n`;
-        }
+                             `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
         
         paymentSection += `-------------------------\n` +
                           `*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}\n`;
@@ -1648,7 +1644,10 @@ ${paymentSection}
 *📝 Special Requests*
 ━━━━━━━━━━━━━━━━━━
 ${b.specialRequests ? b.specialRequests : 'None'}
-
+if (b.extraServices) {
+            paymentSection += `*✨ Extras:* ${b.extraServices}\n`;
+        }
+        
 *🎫 View Your Voucher & Ticket*
 ━━━━━━━━━━━━━━━━━━
 🔗 ${voucherUrl}
