@@ -1,111 +1,90 @@
 /* ==========================================================================
-   DISCOVER SHARM - Tour Booking Stylesheet
+   ✦ DISCOVER SHARM ✦
+   Premium Tour Booking Experience
    All styles scoped within .tour-booking-container
-   Desktop & Mobile Creative Design
    ========================================================================== */
 
 /* ==========================================================================
-   1. CSS VARIABLES (Scoped to container)
+   1. VARIABLES & CORE SETUP (Scoped)
    ========================================================================== */
 .tour-booking-container {
-  /* Brand Colors */
-  --gold: #f59e0b;
-  --gold-dark: #d97706;
-  --gold-light: #fbbf24;
-  --gold-glow: rgba(245, 158, 11, 0.2);
-  --sunset-start: #FF6B35;
-  --sunset-end: #FFA630;
+  /* Colors */
+  --accent-color: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-glow: rgba(245, 158, 11, 0.25);
   
-  /* Backgrounds */
-  --bg-deep: #0a0e1a;
-  --bg-dark: #0f172a;
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
   --bg-card: #1a1f35;
-  --bg-card-alt: #1e293b;
   --bg-input: #1a1f2e;
   --bg-glass: rgba(255, 255, 255, 0.03);
   
-  /* Text */
-  --text-bright: #ffffff;
-  --text-soft: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.1);
-  --border-gold: rgba(245, 158, 11, 0.3);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-light: rgba(255, 255, 255, 0.1);
   
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
+  --sunset-start: #FF6B35;
+  --sunset-end: #FFA630;
   
-  /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-full: 9999px;
-  
-  /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 24px rgba(245, 158, 11, 0.15);
-  
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-smooth: 300ms ease;
-  
-  /* Z-Index */
-  --z-base: 1;
-  --z-sticky: 100;
-  --z-overlay: 200;
-  --z-modal: 300;
-  
-  /* Container Setup */
+  /* Layout */
   display: flex;
   gap: 24px;
   padding: 16px;
   max-width: 1400px;
   margin: 0 auto;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color: var(--text-bright);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
 /* ==========================================================================
-   2. LEFT COLUMN - TOUR DETAILS
+   2. MAIN COLUMNS
    ========================================================================== */
 .tour-details {
   flex: 1;
   min-width: 0;
 }
 
+.booking-form-container {
+  flex: 0 0 380px;
+  background: var(--bg-secondary);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  position: sticky;
+  top: 16px;
+  height: fit-content;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
 /* ==========================================================================
-   3. SWIPER GALLERY - Cinematic Design
+   3. 🎬 MEGA CINEMATIC SWIPER - The Masterpiece
    ========================================================================== */
 .tour-gallery {
-  background: var(--bg-card);
+  background: #000;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
 
 .swiper {
   width: 100%;
-  height: 450px;
-  border-radius: 8px;
+  height: 500px;
   overflow: hidden;
   position: relative;
 }
 
+/* Slide Ken Burns Effect */
 .swiper-slide {
   position: relative;
+  overflow: hidden;
 }
 
 .swiper-slide img,
@@ -113,32 +92,58 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 6s ease;
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.swiper-slide-active img {
-  transform: scale(1.04);
+.swiper-slide-active img,
+.swiper-slide-active iframe {
+  transform: scale(1.12);
 }
 
+/* Multi-layer Gradient Overlays */
 .swiper-slide::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10, 14, 26, 0.4) 0%, transparent 40%);
+  background: 
+    linear-gradient(180deg, 
+      rgba(10, 14, 26, 0.6) 0%, 
+      transparent 25%,
+      transparent 55%,
+      rgba(10, 14, 26, 0.9) 100%
+    );
   pointer-events: none;
+  z-index: 2;
 }
 
-/* Navigation Arrows - Glass Design */
+.swiper-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(10, 14, 26, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ==========================================================================
+   4. NAVIGATION ARROWS - Glass Art
+   ========================================================================== */
 .swiper-button-next,
 .swiper-button-prev {
-  color: #fff;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: var(--transition-smooth);
+  color: #fff;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
   opacity: 0;
 }
 
@@ -149,46 +154,87 @@
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  background: var(--gold);
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  border-color: transparent;
+  box-shadow: 
+    0 0 40px rgba(255, 107, 53, 0.5),
+    0 0 80px rgba(255, 166, 48, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
   color: #000;
-  border-color: var(--gold);
-  box-shadow: var(--shadow-glow);
 }
 
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
 }
 
-/* Pagination - Animated Dots */
-.swiper-pagination {
-  bottom: 20px !important;
+/* Ring pulse on hover */
+.swiper-button-next:hover::before,
+.swiper-button-prev:hover::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 166, 48, 0.4);
+  animation: ringPulse 1.5s infinite;
 }
 
-.swiper-pagination-bullet {
-  width: 10px;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.4);
-  opacity: 1;
-  margin: 0 5px !important;
-  transition: var(--transition-smooth);
-}
-
-.swiper-pagination-bullet-active {
-  background: var(--gold) !important;
-  width: 28px;
-  border-radius: 5px;
+@keyframes ringPulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
 /* ==========================================================================
-   4. THUMBNAIL STRIP
+   5. PAGINATION - Floating Animated Pills
+   ========================================================================== */
+.swiper-pagination {
+  bottom: 28px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  width: auto !important;
+  background: rgba(10, 14, 26, 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 24px;
+  border-radius: 30px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+  margin: 0 3px !important;
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--accent-color) !important;
+  width: 32px;
+  border-radius: 4px;
+  box-shadow: 
+    0 0 12px var(--accent-glow),
+    0 0 24px rgba(245, 158, 11, 0.3);
+}
+
+/* ==========================================================================
+   6. THUMBNAIL GALLERY - Interactive Filmstrip
    ========================================================================== */
 .thumbnail-gallery {
   display: flex;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 14px 16px;
+  background: var(--bg-primary);
   overflow-x: auto;
+  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 
@@ -197,91 +243,58 @@
 }
 
 .thumbnail-gallery img {
-  width: 72px;
-  height: 54px;
+  width: 85px;
+  height: 56px;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   cursor: pointer;
   border: 2px solid transparent;
-  opacity: 0.5;
-  transition: var(--transition-smooth);
+  opacity: 0.45;
+  filter: grayscale(20%) brightness(0.7);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
 }
 
 .thumbnail-gallery img:hover {
   opacity: 0.8;
+  filter: grayscale(0%) brightness(0.9);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .thumbnail-gallery img.active {
   opacity: 1;
-  border-color: var(--gold);
+  filter: grayscale(0%) brightness(1.1);
+  border-color: var(--accent-color);
+  box-shadow: 
+    0 4px 16px var(--accent-glow),
+    0 0 0 2px rgba(245, 158, 11, 0.2);
+  transform: translateY(-4px) scale(1.05);
 }
 
 /* ==========================================================================
-   5. TOUR HEADER & INFO
+   7. TOUR TITLE & RATING
    ========================================================================== */
-.tour-details h1 {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 700;
-  margin-bottom: 5px;
-  color: var(--text-bright);
-}
-
 .rating-container {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  margin: 12px 0;
 }
 
-.tour-details .notranslate#tourPrice {
-  color: var(--gold);
-  font-size: clamp(28px, 4vw, 36px);
-  font-weight: 700;
-  margin: 10px 0;
-}
-
-.per-person {
-  color: var(--text-muted);
+.rating-container i.text-yellow-500 {
   font-size: 14px;
+  filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.5));
 }
 
 /* ==========================================================================
-   6. SECTION DIVIDERS
-   ========================================================================== */
-.section-divider {
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 20px 0;
-}
-
-.section-spacing {
-  padding: 20px 0;
-}
-
-.section-divider h2,
-.section-spacing h2 {
-  display: flex;
-  align-items: center;
-  font-size: clamp(18px, 2vw, 22px);
-  font-weight: 600;
-  gap: 10px;
-  margin-bottom: 15px;
-  color: var(--text-bright);
-}
-
-.section-divider h2 i,
-.section-spacing h2 i {
-  color: var(--gold);
-}
-
-/* ==========================================================================
-   7. INCLUDED / EXCLUDED GRID
+   8. INCLUDED / EXCLUDED GRID
    ========================================================================== */
 .included-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
-  margin-bottom: 20px;
 }
 
 .included-item {
@@ -290,31 +303,30 @@
   gap: 10px;
   padding: 10px 14px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 14px;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .included-item:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: var(--border-medium);
+  border-color: var(--border-light);
 }
 
 .included-item i {
-  color: var(--gold);
+  color: var(--accent-color);
   width: 20px;
   font-size: 16px;
 }
 
 /* ==========================================================================
-   8. TIMELINE - Modern Design
+   9. TIMELINE
    ========================================================================== */
 .timeline-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  position: relative;
 }
 
 .timeline-item {
@@ -322,38 +334,38 @@
   gap: 16px;
   padding: 16px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  border-left: 3px solid var(--gold);
-  transition: var(--transition-smooth);
+  border-left: 3px solid var(--accent-color);
+  transition: all 0.2s ease;
 }
 
 .timeline-item:hover {
-  border-left-color: var(--gold-light);
+  border-left-color: var(--accent-hover);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .timeline-time {
   min-width: 100px;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--accent-color);
   font-size: 14px;
 }
 
 .timeline-content h4 {
   font-weight: 600;
   margin-bottom: 6px;
-  color: var(--text-bright);
+  color: var(--text-primary);
 }
 
 .timeline-content p {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 /* ==========================================================================
-   9. WHAT TO BRING - Tag Cloud
+   10. WHAT TO BRING
    ========================================================================== */
 .what-to-bring-list {
   display: flex;
@@ -368,90 +380,42 @@
   gap: 8px;
   padding: 8px 16px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   border-radius: 30px;
   font-size: 13px;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .what-to-bring-list li:hover {
-  border-color: var(--gold);
+  border-color: var(--accent-color);
   background: rgba(245, 158, 11, 0.08);
 }
 
 .what-to-bring-list li i {
-  color: var(--gold);
-}
-
-/* ==========================================================================
-   10. RIGHT COLUMN - BOOKING FORM
-   ========================================================================== */
-.booking-form-container {
-  flex: 0 0 380px;
-  background: var(--bg-card-alt);
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid var(--border-subtle);
-  position: sticky;
-  top: 16px;
-  height: fit-content;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  box-shadow: var(--shadow-md);
-}
-
-.booking-form-container > h2 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 20px;
-}
-
-.booking-form-container > h2 i {
-  font-size: 20px;
+  color: var(--accent-color);
 }
 
 /* ==========================================================================
    11. PROGRESS BAR
    ========================================================================== */
-.progress-wrapper {
+.booking-form-container .mb-6 {
   margin-bottom: 24px;
 }
 
-.progress-track {
+.booking-form-container .w-full.h-2 {
   width: 100%;
-  height: 8px;
-  background: var(--border-subtle);
-  border-radius: var(--radius-full);
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 9999px;
   overflow: hidden;
 }
 
-.progress-fill {
+#progressBar {
   height: 100%;
-  background: var(--gold);
-  border-radius: var(--radius-full);
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.progress-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.progress-labels span {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-dim);
-  transition: var(--transition-fast);
-}
-
-.progress-labels span[data-active="true"] {
-  color: var(--gold);
+  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end));
+  border-radius: 9999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* ==========================================================================
@@ -459,17 +423,17 @@
    ========================================================================== */
 .form-step {
   display: none;
-  animation: fadeSlideIn 0.35s ease-out;
+  animation: fadeSlideUp 0.35s ease-out;
 }
 
 .form-step.active {
   display: block;
 }
 
-@keyframes fadeSlideIn {
+@keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -478,57 +442,35 @@
 }
 
 /* ==========================================================================
-   13. FORM ELEMENTS
+   13. FORM CONTROLS
    ========================================================================== */
 .form-group {
   margin-bottom: 18px;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-soft);
-  margin-bottom: 8px;
-}
-
-.form-group label i {
-  color: var(--gold);
-  font-size: 14px;
 }
 
 .form-control {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg-input);
-  border: 1px solid var(--border-medium);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
-  color: var(--text-bright);
+  color: var(--text-primary);
   font-size: 14px;
-  transition: var(--transition-smooth);
+  transition: all 0.25s ease;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .form-control::placeholder {
-  color: var(--text-dim);
+  color: var(--text-muted);
 }
 
 select.form-control {
   cursor: pointer;
-}
-
-.error-msg {
-  color: #ef4444;
-  font-size: 11px;
-  margin-top: 6px;
-  font-weight: 500;
 }
 
 /* ==========================================================================
@@ -546,7 +488,7 @@ select.form-control {
   min-width: 100px;
   text-align: center;
   background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   padding: 15px;
   border-radius: 16px;
 }
@@ -556,7 +498,7 @@ select.form-control {
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 12px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .button-container {
@@ -570,22 +512,27 @@ select.form-control {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--bg-card-alt);
-  border: 1px solid var(--border-medium);
-  color: var(--gold);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  color: var(--accent-color);
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .bb:hover {
-  background: var(--gold);
+  background: var(--accent-color);
   color: #000;
-  border-color: var(--gold);
+  border-color: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.bb:active {
+  transform: scale(0.95);
 }
 
 .button-container input {
@@ -595,26 +542,25 @@ select.form-control {
   border: none;
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-bright);
+  color: var(--text-primary);
 }
 
 /* ==========================================================================
    15. BUTTONS
    ========================================================================== */
 .btn {
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-radius: 40px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.3s ease;
   border: none;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  flex: 1;
 }
 
 .btn-primary {
@@ -625,22 +571,21 @@ select.form-control {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(255, 107, 53, 0.35);
+  box-shadow: 0 8px 28px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
   background: transparent;
-  border: 1px solid var(--border-medium);
-  color: var(--text-bright);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
 }
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.05);
-}
-
-.btn-row {
-  display: flex;
-  gap: 12px;
 }
 
 /* ==========================================================================
@@ -648,125 +593,64 @@ select.form-control {
    ========================================================================== */
 .summary-section {
   background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 16px;
 }
 
 .summary-section h3 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-size: 16px;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--accent-color);
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
   font-size: 13px;
 }
 
-.summary-item:not(:last-child) {
-  border-bottom: 1px solid var(--border-subtle);
+.summary-item:last-child {
+  border-bottom: none;
 }
 
 .summary-label {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .summary-value {
   font-weight: 500;
-  color: var(--text-bright);
+  color: var(--text-primary);
   word-break: break-word;
   text-align: right;
-}
-
-.total-box {
-  text-align: center;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 166, 48, 0.08));
-  border: 1px solid var(--border-gold);
-}
-
-.total-box .text-2xl {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-top: 8px;
 }
 
 /* ==========================================================================
    17. REVIEWS SECTION
    ========================================================================== */
-.reviews-wrapper {
-  margin-top: 48px;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 32px;
-}
-
-.reviews-top {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  gap: 16px;
-}
-
-.reviews-top h3 {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-bright);
-}
-
-.reviews-top button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-}
-
-.reviews-top button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-
-.reviews-scroll {
+#reviewsListContainer {
   max-height: 500px;
   overflow-y: auto;
-  padding-right: 8px;
 }
 
-.reviews-scroll::-webkit-scrollbar {
+#reviewsListContainer::-webkit-scrollbar {
   width: 4px;
 }
 
-.reviews-scroll::-webkit-scrollbar-thumb {
-  background: var(--gold);
+#reviewsListContainer::-webkit-scrollbar-track {
+  background: var(--border-color);
   border-radius: 10px;
 }
 
-.empty-reviews {
-  text-align: center;
-  padding: 40px 0;
-  color: var(--text-muted);
+#reviewsListContainer::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
 }
 
 /* ==========================================================================
@@ -792,18 +676,18 @@ select.form-control {
   position: relative;
   width: 90%;
   max-width: 480px;
-  background: var(--bg-card-alt);
-  border: 1px solid var(--border-medium);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
   z-index: 10001;
   overflow: hidden;
-  animation: popupSlideIn 0.3s ease;
+  animation: popupBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes popupSlideIn {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes popupBounce {
+  from { opacity: 0; transform: translateY(-40px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .services-popup-header {
@@ -835,7 +719,7 @@ select.form-control {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .close-popup-btn:hover {
@@ -852,7 +736,7 @@ select.form-control {
   display: flex;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-color);
 }
 
 .services-popup-footer .btn {
@@ -870,7 +754,7 @@ select.form-control {
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.25s ease;
 }
 
 .service-option:hover {
@@ -879,7 +763,7 @@ select.form-control {
 }
 
 .service-option.selected {
-  border-color: var(--sunset-start);
+  border-color: #FF6B35;
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 166, 48, 0.1));
 }
 
@@ -891,29 +775,29 @@ select.form-control {
   font-weight: 600;
   font-size: 15px;
   margin-bottom: 4px;
-  color: var(--text-bright);
+  color: var(--text-primary);
 }
 
 .service-option-price {
   font-size: 13px;
-  color: var(--gold-light);
+  color: #FFA630;
 }
 
 .service-option-check {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: transparent;
-  border: 2px solid var(--border-medium);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .service-option.selected .service-option-check {
-  background: var(--sunset-start);
-  border-color: var(--sunset-start);
+  background: #FF6B35;
+  border-color: #FF6B35;
 }
 
 .service-option.selected .service-option-check::after {
@@ -923,24 +807,13 @@ select.form-control {
 }
 
 /* ==========================================================================
-   19. SPINNER OVERLAY
+   19. SPINNER
    ========================================================================== */
-.spinner-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal);
-}
-
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--gold);
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--accent-color);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -953,12 +826,13 @@ select.form-control {
    20. THIRD-PARTY OVERRIDES
    ========================================================================== */
 .iti__country-list {
-  background: var(--bg-card-alt) !important;
-  border: 1px solid var(--border-medium) !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 12px !important;
 }
 
 .iti__country {
-  color: var(--text-bright) !important;
+  color: var(--text-primary) !important;
 }
 
 .iti__country:hover {
@@ -966,27 +840,33 @@ select.form-control {
 }
 
 .flatpickr-calendar {
-  background: var(--bg-card-alt) !important;
-  border: 1px solid var(--border-medium) !important;
-  box-shadow: var(--shadow-lg) !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-light) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 16px !important;
 }
 
 .flatpickr-day {
-  color: var(--text-bright) !important;
+  color: var(--text-primary) !important;
 }
 
 .flatpickr-day.selected {
-  background: var(--gold) !important;
-  border-color: var(--gold) !important;
+  background: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
   color: #000 !important;
 }
 
 .flatpickr-day.today {
-  border-color: var(--gold) !important;
+  border-color: var(--accent-color) !important;
 }
 
 .flatpickr-day:hover {
   background: var(--bg-glass) !important;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-weekdays {
+  color: var(--text-primary) !important;
 }
 
 /* ==========================================================================
@@ -1009,7 +889,7 @@ select.form-control {
   }
   
   .swiper {
-    height: 380px;
+    height: 400px;
   }
 }
 
@@ -1022,66 +902,66 @@ select.form-control {
     gap: 0;
   }
   
-  /* Swiper Full Width */
+  /* Full Width Swiper */
   .tour-gallery {
     border-radius: 0;
     margin-bottom: 0;
   }
   
   .swiper {
-    height: 280px;
+    height: 300px;
     border-radius: 0;
   }
   
+  /* Mobile Navigation - Always Visible */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     opacity: 1;
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
   }
   
   .swiper-button-next::after,
   .swiper-button-prev::after {
-    font-size: 15px;
+    font-size: 16px;
   }
   
+  .swiper-button-next {
+    right: 10px;
+  }
+  
+  .swiper-button-prev {
+    left: 10px;
+  }
+  
+  /* Mobile Pagination */
   .swiper-pagination {
-    bottom: 14px !important;
-    left: 50% !important;
-    transform: translateX(-50%);
-    width: auto !important;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(10px);
-    padding: 6px 18px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    bottom: 20px !important;
+    background: rgba(10, 14, 26, 0.7) !important;
+    backdrop-filter: blur(16px);
+    padding: 6px 20px;
   }
   
   .swiper-pagination-bullet {
-    width: 7px;
-    height: 7px;
-    margin: 0 2px !important;
+    width: 6px;
+    height: 6px;
   }
   
   .swiper-pagination-bullet-active {
-    width: 22px;
-    border-radius: 4px;
+    width: 24px;
   }
   
-  /* Thumbnails */
+  /* Mobile Thumbnails */
   .thumbnail-gallery {
     padding: 10px 12px;
-    gap: 8px;
-    background: var(--bg-dark);
+    background: var(--bg-primary);
   }
   
   .thumbnail-gallery img {
-    width: 56px;
-    height: 42px;
-    border-radius: 6px;
+    width: 60px;
+    height: 44px;
   }
   
   /* Content Padding */
@@ -1090,13 +970,13 @@ select.form-control {
     padding-right: 16px;
   }
   
-  /* Form Card */
+  /* Form Card - Bottom Sheet Style */
   .booking-form-container {
     border-radius: 24px 24px 0 0;
     margin-top: -16px;
     position: relative;
-    z-index: var(--z-sticky);
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
     padding: 20px 16px;
   }
   
@@ -1110,7 +990,7 @@ select.form-control {
     min-width: auto;
   }
   
-  /* Grids Mobile */
+  /* Grids */
   .included-grid {
     grid-template-columns: 1fr;
   }
@@ -1128,6 +1008,10 @@ select.form-control {
     justify-content: space-between;
   }
   
+  .number-box label {
+    margin-bottom: 0;
+  }
+  
   /* Summary */
   .summary-item {
     flex-direction: column;
@@ -1136,6 +1020,11 @@ select.form-control {
   
   .summary-value {
     text-align: left;
+  }
+  
+  /* Reviews */
+  #reviewsListContainer {
+    max-height: 350px;
   }
   
   /* Popup */
@@ -1150,10 +1039,6 @@ select.form-control {
     flex: 1;
     overflow-y: auto;
     max-height: none;
-  }
-  
-  .reviews-scroll {
-    max-height: 350px;
   }
 }
 
