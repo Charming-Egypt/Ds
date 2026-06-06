@@ -1130,12 +1130,12 @@ select.form-control option,
   /* Floating Book Now Button */
   .mobile-book-now-btn {
     position: fixed;
-    bottom: 15px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #FF6B35, #FFA630);
     color: #fff;
-    padding: 32px;
+    padding: 14px;
     border-radius: 100%;
     display: flex;
     align-items: center;
