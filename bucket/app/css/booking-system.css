@@ -810,7 +810,7 @@ textarea.input-field {
 
 /* Phone input */
 .iti input[type="tel"] {
-  padding-left: 95px !important;
+  padding-righ: 95px !important;
   height: 48px !important;
   width: 100% !important;
   background: #1a1a1a !important;
