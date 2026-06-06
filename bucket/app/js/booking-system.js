@@ -1,7 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Clean Production Version
-// Inline validation errors + Auto-hiding toasts
+// Complete Production Version
 // ==========================================================================
 
 (function() {
@@ -37,12 +36,13 @@
     return r;
   }
 
-  // Toast - guaranteed to auto-hide
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
   function toast(msg, type) {
-    // Clear any existing timer
     if (toastTimer) clearTimeout(toastTimer);
     
-    // Remove existing toast
     const old = document.querySelector('.bs-toast');
     if (old) old.remove();
     
@@ -52,16 +52,13 @@
     t.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
     document.body.appendChild(t);
     
-    // Auto remove after 3 seconds
     toastTimer = setTimeout(function() {
       t.style.opacity = '0';
       setTimeout(function() { if (t.parentNode) t.remove(); }, 300);
     }, 3000);
   }
 
-  // Inline error under input
   function showFieldError(inputId, msg) {
-    // Remove existing error
     const existing = document.querySelector('.field-error[data-field="' + inputId + '"]');
     if (existing) existing.remove();
     
@@ -77,7 +74,6 @@
     input.style.borderColor = '#ef4444';
     input.parentNode.appendChild(error);
     
-    // Remove error when user types
     input.addEventListener('input', function() {
       input.style.borderColor = '';
       if (error.parentNode) error.remove();
@@ -314,6 +310,37 @@
   }
 
   // ==========================================================================
+  // COUNTRY LIST INSIDE BOOKING CARD (MOBILE)
+  // ==========================================================================
+  function setupCountryListMobile() {
+    if (!iti || !isMobile()) return;
+    
+    setTimeout(function() {
+      const countryList = document.querySelector('.iti__country-list');
+      const bookingCard = document.querySelector('.booking-card');
+      
+      if (countryList && bookingCard && countryList.parentElement !== bookingCard) {
+        bookingCard.appendChild(countryList);
+        bookingCard.classList.add('has-country-list');
+        
+        if (!countryList.querySelector('.iti__close-btn')) {
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'iti__close-btn';
+          closeBtn.innerHTML = '✕';
+          closeBtn.type = 'button';
+          closeBtn.onclick = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const flag = document.querySelector('.iti__selected-flag');
+            if (flag) flag.click();
+          };
+          countryList.appendChild(closeBtn);
+        }
+      }
+    }, 300);
+  }
+
+  // ==========================================================================
   // SUBMIT
   // ==========================================================================
   async function submitBooking() {
@@ -426,6 +453,7 @@
     const trip = getTrip();
     const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     
+    // Phone input
     const phoneEl = document.querySelector('#phone');
     if (phoneEl && window.intlTelInput) {
       iti = window.intlTelInput(phoneEl, {
@@ -435,141 +463,79 @@
         initialCountry: 'eg',
         nationalMode: false,
       });
+      
+      // Move country list inside booking card on mobile
+      setupCountryListMobile();
     }
     
+    // Date picker
     const dateEl = document.querySelector('#tripDate');
     if (dateEl && typeof flatpickr !== 'undefined') {
       flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
     }
     
+    // Bind navigation buttons
     document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
     document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
     document.querySelectorAll('[data-stepper]').forEach(function(b) {
       b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); };
     });
     
+    // Bind submit
     const sb = $('submitBtn'); if (sb) sb.onclick = submitBooking;
+    
+    // Bind services
     const sv = $('openServicesBtn'); if (sv) sv.onclick = openServicesPopup;
     const cb = $('confirmServicesBtn'); if (cb) cb.onclick = confirmService;
     const cl = $('cancelServicesBtn'); if (cl) cl.onclick = closeServicesPopup;
     
+    // Close popup buttons
     document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
     const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
     
+    // Escape key
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeServicesPopup(); });
     
+    // Auth state
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     
+    // Mobile country list reposition on resize
+    window.addEventListener('resize', function() {
+      setupCountryListMobile();
+    });
+    
+    // Initial summary
     setTimeout(updateSummary, 1500);
   }
 
+  // ==========================================================================
+  // PUBLIC API
+  // ==========================================================================
   window.BookingSystem = {
-    init, nextStep, prevStep, stepper,
-    openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService,
-    submit: submitBooking, updateSummary,
+    init: init,
+    nextStep: nextStep,
+    prevStep: prevStep,
+    stepper: stepper,
+    openServices: openServicesPopup,
+    closeServices: closeServicesPopup,
+    confirmService: confirmService,
+    submit: submitBooking,
+    updateSummary: updateSummary,
     getRef: function() { return refNumber; },
     getPhone: function() { return iti ? iti.getNumber() : ''; }
   };
 
+  // ==========================================================================
+  // AUTO START
+  // ==========================================================================
   function tryInit() {
-    if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; }
+    if (typeof auth === 'undefined' || typeof db === 'undefined') {
+      setTimeout(tryInit, 500);
+      return;
+    }
     init();
   }
+  
   setTimeout(tryInit, 800);
 
 })();
-
-
-// Add close button to country list on mobile
-if (iti) {
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-        const countryList = document.querySelector('.iti__country-list');
-        if (countryList && window.innerWidth <= 768) {
-          // Add close button if not already added
-          if (!countryList.querySelector('.iti__close-btn')) {
-            const closeBtn = document.createElement('button');
-            closeBtn.className = 'iti__close-btn';
-            closeBtn.innerHTML = '✕';
-            closeBtn.onclick = function(e) {
-              e.stopPropagation();
-              // Close the dropdown
-              const flag = document.querySelector('.iti__selected-flag');
-              if (flag) flag.click();
-            };
-            countryList.appendChild(closeBtn);
-          }
-        }
-      }
-    });
-  });
-  
-  const countryList = document.querySelector('.iti__country-list');
-  if (countryList) {
-    observer.observe(countryList, { attributes: true });
-  }
-}
-// ==========================================================================
-// MOVE COUNTRY LIST INSIDE BOOKING CARD ON MOBILE
-// ==========================================================================
-if (iti && window.innerWidth <= 768) {
-  // Wait for country list to be created
-  setTimeout(function() {
-    const countryList = document.querySelector('.iti__country-list');
-    const bookingCard = document.querySelector('.booking-card');
-    
-    if (countryList && bookingCard) {
-      // Move country list inside booking card
-      bookingCard.appendChild(countryList);
-      
-      // Add close button
-      if (!countryList.querySelector('.iti__close-btn')) {
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'iti__close-btn';
-        closeBtn.innerHTML = '✕';
-        closeBtn.type = 'button';
-        closeBtn.onclick = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-          // Close dropdown by clicking flag
-          const flag = document.querySelector('.iti__selected-flag');
-          if (flag) flag.click();
-        };
-        countryList.appendChild(closeBtn);
-      }
-      
-      // Add class to booking card for CSS
-      bookingCard.classList.add('has-country-list');
-    }
-  }, 500);
-}
-
-// Re-check on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth <= 768) {
-    setTimeout(function() {
-      const countryList = document.querySelector('.iti__country-list');
-      const bookingCard = document.querySelector('.booking-card');
-      
-      if (countryList && bookingCard && countryList.parentElement !== bookingCard) {
-        bookingCard.appendChild(countryList);
-        bookingCard.classList.add('has-country-list');
-        
-        if (!countryList.querySelector('.iti__close-btn')) {
-          const closeBtn = document.createElement('button');
-          closeBtn.className = 'iti__close-btn';
-          closeBtn.innerHTML = '✕';
-          closeBtn.type = 'button';
-          closeBtn.onclick = function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            const flag = document.querySelector('.iti__selected-flag');
-            if (flag) flag.click();
-          };
-          countryList.appendChild(closeBtn);
-        }
-      }
-    }, 300);
-  }
-});
