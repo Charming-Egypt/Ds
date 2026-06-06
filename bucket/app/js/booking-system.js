@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Single Booking Card - Desktop & Mobile
+// Production Ready - Clean Version
 // ==========================================================================
 
 (function() {
@@ -53,15 +53,19 @@
   function getTrip() {
     try { return (window.tripModule?.getCurrentTrip?.()) || {}; } catch(e) { return {}; }
   }
+  
   function getTourTypes() {
     try { return (window.tripModule?.getTourTypes?.()) || {}; } catch(e) { return {}; }
   }
+  
   function getOwnerId() {
     try { return toStr(window.tripModule?.getTripOwnerId?.()); } catch(e) { return ''; }
   }
+  
   function getTripId() {
     try { return toStr(window.tripModule?.getTripPName?.()); } catch(e) { return ''; }
   }
+  
   function fmtPrice(p) {
     try { return window.tripModule?.formatPrice?.(p) || (parseFloat(p)||0).toFixed(2) + ' EGP'; } catch(e) { return (parseFloat(p)||0).toFixed(2) + ' EGP'; }
   }
@@ -84,6 +88,7 @@
     const cp = parseFloat(t.cprice) || bp * 0.5;
     return parseFloat(((adults() * bp) + (children() * cp)).toFixed(2));
   }
+  
   function calcExtra() {
     const tt = getTourTypes();
     if (selectedTripType && tt[selectedTripType]) {
@@ -91,6 +96,7 @@
     }
     return 0;
   }
+  
   function calcNet() { return parseFloat((calcBase() + calcExtra()).toFixed(2)); }
   function calcTax() { const n = calcNet(); return parseFloat((n * 0.03 + n * 0.03 * 0.14 + 3).toFixed(2)); }
   function calcTotal() { return parseFloat((calcNet() + calcTax()).toFixed(2)); }
@@ -345,7 +351,6 @@
     const trip = getTrip();
     const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     
-    // Phone
     const phoneEl = document.querySelector('#phone');
     if (phoneEl && window.intlTelInput) {
       iti = window.intlTelInput(phoneEl, {
@@ -357,13 +362,11 @@
       });
     }
     
-    // Date
     const dateEl = document.querySelector('#tripDate');
     if (dateEl && typeof flatpickr !== 'undefined') {
       flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
     }
     
-    // Bind events
     document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
     document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
     document.querySelectorAll('[data-stepper]').forEach(function(b) {
@@ -383,17 +386,16 @@
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     
     setTimeout(updateSummary, 1500);
-    toast('Ready', 'success');
   }
 
-  // ==========================================================================
-  // EXPORT
-  // ==========================================================================
-  window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: function() { return iti ? iti.getNumber() : ''; } };
+  window.BookingSystem = {
+    init, nextStep, prevStep, stepper,
+    openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService,
+    submit: submitBooking, updateSummary,
+    getRef: function() { return refNumber; },
+    getPhone: function() { return iti ? iti.getNumber() : ''; }
+  };
 
-  // ==========================================================================
-  // START
-  // ==========================================================================
   function tryInit() {
     if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; }
     init();
