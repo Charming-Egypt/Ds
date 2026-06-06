@@ -1,6 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Production Ready - Clean Version
+// Clean Production Version
+// Inline validation errors + Auto-hiding toasts
 // ==========================================================================
 
 (function() {
@@ -13,6 +14,7 @@
   let refNumber = '';
   let selectedTripType = '';
   let currentStep = 0;
+  let toastTimer = null;
 
   // ==========================================================================
   // HELPERS
@@ -35,16 +37,56 @@
     return r;
   }
 
+  // Toast - guaranteed to auto-hide
   function toast(msg, type) {
+    // Clear any existing timer
+    if (toastTimer) clearTimeout(toastTimer);
+    
+    // Remove existing toast
     const old = document.querySelector('.bs-toast');
     if (old) old.remove();
     
     const t = document.createElement('div');
     t.className = 'bs-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ' + (type === 'error' ? '#ef4444' : '#22c55e') + ';white-space:nowrap;';
+    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ' + (type === 'error' ? '#ef4444' : '#22c55e') + ';white-space:nowrap;opacity:1;transition:opacity 0.3s;';
     t.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
     document.body.appendChild(t);
-    setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(function() { t.remove(); }, 300); }, 4000);
+    
+    // Auto remove after 3 seconds
+    toastTimer = setTimeout(function() {
+      t.style.opacity = '0';
+      setTimeout(function() { if (t.parentNode) t.remove(); }, 300);
+    }, 3000);
+  }
+
+  // Inline error under input
+  function showFieldError(inputId, msg) {
+    // Remove existing error
+    const existing = document.querySelector('.field-error[data-field="' + inputId + '"]');
+    if (existing) existing.remove();
+    
+    const input = $(inputId);
+    if (!input) return;
+    
+    const error = document.createElement('div');
+    error.className = 'field-error';
+    error.setAttribute('data-field', inputId);
+    error.style.cssText = 'color:#ef4444;font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px;animation:fadeIn 0.2s ease;';
+    error.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
+    
+    input.style.borderColor = '#ef4444';
+    input.parentNode.appendChild(error);
+    
+    // Remove error when user types
+    input.addEventListener('input', function() {
+      input.style.borderColor = '';
+      if (error.parentNode) error.remove();
+    }, { once: true });
+  }
+
+  function clearAllFieldErrors() {
+    document.querySelectorAll('.field-error').forEach(function(e) { e.remove(); });
+    document.querySelectorAll('.input-field').forEach(function(e) { e.style.borderColor = ''; });
   }
 
   // ==========================================================================
@@ -146,6 +188,8 @@
   // NAVIGATION
   // ==========================================================================
   function goToStep(n) {
+    clearAllFieldErrors();
+    
     document.querySelectorAll('.form-step').forEach(function(s) { s.classList.remove('active'); });
     const tgt = document.querySelector('.form-step[data-step="' + n + '"]');
     if (tgt) tgt.classList.add('active');
@@ -162,22 +206,55 @@
   }
 
   function validateStep1() {
-    if (!toStr($('username')?.value)) { toast('Enter your full name', 'error'); $('username')?.focus(); return false; }
-    const em = toStr($('customerEmail')?.value);
-    if (!em || em.indexOf('@') < 0) { toast('Enter valid email', 'error'); $('customerEmail')?.focus(); return false; }
-    if (iti) {
-      if (!iti.getNumber() || !iti.isValidNumber()) { toast('Enter valid phone number', 'error'); return false; }
-    } else {
-      if (toStr($('phone')?.value).length < 8) { toast('Enter valid phone number', 'error'); return false; }
+    clearAllFieldErrors();
+    let valid = true;
+    
+    if (!toStr($('username')?.value)) {
+      showFieldError('username', 'Please enter your full name');
+      valid = false;
     }
-    return true;
+    
+    const em = toStr($('customerEmail')?.value);
+    if (!em || em.indexOf('@') < 0 || em.indexOf('.') < 0) {
+      showFieldError('customerEmail', 'Please enter a valid email address');
+      valid = false;
+    }
+    
+    if (iti) {
+      if (!iti.getNumber() || !iti.isValidNumber()) {
+        showFieldError('phone', 'Please enter a valid phone number with country code');
+        valid = false;
+      }
+    } else {
+      if (toStr($('phone')?.value).length < 8) {
+        showFieldError('phone', 'Please enter a valid phone number');
+        valid = false;
+      }
+    }
+    
+    return valid;
   }
 
   function validateStep2() {
-    if (!toStr($('tripDate')?.value)) { toast('Select a date', 'error'); return false; }
-    if (!toStr($('hotelName')?.value)) { toast('Enter hotel name', 'error'); $('hotelName')?.focus(); return false; }
-    if (!toStr($('roomNumber')?.value)) { toast('Enter room number', 'error'); $('roomNumber')?.focus(); return false; }
-    return true;
+    clearAllFieldErrors();
+    let valid = true;
+    
+    if (!toStr($('tripDate')?.value)) {
+      showFieldError('tripDate', 'Please select a date for your trip');
+      valid = false;
+    }
+    
+    if (!toStr($('hotelName')?.value)) {
+      showFieldError('hotelName', 'Please enter your hotel name');
+      valid = false;
+    }
+    
+    if (!toStr($('roomNumber')?.value)) {
+      showFieldError('roomNumber', 'Please enter your room number');
+      valid = false;
+    }
+    
+    return valid;
   }
 
   function nextStep() {
@@ -247,9 +324,9 @@
     if (submitBtn) submitBtn.disabled = true;
     
     try {
-      if (typeof auth === 'undefined') throw new Error('Auth not loaded');
-      if (typeof db === 'undefined') throw new Error('Database not loaded');
-      if (!auth.currentUser) throw new Error('Please sign in');
+      if (typeof auth === 'undefined') throw new Error('Authentication not loaded. Please refresh the page.');
+      if (typeof db === 'undefined') throw new Error('Database not loaded. Please refresh the page.');
+      if (!auth.currentUser) throw new Error('Please sign in to complete your booking.');
       
       const user = auth.currentUser;
       const trip = getTrip();
@@ -280,9 +357,9 @@
         body: JSON.stringify({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP' })
       });
       
-      if (!resp.ok) throw new Error('Payment service error');
+      if (!resp.ok) throw new Error('Payment service temporarily unavailable. Please try again.');
       const hashData = await resp.json();
-      if (!hashData.hash) throw new Error('No hash');
+      if (!hashData.hash) throw new Error('Payment verification failed. Please try again.');
       
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
         merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP',
@@ -311,7 +388,7 @@
       sessionStorage.setItem('phone', booking.phone);
       sessionStorage.setItem('refNumber', refNumber);
       
-      toast('Redirecting to payment...', 'success');
+      toast('Redirecting to payment gateway...', 'success');
       setTimeout(function() { window.location.href = paymentUrl; }, 1500);
       
     } catch(e) {
@@ -334,8 +411,6 @@
       if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
       if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
       if (d.phone && iti) { iti.setNumber(String(d.phone)); }
-      
-      toast('Your data loaded', 'success');
     } catch(e) {}
   }
 
@@ -344,7 +419,7 @@
   // ==========================================================================
   function init() {
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
-    if (!tripId) { toast('No trip specified', 'error'); return; }
+    if (!tripId) { toast('No trip specified in URL', 'error'); return; }
     
     refNumber = generateRef();
     
