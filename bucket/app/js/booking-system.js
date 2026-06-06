@@ -1,14 +1,15 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// COMPLETE & FINAL VERSION
-// All Features Working: Phone, Date, Steps, Payment
+// NO EXTERNAL DEPENDENCIES VERSION
+// Phone: Manual input with country code prefix
+// Date: Native HTML date picker
 // ==========================================================================
 
 (function() {
   'use strict';
 
   // ==========================================================================
-  // DEBUG PANEL (Visual feedback on screen)
+  // DEBUG PANEL
   // ==========================================================================
   let debugLines = [];
   let debugPanel = null;
@@ -25,7 +26,7 @@
       'padding:10px;border-radius:8px;',
       'font-family:monospace;font-size:10px;',
       'max-width:320px;max-height:200px;overflow-y:auto;',
-      'border:1px solid #444;line-height:1.4;pointer-events:auto;'
+      'border:1px solid #444;line-height:1.4;'
     ].join('');
     
     const title = document.createElement('div');
@@ -66,16 +67,10 @@
     logContainer.scrollTop = logContainer.scrollHeight;
   }
 
-  function ensureDebugPanel() {
-    if (!document.getElementById('bsDebugPanel')) {
-      createDebugPanel();
-    }
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { setTimeout(ensureDebugPanel, 200); });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(createDebugPanel, 200); });
   } else {
-    setTimeout(ensureDebugPanel, 200);
+    setTimeout(createDebugPanel, 200);
   }
 
   // ==========================================================================
@@ -131,17 +126,15 @@
   // ==========================================================================
   // STATE
   // ==========================================================================
-  let iti = null;
   let refNumber = '';
   let selectedTripType = '';
   let currentStep = 0;
 
   // ==========================================================================
-  // SAFE GETTERS
+  // HELPERS
   // ==========================================================================
   function $(id) {
-    if (!id) return null;
-    return document.getElementById(String(id));
+    return document.getElementById(id);
   }
 
   function toStr(val) {
@@ -155,9 +148,6 @@
     return toStr(val).replace(/[<>]/g, '');
   }
 
-  // ==========================================================================
-  // REFERENCE GENERATOR
-  // ==========================================================================
   function generateRef() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let r = 'DS-';
@@ -168,16 +158,14 @@
   }
 
   // ==========================================================================
-  // TRIP DATA ACCESS (from trip.js)
+  // TRIP DATA
   // ==========================================================================
   function getTripData() {
     try {
       if (window.tripModule && typeof window.tripModule.getCurrentTrip === 'function') {
         return window.tripModule.getCurrentTrip() || {};
       }
-    } catch(e) {
-      debug('tripData error: ' + e.message, '#ff4444');
-    }
+    } catch(e) {}
     return {};
   }
 
@@ -205,8 +193,7 @@
         return toStr(window.tripModule.getTripPName());
       }
     } catch(e) {}
-    const params = new URLSearchParams(window.location.search);
-    return toStr(params.get('trip-id'));
+    return toStr(new URLSearchParams(window.location.search).get('trip-id'));
   }
 
   function fmtPrice(p) {
@@ -233,40 +220,28 @@
   function getInfants() { return getVal('infants'); }
 
   // ==========================================================================
-  // PRICE CALCULATION
+  // PRICE
   // ==========================================================================
   function calcBase() {
     const t = getTripData();
-    const basePrice = parseFloat(t.basePrice) || 0;
-    if (basePrice <= 0) return 0;
-    const childPrice = parseFloat(t.cprice) || basePrice * 0.5;
-    return parseFloat(((getAdults() * basePrice) + (getChildren() * childPrice)).toFixed(2));
+    const bp = parseFloat(t.basePrice) || 0;
+    if (bp <= 0) return 0;
+    const cp = parseFloat(t.cprice) || bp * 0.5;
+    return parseFloat(((getAdults() * bp) + (getChildren() * cp)).toFixed(2));
   }
-
   function calcExtra() {
     const tt = getTourTypes();
     if (selectedTripType && tt[selectedTripType]) {
-      const extra = parseFloat(tt[selectedTripType]) || 0;
-      return parseFloat(((getAdults() + getChildren()) * extra).toFixed(2));
+      return parseFloat(((getAdults() + getChildren()) * parseFloat(tt[selectedTripType])).toFixed(2));
     }
     return 0;
   }
-
-  function calcNet() { 
-    return parseFloat((calcBase() + calcExtra()).toFixed(2)); 
-  }
-
-  function calcTax() { 
-    const n = calcNet(); 
-    return parseFloat((n * 0.03 + n * 0.03 * 0.14 + 3).toFixed(2)); 
-  }
-
-  function calcTotal() { 
-    return parseFloat((calcNet() + calcTax()).toFixed(2)); 
-  }
+  function calcNet() { return parseFloat((calcBase() + calcExtra()).toFixed(2)); }
+  function calcTax() { const n = calcNet(); return parseFloat((n * 0.03 + n * 0.03 * 0.14 + 3).toFixed(2)); }
+  function calcTotal() { return parseFloat((calcNet() + calcTax()).toFixed(2)); }
 
   // ==========================================================================
-  // STEPPER BUTTONS
+  // STEPPER
   // ==========================================================================
   function stepper(id, delta) {
     const inp = $(id);
@@ -280,7 +255,7 @@
   }
 
   // ==========================================================================
-  // SUMMARY UPDATE
+  // SUMMARY
   // ==========================================================================
   function setText(id, val) {
     const el = $(id);
@@ -304,32 +279,25 @@
         fmtPrice(calcNet()) +
         '<div style="font-size:11px;color:#a0a0a0;margin-top:8px;">' +
         '<div style="display:flex;justify-content:space-between;border-top:1px solid #3a3a3a;padding-top:4px;">' +
-        '<span>+ Taxes & Fees:</span><span>' + fmtPrice(calcTax()) + '</span></div>' +
+        '<span>+ Taxes:</span><span>' + fmtPrice(calcTax()) + '</span></div>' +
         '<div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;color:#f59e0b;font-weight:700;">' +
         '<span>Total:</span><span>' + fmtPrice(calcTotal()) + '</span></div></div>';
     }
   }
 
   // ==========================================================================
-  // STEP NAVIGATION
+  // NAVIGATION
   // ==========================================================================
   function goToStep(stepNum) {
-    debug('→ Step ' + (stepNum + 1) + '/4', '#ffa500');
-    
-    document.querySelectorAll('.form-step').forEach(function(s) { 
-      s.classList.remove('active'); 
-    });
-    
+    document.querySelectorAll('.form-step').forEach(function(s) { s.classList.remove('active'); });
     const target = document.querySelector('.form-step[data-step="' + stepNum + '"]');
     if (target) target.classList.add('active');
     
     currentStep = stepNum;
     
-    // Progress bar
     const pb = $('progressBar');
     if (pb) pb.style.width = ((stepNum + 1) / 4 * 100) + '%';
     
-    // Step labels
     document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) {
       if (i === stepNum) l.classList.add('active');
       else l.classList.remove('active');
@@ -348,30 +316,15 @@
     
     const email = toStr($('customerEmail')?.value);
     if (!email || email.indexOf('@') < 0 || email.indexOf('.') < 0) {
-      screenError('Please enter a valid email address');
+      screenError('Please enter a valid email');
       try { $('customerEmail')?.focus(); } catch(e) {}
       return false;
     }
     
-    // Phone validation
-    if (iti) {
-      try {
-        const num = iti.getNumber();
-        const valid = iti.isValidNumber();
-        debug('📱 Phone: ' + num + ' | Valid: ' + valid, valid ? '#0f0' : '#ff4444');
-        if (!num || !valid) {
-          screenError('Please enter a valid phone number with country code');
-          return false;
-        }
-      } catch(e) {
-        debug('Phone error: ' + e.message, '#ff4444');
-      }
-    } else {
-      const phone = toStr($('phone')?.value);
-      if (!phone || phone.length < 8) {
-        screenError('Please enter a valid phone number');
-        return false;
-      }
+    const phone = toStr($('phone')?.value);
+    if (!phone || phone.length < 8) {
+      screenError('Please enter a valid phone number with country code');
+      return false;
     }
     
     return true;
@@ -383,12 +336,12 @@
       return false;
     }
     if (!toStr($('hotelName')?.value)) {
-      screenError('Please enter your hotel name');
+      screenError('Please enter hotel name');
       try { $('hotelName')?.focus(); } catch(e) {}
       return false;
     }
     if (!toStr($('roomNumber')?.value)) {
-      screenError('Please enter your room number');
+      screenError('Please enter room number');
       try { $('roomNumber')?.focus(); } catch(e) {}
       return false;
     }
@@ -396,7 +349,6 @@
   }
 
   function nextStep() {
-    debug('Next from step ' + (currentStep + 1), '#ffa500');
     if (currentStep === 0 && !validateStep1()) return;
     if (currentStep === 1 && !validateStep2()) return;
     if (currentStep < 3) goToStep(currentStep + 1);
@@ -414,15 +366,12 @@
   function openServicesPopup() {
     const popup = $('extraServicesPopup');
     const content = $('servicesPopupContent');
-    if (!popup || !content) {
-      screenError('Services popup not found');
-      return;
-    }
+    if (!popup || !content) return;
     
     tempService = selectedTripType;
     content.innerHTML = '';
     
-    // "None" option
+    // None
     (function() {
       const div = document.createElement('div');
       div.className = 'service-option' + (tempService === '' ? ' selected' : '');
@@ -435,7 +384,7 @@
       content.appendChild(div);
     })();
     
-    // Tour type options
+    // Types
     const types = getTourTypes();
     if (types) {
       Object.keys(types).forEach(function(key) {
@@ -453,7 +402,6 @@
     
     popup.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    debug('Services popup opened', '#ffa500');
   }
 
   function confirmService() {
@@ -462,7 +410,6 @@
     const st = $('selectedServiceText'); if (st) st.textContent = selectedTripType || 'No extra services';
     closeServicesPopup();
     updateSummary();
-    debug('Service: ' + (selectedTripType || 'None'), '#0f0');
   }
 
   function closeServicesPopup() {
@@ -472,11 +419,9 @@
   }
 
   // ==========================================================================
-  // SUBMIT BOOKING
+  // SUBMIT
   // ==========================================================================
   async function submitBooking() {
-    debug('🚀 Submitting...', '#ffa500');
-    
     const spinner = $('spinner');
     if (spinner) spinner.classList.remove('hidden');
     
@@ -484,24 +429,11 @@
     if (submitBtn) submitBtn.disabled = true;
     
     try {
-      // Check Firebase
-      if (typeof auth === 'undefined') throw new Error('Authentication not loaded. Please refresh.');
-      if (typeof db === 'undefined') throw new Error('Database not loaded. Please refresh.');
-      
-      // Check user
-      if (!auth.currentUser) throw new Error('Please sign in to complete your booking');
+      if (typeof auth === 'undefined') throw new Error('Auth not loaded');
+      if (typeof db === 'undefined') throw new Error('Database not loaded');
+      if (!auth.currentUser) throw new Error('Please sign in first');
       
       const user = auth.currentUser;
-      debug('👤 User: ' + user.uid, '#0f0');
-      
-      // Get phone number
-      let phone = '';
-      if (iti) {
-        try { phone = iti.getNumber() || ''; } catch(e) {}
-      }
-      if (!phone) phone = toStr($('phone')?.value);
-      debug('📱 Phone: ' + (phone || 'none'), '#ffa500');
-      
       const trip = getTripData();
       const tripId = getTripPName();
       const ownerId = getOwnerId();
@@ -510,14 +442,11 @@
       const tax = calcTax();
       const total = calcTotal();
       
-      debug('💰 Net:' + net + ' Tax:' + tax + ' Total:' + total, '#0f0');
-      
-      // Build booking object
       const booking = {
         refNumber: refNumber,
         username: clean($('username')?.value),
         email: clean($('customerEmail')?.value),
-        phone: phone,
+        phone: toStr($('phone')?.value),
         tour: toStr(trip.name),
         tripId: tripId,
         tripDate: toStr($('tripDate')?.value),
@@ -542,9 +471,7 @@
         updatedAt: Date.now()
       };
       
-      // Get payment hash
-      debug('🔐 Getting payment hash...', '#ffa500');
-      
+      // Payment hash
       const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -556,17 +483,11 @@
         })
       });
       
-      if (!resp.ok) {
-        const txt = await resp.text();
-        throw new Error('Payment service error: ' + txt);
-      }
+      if (!resp.ok) throw new Error('Payment service error');
       
       const hashData = await resp.json();
-      if (!hashData.hash) throw new Error('No payment hash received');
+      if (!hashData.hash) throw new Error('No payment hash');
       
-      debug('✅ Hash received', '#0f0');
-      
-      // Build payment URL
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
@@ -579,17 +500,13 @@
         redirectMethod: 'get'
       }).toString();
       
-      // Save to Firebase
-      debug('💾 Saving booking...', '#ffa500');
-      
+      // Save
       await db.ref('trip-bookings/' + refNumber).set({
         ...booking,
         paymenturl: paymentUrl
       });
       
-      debug('✅ Booking saved', '#0f0');
-      
-      // Notify trip owner
+      // Notify
       if (ownerId && ownerId !== user.uid) {
         try {
           await db.ref('notifications/' + ownerId + '/' + Date.now()).set({
@@ -610,13 +527,9 @@
             timestamp: Date.now(),
             type: 'new_booking'
           });
-          debug('✅ Owner notified', '#0f0');
-        } catch(e) {
-          debug('⚠️ Notification failed: ' + e.message, '#ffa500');
-        }
+        } catch(e) {}
       }
       
-      // Store in session
       sessionStorage.setItem('username', booking.username);
       sessionStorage.setItem('email', booking.email);
       sessionStorage.setItem('phone', booking.phone);
@@ -625,12 +538,11 @@
       screenSuccess('Redirecting to payment...');
       
       setTimeout(function() {
-        debug('🔀 Redirecting...', '#ffa500');
         window.location.href = paymentUrl;
       }, 1500);
       
     } catch (error) {
-      debug('❌ ERROR: ' + error.message, '#ff4444');
+      debug('❌ ' + error.message, '#ff4444');
       screenError(error.message);
       if (spinner) spinner.classList.add('hidden');
       if (submitBtn) submitBtn.disabled = false;
@@ -642,168 +554,48 @@
   // ==========================================================================
   async function loadUserData() {
     try {
-      if (typeof auth === 'undefined') {
-        debug('Auth missing', '#ff4444');
-        return;
-      }
-      
-      if (!auth.currentUser) {
-        debug('Not logged in', '#ffa500');
-        return;
-      }
+      if (!auth?.currentUser) return;
       
       const user = auth.currentUser;
-      debug('Loading profile: ' + user.uid, '#ffa500');
-      
-      if (typeof db === 'undefined') {
-        debug('DB missing', '#ff4444');
-        return;
-      }
-      
       const snap = await db.ref('egy_user/' + user.uid).once('value');
       const data = snap.val();
       
       if (!data) {
-        debug('No profile in DB', '#ffa500');
+        debug('No profile found', '#ffa500');
         return;
       }
       
-      debug('Profile found', '#0f0');
-      
-      // Set name
       if (data.username) {
         const el = $('username');
-        if (el) {
-          el.value = String(data.username);
-          debug('✅ Name: ' + data.username, '#0f0');
-        }
+        if (el) el.value = String(data.username);
       }
       
-      // Set email
       if (data.email) {
         const el = $('customerEmail');
-        if (el) {
-          el.value = String(data.email);
-          debug('✅ Email: ' + data.email, '#0f0');
-        }
+        if (el) el.value = String(data.email);
       }
       
-      // Set phone
       if (data.phone) {
-        const phoneStr = String(data.phone);
-        debug('📱 Setting: ' + phoneStr, '#ffa500');
-        
-        if (iti) {
-          try {
-            iti.setNumber(phoneStr);
-            debug('✅ Phone via intl-tel-input', '#0f0');
-          } catch(e) {
-            debug('intl error: ' + e.message, '#ff4444');
-            const el = $('phone');
-            if (el) {
-              el.value = phoneStr;
-              debug('✅ Phone directly', '#0f0');
-            }
-          }
-        } else {
-          const el = $('phone');
-          if (el) {
-            el.value = phoneStr;
-            debug('✅ Phone directly (no intl)', '#0f0');
-          }
-        }
-      } else {
-        debug('⚠️ No phone in profile', '#ffa500');
+        const el = $('phone');
+        if (el) el.value = String(data.phone);
+        debug('✅ Phone loaded: ' + data.phone, '#0f0');
       }
       
-      screenSuccess('Your data has been loaded');
+      screenSuccess('Your data loaded');
       
     } catch (error) {
-      debug('❌ Load error: ' + error.message, '#ff4444');
-      screenError('Failed to load data: ' + error.message);
+      debug('Load error: ' + error.message, '#ff4444');
     }
   }
 
   // ==========================================================================
-  // MOBILE BOOKING CARD
-  // ==========================================================================
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-
-  function moveBookingToMobile() {
-    const mc = $('mobileBookingContainer');
-    const main = $('mainBookingCard');
-    const ms = $('mobileBookingSection');
-    
-    if (!mc || !main || !ms) return;
-    
-    if (isMobile()) {
-      // Clone card to mobile section
-      mc.innerHTML = '';
-      const clone = main.cloneNode(true);
-      clone.id = 'mobileBookingCard';
-      mc.appendChild(clone);
-      ms.style.display = 'block';
-      
-      // Re-bind events on cloned card
-      const card = $('mobileBookingCard');
-      if (card) {
-        card.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
-        card.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
-        card.querySelectorAll('[data-stepper]').forEach(function(b) {
-          b.onclick = function() { 
-            stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); 
-          };
-        });
-        const sb = card.querySelector('#submitBtn');
-        if (sb) sb.onclick = submitBooking;
-        const sv = card.querySelector('#openServicesBtn');
-        if (sv) sv.onclick = openServicesPopup;
-      }
-      debug('📱 Mobile layout', '#0f0');
-    } else {
-      ms.style.display = 'none';
-      mc.innerHTML = '';
-    }
-  }
-
-  function showMobileBooking() {
-    moveBookingToMobile();
-    const ms = $('mobileBookingSection');
-    if (ms) {
-      setTimeout(function() { 
-        ms.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
-      }, 200);
-    }
-  }
-
-  // ==========================================================================
-  // NATIVE DATE PICKER FALLBACK
+  // DATE PICKER SETUP
   // ==========================================================================
   function setupDatePicker() {
     const dateEl = $('tripDate');
     if (!dateEl) return;
     
-    // Try flatpickr first
-    if (typeof flatpickr !== 'undefined') {
-      try {
-        flatpickr(dateEl, {
-          minDate: new Date().fp_incr(1),
-          dateFormat: 'Y-m-d',
-          disableMobile: true,
-          onChange: function(selectedDates, dateStr) {
-            if (currentStep === 3) updateSummary();
-          }
-        });
-        debug('✅ Flatpickr ready', '#0f0');
-        return;
-      } catch(e) {
-        debug('Flatpickr error: ' + e.message, '#ff4444');
-      }
-    }
-    
-    // Fallback: native date input
+    // Use native date input
     dateEl.type = 'date';
     dateEl.removeAttribute('readonly');
     
@@ -813,113 +605,113 @@
     dateEl.setAttribute('min', minDate);
     dateEl.value = minDate;
     
-    // Style native date picker for dark theme
+    // Dark theme for date picker
     dateEl.style.cssText = [
       'width:100%;padding:13px 16px;',
       'background:#1a1a1a;',
       'border:1.5px solid #2e2e2e;border-radius:12px;',
       'color:#fff;font-size:14px;',
-      'color-scheme:dark;'
+      'color-scheme:dark;',
+      'cursor:pointer;'
     ].join('');
     
     dateEl.addEventListener('change', function() {
       if (currentStep === 3) updateSummary();
+      debug('📅 Date: ' + dateEl.value, '#0f0');
     });
     
-    debug('⚠️ Using native date picker', '#ffa500');
+    debug('✅ Date picker ready (native)', '#0f0');
   }
 
   // ==========================================================================
-  // INITIALIZATION
+  // MOBILE
+  // ==========================================================================
+  function isMobile() { return window.innerWidth <= 768; }
+
+  function moveBookingToMobile() {
+    const mc = $('mobileBookingContainer');
+    const main = $('mainBookingCard');
+    const ms = $('mobileBookingSection');
+    
+    if (!mc || !main || !ms) return;
+    
+    if (isMobile()) {
+      mc.innerHTML = '';
+      const clone = main.cloneNode(true);
+      clone.id = 'mobileBookingCard';
+      mc.appendChild(clone);
+      ms.style.display = 'block';
+      
+      const card = $('mobileBookingCard');
+      if (card) {
+        card.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
+        card.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
+        card.querySelectorAll('[data-stepper]').forEach(function(b) {
+          b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); };
+        });
+        const sb = card.querySelector('#submitBtn');
+        if (sb) sb.onclick = submitBooking;
+        const sv = card.querySelector('#openServicesBtn');
+        if (sv) sv.onclick = openServicesPopup;
+      }
+    } else {
+      ms.style.display = 'none';
+      mc.innerHTML = '';
+    }
+  }
+
+  function showMobileBooking() {
+    moveBookingToMobile();
+    const ms = $('mobileBookingSection');
+    if (ms) setTimeout(function() { ms.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
+  }
+
+  // ==========================================================================
+  // INIT
   // ==========================================================================
   function init() {
-    debug('🚀 Init started', '#ffa500');
+    debug('🚀 Init', '#ffa500');
     
-    // Check dependencies
-    if (typeof auth === 'undefined') {
-      screenError('Firebase Auth not loaded! Check cof.js');
-      debug('❌ auth missing', '#ff4444');
-      return;
-    }
-    if (typeof db === 'undefined') {
-      screenError('Firebase Database not loaded! Check cof.js');
-      debug('❌ db missing', '#ff4444');
-      return;
-    }
-    
-    debug('✅ Firebase OK', '#0f0');
+    if (typeof auth === 'undefined') { screenError('Auth missing'); return; }
+    if (typeof db === 'undefined') { screenError('DB missing'); return; }
     
     const tripId = getTripPName();
-    if (!tripId) {
-      screenError('No trip-id in URL');
-      debug('❌ No trip-id', '#ff4444');
-      return;
-    }
+    if (!tripId) { screenError('No trip-id'); return; }
     
-    debug('🏷️ Trip: ' + tripId, '#0f0');
+    debug('✅ Trip: ' + tripId, '#0f0');
     
-    // Generate reference
     refNumber = generateRef();
     debug('📋 Ref: ' + refNumber, '#0f0');
     
-    // Set trip name
     const trip = getTripData();
     const tn = $('tripName');
     if (tn && trip.name) tn.value = String(trip.name);
     
-    // ==========================================================================
-    // PHONE INPUT - Country code BESIDE number
-    // ==========================================================================
+    // Setup phone input
     const phoneEl = $('phone');
-    if (phoneEl && window.intlTelInput) {
-      try {
-        iti = window.intlTelInput(phoneEl, {
-          utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
-          preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it', 'sa'],
-          separateDialCode: false,
-          initialCountry: 'eg',
-          nationalMode: false,
-          autoPlaceholder: 'aggressive',
-        });
-        debug('✅ Phone ready', '#0f0');
-      } catch(e) {
-        debug('Phone error: ' + e.message, '#ff4444');
-      }
-    } else {
-      debug('⚠️ intl-tel-input not available', '#ffa500');
+    if (phoneEl) {
+      phoneEl.setAttribute('placeholder', '+20 1XX XXX XXXX');
+      phoneEl.setAttribute('type', 'tel');
+      debug('✅ Phone ready', '#0f0');
     }
     
-    // ==========================================================================
-    // DATE PICKER
-    // ==========================================================================
+    // Setup date picker
     setupDatePicker();
     
-    // ==========================================================================
-    // BIND EVENTS
-    // ==========================================================================
-    document.querySelectorAll('[data-action="next"]').forEach(function(b) { 
-      b.onclick = nextStep; 
-    });
-    
-    document.querySelectorAll('[data-action="prev"]').forEach(function(b) { 
-      b.onclick = prevStep; 
-    });
-    
+    // Bind events
+    document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
+    document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
     document.querySelectorAll('[data-stepper]').forEach(function(b) {
       b.onclick = function() {
-        const id = this.getAttribute('data-stepper');
-        const delta = parseInt(this.getAttribute('data-delta'));
-        if (id && !isNaN(delta)) stepper(id, delta);
+        stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta')));
       };
     });
     
-    // Submit
     const sb = $('submitBtn');
-    if (sb) { sb.onclick = submitBooking; debug('✅ Submit bound', '#0f0'); }
+    if (sb) sb.onclick = submitBooking;
     
-    // Services
     const sv = $('openServicesBtn');
-    if (sv) { sv.onclick = openServicesPopup; debug('✅ Services bound', '#0f0'); }
+    if (sv) sv.onclick = openServicesPopup;
     
     const cb = $('confirmServicesBtn');
     if (cb) cb.onclick = confirmService;
@@ -927,53 +719,35 @@
     const cl = $('cancelServicesBtn');
     if (cl) cl.onclick = closeServicesPopup;
     
-    // Close popup buttons
-    document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) {
-      b.onclick = closeServicesPopup;
-    });
-    
-    // Overlay
+    document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
     const ov = document.querySelector('#extraServicesPopup .services-popup-overlay');
     if (ov) ov.onclick = closeServicesPopup;
     
-    // Mobile
     const mb = $('mobileBookNowBtn');
-    if (mb) { mb.onclick = showMobileBooking; debug('✅ Mobile bound', '#0f0'); }
+    if (mb) mb.onclick = showMobileBooking;
     
-    // Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeServicesPopup();
-    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeServicesPopup(); });
     
-    // ==========================================================================
-    // AUTH LISTENER
-    // ==========================================================================
+    // Auth
     auth.onAuthStateChanged(function(user) {
       if (user) {
-        debug('👤 Logged in: ' + user.uid, '#0f0');
+        debug('👤 Logged in', '#0f0');
         setTimeout(loadUserData, 500);
-      } else {
-        debug('👤 Not logged in', '#ffa500');
       }
     });
     
-    // ==========================================================================
-    // MOBILE LAYOUT
-    // ==========================================================================
+    // Mobile
     moveBookingToMobile();
     window.addEventListener('resize', moveBookingToMobile);
     
-    // ==========================================================================
-    // INITIAL SUMMARY
-    // ==========================================================================
     setTimeout(updateSummary, 1500);
     
-    debug('✅ System Ready!', '#0f0');
+    debug('✅ Ready!', '#0f0');
     screenSuccess('Booking system ready');
   }
 
   // ==========================================================================
-  // EXPORT TO WINDOW
+  // EXPORT
   // ==========================================================================
   window.BookingSystem = {
     init: init,
@@ -988,7 +762,7 @@
     updateSummary: updateSummary,
     getRef: function() { return refNumber; },
     getTripType: function() { return selectedTripType; },
-    getPhone: function() { return iti ? iti.getNumber() : ''; }
+    getPhone: function() { return toStr($('phone')?.value); }
   };
 
   // ==========================================================================
@@ -996,7 +770,7 @@
   // ==========================================================================
   function tryInit() {
     if (typeof auth === 'undefined' || typeof db === 'undefined') {
-      debug('⏳ Waiting for Firebase...', '#ffa500');
+      debug('⏳ Waiting...', '#ffa500');
       setTimeout(tryInit, 500);
       return;
     }
@@ -1004,13 +778,11 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { 
-      setTimeout(tryInit, 800); 
-    });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(tryInit, 800); });
   } else {
     setTimeout(tryInit, 800);
   }
 
-  debug('📦 Booking System script loaded', '#888');
+  debug('📦 Script loaded', '#888');
 
 })();
