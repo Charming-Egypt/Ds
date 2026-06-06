@@ -746,6 +746,28 @@ textarea.input-field {
   position: relative !important;
 }
 
+/* العلم والكود - fixed width */
+.iti__flag-container {
+  position: relative !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
+}
+
+.iti__selected-flag {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 12px !important;
+  background: #2d2d30 !important;
+  border: 2px solid #404045 !important;
+  border-right: none !important;
+  border-radius: 10px 0 0 10px !important;
+  height: 48px !important;
+  white-space: nowrap !important;
+}
+
+
+
 /* حقل الإدخال */
 .iti input,
 .iti input[type="tel"],
@@ -766,16 +788,7 @@ textarea.input-field {
   box-sizing: border-box !important;
 }
 
-/* العلم والدولة - جنب بعض */
-.iti__selected-flag {
-  display: flex !important;
-  align-items: center !important;
-  padding: 0 12px !important;
-  background: #2d2d30 !important;
-  border-radius: 10px 0 0 10px !important;
-  border-right: 1px solid #404045 !important;
-  height: 100% !important;
-}
+
 
 /* كود الدولة */
 .iti__selected-dial-code {
