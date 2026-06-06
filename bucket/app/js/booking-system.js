@@ -1,7 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete Production Version
-// Country List Inside Booking Card
+// Country List Inside Booking Card - Forced
 // ==========================================================================
 
 (function() {
@@ -311,48 +311,55 @@
   }
 
   // ==========================================================================
-  // COUNTRY LIST - Move inside booking card
+  // COUNTRY LIST - Force inside booking card
   // ==========================================================================
   function moveCountryListToCard() {
-    if (!iti) return;
+    const countryList = document.querySelector('.iti__country-list');
+    const bookingCard = document.querySelector('.booking-card');
     
-    setTimeout(function() {
+    if (!countryList || !bookingCard) return;
+    
+    if (countryList.parentElement !== bookingCard) {
+      bookingCard.appendChild(countryList);
+      bookingCard.classList.add('has-country-list');
+      
+      if (!countryList.querySelector('.iti__close-btn')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'iti__close-btn';
+        closeBtn.innerHTML = '✕';
+        closeBtn.type = 'button';
+        closeBtn.style.cssText = 'position:absolute;right:16px;top:12px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#2a2a2a;border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;z-index:10;';
+        closeBtn.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          const flag = document.querySelector('.iti__selected-flag');
+          if (flag) flag.click();
+        };
+        countryList.appendChild(closeBtn);
+      }
+    }
+  }
+
+  function startWatchingCountryList() {
+    setInterval(function() {
       const countryList = document.querySelector('.iti__country-list');
       const bookingCard = document.querySelector('.booking-card');
       
       if (countryList && bookingCard && countryList.parentElement !== bookingCard) {
-        bookingCard.appendChild(countryList);
-        bookingCard.classList.add('has-country-list');
-        
-        if (!countryList.querySelector('.iti__close-btn')) {
-          const closeBtn = document.createElement('button');
-          closeBtn.className = 'iti__close-btn';
-          closeBtn.innerHTML = '✕';
-          closeBtn.type = 'button';
-          closeBtn.onclick = function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            const flag = document.querySelector('.iti__selected-flag');
-            if (flag) flag.click();
-          };
-          countryList.appendChild(closeBtn);
-        }
+        moveCountryListToCard();
       }
     }, 100);
-  }
-
-  function watchForCountryList() {
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        mutation.addedNodes.forEach(function(node) {
-          if (node.classList && node.classList.contains('iti__country-list')) {
-            moveCountryListToCard();
-          }
-        });
-      });
+    
+    const observer = new MutationObserver(function() {
+      setTimeout(moveCountryListToCard, 50);
     });
     
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: false,
+      characterData: false
+    });
   }
 
   // ==========================================================================
@@ -479,9 +486,17 @@
         nationalMode: false,
       });
       
-      // Watch for country list and move to card
-      watchForCountryList();
-      moveCountryListToCard();
+      // Force country list inside booking card
+      startWatchingCountryList();
+      
+      const flagContainer = document.querySelector('.iti__flag-container');
+      if (flagContainer) {
+        flagContainer.addEventListener('click', function() {
+          setTimeout(moveCountryListToCard, 50);
+          setTimeout(moveCountryListToCard, 200);
+          setTimeout(moveCountryListToCard, 500);
+        });
+      }
     }
     
     // Date picker
@@ -515,17 +530,9 @@
     // Auth state
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     
-    // Country list on flag click
-    const flagContainer = document.querySelector('.iti__flag-container');
-    if (flagContainer) {
-      flagContainer.addEventListener('click', function() {
-        setTimeout(moveCountryListToCard, 200);
-      });
-    }
-    
     // Re-check on resize
     window.addEventListener('resize', function() {
-      setTimeout(moveCountryListToCard, 300);
+      setTimeout(moveCountryListToCard, 200);
     });
     
     // Initial summary
