@@ -47,6 +47,7 @@
 
 /* الحاوية الرئيسية */
 .iti {
+  position: relative;
   display: flex !important;
   align-items: stretch !important;
   width: 100% !important;
