@@ -749,7 +749,8 @@ textarea.input-field {
 #phone {
   width: 100% !important;
   padding-left: 60px !important;
-  background: #2d2d30 !important;
+  display: flex !important;
+  align-items: center !important;
   border: 2px solid #404045 !important;
   border-radius: 10px !important;
   color: #fff !important;
