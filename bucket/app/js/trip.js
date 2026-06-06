@@ -1,16 +1,18 @@
 // ==========================================================================
-// DISCOVER SHARM - Original Booking System Restored
+// DISCOVER SHARM - Complete Booking System
+// With Phone Country Code & User Data Auto-Fill
 // ==========================================================================
 
 let swiper, currentVideoSlide = null;
 let tripData = {}, currentTrip = {}, tourTypes = {}, selectedTripType = "";
-let iti;
+let iti; // Phone input instance
 const refNumber = generateReference();
 let currentUserUid = '', tripOwnerId = '';
 const MAX_PER_TYPE = 10, MAX_INFANTS_PER_ADULT = 2, MAX_TOTAL_INFANTS = 10;
 let currentStep = 0, mobileCurrentStep = 0;
 let currentCurrency = 'EGP', exchangeRates = { EGP: 1 }, ratesLoaded = false;
 let tripReviews = [], currentUserReview = null;
+let userLoggedIn = false;
 
 function getTripIdFromURL() { return new URLSearchParams(window.location.search).get('trip-id'); }
 const tripPName = getTripIdFromURL();
@@ -47,6 +49,104 @@ function showToast(m, t='success') {
 }
 function showSpinner() { document.getElementById('spinner')?.classList.remove('hidden'); const b=document.getElementById('submitBtn'); if(b)b.disabled=true; }
 function hideSpinner() { document.getElementById('spinner')?.classList.add('hidden'); const b=document.getElementById('submitBtn'); if(b)b.disabled=false; }
+
+// ==========================================================================
+// PHONE INPUT INITIALIZATION
+// ==========================================================================
+function initPhoneInput() {
+  const phoneInput = document.querySelector("#phone");
+  if (phoneInput) {
+    try {
+      iti = window.intlTelInput(phoneInput, {
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
+        separateDialCode: true,
+        initialCountry: "eg",
+      });
+    } catch (error) {
+      console.error("intlTelInput initialization failed:", error);
+    }
+  }
+}
+
+// ==========================================================================
+// USER DATA - Fetch from Firebase
+// ==========================================================================
+async function populateUserData() {
+  const user = auth.currentUser;
+  if (!user) {
+    userLoggedIn = false;
+    showLoginPrompt();
+    return;
+  }
+  
+  userLoggedIn = true;
+  currentUserUid = user.uid;
+  
+  try {
+    const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
+    const userData = userSnapshot.val();
+    
+    if (userData) {
+      // Fill desktop form
+      if (document.getElementById("username")) {
+        document.getElementById("username").value = userData.username || userData.name || "";
+        document.getElementById("username").readOnly = true;
+        document.getElementById("username").style.background = "#2d2d30";
+      }
+      if (document.getElementById("customerEmail")) {
+        document.getElementById("customerEmail").value = userData.email || "";
+        document.getElementById("customerEmail").readOnly = true;
+        document.getElementById("customerEmail").style.background = "#2d2d30";
+      }
+      if (document.getElementById("uid")) {
+        document.getElementById("uid").value = user.uid || "";
+      }
+      
+      // Fill mobile form
+      if (document.getElementById("mobileUsername")) {
+        document.getElementById("mobileUsername").value = userData.username || userData.name || "";
+        document.getElementById("mobileUsername").readOnly = true;
+        document.getElementById("mobileUsername").style.background = "#2d2d30";
+      }
+      if (document.getElementById("mobileCustomerEmail")) {
+        document.getElementById("mobileCustomerEmail").value = userData.email || "";
+        document.getElementById("mobileCustomerEmail").readOnly = true;
+        document.getElementById("mobileCustomerEmail").style.background = "#2d2d30";
+      }
+      
+      // Set phone with country code
+      if (userData.phone && iti) {
+        iti.setNumber(userData.phone);
+      }
+      
+      hideLoginPrompt();
+    } else {
+      showLoginPrompt();
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    showLoginPrompt();
+  }
+}
+
+function showLoginPrompt() {
+  userLoggedIn = false;
+  // Show fields as editable
+  const desktopUsername = document.getElementById("username");
+  const desktopEmail = document.getElementById("customerEmail");
+  const mobileUsername = document.getElementById("mobileUsername");
+  const mobileEmail = document.getElementById("mobileCustomerEmail");
+  
+  if (desktopUsername) { desktopUsername.readOnly = false; desktopUsername.style.background = ""; desktopUsername.value = ""; }
+  if (desktopEmail) { desktopEmail.readOnly = false; desktopEmail.style.background = ""; desktopEmail.value = ""; }
+  if (mobileUsername) { mobileUsername.readOnly = false; mobileUsername.style.background = ""; mobileUsername.value = ""; }
+  if (mobileEmail) { mobileEmail.readOnly = false; mobileEmail.style.background = ""; mobileEmail.value = ""; }
+}
+
+function hideLoginPrompt() {
+  // Fields stay readonly with data
+}
 
 // ==========================================================================
 // STEPPER
@@ -102,10 +202,13 @@ function updateProgressBar() {
 }
 function validateStep() {
   if (currentStep === 0) {
-    if (!document.getElementById('username')?.value.trim()) { showToast('Enter your name', 'error'); return false; }
-    const em = document.getElementById('customerEmail')?.value.trim();
-    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showToast('Enter valid email', 'error'); return false; }
-    if (iti && (!iti.getNumber() || !iti.isValidNumber())) { showToast('Enter valid phone', 'error'); return false; }
+    // If user is logged in, skip validation for pre-filled fields
+    if (!userLoggedIn) {
+      if (!document.getElementById('username')?.value.trim()) { showToast('Enter your name', 'error'); return false; }
+      const em = document.getElementById('customerEmail')?.value.trim();
+      if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showToast('Enter valid email', 'error'); return false; }
+    }
+    if (iti && (!iti.getNumber() || !iti.isValidNumber())) { showToast('Enter valid phone number with country code', 'error'); return false; }
   } else if (currentStep === 1) {
     if (!document.getElementById('tripDate')?.value.trim()) { showToast('Select date', 'error'); return false; }
     if (!document.getElementById('hotelName')?.value.trim()) { showToast('Enter hotel name', 'error'); return false; }
@@ -138,9 +241,11 @@ function updateMobileProgressBar() {
 }
 function validateMobileStep() {
   if (mobileCurrentStep === 0) {
-    if (!document.getElementById('mobileUsername')?.value.trim()) { showToast('Enter your name', 'error'); return false; }
-    const em = document.getElementById('mobileCustomerEmail')?.value.trim();
-    if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showToast('Enter valid email', 'error'); return false; }
+    if (!userLoggedIn) {
+      if (!document.getElementById('mobileUsername')?.value.trim()) { showToast('Enter your name', 'error'); return false; }
+      const em = document.getElementById('mobileCustomerEmail')?.value.trim();
+      if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showToast('Enter valid email', 'error'); return false; }
+    }
   } else if (mobileCurrentStep === 1) {
     if (!document.getElementById('mobileTripDate')?.value.trim()) { showToast('Select date', 'error'); return false; }
     if (!document.getElementById('mobileHotelName')?.value.trim()) { showToast('Enter hotel name', 'error'); return false; }
@@ -289,12 +394,20 @@ async function submitForm() {
   showSpinner();
   try {
     const user = auth.currentUser;
-    if (!user) throw new Error('Please sign in');
+    
+    // If user not logged in, create anonymous user or use provided data
+    let uid = user ? user.uid : 'anonymous_' + Date.now();
+    if (user) currentUserUid = user.uid;
+    
     const net = calcNet(), tax = calcTax(), total = calcTotal();
+    const phone = iti?.getNumber() || '';
+    
     const booking = {
-      refNumber, username: sanitizeInput(document.getElementById('username').value),
+      refNumber, 
+      username: sanitizeInput(document.getElementById('username').value),
       email: sanitizeInput(document.getElementById('customerEmail').value),
-      phone: iti?.getNumber() || '', tour: currentTrip.name, tripId: tripPName,
+      phone: phone,
+      tour: currentTrip.name, tripId: tripPName,
       tripDate: document.getElementById('tripDate').value,
       adults: getA(), childrenUnder12: getC(), infants: getI(),
       hotelName: sanitizeInput(document.getElementById('hotelName').value),
@@ -304,7 +417,7 @@ async function submitForm() {
       netTotal: parseFloat(net.toFixed(2)), total: parseFloat(total.toFixed(2)),
       taxes: parseFloat(tax.toFixed(2)), extraServices: selectedTripType || 'None',
       status: 'pending', resStatus: 'new', isPaid: false, paymentStatus: 'unpaid',
-      uid: user.uid, owner: tripOwnerId || user.uid,
+      uid: uid, owner: tripOwnerId || uid,
       createdAt: Date.now(), updatedAt: Date.now()
     };
     
@@ -323,7 +436,7 @@ async function submitForm() {
         message: `${booking.username} - ${getA()}A/${getC()}C/${getI()}I`,
         totalAmount: parseFloat(net.toFixed(2)), bookingId: refNumber,
         tripId: tripPName, tripName: currentTrip.name,
-        userName: booking.username, userEmail: booking.email, phone: booking.phone,
+        userName: booking.username, userEmail: booking.email, phone: phone,
         adults: getA(), children: getC(), infants: getI(),
         tripDate: booking.tripDate, read: false, timestamp: Date.now(), type: 'new_booking'
       });
@@ -331,7 +444,7 @@ async function submitForm() {
     
     sessionStorage.setItem("username", booking.username);
     sessionStorage.setItem("email", booking.email);
-    sessionStorage.setItem("phone", booking.phone);
+    sessionStorage.setItem("phone", phone);
     showToast('Redirecting to payment...');
     setTimeout(() => { window.location.href = url; }, 1000);
   } catch (e) { showToast('Error: ' + e.message, 'error'); hideSpinner(); }
@@ -489,7 +602,7 @@ function renderReviews() {
   }).join('');
 }
 function openReviewModal() {
-  if (!auth.currentUser) { showToast('Please login', 'error'); return; }
+  if (!auth.currentUser) { showToast('Please login to write a review', 'error'); return; }
   const m = document.getElementById('reviewModal');
   if (m) { m.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
 }
@@ -551,19 +664,6 @@ async function submitReview() {
 // ==========================================================================
 // INIT
 // ==========================================================================
-async function populateForm() {
-  const u = auth.currentUser; if (!u) return;
-  try {
-    const s = await db.ref('egy_user/' + u.uid).once('value'); const d = s.val();
-    if (d) {
-      if (document.getElementById('username')) document.getElementById('username').value = d.username || '';
-      if (document.getElementById('mobileUsername')) document.getElementById('mobileUsername').value = d.username || '';
-      if (document.getElementById('customerEmail')) document.getElementById('customerEmail').value = d.email || '';
-      if (document.getElementById('mobileCustomerEmail')) document.getElementById('mobileCustomerEmail').value = d.email || '';
-      if (d.phone && iti) { document.getElementById('phone').value = d.phone; iti.setNumber(d.phone); }
-    }
-  } catch (e) {}
-}
 function initCurrency() {
   currentCurrency = getCurrentCurrencyFromHeader();
   const r = getExchangeRatesFromHeader(); if (r) { exchangeRates = r; ratesLoaded = true; }
@@ -585,24 +685,41 @@ window.onload = async function () {
   if (!tripPName) { showToast("No trip specified.", 'error'); return; }
   initCurrency();
   
-  const pi = document.querySelector("#phone");
-  if (pi) try { iti = window.intlTelInput(pi, { utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js", preferredCountries: ['eg','gb','de','ru','tr','it'], separateDialCode: true, initialCountry: "eg" }); } catch (e) {}
+  // Initialize phone input
+  initPhoneInput();
   
+  // Initialize flatpickr for date inputs
   flatpickr("#tripDate", { minDate: new Date().fp_incr(1), dateFormat: "Y-m-d", disableMobile: true, onChange: updateSummary });
   flatpickr("#mobileTripDate", { minDate: new Date().fp_incr(1), dateFormat: "Y-m-d", disableMobile: true, onChange: updateMobileSummary });
   
+  // Setup stars for review
   setupStars();
   
+  // Event listeners
   document.getElementById('submitBtn')?.addEventListener('click', submitForm);
   document.getElementById('openReviewBtn')?.addEventListener('click', openReviewModal);
   document.getElementById('mobileBookNowBtn')?.addEventListener('click', showMobileBooking);
   
-  auth.onAuthStateChanged((u) => { if (u) { currentUserUid = u.uid; populateForm(); } });
+  // Auth state listener
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      currentUserUid = user.uid;
+      await populateUserData();
+    } else {
+      userLoggedIn = false;
+      showLoginPrompt();
+    }
+  });
   
+  // Load trip data
   await fetchAllTripData();
-  updateSummary(); updateMobileSummary();
+  updateSummary(); 
+  updateMobileSummary();
+  
+  // Load reviews
   setTimeout(() => { if (tripPName) loadReviews(); }, 2000);
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 1500);
 };
 
-console.log('✅ Discover Sharm - Booking System Ready');
+console.log('✅ Discover Sharm - Complete Booking System Ready');
+console.log('✅ Phone with country code | Auto-fill user data | Anonymous support');
