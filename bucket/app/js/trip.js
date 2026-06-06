@@ -1,7 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Tour Booking System
-// Complete JavaScript Controller v4.0
-// With Reviews, Bottom Sheet, Extra Services, and User Photos
+// Complete JavaScript Controller v5.0 Final
+// With Fixed Booking Card, Mobile Bottom Sheet, Reviews & User Photos
 // ==========================================================================
 
 // ==========================================================================
@@ -99,7 +99,6 @@ function showToast(message, type = 'success') {
   if (existing) existing.remove();
   
   const toast = document.createElement("div");
-  toast.className = 'toast';
   toast.style.cssText = `
     position: fixed;
     bottom: 120px;
@@ -196,13 +195,12 @@ function updateProgressBar() {
   const bar = document.getElementById('progressBar');
   if (bar) bar.style.width = ((currentStep + 1) * 25) + '%';
   
-  const steps = document.querySelectorAll('.progress-steps .step');
+  const steps = document.querySelectorAll('.booking-form-container .progress-steps .step');
   steps.forEach((s, i) => {
     if (i === currentStep) s.classList.add('active');
     else s.classList.remove('active');
   });
   
-  // Update mobile progress bar too
   const mobileBar = document.querySelector('#mobileBookingContent #progressBar');
   if (mobileBar) mobileBar.style.width = ((currentStep + 1) * 25) + '%';
   
@@ -223,8 +221,6 @@ function nextStep() {
   
   updateProgressBar();
   updateSummary();
-  
-  // Sync mobile steps
   syncMobileSteps();
 }
 
@@ -235,8 +231,6 @@ function prevStep() {
   if (prev) prev.classList.add('active');
   
   updateProgressBar();
-  
-  // Sync mobile steps
   syncMobileSteps();
 }
 
@@ -305,7 +299,6 @@ function updateSummary() {
   const setVal = (id, val) => { 
     const el = document.getElementById(id); 
     if (el) el.textContent = val;
-    // Also update mobile
     const mobileEl = document.querySelector(`#mobileBookingContent #${id}`);
     if (mobileEl) mobileEl.textContent = val;
   };
@@ -320,13 +313,12 @@ function updateSummary() {
   setVal('summaryInfants', `${infants} Infant${infants !== 1 ? 's' : ''}`);
   setVal('summaryService', selectedTripType || 'None');
   
-  // Update total price
   const totalDisplay = document.getElementById('totalPriceDisplay');
   if (totalDisplay && currentTrip.basePrice) {
     const netTotal = calculateNetTotal();
     const taxes = calculateTaxesOnly();
     const totalWithTaxes = calculateTotalWithTaxes();
-    totalDisplay.innerHTML = `
+    const html = `
       <div style="font-weight:bold;font-size:20px;">${formatPrice(netTotal)}</div>
       <div style="font-size:11px;color:#94a3b8;margin-top:8px;">
         <div style="display:flex;justify-content:space-between;border-top:1px solid #334155;padding-top:4px;margin-top:4px;">
@@ -336,12 +328,10 @@ function updateSummary() {
           <span>Total at Payment:</span><span>${formatPrice(totalWithTaxes)}</span>
         </div>
       </div>`;
-  }
-  
-  // Update mobile total too
-  const mobileTotalDisplay = document.querySelector('#mobileBookingContent #totalPriceDisplay');
-  if (mobileTotalDisplay && currentTrip.basePrice) {
-    mobileTotalDisplay.innerHTML = totalDisplay.innerHTML;
+    totalDisplay.innerHTML = html;
+    
+    const mobileTotalDisplay = document.querySelector('#mobileBookingContent #totalPriceDisplay');
+    if (mobileTotalDisplay) mobileTotalDisplay.innerHTML = html;
   }
 }
 
@@ -427,7 +417,6 @@ async function submitForm() {
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
     await db.ref('trip-bookings/' + refNumber).set({ ...bookingData, paymenturl: kashierUrl });
 
-    // Send notification to supplier
     if (tripOwnerId) {
       const notificationId = Date.now().toString();
       await db.ref(`notifications/${tripOwnerId}/${notificationId}`).set({
@@ -435,19 +424,10 @@ async function submitForm() {
         title: `New Booking: ${currentTrip.name}`,
         message: `${username} booked for ${adults} adults, ${childrenUnder12} children, ${infants} infants`,
         totalAmount: parseFloat(netTotal.toFixed(2)),
-        bookingId: refNumber,
-        tripId: tripPName,
-        tripName: currentTrip.name,
-        userName: username,
-        userEmail: email,
-        phone,
-        adults,
-        children: childrenUnder12,
-        infants,
-        tripDate,
-        read: false,
-        timestamp: Date.now(),
-        type: 'new_booking'
+        bookingId: refNumber, tripId: tripPName, tripName: currentTrip.name,
+        userName: username, userEmail: email, phone,
+        adults, children: childrenUnder12, infants, tripDate,
+        read: false, timestamp: Date.now(), type: 'new_booking'
       });
     }
 
@@ -585,9 +565,7 @@ function loadMediaContent(mediaData) {
   
   if (!swiper) {
     swiper = new Swiper('.swiper', {
-      slidesPerView: 1,
-      spaceBetween: 0,
-      loop: true,
+      slidesPerView: 1, spaceBetween: 0, loop: true,
       pagination: { el: '.swiper-pagination', clickable: true },
       navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
       on: { 
@@ -712,11 +690,7 @@ function setupStepper(plusId, minusId, inputId, min, max, updateInfants) {
     plusBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const val = parseInt(input.value);
-      if (val < max) { 
-        input.value = val + 1; 
-        if (updateInfants) updateInfantsMax(); 
-        updateSummary(); 
-      }
+      if (val < max) { input.value = val + 1; if (updateInfants) updateInfantsMax(); updateSummary(); }
     });
   }
   
@@ -724,11 +698,7 @@ function setupStepper(plusId, minusId, inputId, min, max, updateInfants) {
     minusBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const val = parseInt(input.value);
-      if (val > min) { 
-        input.value = val - 1; 
-        if (updateInfants) updateInfantsMax(); 
-        updateSummary(); 
-      }
+      if (val > min) { input.value = val - 1; if (updateInfants) updateInfantsMax(); updateSummary(); }
     });
   }
 }
@@ -750,7 +720,7 @@ function initFlatpickr() {
 }
 
 // ==========================================================================
-// MOBILE BOTTOM SHEET - COMPLETE FIXED VERSION
+// MOBILE BOTTOM SHEET - COMPLETE WORKING VERSION
 // ==========================================================================
 function isMobile() { return window.innerWidth <= 768; }
 
@@ -770,14 +740,13 @@ function openMobileBottomSheet() {
   clone.style.cssText = 'position:relative;top:auto;max-height:none;display:block;box-shadow:none;border:none;padding:0;background:transparent;';
   content.appendChild(clone);
   
-  // Show overlay and sheet
   overlay.classList.remove('hidden');
   sheet.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   
-  // Initialize cloned elements after a delay
+  // Initialize cloned elements
   setTimeout(() => {
-    // Re-init flatpickr for cloned date input
+    // Re-init flatpickr
     const clonedDateInput = content.querySelector('#tripDate');
     if (clonedDateInput) {
       if (clonedDateInput._flatpickr) clonedDateInput._flatpickr.destroy();
@@ -786,15 +755,13 @@ function openMobileBottomSheet() {
         dateFormat: "Y-m-d",
         disableMobile: true,
         onChange: function(selectedDates, dateStr) {
-          // Sync with original date input
-          const origDate = document.getElementById('tripDate');
-          if (origDate) origDate.value = dateStr;
+          document.getElementById('tripDate').value = dateStr;
           updateSummary();
         }
       });
     }
     
-    // Re-attach select change for extra services
+    // Re-attach select
     const clonedSelect = content.querySelector('#tripType');
     if (clonedSelect) {
       clonedSelect.value = selectedTripType || '';
@@ -805,110 +772,120 @@ function openMobileBottomSheet() {
       };
     }
     
-    // Re-attach ALL button events
+    // Re-attach ALL buttons
     attachAllMobileButtonEvents(content);
     
-    // Re-attach stepper controls
+    // Re-attach steppers
     attachMobileSteppers(content);
     
-    // Sync current step
+    // Sync steps
     syncMobileSteps();
     
   }, 200);
   
-  // Scroll to top
   setTimeout(() => { sheet.scrollTop = 0; }, 300);
-  
   updateSummary();
 }
 
 function attachAllMobileButtonEvents(container) {
   if (!container) return;
   
-  // Find all NEXT/CONTINUE buttons
-  const nextButtons = container.querySelectorAll('.btn-primary');
-  nextButtons.forEach(btn => {
-    const text = btn.textContent || '';
-    if (text.includes('Continue') || text.includes('Next') || text.includes('Review')) {
-      btn.onclick = function(e) {
+  // Clone and replace all buttons to remove old events
+  const allButtons = container.querySelectorAll('button');
+  allButtons.forEach(btn => {
+    const newBtn = btn.cloneNode(true);
+    if (btn.parentNode) btn.parentNode.replaceChild(newBtn, btn);
+  });
+  
+  // Get fresh buttons
+  const freshButtons = container.querySelectorAll('button');
+  
+  freshButtons.forEach(btn => {
+    const btnText = (btn.textContent || '').trim();
+    
+    // NEXT/CONTINUE/REVIEW buttons
+    if (btnText.includes('Continue') || btnText.includes('Next') || btnText.includes('Review')) {
+      btn.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        
         if (validateCurrentStep()) {
-          // Advance step in mobile
           const mobileSteps = container.querySelectorAll('.form-step');
-          let mobileCurrentStep = 0;
+          let currentMobileStep = 0;
           mobileSteps.forEach((s, i) => {
-            if (s.classList.contains('active')) mobileCurrentStep = i;
+            if (s.classList.contains('active')) currentMobileStep = i;
             s.classList.remove('active');
           });
-          mobileCurrentStep++;
-          if (mobileSteps[mobileCurrentStep]) {
-            mobileSteps[mobileCurrentStep].classList.add('active');
+          
+          const nextStepIndex = currentMobileStep + 1;
+          if (mobileSteps[nextStepIndex]) {
+            mobileSteps[nextStepIndex].classList.add('active');
           }
           
-          // Also advance desktop
-          document.getElementById(`step${currentStep + 1}`).classList.remove('active');
+          document.getElementById(`step${currentStep + 1}`)?.classList.remove('active');
           currentStep++;
-          const next = document.getElementById(`step${currentStep + 1}`);
-          if (next) next.classList.add('active');
+          document.getElementById(`step${currentStep + 1}`)?.classList.add('active');
           
           updateProgressBar();
           updateSummary();
+          
+          const sheet = document.getElementById('mobileBottomSheet');
+          if (sheet) sheet.scrollTop = 0;
         }
-      };
+      });
     }
     
-    if (text.includes('Confirm') || text.includes('Pay')) {
-      btn.onclick = function(e) {
+    // CONFIRM & PAY button
+    if (btnText.includes('Confirm') || btnText.includes('Pay')) {
+      btn.addEventListener('click', function(e) {
         e.preventDefault();
-        // Sync all values back to desktop form before submitting
+        e.stopPropagation();
         syncMobileToDesktop(container);
         submitForm();
-      };
+      });
+    }
+    
+    // BACK button
+    if (btnText.includes('Back')) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const mobileSteps = container.querySelectorAll('.form-step');
+        let currentMobileStep = 0;
+        mobileSteps.forEach((s, i) => {
+          if (s.classList.contains('active')) currentMobileStep = i;
+          s.classList.remove('active');
+        });
+        
+        const prevStepIndex = currentMobileStep - 1;
+        if (mobileSteps[prevStepIndex]) {
+          mobileSteps[prevStepIndex].classList.add('active');
+        }
+        
+        document.getElementById(`step${currentStep + 1}`)?.classList.remove('active');
+        currentStep--;
+        document.getElementById(`step${currentStep + 1}`)?.classList.add('active');
+        
+        updateProgressBar();
+        
+        const sheet = document.getElementById('mobileBottomSheet');
+        if (sheet) sheet.scrollTop = 0;
+      });
     }
   });
   
-  // Find all BACK buttons
-  const backButtons = container.querySelectorAll('.btn-secondary');
-  backButtons.forEach(btn => {
-    if ((btn.textContent || '').includes('Back')) {
-      btn.onclick = function(e) {
-        e.preventDefault();
-        // Go back in mobile
-        const mobileSteps = container.querySelectorAll('.form-step');
-        let mobileCurrentStep = 0;
-        mobileSteps.forEach((s, i) => {
-          if (s.classList.contains('active')) mobileCurrentStep = i;
-          s.classList.remove('active');
-        });
-        mobileCurrentStep--;
-        if (mobileSteps[mobileCurrentStep]) {
-          mobileSteps[mobileCurrentStep].classList.add('active');
-        }
-        
-        // Also go back in desktop
-        document.getElementById(`step${currentStep + 1}`).classList.remove('active');
-        currentStep--;
-        const prev = document.getElementById(`step${currentStep + 1}`);
-        if (prev) prev.classList.add('active');
-        
-        updateProgressBar();
-      };
-    }
-  });
+  attachMobileSteppers(container);
 }
 
 function syncMobileToDesktop(container) {
-  // Sync all input values from mobile to desktop before submission
   const fields = ['username', 'customerEmail', 'phone', 'tripDate', 'hotelName', 'roomNumber', 'adults', 'childrenUnder12', 'infants'];
   fields.forEach(fieldId => {
     const mobileField = container.querySelector(`#${fieldId}`);
     const desktopField = document.getElementById(fieldId);
-    if (mobileField && desktopField) {
-      desktopField.value = mobileField.value;
-    }
+    if (mobileField && desktopField) desktopField.value = mobileField.value;
   });
   
-  // Sync extra services
   const mobileSelect = container.querySelector('#tripType');
   if (mobileSelect) {
     selectedTripType = mobileSelect.value;
@@ -925,32 +902,37 @@ function attachMobileSteppers(container) {
     const input = container.querySelector(inputSel);
     
     if (plusBtn && input) {
-      plusBtn.onclick = function(e) {
+      const newPlusBtn = plusBtn.cloneNode(true);
+      plusBtn.parentNode.replaceChild(newPlusBtn, plusBtn);
+      newPlusBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         const val = parseInt(input.value);
         if (val < max) {
           input.value = val + 1;
-          // Sync with desktop
           const desktopInput = document.querySelector(inputSel);
-          if (desktopInput && desktopInput !== input) desktopInput.value = input.value;
+          if (desktopInput) desktopInput.value = input.value;
           if (updateInfantsFn) updateInfantsMax();
           updateSummary();
         }
-      };
+      });
     }
     
     if (minusBtn && input) {
-      minusBtn.onclick = function(e) {
+      const newMinusBtn = minusBtn.cloneNode(true);
+      minusBtn.parentNode.replaceChild(newMinusBtn, minusBtn);
+      newMinusBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         const val = parseInt(input.value);
         if (val > min) {
           input.value = val - 1;
           const desktopInput = document.querySelector(inputSel);
-          if (desktopInput && desktopInput !== input) desktopInput.value = input.value;
+          if (desktopInput) desktopInput.value = input.value;
           if (updateInfantsFn) updateInfantsMax();
           updateSummary();
         }
-      };
+      });
     }
   };
   
@@ -962,7 +944,6 @@ function attachMobileSteppers(container) {
 function closeMobileBottomSheet() {
   const overlay = document.getElementById('mobileBottomSheetOverlay');
   const sheet = document.getElementById('mobileBottomSheet');
-  
   if (overlay) overlay.classList.add('hidden');
   if (sheet) sheet.classList.add('hidden');
   document.body.style.overflow = '';
@@ -974,20 +955,7 @@ function closeMobileBottomSheet() {
 
 function getUserPhotoUrl(userId) {
   if (!userId) return null;
-  // Try both jpg and png
   return `/app/photos/${userId}.jpg`;
-}
-
-function handleImageError(imgElement, userId) {
-  // If jpg fails, try png
-  if (imgElement.src.endsWith('.jpg')) {
-    imgElement.src = `/app/photos/${userId}.png`;
-  }
-  // If both fail, hide the image and show fallback
-  imgElement.onerror = function() {
-    imgElement.style.display = 'none';
-    imgElement.parentElement.querySelector('.photo-fallback').style.display = 'flex';
-  };
 }
 
 async function loadReviews() {
@@ -1036,16 +1004,9 @@ function updateStarsSummary(average, count) {
         const full = Math.floor(average);
         const half = (average % 1) >= 0.5;
         
-        for (let i = 0; i < full; i++) {
-            container.innerHTML += '<i class="fas fa-star"></i>';
-        }
-        if (half) {
-            container.innerHTML += '<i class="fas fa-star-half-alt"></i>';
-        }
-        const emptyStars = 5 - Math.ceil(average);
-        for (let i = 0; i < emptyStars; i++) {
-            container.innerHTML += '<i class="far fa-star"></i>';
-        }
+        for (let i = 0; i < full; i++) container.innerHTML += '<i class="fas fa-star"></i>';
+        if (half) container.innerHTML += '<i class="fas fa-star-half-alt"></i>';
+        for (let i = container.children.length; i < 5; i++) container.innerHTML += '<i class="far fa-star"></i>';
     }
     
     if (countSpan) {
@@ -1063,8 +1024,7 @@ function renderReviews() {
                 <i class="fas fa-star"></i>
                 <p>No reviews yet</p>
                 <span>Be the first to review this trip</span>
-            </div>
-        `;
+            </div>`;
         return;
     }
     
@@ -1079,29 +1039,20 @@ function renderReviews() {
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="position: relative; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: linear-gradient(135deg, #FF6B35, #FFA630);">
-                            <img src="${photoUrl}" 
-                                 alt="${escapeHtml(review.userName || 'User')}" 
-                                 style="width: 100%; height: 100%; object-fit: cover;"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                 loading="lazy">
-                            <div class="photo-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff;">
-                                ${initial}
-                            </div>
+                            <img src="${photoUrl}" alt="" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" loading="lazy">
+                            <div class="photo-fallback" style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff;">${initial}</div>
                         </div>
                         <div>
                             <div style="font-weight: 600; color: #fff; font-size: 14px;">${escapeHtml(review.userName || 'User')}</div>
                             <div style="display: flex; gap: 2px; font-size: 11px; margin-top: 2px;">
-                                ${Array(5).fill().map((_, i) => 
-                                    i < review.rating ? '<i class="fas fa-star" style="color: #f59e0b;"></i>' : '<i class="far fa-star" style="color: #64748b;"></i>'
-                                ).join('')}
+                                ${Array(5).fill().map((_, i) => i < review.rating ? '<i class="fas fa-star" style="color: #f59e0b;"></i>' : '<i class="far fa-star" style="color: #64748b;"></i>').join('')}
                             </div>
                         </div>
                     </div>
                     <span style="font-size: 11px; color: #64748b; white-space: nowrap;">${formattedDate}</span>
                 </div>
                 <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; margin: 0;">${escapeHtml(review.comment)}</p>
-            </div>
-        `;
+            </div>`;
     }).join('');
 }
 
@@ -1113,7 +1064,7 @@ function escapeHtml(text) {
 }
 
 // ==========================================================================
-// REVIEW MODAL - POPUP LIKE REVIEWS SYSTEM
+// REVIEW MODAL
 // ==========================================================================
 function createReviewModal() {
     const existingModal = document.getElementById('reviewModal');
@@ -1167,35 +1118,22 @@ function createReviewModal() {
 
 async function verifyVoucher(voucherNumber) {
     const user = auth.currentUser;
-    if (!user) {
-        showToast('Please login first', 'error');
-        return false;
-    }
+    if (!user) { showToast('Please login first', 'error'); return false; }
     
     try {
         const snapshot = await db.ref('trip-bookings/' + voucherNumber).once('value');
         const booking = snapshot.val();
         
-        if (!booking) {
-            showToast('Invalid voucher number. Please check and try again.', 'error');
-            return false;
-        }
-        
-        if (booking.uid !== user.uid) {
-            showToast('This voucher belongs to another user.', 'error');
-            return false;
-        }
+        if (!booking) { showToast('Invalid voucher number.', 'error'); return false; }
+        if (booking.uid !== user.uid) { showToast('This voucher belongs to another user.', 'error'); return false; }
         
         const bookingTripId = booking.tripId || booking.Id || '';
-        if (bookingTripId !== tripPName) {
-            showToast('This voucher is for a different trip.', 'error');
-            return false;
-        }
+        if (bookingTripId !== tripPName) { showToast('This voucher is for a different trip.', 'error'); return false; }
         
         return true;
     } catch (error) {
         console.error('Voucher verification error:', error);
-        showToast('Error verifying voucher. Please try again.', 'error');
+        showToast('Error verifying voucher.', 'error');
         return false;
     }
 }
@@ -1221,28 +1159,17 @@ async function submitReviewHandler() {
     
     try {
         const user = auth.currentUser;
-        
         let userName = 'Traveler';
         try {
             const userSnapshot = await db.ref('egy_user/' + user.uid).once('value');
             const userData = userSnapshot.val();
-            if (userData) {
-                userName = userData.username || userData.name || user.email?.split('@')[0] || 'Traveler';
-            } else {
-                userName = user.email?.split('@')[0] || 'Traveler';
-            }
-        } catch (e) {
-            userName = user.email?.split('@')[0] || 'Traveler';
-        }
+            if (userData) userName = userData.username || userData.name || user.email?.split('@')[0] || 'Traveler';
+            else userName = user.email?.split('@')[0] || 'Traveler';
+        } catch (e) { userName = user.email?.split('@')[0] || 'Traveler'; }
         
         const reviewData = {
-            userId: user.uid,
-            userName: userName,
-            rating: rating,
-            comment: comment,
-            date: new Date().toISOString(),
-            approved: true,
-            voucher: voucher
+            userId: user.uid, userName, rating, comment,
+            date: new Date().toISOString(), approved: true, voucher
         };
         
         const reviewsRef = db.ref('trip-reviews/' + tripPName);
@@ -1264,20 +1191,16 @@ async function submitReviewHandler() {
         }
         
         const newAverage = newCount > 0 ? totalRating / newCount : 0;
-        await reviewsRef.update({
-            count: newCount,
-            average: parseFloat(newAverage.toFixed(1))
-        });
+        await reviewsRef.update({ count: newCount, average: parseFloat(newAverage.toFixed(1)) });
         
         closeReviewModal();
         resetReviewForm();
         await loadReviews();
-        
-        showToast(currentUserReview ? 'Review updated successfully!' : 'Thank you for your review!', 'success');
+        showToast(currentUserReview ? 'Review updated!' : 'Thank you for your review!', 'success');
         
     } catch (error) {
         console.error('Review submission error:', error);
-        showToast('Error submitting review: ' + (error.message || 'Unknown error'), 'error');
+        showToast('Error: ' + (error.message || 'Unknown error'), 'error');
     } finally {
         submitBtn.innerHTML = originalHTML;
         submitBtn.disabled = false;
@@ -1285,43 +1208,28 @@ async function submitReviewHandler() {
 }
 
 function resetReviewForm() {
-    const voucherInput = document.getElementById('voucherInput');
-    const commentInput = document.getElementById('commentInput');
-    const ratingValue = document.getElementById('ratingValue');
-    const charCount = document.getElementById('charCount');
-    
-    if (voucherInput) voucherInput.value = '';
-    if (commentInput) commentInput.value = '';
-    if (ratingValue) ratingValue.value = '0';
-    if (charCount) charCount.textContent = '0';
-    
-    document.querySelectorAll('#starSelector i').forEach(s => {
-        s.className = 'far fa-star';
-        s.style.color = '#64748b';
-    });
+    const vi = document.getElementById('voucherInput');
+    const ci = document.getElementById('commentInput');
+    const rv = document.getElementById('ratingValue');
+    const cc = document.getElementById('charCount');
+    if (vi) vi.value = '';
+    if (ci) ci.value = '';
+    if (rv) rv.value = '0';
+    if (cc) cc.textContent = '0';
+    document.querySelectorAll('#starSelector i').forEach(s => { s.className = 'far fa-star'; s.style.color = '#64748b'; });
 }
 
 function closeReviewModal() {
     const modal = document.getElementById('reviewModal');
-    if (modal) {
-        modal.style.display = 'none';
-        modal.classList.add('hidden');
-    }
+    if (modal) { modal.style.display = 'none'; modal.classList.add('hidden'); }
     document.body.style.overflow = '';
 }
 
 function openReviewModal() {
     const user = auth.currentUser;
-    if (!user) {
-        showToast('Please login first', 'error');
-        return;
-    }
+    if (!user) { showToast('Please login first', 'error'); return; }
     
-    // Create modal if not exists
-    if (!document.getElementById('reviewModal')) {
-        createReviewModal();
-        setupReviewModalEvents();
-    }
+    if (!document.getElementById('reviewModal')) { createReviewModal(); setupReviewModalEvents(); }
     
     const modal = document.getElementById('reviewModal');
     if (modal) {
@@ -1335,16 +1243,10 @@ function openReviewModal() {
             document.getElementById('commentInput').value = currentUserReview.comment || '';
             document.getElementById('ratingValue').value = currentUserReview.rating || 0;
             document.getElementById('charCount').textContent = (currentUserReview.comment || '').length;
-            
             const stars = document.querySelectorAll('#starSelector i');
             stars.forEach((s, i) => {
-                if (i < (currentUserReview.rating || 0)) {
-                    s.className = 'fas fa-star';
-                    s.style.color = '#f59e0b';
-                } else {
-                    s.className = 'far fa-star';
-                    s.style.color = '#64748b';
-                }
+                if (i < (currentUserReview.rating || 0)) { s.className = 'fas fa-star'; s.style.color = '#f59e0b'; }
+                else { s.className = 'far fa-star'; s.style.color = '#64748b'; }
             });
         } else {
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-star"></i> Write a Review';
@@ -1357,61 +1259,40 @@ function setupReviewModalEvents() {
     const modal = document.getElementById('reviewModal');
     if (!modal) return;
     
-    // Star rating
     const stars = document.querySelectorAll('#starSelector i');
     stars.forEach(star => {
         star.addEventListener('click', () => {
             const rating = parseInt(star.dataset.rating);
             document.getElementById('ratingValue').value = rating;
             stars.forEach((s, i) => {
-                if (i < rating) {
-                    s.className = 'fas fa-star';
-                    s.style.color = '#f59e0b';
-                } else {
-                    s.className = 'far fa-star';
-                    s.style.color = '#64748b';
-                }
+                if (i < rating) { s.className = 'fas fa-star'; s.style.color = '#f59e0b'; }
+                else { s.className = 'far fa-star'; s.style.color = '#64748b'; }
             });
         });
-        
         star.addEventListener('mouseenter', () => {
             const rating = parseInt(star.dataset.rating);
-            stars.forEach((s, i) => {
-                if (i < rating) s.style.color = '#fbbf24';
-            });
+            stars.forEach((s, i) => { if (i < rating) s.style.color = '#fbbf24'; });
         });
-        
         star.addEventListener('mouseleave', () => {
             const currentRating = parseInt(document.getElementById('ratingValue').value) || 0;
-            stars.forEach((s, i) => {
-                if (i >= currentRating) s.style.color = '#64748b';
-            });
+            stars.forEach((s, i) => { if (i >= currentRating) s.style.color = '#64748b'; });
         });
     });
     
-    // Character count
     const commentInput = document.getElementById('commentInput');
     const charCount = document.getElementById('charCount');
     if (commentInput && charCount) {
         commentInput.addEventListener('input', () => {
             let len = commentInput.value.length;
-            if (len > 500) {
-                commentInput.value = commentInput.value.substring(0, 500);
-                len = 500;
-            }
+            if (len > 500) { commentInput.value = commentInput.value.substring(0, 500); len = 500; }
             charCount.textContent = len;
         });
     }
     
-    // Close buttons
     document.getElementById('closeModalBtn')?.addEventListener('click', closeReviewModal);
     document.getElementById('cancelReviewBtn')?.addEventListener('click', closeReviewModal);
     document.getElementById('reviewModalOverlay')?.addEventListener('click', closeReviewModal);
-    
-    // Submit button
     document.getElementById('submitReviewBtn')?.addEventListener('click', submitReviewHandler);
-    
-    // Open button
     document.getElementById('openReviewBtn')?.addEventListener('click', openReviewModal);
 }
 
@@ -1427,20 +1308,15 @@ async function populateForm() {
     const userData = userSnapshot.val();
     
     if (userData) {
-      if (document.getElementById("username")) 
-        document.getElementById("username").value = userData.username || "";
-      if (document.getElementById("customerEmail")) 
-        document.getElementById("customerEmail").value = userData.email || "";
-      if (document.getElementById("uid")) 
-        document.getElementById("uid").value = user.uid || "";
+      if (document.getElementById("username")) document.getElementById("username").value = userData.username || "";
+      if (document.getElementById("customerEmail")) document.getElementById("customerEmail").value = userData.email || "";
+      if (document.getElementById("uid")) document.getElementById("uid").value = user.uid || "";
       if (userData.phone && iti && document.getElementById("phone")) {
         document.getElementById("phone").value = userData.phone;
         iti.setNumber(userData.phone);
       }
     }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
+  } catch (error) { console.error("Error fetching user data:", error); }
 }
 
 function initCurrencyFromHeader() {
@@ -1466,7 +1342,6 @@ window.onload = async function () {
 
   initCurrencyFromHeader();
 
-  // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
     try {
@@ -1476,53 +1351,35 @@ window.onload = async function () {
         separateDialCode: true,
         initialCountry: "eg",
       });
-    } catch (error) {
-      console.error("intlTelInput initialization failed:", error);
-    }
+    } catch (error) { console.error("intlTelInput initialization failed:", error); }
   }
 
-  // Initialize controls
   initNumberControls();
   initFlatpickr();
 
-  // Desktop submit button
   document.getElementById('submitBtn')?.addEventListener('click', submitForm);
-  
-  // Mobile bottom sheet
   document.getElementById('mobileBookNowBtn')?.addEventListener('click', openMobileBottomSheet);
   document.getElementById('mobileBottomSheetOverlay')?.addEventListener('click', function(e) {
     if (e.target === this) closeMobileBottomSheet();
   });
 
-  // Swipe to close mobile sheet
   const mobileSheet = document.getElementById('mobileBottomSheet');
   if (mobileSheet) {
     let touchStartY = 0;
-    mobileSheet.addEventListener('touchstart', (e) => { 
-      touchStartY = e.changedTouches[0].screenY; 
-    }, { passive: true });
+    mobileSheet.addEventListener('touchstart', (e) => { touchStartY = e.changedTouches[0].screenY; }, { passive: true });
     mobileSheet.addEventListener('touchend', (e) => {
-      if (e.changedTouches[0].screenY > touchStartY + 80 && mobileSheet.scrollTop <= 0) {
-        closeMobileBottomSheet();
-      }
+      if (e.changedTouches[0].screenY > touchStartY + 80 && mobileSheet.scrollTop <= 0) closeMobileBottomSheet();
     }, { passive: true });
   }
 
-  // Auth state listener
   auth.onAuthStateChanged((user) => {
-    if (user) { 
-      currentUserUid = user.uid; 
-      populateForm(); 
-    } else { 
-      currentUserUid = 'anonymous'; 
-    }
+    if (user) { currentUserUid = user.uid; populateForm(); }
+    else { currentUserUid = 'anonymous'; }
   });
 
-  // Load trip data
   await fetchAllTripData();
   updateSummary();
   
-  // Initialize Reviews System
   setTimeout(() => {
     if (tripPName) {
       createReviewModal();
@@ -1531,10 +1388,8 @@ window.onload = async function () {
     }
   }, 2000);
   
-  // Delayed updates
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 500);
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 1500);
 };
 
-console.log('✅ Discover Sharm - Tour Booking System v4.0 Initialized');
-console.log('✅ Features: Reviews with Photos | Bottom Sheet | Extra Services | Flatpickr');
+console.log('✅ Discover Sharm - Booking System v5.0 Final');
