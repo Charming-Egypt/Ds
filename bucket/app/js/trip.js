@@ -1106,7 +1106,7 @@ function createReviewModal() {
                     <div style="text-align: right; font-size: 10px; color: #64748b; margin-top: 4px;"><span id="charCount">0</span>/500</div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button id="cancelReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 600; flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; transition: 0.2s;">Cancel</button>
+                    <button id="cancelReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 600; display:flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; transition: 0.2s;">Cancel</button>
                     <button id="submitReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: none; background: linear-gradient(135deg, #FF6B35, #FFA630); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="fas fa-paper-plane"></i> Submit</button>
                 </div>
             </div>
