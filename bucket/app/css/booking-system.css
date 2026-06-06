@@ -1,43 +1,51 @@
 /* ==========================================================================
    DISCOVER SHARM - Booking & Payment System
-   Single Booking Card - Desktop & Mobile
-   Background: #1e1e1e | Accent: #f59e0b (Orange)
+   Complete CSS - Dark Theme #1e1e1e + Orange #f59e0b
+   Flatpickr fully themed | Phone beside country code
    ========================================================================== */
 
 :root {
+  /* Background */
   --bs-bg: #1e1e1e;
   --bs-bg-light: #252525;
   --bs-bg-lighter: #2a2a2a;
   --bs-bg-card: #222222;
   --bs-bg-input: #1a1a1a;
   
+  /* Accent - Orange */
   --bs-accent: #f59e0b;
   --bs-accent-dark: #d97706;
   --bs-accent-light: #fbbf24;
   --bs-accent-glow: rgba(245, 158, 11, 0.15);
   
+  /* Text */
   --bs-text: #ffffff;
   --bs-text-secondary: #b0b0b0;
   --bs-text-muted: #888888;
   
+  /* Borders */
   --bs-border: #2e2e2e;
   --bs-border-light: #333333;
   --bs-border-accent: rgba(245, 158, 11, 0.3);
   
+  /* Status */
   --bs-success: #22c55e;
   --bs-error: #ef4444;
   
+  /* Radius */
   --bs-radius-sm: 8px;
   --bs-radius-md: 12px;
   --bs-radius-lg: 16px;
   --bs-radius-xl: 20px;
   --bs-radius-full: 50px;
   
+  /* Shadows */
   --bs-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --bs-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --bs-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --bs-shadow-orange: 0 4px 20px rgba(245, 158, 11, 0.15);
   
+  /* Transitions */
   --bs-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -217,6 +225,33 @@
   cursor: pointer;
 }
 
+textarea.input-field {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* ==========================================================================
+   INLINE FIELD ERRORS
+   ========================================================================== */
+.field-error {
+  color: #ef4444;
+  font-size: 11px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.2s ease;
+}
+
+.field-error i {
+  font-size: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ==========================================================================
    SERVICES BUTTON
    ========================================================================== */
@@ -352,8 +387,6 @@
   justify-content: center;
   gap: 8px;
   transition: var(--bs-transition);
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-primary:hover {
@@ -524,6 +557,18 @@
 }
 
 /* ==========================================================================
+   TOAST
+   ========================================================================== */
+.bs-toast {
+  animation: bsSlideUp 0.35s ease;
+}
+
+@keyframes bsSlideUp {
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ==========================================================================
    SERVICES POPUP
    ========================================================================== */
 .services-popup {
@@ -684,42 +729,88 @@
 }
 
 /* ==========================================================================
-   TOAST
+   STARS SELECTOR
    ========================================================================== */
-.bs-toast {
-  animation: bsSlideUp 0.35s ease;
+.stars-selector {
+  display: flex;
+  gap: 6px;
+  font-size: 30px;
 }
 
-@keyframes bsSlideUp {
-  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
-  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+.stars-selector i {
+  color: var(--bs-text-muted);
+  cursor: pointer;
+  transition: var(--bs-transition);
+}
+
+.stars-selector i.active,
+.stars-selector i:hover {
+  color: var(--bs-accent);
+}
+
+.stars-selector i.fas {
+  color: var(--bs-accent);
 }
 
 /* ==========================================================================
-   INTL-TEL-INPUT
+   INTL-TEL-INPUT - Phone beside country code
    ========================================================================== */
 .iti {
   width: 100%;
+  display: block;
 }
 
+/* Country flag container */
+.iti__flag-container {
+  padding: 0;
+  z-index: 10;
+}
+
+/* Selected flag button */
 .iti__selected-flag {
   background: #1a1a1a !important;
   border: 1.5px solid #2e2e2e;
-  border-right: none;
+  border-right: 1px solid #2e2e2e;
   border-radius: 12px 0 0 12px;
-  padding: 0 12px !important;
+  padding: 0 10px 0 12px !important;
   height: 48px;
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .iti__selected-flag:hover {
   background: #222 !important;
 }
 
+.iti__selected-flag:focus {
+  outline: none;
+}
+
+/* Flag icon */
+.iti__flag {
+  margin: 0;
+  box-shadow: none;
+  border-radius: 2px;
+}
+
+/* Arrow */
+.iti__arrow {
+  border-top: 4px solid #888;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  margin-left: 4px;
+}
+
+.iti__selected-flag:hover .iti__arrow {
+  border-top-color: #f59e0b;
+}
+
+/* Phone input */
 .iti input[type="tel"] {
-  padding-left: 60px !important;
+  padding-left: 95px !important;
   height: 48px !important;
   width: 100% !important;
   background: #1a1a1a !important;
@@ -728,6 +819,7 @@
   color: #fff !important;
   font-size: 14px !important;
   box-sizing: border-box !important;
+  font-family: inherit !important;
 }
 
 .iti input[type="tel"]:focus {
@@ -736,20 +828,36 @@
   outline: none !important;
 }
 
+.iti input[type="tel"]::placeholder {
+  color: #555;
+}
+
+/* Dropdown list */
 .iti__country-list {
   background: #1e1e1e !important;
   border: 1px solid #333 !important;
   border-radius: 8px !important;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+  max-height: 200px !important;
   z-index: 99999 !important;
+  margin-top: 4px;
 }
 
 .iti__country {
   color: #fff !important;
+  padding: 8px 12px !important;
+  font-size: 13px;
 }
 
-.iti__country:hover,
+.iti__country:hover {
+  background: #2a2a2a !important;
+}
+
 .iti__country.iti__highlight {
+  background: #2a2a2a !important;
+}
+
+.iti__country.iti__active {
   background: #2a2a2a !important;
 }
 
@@ -757,8 +865,58 @@
   color: #888 !important;
 }
 
+.iti__country-name {
+  color: #ccc !important;
+}
+
+/* Divider */
+.iti__divider {
+  border-color: #333 !important;
+  margin: 0 12px;
+}
+
+/* Search input */
+.iti__search-input {
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  color: #fff !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  width: calc(100% - 24px) !important;
+  margin: 8px 12px !important;
+  font-size: 13px;
+}
+
+.iti__search-input:focus {
+  outline: none;
+  border-color: #f59e0b !important;
+}
+
+.iti__search-input::placeholder {
+  color: #555;
+}
+
+/* Hide the "selected" flag in dropdown */
+.iti__country.iti__active .iti__flag-box {
+  /* Already highlighted */
+}
+
+/* Scrollbar in dropdown */
+.iti__country-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.iti__country-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.iti__country-list::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
 /* ==========================================================================
-   FLATPICKR
+   FLATPICKR - Fully themed #1e1e1e + Orange
    ========================================================================== */
 .flatpickr-calendar {
   background: #1e1e1e !important;
@@ -766,49 +924,265 @@
   border-radius: 12px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
   z-index: 99999 !important;
+  font-family: inherit !important;
+  padding: 8px;
+  width: 300px !important;
 }
 
-.flatpickr-month {
+/* Arrow */
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+  border-bottom-color: #1e1e1e !important;
+}
+
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after {
+  border-top-color: #1e1e1e !important;
+}
+
+/* Month header */
+.flatpickr-months {
+  padding: 4px 0 8px;
+  background: transparent !important;
+}
+
+.flatpickr-months .flatpickr-month {
   color: #fff !important;
+  fill: #fff !important;
+  height: 40px !important;
+}
+
+.flatpickr-current-month {
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flatpickr-current-month .numInputWrapper {
+  width: 55px;
+}
+
+.flatpickr-current-month .numInputWrapper input {
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.flatpickr-current-month .numInputWrapper span {
+  border-color: #444 !important;
+  padding: 0 4px;
+}
+
+.flatpickr-current-month .numInputWrapper span:hover {
+  background: #2a2a2a !important;
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowUp:after {
+  border-bottom-color: #888 !important;
+}
+
+.flatpickr-current-month .numInputWrapper span.arrowDown:after {
+  border-top-color: #888 !important;
+}
+
+/* Navigation arrows */
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  padding: 8px !important;
+  fill: #888 !important;
+  transition: all 0.2s ease !important;
+  top: 4px;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  fill: #f59e0b !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+  fill: #f59e0b !important;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Weekdays */
+.flatpickr-weekdays {
+  background: transparent !important;
+  padding: 8px 0 4px;
 }
 
 .flatpickr-weekday {
   color: #f59e0b !important;
+  font-weight: 600 !important;
+  font-size: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
+/* Days container */
+.flatpickr-days {
+  padding: 4px;
+  width: 100% !important;
+}
+
+/* Day cells */
 .flatpickr-day {
   color: #ccc !important;
   border-radius: 8px !important;
+  border: 2px solid transparent !important;
+  font-size: 13px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  max-width: 36px !important;
+  transition: all 0.15s ease !important;
+  margin: 1px;
 }
 
 .flatpickr-day:hover {
   background: #2a2a2a !important;
   color: #fff !important;
+  border-color: #2a2a2a !important;
 }
 
 .flatpickr-day.today {
-  border: 1px solid #f59e0b !important;
+  border-color: #f59e0b !important;
   color: #f59e0b !important;
+  font-weight: 600 !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+
+.flatpickr-day.today:hover {
+  background: #f59e0b !important;
+  color: #000 !important;
+  border-color: #f59e0b !important;
+}
+
+.flatpickr-day.today:focus {
+  background: #f59e0b !important;
+  color: #000 !important;
 }
 
 .flatpickr-day.selected {
   background: #f59e0b !important;
   color: #000 !important;
   font-weight: 700 !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
 }
 
-.flatpickr-day.flatpickr-disabled {
+.flatpickr-day.selected:hover {
+  background: #d97706 !important;
+  border-color: #d97706 !important;
+}
+
+.flatpickr-day.selected:focus {
+  background: #d97706 !important;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
   color: #444 !important;
+  cursor: not-allowed;
+  background: transparent !important;
+  border-color: transparent !important;
 }
 
-.flatpickr-prev-month svg,
-.flatpickr-next-month svg {
-  fill: #888 !important;
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #555 !important;
 }
 
-.flatpickr-prev-month:hover svg,
-.flatpickr-next-month:hover svg {
-  fill: #f59e0b !important;
+.flatpickr-day.prevMonthDay:hover,
+.flatpickr-day.nextMonthDay:hover {
+  color: #fff !important;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(245, 158, 11, 0.08) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.flatpickr-day.startRange {
+  border-radius: 8px 0 0 8px !important;
+}
+
+.flatpickr-day.endRange {
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #f59e0b !important;
+  color: #000 !important;
+  border-color: #f59e0b !important;
+}
+
+.flatpickr-day.startRange + .flatpickr-day.endRange {
+  box-shadow: none !important;
+}
+
+/* Time picker */
+.flatpickr-time {
+  border-top: 1px solid #333 !important;
+  background: #1a1a1a !important;
+  border-radius: 0 0 12px 12px !important;
+  max-height: 45px !important;
+  margin-top: 4px;
+}
+
+.flatpickr-time input {
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+  background: #222 !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+  color: #888 !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time .flatpickr-am-pm:focus {
+  background: #222 !important;
+  color: #f59e0b !important;
+}
+
+.flatpickr-time .numInputWrapper span {
+  border-color: #444 !important;
+}
+
+.flatpickr-time .numInputWrapper span:hover {
+  background: #333 !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp:after {
+  border-bottom-color: #888 !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowDown:after {
+  border-top-color: #888 !important;
+}
+
+/* Time separator */
+.flatpickr-time .flatpickr-time-separator {
+  color: #f59e0b !important;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -817,6 +1191,11 @@
 .booking-card::-webkit-scrollbar,
 .services-popup-content::-webkit-scrollbar {
   width: 5px;
+}
+
+.booking-card::-webkit-scrollbar-track,
+.services-popup-content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .booking-card::-webkit-scrollbar-thumb,
@@ -864,7 +1243,12 @@
   
   .iti input[type="tel"] {
     font-size: 16px !important;
-    padding: 15px 15px 15px 60px !important;
+    padding: 15px 15px 15px 95px !important;
+  }
+  
+  .flatpickr-calendar {
+    width: 100% !important;
+    max-width: 320px !important;
   }
 }
 
@@ -887,7 +1271,13 @@
 .input-field:focus-visible,
 .services-btn:focus-visible,
 .stepper-btn:focus-visible,
-.close-popup-btn:focus-visible {
+.close-popup-btn:focus-visible,
+.service-option:focus-visible {
   outline: 2px solid var(--bs-accent);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--bs-accent);
+  color: #1a1a1a;
 }
