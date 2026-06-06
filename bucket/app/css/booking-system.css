@@ -1,66 +1,44 @@
 /* ==========================================================================
    DISCOVER SHARM - Booking & Payment System
-   Complete CSS - Dark Theme with Orange Accent
+   Single Booking Card - Desktop & Mobile
    Background: #1e1e1e | Accent: #f59e0b (Orange)
-   Includes: intl-tel-input & flatpickr styles
    ========================================================================== */
 
 :root {
-  /* Background Colors */
   --bs-bg: #1e1e1e;
   --bs-bg-light: #252525;
   --bs-bg-lighter: #2a2a2a;
   --bs-bg-card: #222222;
   --bs-bg-input: #1a1a1a;
   
-  /* Accent - Orange */
   --bs-accent: #f59e0b;
   --bs-accent-dark: #d97706;
   --bs-accent-light: #fbbf24;
   --bs-accent-glow: rgba(245, 158, 11, 0.15);
   
-  /* Text Colors */
   --bs-text: #ffffff;
   --bs-text-secondary: #b0b0b0;
   --bs-text-muted: #888888;
   
-  /* Borders */
   --bs-border: #2e2e2e;
   --bs-border-light: #333333;
   --bs-border-accent: rgba(245, 158, 11, 0.3);
   
-  /* Status */
   --bs-success: #22c55e;
   --bs-error: #ef4444;
   
-  /* Radius */
   --bs-radius-sm: 8px;
   --bs-radius-md: 12px;
   --bs-radius-lg: 16px;
   --bs-radius-xl: 20px;
   --bs-radius-full: 50px;
   
-  /* Shadows */
   --bs-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --bs-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --bs-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --bs-shadow-orange: 0 4px 20px rgba(245, 158, 11, 0.15);
   
-  /* Transitions */
   --bs-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --bs-transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ==========================================================================
-   BOOKING CARD WRAPPER (Desktop Sticky)
-   ========================================================================== */
-.booking-card-wrapper {
-  /* Container for sticky behavior */
-}
-
-.booking-card-wrapper .booking-card {
-  position: sticky;
-  top: 24px;
 }
 
 /* ==========================================================================
@@ -74,9 +52,10 @@
   box-shadow: var(--bs-shadow-md);
   position: relative;
   overflow: hidden;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
-/* Subtle top accent line */
 .booking-card::before {
   content: '';
   position: absolute;
@@ -118,13 +97,11 @@
   font-weight: 700;
   color: var(--bs-text);
   margin-bottom: 6px;
-  letter-spacing: -0.3px;
 }
 
 .booking-card-header p {
   font-size: 13px;
   color: var(--bs-text-muted);
-  font-weight: 400;
 }
 
 /* ==========================================================================
@@ -148,27 +125,11 @@
   background: linear-gradient(90deg, var(--bs-accent-dark), var(--bs-accent), var(--bs-accent-light));
   border-radius: 10px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-/* Glow effect on progress fill */
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
-  background: var(--bs-accent-light);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
 
 .steps-labels {
   display: flex;
   justify-content: space-between;
-  padding: 0 2px;
 }
 
 .step-label {
@@ -178,24 +139,10 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   transition: var(--bs-transition);
-  position: relative;
 }
 
 .step-label.active {
   color: var(--bs-accent);
-}
-
-/* Active step dot */
-.step-label.active::after {
-  content: '';
-  position: absolute;
-  bottom: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  background: var(--bs-accent);
-  border-radius: 50%;
 }
 
 /* ==========================================================================
@@ -203,22 +150,16 @@
    ========================================================================== */
 .form-step {
   display: none;
-  animation: bsFadeSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bsFadeIn 0.3s ease;
 }
 
 .form-step.active {
   display: block;
 }
 
-@keyframes bsFadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes bsFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ==========================================================================
@@ -264,7 +205,6 @@
 .input-field:focus {
   outline: none;
   border-color: var(--bs-accent);
-  background: #1c1c1c;
   box-shadow: 0 0 0 3px var(--bs-accent-glow);
 }
 
@@ -273,27 +213,8 @@
   font-size: 13px;
 }
 
-/* Textarea */
-textarea.input-field {
-  resize: vertical;
-  min-height: 90px;
-}
-
-/* Readonly fields */
 .input-field[readonly] {
   cursor: pointer;
-  color: var(--bs-text);
-}
-
-/* Number input - hide spinners */
-.input-field[type="number"]::-webkit-inner-spin-button,
-.input-field[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.input-field[type="number"] {
-  -moz-appearance: textfield;
 }
 
 /* ==========================================================================
@@ -313,18 +234,16 @@ textarea.input-field {
   align-items: center;
   justify-content: space-between;
   transition: var(--bs-transition);
-  text-align: left;
 }
 
 .services-btn:hover {
   border-color: var(--bs-accent);
-  background: #1c1c1c;
 }
 
 .services-btn i {
   color: var(--bs-accent);
-  transition: var(--bs-transition);
   font-size: 12px;
+  transition: var(--bs-transition);
 }
 
 .services-btn:hover i {
@@ -343,11 +262,6 @@ textarea.input-field {
   border: 1px solid var(--bs-border);
   border-radius: var(--bs-radius-md);
   margin-bottom: 10px;
-  transition: var(--bs-transition);
-}
-
-.guest-card:hover {
-  border-color: var(--bs-border-light);
 }
 
 .guest-info {
@@ -358,7 +272,6 @@ textarea.input-field {
 
 .guest-info > span {
   font-size: 24px;
-  line-height: 1;
 }
 
 .guest-info strong {
@@ -374,7 +287,6 @@ textarea.input-field {
   color: var(--bs-text-muted);
 }
 
-/* Stepper Controls */
 .stepper-controls {
   display: flex;
   align-items: center;
@@ -385,8 +297,7 @@ textarea.input-field {
   border: 1px solid var(--bs-border);
 }
 
-.stepper-btn,
-.stepper-btn-mobile {
+.stepper-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -400,19 +311,15 @@ textarea.input-field {
   align-items: center;
   justify-content: center;
   transition: var(--bs-transition);
-  line-height: 1;
   user-select: none;
 }
 
-.stepper-btn:hover,
-.stepper-btn-mobile:hover {
+.stepper-btn:hover {
   background: var(--bs-accent-light);
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
-.stepper-btn:active,
-.stepper-btn-mobile:active {
+.stepper-btn:active {
   transform: scale(0.95);
 }
 
@@ -430,8 +337,7 @@ textarea.input-field {
 /* ==========================================================================
    BUTTONS
    ========================================================================== */
-.btn-primary,
-.btn-primary-mobile {
+.btn-primary {
   width: 100%;
   padding: 14px 24px;
   border-radius: var(--bs-radius-full);
@@ -446,49 +352,26 @@ textarea.input-field {
   justify-content: center;
   gap: 8px;
   transition: var(--bs-transition);
-  letter-spacing: 0.3px;
   position: relative;
   overflow: hidden;
 }
 
-/* Shine effect */
-.btn-primary::after,
-.btn-primary-mobile::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-primary:hover,
-.btn-primary-mobile:hover {
+.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(245, 158, 11, 0.3);
 }
 
-.btn-primary:hover::after,
-.btn-primary-mobile:hover::after {
-  left: 100%;
-}
-
-.btn-primary:active,
-.btn-primary-mobile:active {
+.btn-primary:active {
   transform: translateY(0);
 }
 
-.btn-primary:disabled,
-.btn-primary-mobile:disabled {
+.btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
-.btn-secondary,
-.btn-secondary-mobile {
+.btn-secondary {
   flex: 1;
   padding: 14px 24px;
   border-radius: var(--bs-radius-full);
@@ -505,14 +388,11 @@ textarea.input-field {
   transition: var(--bs-transition);
 }
 
-.btn-secondary:hover,
-.btn-secondary-mobile:hover {
+.btn-secondary:hover {
   background: var(--bs-bg-lighter);
-  border-color: var(--bs-border-light);
 }
 
-.btn-group,
-.btn-group-mobile {
+.btn-group {
   display: flex;
   gap: 10px;
   margin-top: 20px;
@@ -525,18 +405,13 @@ textarea.input-field {
 /* ==========================================================================
    PULSE ANIMATION
    ========================================================================== */
-.pulse,
-.pulse-mobile {
+.pulse {
   animation: bsPulse 2.5s infinite;
 }
 
 @keyframes bsPulse {
-  0%, 100% {
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
-  }
-  50% {
-    box-shadow: 0 6px 28px rgba(245, 158, 11, 0.4), 0 0 0 8px rgba(245, 158, 11, 0.05);
-  }
+  0%, 100% { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 6px 28px rgba(245, 158, 11, 0.4), 0 0 0 8px rgba(245, 158, 11, 0.05); }
 }
 
 /* ==========================================================================
@@ -584,10 +459,8 @@ textarea.input-field {
 .summary-line strong {
   color: var(--bs-text);
   font-weight: 600;
-  text-align: right;
 }
 
-/* Total Card */
 .total-card {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(245, 158, 11, 0.02));
   border: 1px solid var(--bs-border-accent);
@@ -610,11 +483,10 @@ textarea.input-field {
   font-weight: 800;
   color: var(--bs-accent);
   margin-top: 8px;
-  letter-spacing: -0.5px;
 }
 
 /* ==========================================================================
-   LOADING OVERLAY / SPINNER
+   SPINNER
    ========================================================================== */
 .loading-overlay {
   position: fixed;
@@ -632,7 +504,6 @@ textarea.input-field {
 .loading-overlay p {
   color: var(--bs-text-secondary);
   font-size: 14px;
-  font-weight: 500;
 }
 
 .spinner {
@@ -645,9 +516,7 @@ textarea.input-field {
 }
 
 @keyframes bsSpin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 .hidden {
@@ -720,7 +589,6 @@ textarea.input-field {
   justify-content: center;
   border-radius: 50%;
   transition: var(--bs-transition);
-  line-height: 1;
 }
 
 .close-popup-btn:hover {
@@ -749,7 +617,7 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   SERVICE OPTION (Radio-style)
+   SERVICE OPTION
    ========================================================================== */
 .service-option {
   display: flex;
@@ -765,14 +633,12 @@ textarea.input-field {
 }
 
 .service-option:hover {
-  background: var(--bs-bg-lighter);
   border-color: var(--bs-border);
 }
 
 .service-option.selected {
   border-color: var(--bs-accent);
   background: rgba(245, 158, 11, 0.08);
-  box-shadow: var(--bs-shadow-orange);
 }
 
 .service-option-info {
@@ -789,10 +655,8 @@ textarea.input-field {
 .service-option-price {
   font-size: 13px;
   color: var(--bs-accent);
-  font-weight: 500;
 }
 
-/* Custom radio circle */
 .service-option-check {
   width: 22px;
   height: 22px;
@@ -820,85 +684,22 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   STARS SELECTOR (Review Modal)
-   ========================================================================== */
-.stars-selector {
-  display: flex;
-  gap: 6px;
-  font-size: 30px;
-}
-
-.stars-selector i {
-  color: var(--bs-text-muted);
-  cursor: pointer;
-  transition: var(--bs-transition);
-}
-
-.stars-selector i.active,
-.stars-selector i:hover {
-  color: var(--bs-accent);
-}
-
-.stars-selector i.fas {
-  color: var(--bs-accent);
-}
-
-/* ==========================================================================
-   TOAST NOTIFICATIONS
+   TOAST
    ========================================================================== */
 .bs-toast {
-  animation: bsSlideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bsSlideUp 0.35s ease;
 }
 
 @keyframes bsSlideUp {
-  from {
-    transform: translateX(-50%) translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
 /* ==========================================================================
-   MOBILE BOOK NOW BUTTON
-   ========================================================================== */
-.mobile-book-now-btn {
-  display: none;
-}
-
-/* ==========================================================================
-   MOBILE BOOKING SECTION
-   ========================================================================== */
-.mobile-booking-section {
-  padding: 20px 16px 32px;
-  border-top: 3px solid var(--bs-accent);
-  margin-top: 24px;
-  background: var(--bs-bg-light);
-}
-
-.mobile-booking-section .booking-card {
-  box-shadow: none;
-  border-radius: var(--bs-radius-lg);
-  background: var(--bs-bg-card);
-}
-
-.mobile-booking-section .booking-card::before {
-  display: none;
-}
-
-/* ==========================================================================
-   INTL-TEL-INPUT CUSTOM STYLES
-   Country code select + phone number beside it
+   INTL-TEL-INPUT
    ========================================================================== */
 .iti {
   width: 100%;
-  display: block;
-}
-
-.iti__flag-container {
-  padding: 0;
 }
 
 .iti__selected-flag {
@@ -911,26 +712,13 @@ textarea.input-field {
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: var(--bs-transition);
 }
 
 .iti__selected-flag:hover {
   background: #222 !important;
 }
 
-.iti__selected-flag .iti__flag {
-  margin: 0;
-  box-shadow: none;
-}
-
-.iti__selected-flag .iti__arrow {
-  border-top: 4px solid #888;
-  margin-left: 4px;
-}
-
-/* Phone input inside iti */
-.iti input[type="tel"],
-.iti input[type="text"] {
+.iti input[type="tel"] {
   padding-left: 60px !important;
   height: 48px !important;
   width: 100% !important;
@@ -940,40 +728,28 @@ textarea.input-field {
   color: #fff !important;
   font-size: 14px !important;
   box-sizing: border-box !important;
-  font-family: inherit !important;
 }
 
-.iti input[type="tel"]:focus,
-.iti input[type="text"]:focus {
+.iti input[type="tel"]:focus {
   border-color: #f59e0b !important;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
   outline: none !important;
 }
 
-/* Country dropdown */
 .iti__country-list {
   background: #1e1e1e !important;
   border: 1px solid #333 !important;
   border-radius: 8px !important;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
-  max-height: 200px !important;
   z-index: 99999 !important;
 }
 
 .iti__country {
   color: #fff !important;
-  padding: 8px 12px !important;
 }
 
-.iti__country:hover {
-  background: #2a2a2a !important;
-}
-
+.iti__country:hover,
 .iti__country.iti__highlight {
-  background: #2a2a2a !important;
-}
-
-.iti__country.iti__active {
   background: #2a2a2a !important;
 }
 
@@ -981,29 +757,8 @@ textarea.input-field {
   color: #888 !important;
 }
 
-.iti__divider {
-  border-color: #333 !important;
-}
-
-/* Search box in dropdown */
-.iti__search-input {
-  background: #1a1a1a !important;
-  border: 1px solid #333 !important;
-  color: #fff !important;
-  padding: 8px 12px !important;
-  border-radius: 6px !important;
-  width: calc(100% - 24px) !important;
-  margin: 8px 12px !important;
-}
-
-.iti__search-input:focus {
-  outline: none;
-  border-color: #f59e0b !important;
-}
-
 /* ==========================================================================
-   FLATPICKR CUSTOM STYLES
-   Dark themed calendar
+   FLATPICKR
    ========================================================================== */
 .flatpickr-calendar {
   background: #1e1e1e !important;
@@ -1011,132 +766,44 @@ textarea.input-field {
   border-radius: 12px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
   z-index: 99999 !important;
-  font-family: inherit !important;
-}
-
-.flatpickr-calendar.arrowTop:before,
-.flatpickr-calendar.arrowTop:after {
-  border-bottom-color: #333 !important;
-}
-
-.flatpickr-months {
-  padding: 8px 0;
-  background: transparent !important;
 }
 
 .flatpickr-month {
   color: #fff !important;
-  fill: #fff !important;
-  height: 40px !important;
-}
-
-.flatpickr-current-month {
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  padding: 0 !important;
-}
-
-.flatpickr-current-month .numInputWrapper {
-  width: 60px;
-}
-
-.flatpickr-current-month .numInputWrapper input {
-  color: #fff !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-current-month .numInputWrapper span {
-  border-color: #444 !important;
-}
-
-.flatpickr-current-month .numInputWrapper span:hover {
-  background: #333 !important;
-}
-
-.flatpickr-weekdays {
-  background: transparent !important;
-  padding: 8px 0;
 }
 
 .flatpickr-weekday {
   color: #f59e0b !important;
-  font-weight: 600 !important;
-  font-size: 11px !important;
-}
-
-.flatpickr-days {
-  padding: 4px;
 }
 
 .flatpickr-day {
   color: #ccc !important;
   border-radius: 8px !important;
-  border: none !important;
-  font-size: 13px !important;
-  height: 36px !important;
-  line-height: 36px !important;
-  max-width: 36px !important;
-  transition: all 0.15s ease !important;
 }
 
 .flatpickr-day:hover {
   background: #2a2a2a !important;
   color: #fff !important;
-  border: none !important;
 }
 
 .flatpickr-day.today {
-  border: 1.5px solid #f59e0b !important;
+  border: 1px solid #f59e0b !important;
   color: #f59e0b !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-day.today:hover {
-  background: #f59e0b !important;
-  color: #000 !important;
 }
 
 .flatpickr-day.selected {
   background: #f59e0b !important;
   color: #000 !important;
   font-weight: 700 !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
 }
 
-.flatpickr-day.selected:hover {
-  background: #d97706 !important;
-}
-
-.flatpickr-day.flatpickr-disabled,
-.flatpickr-day.flatpickr-disabled:hover {
+.flatpickr-day.flatpickr-disabled {
   color: #444 !important;
-  cursor: not-allowed;
-  background: transparent !important;
 }
 
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-  color: #555 !important;
-}
-
-.flatpickr-day.inRange {
-  background: rgba(245, 158, 11, 0.1) !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.flatpickr-prev-month,
-.flatpickr-next-month {
-  padding: 8px !important;
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
   fill: #888 !important;
-  transition: var(--bs-transition) !important;
-}
-
-.flatpickr-prev-month:hover,
-.flatpickr-next-month:hover {
-  fill: #f59e0b !important;
 }
 
 .flatpickr-prev-month:hover svg,
@@ -1144,158 +811,60 @@ textarea.input-field {
   fill: #f59e0b !important;
 }
 
-.flatpickr-time {
-  border-top: 1px solid #333 !important;
-  background: #1a1a1a !important;
-  border-radius: 0 0 12px 12px !important;
-  max-height: 45px !important;
-}
-
-.flatpickr-time input {
-  color: #fff !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-time input:hover,
-.flatpickr-time input:focus {
-  background: #222 !important;
-}
-
-.flatpickr-time .flatpickr-am-pm {
-  color: #888 !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-time .flatpickr-am-pm:hover,
-.flatpickr-time .flatpickr-am-pm:focus {
-  background: #222 !important;
-  color: #f59e0b !important;
-}
-
-.flatpickr-time .numInputWrapper span {
-  border-color: #444 !important;
-}
-
-.flatpickr-time .numInputWrapper span:hover {
-  background: #333 !important;
-}
-
 /* ==========================================================================
-   SCROLLBAR STYLES
+   SCROLLBAR
    ========================================================================== */
 .booking-card::-webkit-scrollbar,
-.services-popup-content::-webkit-scrollbar,
-.iti__country-list::-webkit-scrollbar {
+.services-popup-content::-webkit-scrollbar {
   width: 5px;
 }
 
-.booking-card::-webkit-scrollbar-track,
-.services-popup-content::-webkit-scrollbar-track,
-.iti__country-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 .booking-card::-webkit-scrollbar-thumb,
-.services-popup-content::-webkit-scrollbar-thumb,
-.iti__country-list::-webkit-scrollbar-thumb {
-  background: var(--bs-border-light);
+.services-popup-content::-webkit-scrollbar-thumb {
+  background: #333;
   border-radius: 10px;
-}
-
-.booking-card::-webkit-scrollbar-thumb:hover,
-.services-popup-content::-webkit-scrollbar-thumb:hover,
-.iti__country-list::-webkit-scrollbar-thumb:hover {
-  background: #444;
 }
 
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Hide desktop booking card on mobile */
-  .booking-card-wrapper {
-    display: none !important;
+  .booking-card {
+    border-radius: 16px;
+    padding: 20px;
+    max-height: none;
+    overflow-y: visible;
+    box-shadow: none;
   }
   
-  /* Show mobile booking section */
-  .mobile-booking-section {
-    display: block !important;
+  .booking-card::before {
+    display: none;
   }
-
-  /* Mobile Book Now Button */
-  .mobile-book-now-btn {
-    display: flex !important;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--bs-accent-dark), var(--bs-accent));
-    color: #1a1a1a;
-    padding: 15px 32px;
-    border-radius: var(--bs-radius-full);
-    font-weight: 700;
-    font-size: 15px;
-    z-index: 100;
-    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.35);
-    cursor: pointer;
-    border: none;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-    letter-spacing: 0.3px;
-    transition: var(--bs-transition);
-  }
-
-  .mobile-book-now-btn:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 12px 40px rgba(245, 158, 11, 0.45);
-  }
-
-  .mobile-book-now-btn:active {
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* Larger inputs on mobile */
-  .mobile-booking-section .input-field {
+  
+  .booking-card .input-field {
     font-size: 16px !important;
     padding: 15px !important;
   }
-
-  .mobile-booking-section .btn-primary-mobile {
+  
+  .booking-card .btn-primary {
     padding: 16px 24px !important;
     font-size: 15px !important;
   }
-
-  .mobile-booking-section .btn-secondary-mobile {
+  
+  .booking-card .btn-secondary {
     padding: 16px 24px !important;
     font-size: 15px !important;
   }
-
-  .mobile-booking-section .stepper-btn-mobile {
+  
+  .booking-card .stepper-btn {
     width: 36px !important;
     height: 36px !important;
     font-size: 18px !important;
   }
-
-  .mobile-booking-section .services-btn {
-    font-size: 16px !important;
-    padding: 15px !important;
-  }
   
-  /* Mobile intl-tel-input adjustments */
-  .mobile-booking-section .iti input[type="tel"] {
+  .iti input[type="tel"] {
     font-size: 16px !important;
     padding: 15px 15px 15px 60px !important;
-  }
-}
-
-@media (min-width: 769px) {
-  .mobile-booking-section {
-    display: none !important;
-  }
-
-  .mobile-book-now-btn {
-    display: none !important;
   }
 }
 
@@ -1306,33 +875,19 @@ textarea.input-field {
   .form-step,
   .bs-toast,
   .progress-fill,
-  .step-label,
   .btn-primary,
-  .btn-primary-mobile,
-  .pulse,
-  .pulse-mobile {
+  .pulse {
     animation: none !important;
     transition: none !important;
   }
 }
 
-/* Focus visible */
 .btn-primary:focus-visible,
-.btn-primary-mobile:focus-visible,
 .btn-secondary:focus-visible,
-.btn-secondary-mobile:focus-visible,
 .input-field:focus-visible,
 .services-btn:focus-visible,
 .stepper-btn:focus-visible,
-.stepper-btn-mobile:focus-visible,
-.close-popup-btn:focus-visible,
-.service-option:focus-visible {
+.close-popup-btn:focus-visible {
   outline: 2px solid var(--bs-accent);
   outline-offset: 2px;
-}
-
-/* Selection color */
-::selection {
-  background: var(--bs-accent);
-  color: #1a1a1a;
 }
