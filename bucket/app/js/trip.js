@@ -851,10 +851,9 @@ window.onload = async function () {
   
   document.getElementById('submitBtn')?.addEventListener('click', submitForm);
   document.getElementById('mobileBookNowBtn')?.addEventListener('click', showMobileBooking);
-  
   document.getElementById('cancelServicesBtn')?.addEventListener('click', closeServicesPopup);
-  document.getElementById('confirmServicesBtn')?.addEventListener('click', confirmServiceSelection);
-  document.getElementById('closeServicesPopup')?.addEventListener('click', closeServicesPopup);
+document.getElementById('confirmServicesBtn')?.addEventListener('click', confirmServiceSelection);
+document.getElementById('closeServicesPopup')?.addEventListener('click', closeServicesPopup);
   document.getElementById('extraServicesPopup')?.addEventListener('click', function(e) { if (e.target === this || e.target.classList.contains('services-popup-overlay')) closeServicesPopup(); });
   
   auth.onAuthStateChanged((u) => { if (u) { currentUserUid = u.uid; populateForm(); } else currentUserUid = 'anonymous'; });
