@@ -751,6 +751,9 @@ function initCurrencyFromHeader() {
 // ========================================
 // INITIALIZATION
 // ========================================
+// ========================================
+// INITIALIZATION
+// ========================================
 window.onload = async function () {
   if (!tripPName) { showToast("No trip specified.", 'error'); return; }
 
@@ -793,8 +796,406 @@ window.onload = async function () {
 
   await fetchAllTripData();
   updateSummary();
+  
+  // Initialize Reviews System
+  setTimeout(() => {
+    if (tripPName) {
+      setupReviewModal();
+      loadReviews();
+    }
+  }, 2000);
+  
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 500);
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 1500);
 };
+
+console.log('✅ Tour Booking System Initialized v3.0 - With Reviews');
+
+
+
+// ========================================
+// REVIEWS SYSTEM - Complete
+// ========================================
+let tripReviews = [];
+let currentUserReview = null;
+let selectedRating = 0;
+
+async function loadReviews() {
+    const tripId = tripPName;
+    if (!tripId) return;
+    
+    try {
+        const snapshot = await db.ref(`trip-reviews/${tripId}`).once('value');
+        const data = snapshot.val();
+        
+        if (data && data.reviews) {
+            tripReviews = Object.entries(data.reviews).map(([id, review]) => ({ id, ...review }))
+                .filter(r => r.approved === true)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            updateStarsSummary(data.average || 0, data.count || 0);
+            renderReviews();
+        } else {
+            updateStarsSummary(0, 0);
+            renderReviews();
+        }
+        
+        const user = auth.currentUser;
+        if (user) {
+            currentUserReview = tripReviews.find(r => r.userId === user.uid);
+            const btn = document.getElementById('openReviewBtn');
+            if (btn && currentUserReview) {
+                btn.innerHTML = '<i class="fas fa-edit"></i><span>Edit Your Review</span>';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+    }
+}
+
+function updateStarsSummary(average, count) {
+    const container = document.getElementById('avgStars');
+    const countSpan = document.getElementById('reviewsCountText');
+    
+    if (container) {
+        container.innerHTML = '';
+        const full = Math.floor(average);
+        const half = (average % 1) >= 0.5;
+        
+        for (let i = 0; i < full; i++) {
+            container.innerHTML += '<i class="fas fa-star"></i>';
+        }
+        if (half) {
+            container.innerHTML += '<i class="fas fa-star-half-alt"></i>';
+        }
+        const emptyStars = 5 - Math.ceil(average);
+        for (let i = 0; i < emptyStars; i++) {
+            container.innerHTML += '<i class="far fa-star"></i>';
+        }
+    }
+    
+    if (countSpan) {
+        countSpan.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
+    }
+}
+
+function renderReviews() {
+    const container = document.getElementById('reviewsListContainer');
+    if (!container) return;
+    
+    if (tripReviews.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-star"></i>
+                <p>No reviews yet</p>
+                <span>Be the first to review this trip</span>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = tripReviews.map(review => {
+        const date = new Date(review.date);
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        
+        return `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF6B35, #FFA630); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff;">
+                            ${escapeHtml2(review.userName?.charAt(0).toUpperCase() || 'U')}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #fff;">${escapeHtml2(review.userName || 'User')}</div>
+                            <div style="display: flex; gap: 2px; font-size: 12px; margin-top: 2px;">
+                                ${Array(5).fill().map((_, i) => 
+                                    i < review.rating ? '<i class="fas fa-star" style="color: #f59e0b;"></i>' : '<i class="far fa-star" style="color: #64748b;"></i>'
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <span style="font-size: 11px; color: #64748b;">${formattedDate}</span>
+                </div>
+                <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">${escapeHtml2(review.comment)}</p>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtml2(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ========================================
+// REVIEW MODAL
+// ========================================
+const reviewModalHtml = `
+<div id="reviewModal" class="hidden" style="position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);">
+    <div style="background: #1a1f35; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 90%; max-width: 460px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                <span id="modalTitle">Write a Review</span>
+            </h3>
+            <button id="closeModalBtn" style="background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s;">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">
+                    <i class="fas fa-ticket-alt" style="color: #f59e0b; margin-right: 4px;"></i> Booking Voucher Number
+                </label>
+                <input type="text" id="voucherInput" placeholder="Example: DS_XXXXXXXXXX" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 13px;">
+                <p style="font-size: 10px; color: #64748b; margin-top: 4px;">Found in your confirmation email</p>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Your Rating</label>
+                <div style="display: flex; gap: 8px; font-size: 28px;" id="starSelector">
+                    <i class="far fa-star" data-rating="1" style="color: #64748b; cursor: pointer; transition: 0.2s;"></i>
+                    <i class="far fa-star" data-rating="2" style="color: #64748b; cursor: pointer; transition: 0.2s;"></i>
+                    <i class="far fa-star" data-rating="3" style="color: #64748b; cursor: pointer; transition: 0.2s;"></i>
+                    <i class="far fa-star" data-rating="4" style="color: #64748b; cursor: pointer; transition: 0.2s;"></i>
+                    <i class="far fa-star" data-rating="5" style="color: #64748b; cursor: pointer; transition: 0.2s;"></i>
+                </div>
+                <input type="hidden" id="ratingValue" value="0">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #94a3b8; margin-bottom: 6px;">Your Review</label>
+                <textarea id="commentInput" rows="4" placeholder="Share your experience with this trip..." style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 13px; resize: none;"></textarea>
+                <div style="text-align: right; font-size: 10px; color: #64748b; margin-top: 4px;"><span id="charCount">0</span>/500</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="cancelReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer;">Cancel</button>
+                <button id="submitReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: none; background: linear-gradient(135deg, #FF6B35, #FFA630); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;"><i class="fas fa-paper-plane"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+document.body.insertAdjacentHTML('beforeend', reviewModalHtml);
+
+async function verifyVoucher(voucherNumber) {
+    const user = auth.currentUser;
+    if (!user) {
+        alert('Please login first');
+        return false;
+    }
+    try {
+        const snapshot = await db.ref(`trip-bookings/${voucherNumber}`).once('value');
+        const booking = snapshot.val();
+        if (!booking) { alert('Invalid voucher number'); return false; }
+        if (booking.uid !== user.uid) { alert('This voucher belongs to another user'); return false; }
+        if (booking.tripId !== tripPName) { 
+            alert('This voucher is for a different trip'); return false; 
+        }
+        return true;
+    } catch (error) { alert('Error verifying voucher'); return false; }
+}
+
+async function submitReviewHandler() {
+    const voucher = document.getElementById('voucherInput').value.trim().toUpperCase();
+    if (!voucher) { alert('Please enter your voucher number'); return; }
+    const rating = parseInt(document.getElementById('ratingValue').value);
+    if (rating === 0) { alert('Please select a rating'); return; }
+    const comment = document.getElementById('commentInput').value.trim();
+    if (!comment) { alert('Please write your review'); return; }
+    if (comment.length < 5) { alert('Review must be at least 5 characters'); return; }
+    
+    const isValid = await verifyVoucher(voucher);
+    if (!isValid) return;
+    
+    const submitBtn = document.getElementById('submitReviewBtn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    submitBtn.disabled = true;
+    
+    try {
+        const user = auth.currentUser;
+        const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
+        const userData = userSnapshot.val();
+        const userName = userData?.username || user.email?.split('@')[0] || 'Traveler';
+        
+        const reviewData = {
+            userId: user.uid,
+            userName: userName,
+            rating: rating,
+            comment: comment,
+            date: new Date().toISOString(),
+            approved: true,
+            voucher: voucher
+        };
+        
+        const tripId = tripPName;
+        const reviewsRef = db.ref(`trip-reviews/${tripId}`);
+        const snapshot = await reviewsRef.once('value');
+        const current = snapshot.val() || { reviews: {}, count: 0, average: 0 };
+        
+        let newCount = current.count || 0;
+        let totalRating = (current.average || 0) * newCount;
+        
+        if (currentUserReview) {
+            const oldRating = current.reviews[currentUserReview.id]?.rating || 0;
+            totalRating = totalRating - oldRating + rating;
+            await reviewsRef.child(`reviews/${currentUserReview.id}`).update(reviewData);
+        } else {
+            const newId = Date.now().toString();
+            await reviewsRef.child(`reviews/${newId}`).set(reviewData);
+            newCount++;
+            totalRating += rating;
+        }
+        
+        const newAverage = totalRating / newCount;
+        await reviewsRef.update({ count: newCount, average: parseFloat(newAverage.toFixed(1)) });
+        
+        closeReviewModal();
+        
+        document.getElementById('voucherInput').value = '';
+        document.getElementById('ratingValue').value = '0';
+        document.getElementById('commentInput').value = '';
+        document.getElementById('charCount').textContent = '0';
+        resetStars();
+        
+        await loadReviews();
+        
+        alert(currentUserReview ? 'Review updated successfully!' : 'Thank you for your review!');
+        
+    } catch (error) {
+        console.error(error);
+        alert('Error submitting review');
+    } finally {
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+        submitBtn.disabled = false;
+    }
+}
+
+function resetStars() {
+    document.querySelectorAll('#starSelector i').forEach(s => {
+        s.className = 'far fa-star';
+        s.style.color = '#64748b';
+    });
+}
+
+function closeReviewModal() {
+    const modal = document.getElementById('reviewModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    }
+    document.body.style.overflow = '';
+}
+
+function setupReviewModal() {
+    const openBtn = document.getElementById('openReviewBtn');
+    const modal = document.getElementById('reviewModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelReviewBtn');
+    const submitBtn = document.getElementById('submitReviewBtn');
+    const commentInput = document.getElementById('commentInput');
+    const charCount = document.getElementById('charCount');
+    const stars = document.querySelectorAll('#starSelector i');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const rating = parseInt(star.dataset.rating);
+            document.getElementById('ratingValue').value = rating;
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.className = 'fas fa-star';
+                    s.style.color = '#f59e0b';
+                } else {
+                    s.className = 'far fa-star';
+                    s.style.color = '#64748b';
+                }
+            });
+        });
+        
+        star.addEventListener('mouseenter', () => {
+            const rating = parseInt(star.dataset.rating);
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.style.color = '#fbbf24';
+                }
+            });
+        });
+        
+        star.addEventListener('mouseleave', () => {
+            const currentRating = parseInt(document.getElementById('ratingValue').value);
+            stars.forEach((s, i) => {
+                if (i >= currentRating) {
+                    s.style.color = '#64748b';
+                }
+            });
+        });
+    });
+    
+    if (commentInput && charCount) {
+        commentInput.addEventListener('input', () => {
+            charCount.textContent = commentInput.value.length;
+            if (commentInput.value.length > 500) {
+                commentInput.value = commentInput.value.substring(0, 500);
+                charCount.textContent = 500;
+            }
+        });
+    }
+    
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            if (!auth.currentUser) {
+                alert('Please login first');
+                return;
+            }
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            if (currentUserReview) {
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Your Review';
+                document.getElementById('voucherInput').value = currentUserReview.voucher || '';
+                document.getElementById('commentInput').value = currentUserReview.comment;
+                document.getElementById('ratingValue').value = currentUserReview.rating;
+                document.getElementById('charCount').textContent = currentUserReview.comment.length;
+                stars.forEach((s, i) => {
+                    if (i < currentUserReview.rating) {
+                        s.className = 'fas fa-star';
+                        s.style.color = '#f59e0b';
+                    } else {
+                        s.className = 'far fa-star';
+                        s.style.color = '#64748b';
+                    }
+                });
+            } else {
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-star"></i> Write a Review';
+            }
+        });
+    }
+    
+    const closeFn = () => {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (!currentUserReview) {
+            document.getElementById('voucherInput').value = '';
+            document.getElementById('ratingValue').value = '0';
+            document.getElementById('commentInput').value = '';
+            document.getElementById('charCount').textContent = '0';
+            resetStars();
+        }
+    };
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeFn);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeFn);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeFn(); });
+    if (submitBtn) submitBtn.addEventListener('click', submitReviewHandler);
+}
+
+// ========================================
+// UPDATE RATING DISPLAY (for external calls)
+// ========================================
+function updateRatingDisplay(data) {
+    if (data) {
+        updateStarsSummary(data.average || 0, data.count || 0);
+    }
+}
 
 console.log('✅ Tour Booking System Initialized v3.0');
