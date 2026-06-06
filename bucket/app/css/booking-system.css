@@ -238,6 +238,7 @@ textarea.input-field {
 
 .country-code-select {
   flex-shrink: 0;
+  background: #1a1a1a;
 }
 
 .selected-country {
