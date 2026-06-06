@@ -131,26 +131,29 @@
   color: #555;
 }
 
-/* ==========================================================================
-   COUNTRY LIST - DESKTOP (Dropdown)
-   ========================================================================== */
 .iti__country-list {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  right: 0 !important;
-  max-height: 220px !important;
-  width: 100% !important;
-  background: #1e1e1e !important;
-  border: 1px solid #2e2e2e !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
-  z-index: 99999 !important;
-  overflow-y: auto !important;
-  margin-top: 4px !important;
-  list-style: none !important;
-  padding: 4px 0 !important;
-}
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-width: 100% !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    background: #1e1e1e !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: 99999 !important;
+    overflow: hidden !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
 
 /* Country item */
 .iti__country {
