@@ -478,3 +478,41 @@
   setTimeout(tryInit, 800);
 
 })();
+
+
+// في init() function، بعد iti = window.intlTelInput(...)
+
+// Add overlay class on mobile when country list opens
+if (iti && isMobile()) {
+  const countryList = document.querySelector('.iti__country-list');
+  const flagContainer = document.querySelector('.iti__flag-container');
+  
+  if (flagContainer) {
+    flagContainer.addEventListener('click', function() {
+      document.body.classList.add('iti-mobile-open');
+    });
+  }
+  
+  // Remove overlay when country is selected or clicked outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.iti__country-list') && !e.target.closest('.iti__flag-container')) {
+      document.body.classList.remove('iti-mobile-open');
+    }
+  });
+  
+  // Also remove when country is selected
+  if (countryList) {
+    countryList.addEventListener('click', function(e) {
+      if (e.target.closest('.iti__country')) {
+        setTimeout(function() {
+          document.body.classList.remove('iti-mobile-open');
+        }, 100);
+      }
+    });
+  }
+}
+
+// Helper function
+function isMobile() {
+  return window.innerWidth <= 768;
+}
