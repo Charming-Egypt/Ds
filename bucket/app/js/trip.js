@@ -1,21 +1,28 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// Booking/Payment Logic Moved to booking-system.js
+// Handles: Data Fetching, Gallery, Timeline, Reviews
 // ==========================================================================
 
 // ==========================================================================
-// GLOBAL STATE (shared with BookingSystem)
+// GLOBAL STATE
 // ==========================================================================
 let swiper = null;
 let currentVideoSlide = null;
+let tripData = {};
+let currentTrip = {};
+let tourTypes = {};
+let tripOwnerId = '';
 let tripReviews = [];
 let currentUserReview = null;
+let currentUserUid = '';
 
-// These are populated by BookingSystem via window.displayTripInfo etc.
-let currentTrip = {};
+// Currency
+let currentCurrency = 'EGP';
+let exchangeRates = { EGP: 1 };
+let ratesLoaded = false;
 
 // ==========================================================================
-// TRIP ID FROM URL
+// UTILITY
 // ==========================================================================
 function getTripIdFromURL() {
   return new URLSearchParams(window.location.search).get('trip-id');
@@ -23,31 +30,159 @@ function getTripIdFromURL() {
 
 const tripPName = getTripIdFromURL();
 
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function showToast(message, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.cssText = `
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%);
+    background: #252526; color: #fff;
+    padding: 14px 24px; border-radius: 30px;
+    z-index: 99999; font-size: 14px; font-weight: 600;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    border-left: 4px solid ${type === 'success' ? '#22c55e' : '#ef4444'};
+    white-space: nowrap;
+    animation: tripSlideUp 0.3s ease;
+  `;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = '0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
 // ==========================================================================
-// CURRENCY DISPLAY (delegates to BookingSystem when available)
+// CURRENCY
 // ==========================================================================
-function formatPriceDisplay(price) {
-  if (window.BookingSystem?.formatPrice) {
-    return window.BookingSystem.formatPrice(price);
+function getCurrentCurrencyFromHeader() {
+  if (window.SharmCurrency?.get) return window.SharmCurrency.get();
+  return localStorage.getItem('preferredCurrency') || 'EGP';
+}
+
+function getExchangeRatesFromHeader() {
+  return window.SharmCurrency?.rates || null;
+}
+
+function formatPrice(price) {
+  if (!ratesLoaded || currentCurrency === 'EGP') {
+    return parseFloat(price).toFixed(2) + ' EGP';
   }
-  return parseFloat(price).toFixed(2) + ' EGP';
+  const converted = price * exchangeRates[currentCurrency];
+  switch (currentCurrency) {
+    case 'USD': return '$' + converted.toFixed(2);
+    case 'EUR': return '€' + converted.toFixed(2);
+    case 'GBP': return '£' + converted.toFixed(2);
+    default: return price.toFixed(2) + ' EGP';
+  }
+}
+
+function initCurrency() {
+  currentCurrency = getCurrentCurrencyFromHeader();
+  const rates = getExchangeRatesFromHeader();
+  if (rates) {
+    exchangeRates = rates;
+    ratesLoaded = true;
+  }
+  
+  window.addEventListener('currencyChanged', (e) => {
+    if (e.detail?.currency) {
+      currentCurrency = e.detail.currency;
+      if (e.detail.rates) {
+        exchangeRates = e.detail.rates;
+        ratesLoaded = true;
+      }
+      updatePriceDisplay();
+    }
+  });
+}
+
+// ==========================================================================
+// TRIP DATA FETCHING
+// ==========================================================================
+function showSpinner() {
+  const spinner = document.getElementById('spinner');
+  if (spinner) spinner.classList.remove('hidden');
+}
+
+function hideSpinner() {
+  const spinner = document.getElementById('spinner');
+  if (spinner) spinner.classList.add('hidden');
+}
+
+async function fetchAllTripData() {
+  try {
+    showSpinner();
+    
+    const snap = await db.ref('trips').once('value');
+    const data = snap.val();
+    
+    if (!data) {
+      showToast('No trips available.', 'error');
+      return {};
+    }
+    
+    tripData = data;
+    
+    if (tripPName && data[tripPName]) {
+      currentTrip = data[tripPName];
+      currentTrip.basePrice = currentTrip.price || 0;
+      tourTypes = currentTrip.tourtype || {};
+      tripOwnerId = currentTrip.owner || '';
+      
+      // Display everything
+      displayTripInfo(currentTrip);
+      loadMediaContent(currentTrip.media);
+      loadIncludedNotIncluded(currentTrip);
+      loadTimeline(currentTrip.timeline);
+      loadWhatToBring(currentTrip.whatToBring);
+      updatePriceDisplay();
+    }
+    
+    return data;
+  } catch (error) {
+    showToast('Failed to load trip data.', 'error');
+    throw error;
+  } finally {
+    hideSpinner();
+  }
 }
 
 // ==========================================================================
 // DISPLAY TRIP INFO
 // ==========================================================================
 function displayTripInfo(trip) {
-  currentTrip = trip;
-  
   const titleEl = document.getElementById('tourTitle');
   if (titleEl) titleEl.textContent = trip.name || '';
   
   const durationEl = document.getElementById('tourDuration');
   if (durationEl) durationEl.textContent = trip.duration || 'Full Day';
   
-  // Update document title
   if (trip.name) {
     document.title = trip.name + ' - Discover Sharm';
+  }
+  
+  // Set trip name in booking forms (if they exist)
+  const tripNameInput = document.getElementById('tripName');
+  if (tripNameInput) tripNameInput.value = trip.name || '';
+  
+  const mobileTripNameInput = document.getElementById('mobileTripName');
+  if (mobileTripNameInput) mobileTripNameInput.value = trip.name || '';
+}
+
+function updatePriceDisplay() {
+  const el = document.getElementById('tourPrice');
+  if (el && currentTrip.basePrice) {
+    el.innerHTML = formatPrice(currentTrip.basePrice);
   }
 }
 
@@ -63,7 +198,6 @@ function loadMediaContent(media) {
   if (wrapper) wrapper.innerHTML = '';
   if (thumbs) thumbs.innerHTML = '';
   
-  // Helper: add thumbnail
   function addThumb(src, idx) {
     if (!thumbs) return;
     const img = document.createElement('img');
@@ -76,7 +210,7 @@ function loadMediaContent(media) {
     thumbs.appendChild(img);
   }
   
-  // Add images
+  // Images
   if (media.images) {
     media.images.forEach((imgSrc, i) => {
       const slide = document.createElement('div');
@@ -87,7 +221,7 @@ function loadMediaContent(media) {
     });
   }
   
-  // Add videos
+  // Videos
   if (media.videos) {
     media.videos.forEach((video, i) => {
       const idx = (media.images?.length || 0) + i;
@@ -104,7 +238,7 @@ function loadMediaContent(media) {
     });
   }
   
-  // Initialize or update Swiper
+  // Swiper
   if (!swiper) {
     swiper = new Swiper('.swiper', {
       slidesPerView: 1,
@@ -125,7 +259,6 @@ function loadMediaContent(media) {
       }
     });
     
-    // Click handler for play buttons
     const swiperEl = document.querySelector('.swiper');
     if (swiperEl) {
       swiperEl.addEventListener('click', function(e) {
@@ -205,7 +338,7 @@ function loadIncludedNotIncluded(data) {
 }
 
 // ==========================================================================
-// TIMELINE / ITINERARY
+// TIMELINE
 // ==========================================================================
 function loadTimeline(timelineData) {
   const container = document.getElementById('timelineContainer');
@@ -263,7 +396,6 @@ async function loadReviews() {
       renderReviews();
     }
     
-    // Update write review button if user already reviewed
     const user = auth.currentUser;
     if (user) {
       currentUserReview = tripReviews.find(r => r.userId === user.uid);
@@ -284,17 +416,14 @@ function updateStarsSummary(average, count) {
   if (container) {
     container.innerHTML = '';
     
-    // Filled stars
     for (let i = 0; i < Math.floor(average); i++) {
       container.innerHTML += '<i class="fas fa-star"></i>';
     }
     
-    // Half star
     if (average % 1 >= 0.5) {
       container.innerHTML += '<i class="fas fa-star-half-alt"></i>';
     }
     
-    // Empty stars
     for (let i = container.children.length; i < 5; i++) {
       container.innerHTML += '<i class="far fa-star"></i>';
     }
@@ -363,11 +492,7 @@ function renderReviews() {
 // ==========================================================================
 function openReviewModal() {
   if (!auth.currentUser) {
-    if (window.BookingSystem?.showToast) {
-      window.BookingSystem.showToast('Please sign in to write a review', 'error');
-    } else {
-      alert('Please sign in to write a review');
-    }
+    showToast('Please sign in to write a review', 'error');
     return;
   }
   
@@ -407,7 +532,6 @@ function setupStars() {
     });
   });
   
-  // Character counter
   const commentInput = document.getElementById('commentInput');
   const charCount = document.getElementById('charCount');
   if (commentInput && charCount) {
@@ -425,43 +549,39 @@ function setupStars() {
 async function submitReview() {
   const voucher = document.getElementById('voucherInput')?.value?.trim()?.toUpperCase();
   if (!voucher) {
-    showToastMsg('Please enter your voucher number', 'error');
+    showToast('Please enter your voucher number', 'error');
     return;
   }
   
   const rating = parseInt(document.getElementById('ratingValue')?.value || '0');
   if (!rating) {
-    showToastMsg('Please select a rating', 'error');
+    showToast('Please select a rating', 'error');
     return;
   }
   
   const comment = document.getElementById('commentInput')?.value?.trim();
   if (!comment || comment.length < 5) {
-    showToastMsg('Review must be at least 5 characters', 'error');
+    showToast('Review must be at least 5 characters', 'error');
     return;
   }
   
   try {
-    // Verify voucher belongs to current user
     const snap = await db.ref('trip-bookings/' + voucher).once('value');
     const booking = snap.val();
     
     if (!booking || booking.uid !== auth.currentUser.uid) {
-      showToastMsg('Invalid voucher number', 'error');
+      showToast('Invalid voucher number', 'error');
       return;
     }
     
     const user = auth.currentUser;
     let userName = 'Traveler';
     
-    // Try to get username from profile
     try {
       const userSnap = await db.ref('egy_user/' + user.uid).once('value');
       const userData = userSnap.val();
       if (userData) userName = userData.username || 'Traveler';
-    } catch (e) {
-      // Use default
-    }
+    } catch (e) {}
     
     const reviewData = {
       userId: user.uid,
@@ -480,23 +600,19 @@ async function submitReview() {
     let totalRating = (currentData.average || 0) * count;
     
     if (currentUserReview && currentData.reviews[currentUserReview.id]) {
-      // Update existing review
       totalRating = totalRating - (currentData.reviews[currentUserReview.id].rating || 0) + rating;
       await reviewRef.child('reviews/' + currentUserReview.id).update(reviewData);
     } else {
-      // New review
       await reviewRef.child('reviews/' + Date.now()).set(reviewData);
       count++;
       totalRating += rating;
     }
     
-    // Update summary
     await reviewRef.update({
       count: count,
       average: parseFloat((totalRating / count).toFixed(1))
     });
     
-    // Reset form
     closeReviewModal();
     document.getElementById('voucherInput').value = '';
     document.getElementById('commentInput').value = '';
@@ -507,46 +623,12 @@ async function submitReview() {
       s.classList.add('far');
     });
     
-    // Reload reviews
     await loadReviews();
-    showToastMsg('Thank you for your review! 🎉', 'success');
+    showToast('Thank you for your review!', 'success');
     
   } catch (error) {
-    showToastMsg('Error: ' + error.message, 'error');
+    showToast('Error: ' + error.message, 'error');
   }
-}
-
-// Helper toast function (fallback if BookingSystem not loaded)
-function showToastMsg(message, type = 'success') {
-  if (window.BookingSystem?.showToast) {
-    window.BookingSystem.showToast(message, type);
-    return;
-  }
-  
-  // Fallback toast
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-  
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.style.cssText = `
-    position: fixed; bottom: 100px; left: 50%;
-    transform: translateX(-50%);
-    background: #252526; color: #fff;
-    padding: 14px 24px; border-radius: 30px;
-    z-index: 99999; font-size: 14px; font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    border-left: 4px solid ${type === 'success' ? '#22c55e' : '#ef4444'};
-    white-space: nowrap;
-  `;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = '0.3s';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
 }
 
 // ==========================================================================
@@ -554,21 +636,37 @@ function showToastMsg(message, type = 'success') {
 // ==========================================================================
 window.onload = async function() {
   if (!tripPName) {
-    showToastMsg('No trip specified in URL.', 'error');
+    showToast('No trip specified in URL.', 'error');
     return;
   }
   
-  // Setup star selector for review modal
+  // Initialize currency
+  initCurrency();
+  
+  // Setup stars selector
   setupStars();
   
-  // Attach review modal events
-  document.getElementById('openReviewBtn')?.addEventListener('click', openReviewModal);
-  document.getElementById('submitReviewBtn')?.addEventListener('click', submitReview);
+  // Attach event listeners
+  const openReviewBtn = document.getElementById('openReviewBtn');
+  if (openReviewBtn) openReviewBtn.addEventListener('click', openReviewModal);
   
-  // Close modal on overlay click
-  document.querySelector('#reviewModal .services-popup-overlay')?.addEventListener('click', closeReviewModal);
+  const submitReviewBtn = document.getElementById('submitReviewBtn');
+  if (submitReviewBtn) submitReviewBtn.addEventListener('click', submitReview);
   
-  // Load reviews after a short delay (to ensure trip data is loaded by BookingSystem)
+  const reviewOverlay = document.querySelector('#reviewModal .services-popup-overlay');
+  if (reviewOverlay) reviewOverlay.addEventListener('click', closeReviewModal);
+  
+  // Listen for auth changes
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      currentUserUid = user.uid;
+    }
+  });
+  
+  // Fetch trip data
+  await fetchAllTripData();
+  
+  // Load reviews
   setTimeout(() => {
     if (tripPName) loadReviews();
   }, 2000);
@@ -576,18 +674,14 @@ window.onload = async function() {
   console.log('✅ Trip Display & Reviews System Ready');
 };
 
-// ==========================================================================
-// EXPOSE TO GLOBAL SCOPE (for BookingSystem to call)
-// ==========================================================================
-window.displayTripInfo = displayTripInfo;
-window.loadMediaContent = loadMediaContent;
-window.loadIncludedNotIncluded = loadIncludedNotIncluded;
-window.loadTimeline = loadTimeline;
-window.loadWhatToBring = loadWhatToBring;
-window.loadReviews = loadReviews;
-window.updatePriceDisplay = function() {
-  const el = document.getElementById('tourPrice');
-  if (el && currentTrip.basePrice) {
-    el.innerHTML = formatPriceDisplay(currentTrip.basePrice);
-  }
+// Expose for booking system integration
+window.tripModule = {
+  getCurrentTrip: () => currentTrip,
+  getTourTypes: () => tourTypes,
+  getTripOwnerId: () => tripOwnerId,
+  getTripPName: () => tripPName,
+  formatPrice,
+  showToast
 };
+
+console.log('📦 Trip Module loaded');
