@@ -1,7 +1,8 @@
 /* ==========================================================================
    ✦ DISCOVER SHARM - Premium Booking Experience ✦
-   Complete Creative Design System v5.0 Final
+   Complete Creative Design System v6.0 Final
    Scoped to .tour-booking-container | Desktop & Mobile
+   With Mobile Popup & Extra Services Popup
    ========================================================================== */
 
 /* ==========================================================================
@@ -1040,7 +1041,294 @@ select.form-control option,
 .flatpickr-day.flatpickr-disabled { color: #475569 !important; background: #1a1f35 !important; opacity: 0.4 !important; cursor: not-allowed !important; }
 
 /* ==========================================================================
-   17. MOBILE - APP-LIKE EXPERIENCE (Max 768px)
+   17. EXTRA SERVICES POPUP
+   ========================================================================== */
+.services-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.services-popup-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+.services-popup-container {
+  position: relative;
+  width: 90%;
+  max-width: 440px;
+  max-height: 80vh;
+  background: #1a1f35;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.services-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.services-popup-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.close-popup-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.close-popup-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.services-popup-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.services-popup-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.services-popup-footer .btn {
+  flex: 1;
+}
+
+.service-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.service-option.selected {
+  border-color: #FF6B35;
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.service-option-info {
+  flex: 1;
+}
+
+.service-option-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.service-option-price {
+  font-size: 12px;
+  color: #f59e0b;
+}
+
+.service-option-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.service-option.selected .service-option-check {
+  background: #FF6B35;
+  border-color: #FF6B35;
+}
+
+.service-option.selected .service-option-check::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* ==========================================================================
+   18. MOBILE BOOKING POPUP
+   ========================================================================== */
+.mobile-booking-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.mobile-booking-popup-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+}
+
+.mobile-booking-popup-container {
+  position: relative;
+  width: 94%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: linear-gradient(160deg, #1a1f35 0%, #252d3f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mobile-booking-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.mobile-booking-popup-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.mobile-popup-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.mobile-popup-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-booking-popup-content {
+  padding: 20px 16px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-booking-popup-content .booking-form-container {
+  display: block !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  position: relative !important;
+  top: auto !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+}
+
+.mobile-booking-popup-content .form-header {
+  padding-top: 0 !important;
+}
+
+.mobile-booking-popup-content .btn {
+  padding: 14px 20px !important;
+  font-size: 14px !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation !important;
+}
+
+.mobile-booking-popup-content .stepper-btn {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 18px !important;
+}
+
+.mobile-booking-popup-content .form-control {
+  font-size: 16px !important;
+  padding: 12px 14px !important;
+}
+
+.mobile-booking-popup-content select.form-control,
+.mobile-booking-popup-content #tripType {
+  font-size: 16px !important;
+}
+
+/* ==========================================================================
+   19. MOBILE - APP-LIKE EXPERIENCE (Max 768px)
    ========================================================================== */
 @media (max-width: 768px) {
   
@@ -1162,91 +1450,12 @@ select.form-control option,
   .mobile-book-now-btn i {
     font-size: 18px;
   }
-
-  /* Bottom Sheet */
-  .mobile-bottom-sheet-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    z-index: 200;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .mobile-bottom-sheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-height: 85vh;
-    background: linear-gradient(180deg, #1a1f35, #252d3f);
-    border-radius: 28px 28px 0 0;
-    z-index: 300;
-    overflow-y: auto;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
-    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .bottom-sheet-handle {
-    width: 36px;
-    height: 5px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 3px;
-    margin: 12px auto 0;
-  }
-
-  .bottom-sheet-content {
-    padding: 20px 16px 40px;
-  }
-
-  .bottom-sheet-content .booking-form-container {
-    display: block;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    position: relative;
-    top: auto;
-    max-height: none;
-  }
-
-  .bottom-sheet-content .btn {
-    padding: 14px 20px;
-    font-size: 14px;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-
-  .bottom-sheet-content .stepper-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 18px;
-  }
-
-  .bottom-sheet-content .form-control {
-    font-size: 16px;
-    padding: 12px 14px;
-  }
-
-  .bottom-sheet-content select.form-control,
-  .bottom-sheet-content #tripType {
-    font-size: 16px;
-  }
 }
 
 /* Hide mobile elements on desktop */
 @media (min-width: 769px) {
   .mobile-book-now-btn,
+  .mobile-booking-popup,
   .mobile-bottom-sheet-overlay,
   .mobile-bottom-sheet {
     display: none !important;
