@@ -162,16 +162,6 @@
   max-height: 200px !important;
 }
 
-@keyframes popupIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
 
 /* ==========================================================================
    POPUP HEADER
@@ -224,21 +214,9 @@
 /* ==========================================================================
    COUNTRIES SCROLL AREA
    ========================================================================== */
-.iti__country-list {
-  overflow: hidden !important;
-}
 
-/* Container for scrollable countries */
-.iti__country-list .iti__country-list-inner,
-.iti__country-list > div {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  flex: 1 !important;
-  padding: 4px 0 8px !important;
-  max-height: calc(70vh - 140px) !important;
-  min-height: 100px !important;
-  -webkit-overflow-scrolling: touch !important;
-}
+
+
 
 /* Individual country item */
 .iti__country {
