@@ -56,7 +56,7 @@
 
 /* العلم والكود */
 .iti__flag-container {
-  position: relative !important;
+  position: static !important;
   flex-shrink: 0 !important;
   width: auto !important;
 }
