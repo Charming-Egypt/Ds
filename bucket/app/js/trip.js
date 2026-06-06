@@ -1,3 +1,9 @@
+// ==========================================================================
+// DISCOVER SHARM - Tour Booking System
+// Complete JavaScript Controller
+// Compatible with new Creative Design
+// ==========================================================================
+
 // Initialize Swiper
 let swiper;
 let currentVideoSlide = null;
@@ -19,7 +25,7 @@ const TAX_RATE = 0.03;
 const TAX_ON_TAX_RATE = 0.14;
 let currentStep = 0;
 
-// Currency variables (from header)
+// Currency variables
 let currentCurrency = 'EGP';
 let exchangeRates = { EGP: 1 };
 let ratesLoaded = false;
@@ -51,7 +57,7 @@ function getExchangeRatesFromHeader() {
 
 function formatPrice(priceEGP) {
   if (!ratesLoaded || currentCurrency === 'EGP') {
-    return Math.round(priceEGP) + ' EGP';
+    return parseFloat(priceEGP).toFixed(2) + ' EGP';
   }
   
   var converted = priceEGP * exchangeRates[currentCurrency];
@@ -60,200 +66,13 @@ function formatPrice(priceEGP) {
   if (currentCurrency === 'USD') symbol = '$';
   else if (currentCurrency === 'EUR') symbol = '€';
   else if (currentCurrency === 'GBP') symbol = '£';
-  else return Math.round(priceEGP) + ' EGP';
+  else return parseFloat(priceEGP).toFixed(2) + ' EGP';
   
-  return symbol + converted.toFixed(2);
-}
-
-function getCurrencySymbol() {
-  if (currentCurrency === 'EGP') return 'EGP';
-  if (currentCurrency === 'USD') return '$';
-  if (currentCurrency === 'EUR') return '€';
-  if (currentCurrency === 'GBP') return '£';
-  return 'EGP';
-}
-
-function updatePriceDisplay() {
-  const priceElement = document.getElementById('tourPrice');
-  if (priceElement && currentTrip.basePrice) {
-    const totalPrice = calculateTotalWithTaxes();
-    const formattedPrice = formatPrice(totalPrice);
-    priceElement.innerHTML = formattedPrice;
-    priceElement.setAttribute('data-price-egp', totalPrice);
-    priceElement.setAttribute('data-currency', currentCurrency);
-  }
-}
-
-function updateTripTypeDropdownPrices() {
-  const tripTypeSelect = document.getElementById('tripType');
-  if (!tripTypeSelect) return;
-  
-  for (var i = 0; i < tripTypeSelect.options.length; i++) {
-    var option = tripTypeSelect.options[i];
-    var priceEGP = option.getAttribute('data-price-egp');
-    if (priceEGP) {
-      var key = option.value;
-      if (key && tourTypes[key]) {
-        option.textContent = `${key} - ${formatPrice(parseFloat(priceEGP))} (per person)`;
-      }
-    }
-  }
-}
-
-function updateSelectedServiceText() {
-  const textSpan = document.getElementById('selectedServiceText');
-  if (textSpan) {
-    if (selectedTripType && tourTypes[selectedTripType]) {
-      const priceEGP = tourTypes[selectedTripType];
-      const formattedPrice = formatPrice(priceEGP);
-      textSpan.textContent = `${selectedTripType} (+${formattedPrice})`;
-    } else {
-      textSpan.textContent = 'No extra services';
-    }
-  }
-}
-
-function updateServiceTextOnCurrencyChange() {
-  const textSpan = document.getElementById('selectedServiceText');
-  if (textSpan && selectedTripType && tourTypes[selectedTripType]) {
-    const priceEGP = tourTypes[selectedTripType];
-    const formattedPrice = formatPrice(priceEGP);
-    textSpan.textContent = `${selectedTripType} (+${formattedPrice})`;
-  }
-}
-
-function initCurrencyFromHeader() {
-  currentCurrency = getCurrentCurrencyFromHeader();
-  const headerRates = getExchangeRatesFromHeader();
-  
-  if (headerRates) {
-    exchangeRates = headerRates;
-    ratesLoaded = true;
-  }
-  
-  var checkInterval = setInterval(function() {
-    var rates = getExchangeRatesFromHeader();
-    if (rates) {
-      exchangeRates = rates;
-      ratesLoaded = true;
-      clearInterval(checkInterval);
-      updatePriceDisplay();
-      updateSummary();
-      updateTripTypeDropdownPrices();
-      updateSelectedServiceText();
-      updateServiceTextOnCurrencyChange();
-    }
-  }, 500);
-  
-  window.addEventListener('currencyChanged', function(event) {
-    if (event.detail && event.detail.currency) {
-      currentCurrency = event.detail.currency;
-      if (event.detail.rates) {
-        exchangeRates = event.detail.rates;
-        ratesLoaded = true;
-      }
-      updatePriceDisplay();
-      updateSummary();
-      updateTripTypeDropdownPrices();
-      updateSelectedServiceText();
-      updateServiceTextOnCurrencyChange();
-    }
-  });
-  
-  setTimeout(function() {
-    updatePriceDisplay();
-    updateSummary();
-  }, 100);
+  return symbol + parseFloat(converted).toFixed(2);
 }
 
 // ========================================
-// Extra Services Popup Functions
-// ========================================
-
-let tempSelectedService = '';
-
-function openServicesPopup() {
-  const popup = document.getElementById('extraServicesPopup');
-  const content = document.getElementById('servicesPopupContent');
-  
-  if (!popup || !content) return;
-  
-  content.innerHTML = '';
-  tempSelectedService = selectedTripType;
-  
-  const noServiceDiv = document.createElement('div');
-  noServiceDiv.className = `service-option ${tempSelectedService === '' ? 'selected' : ''}`;
-  noServiceDiv.setAttribute('data-value', '');
-  noServiceDiv.innerHTML = `
-    <div class="service-option-info">
-      <div class="service-option-name">No extra services</div>
-      <div class="service-option-price">Free</div>
-    </div>
-    <div class="service-option-check"></div>
-  `;
-  noServiceDiv.onclick = function() { selectServiceInPopup(''); };
-  content.appendChild(noServiceDiv);
-  
-  if (tourTypes && typeof tourTypes === 'object') {
-    Object.keys(tourTypes).forEach(key => {
-      const priceEGP = tourTypes[key];
-      const formattedPrice = formatPrice(priceEGP);
-      const serviceDiv = document.createElement('div');
-      serviceDiv.className = `service-option ${tempSelectedService === key ? 'selected' : ''}`;
-      serviceDiv.setAttribute('data-value', key);
-      serviceDiv.setAttribute('data-price-egp', priceEGP);
-      serviceDiv.innerHTML = `
-        <div class="service-option-info">
-          <div class="service-option-name">${key}</div>
-          <div class="service-option-price">${formattedPrice} (per person)</div>
-        </div>
-        <div class="service-option-check"></div>
-      `;
-      serviceDiv.onclick = function() { selectServiceInPopup(key); };
-      content.appendChild(serviceDiv);
-    });
-  }
-  
-  popup.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function selectServiceInPopup(value) {
-  tempSelectedService = value;
-  
-  const options = document.querySelectorAll('#servicesPopupContent .service-option');
-  options.forEach(opt => {
-    if (opt.getAttribute('data-value') === value) {
-      opt.classList.add('selected');
-    } else {
-      opt.classList.remove('selected');
-    }
-  });
-}
-
-function confirmServiceSelection() {
-  selectedTripType = tempSelectedService;
-  
-  const tripTypeSelect = document.getElementById('tripType');
-  if (tripTypeSelect) {
-    tripTypeSelect.value = selectedTripType;
-  }
-  
-  updateSelectedServiceText();
-  updateSummary();
-  closeServicesPopup();
-}
-
-function closeServicesPopup() {
-  const popup = document.getElementById('extraServicesPopup');
-  if (popup) {
-    popup.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-}
-
-// ========================================
-// Utility Functions
+// UTILITY FUNCTIONS
 // ========================================
 
 function generateReference() {
@@ -274,7 +93,7 @@ function showError(elementId, message) {
   const element = document.getElementById(elementId);
   const errorElement = document.getElementById(`${elementId}Error`);
   if (element && errorElement) {
-    element.classList.add('border-red-500');
+    element.style.borderColor = '#ef4444';
     errorElement.textContent = message;
     errorElement.classList.remove('hidden');
   }
@@ -284,17 +103,24 @@ function clearError(elementId) {
   const element = document.getElementById(elementId);
   const errorElement = document.getElementById(`${elementId}Error`);
   if (element && errorElement) {
-    element.classList.remove('border-red-500');
+    element.style.borderColor = '';
     errorElement.classList.add('hidden');
   }
 }
 
 function showToast(message, type = 'success') {
+  // Remove existing toasts
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) existingToast.remove();
+  
   const toast = document.createElement("div");
-  toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+  toast.className = `toast toast-${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 function showSpinner() {
@@ -312,446 +138,7 @@ function hideSpinner() {
 }
 
 // ========================================
-// NOTIFICATION FUNCTIONS
-// ========================================
-
-async function sendBookingNotificationToSupplier(bookingData, tripInfo) {
-  // 1. التحقق من وجود معرف المورد
-  if (!tripInfo || !tripInfo.supplierId) {
-    console.warn("No supplierId found for this trip. Notification not sent.");
-    return;
-  }
-
-  const notificationId = Date.now().toString();
-  const notificationRef = db.ref(`notifications/${tripInfo.supplierId}/${notificationId}`);
-
-  
-  // 4. بناء نص الإشعار (هيجيب 520 EGP)
-  const notificationMessage = `${bookingData.userName} booked for ${bookingData.adults} adults, ${bookingData.childrenUnder12} children, ${bookingData.infants} infants. Total: ${parseFloat(bookingData.totalAmount)} EGP`;
-
-  // 5. بيانات الإشعار
-  const notificationData = {
-    id: notificationId,
-    title: `New Booking: ${tripInfo.name}`,
-    message: notificationMessage,
-    totalAmount: parseFloat(bookingData.totalAmount),
-    bookingId: bookingData.bookingId,
-    tripId: bookingData.Id || tripInfo.bookingLink || "unknown",
-    tripName: tripInfo.name,
-    userName: bookingData.userName,
-    userEmail: bookingData.userEmail,
-    phone: bookingData.phone,
-    adults: bookingData.adults,
-    children: bookingData.childrenUnder12,
-    infants: bookingData.infants,
-    tripDate: bookingData.tripDate,
-    read: false,
-    timestamp: Date.now(),
-    type: 'new_booking'
-  };
-
-  try {
-    await notificationRef.set(notificationData);
-    console.log(`✅ Notification sent to supplier: ${tripInfo.supplierId} | Net: ${totalBeforeTax} EGP`);
-  } catch (error) {
-    console.error("❌ Error sending notification:", error);
-  }
-}
-
-
-
-// ========================================
-// Form Navigation
-// ========================================
-
-function updateProgressBar() {
-  const progressPercentage = (currentStep + 1) * 25;
-  document.getElementById('progressBar').style.width = `${progressPercentage}%`;
-  
-  for (let i = 1; i <= 4; i++) {
-    const indicator = document.getElementById(`step${i}Indicator`);
-    if (indicator) {
-      indicator.dataset.active = (i === currentStep + 1) ? "true" : "false";
-      if (indicator.dataset.active === "true") {
-        indicator.classList.add('text-yellow-500');
-        indicator.classList.remove('text-gray-500');
-      } else {
-        indicator.classList.add('text-gray-500');
-        indicator.classList.remove('text-yellow-500');
-      }
-    }
-  }
-}
-
-function nextStep() {
-  if (!validateCurrentStep()) return;
-  
-  document.getElementById(`step${currentStep + 1}`).classList.remove('active');
-  currentStep++;
-  document.getElementById(`step${currentStep + 1}`).classList.add('active');
-  
-  if (currentStep === 3) {
-    document.getElementById('submitBtn').classList.remove('hidden');
-  } else {
-    document.getElementById('submitBtn').classList.add('hidden');
-  }
-  
-  updateProgressBar();
-  updateSummary();
-}
-
-function prevStep() {
-  document.getElementById(`step${currentStep + 1}`).classList.remove('active');
-  currentStep--;
-  document.getElementById(`step${currentStep + 1}`).classList.add('active');
-  document.getElementById('submitBtn').classList.add('hidden');
-  updateProgressBar();
-}
-
-// ========================================
-// Trip Data Functions
-// ========================================
-
-async function fetchAllTripData() {
-  try {
-    showSpinner();
-    const snapshot = await db.ref('trips').once('value');
-    const allTripsData = snapshot.val();
-    
-    if (!allTripsData) {
-      showToast("No trips available at the moment.", 'error');
-      return {};
-    }
-    
-    tripData = allTripsData;
-    
-    if (tripPName && allTripsData[tripPName]) {
-      currentTrip = allTripsData[tripPName];
-      currentTrip.basePrice = currentTrip.price || 0;
-      currentTrip.commissionRate = currentTrip.commission || 0.10;
-      tourTypes = currentTrip.tourtype || {};
-      tripOwnerId = currentTrip.owner || '';
-      
-      // Add supplierId to currentTrip for easy access
-      currentTrip.supplierId = tripOwnerId;
-      
-      populateTripTypeDropdown(tourTypes);
-      displayTripInfo(currentTrip);
-      
-      loadMediaContent(currentTrip.media);
-      loadIncludedNotIncluded(currentTrip);
-      loadTimeline(currentTrip.timeline);
-      loadWhatToBring(currentTrip.whatToBring);
-      updateRating(currentTrip.rating);
-      
-      updatePriceDisplay();
-    } else {
-      showToast("Trip not found.", 'error');
-    }
-    
-    return allTripsData;
-  } catch (error) {
-    console.error("Error fetching trip data:", error);
-    showToast("Failed to load trip data.", 'error');
-    throw error;
-  } finally {
-    hideSpinner();
-  }
-}
-
-function updateRating(ratingData) {
-  if (!ratingData) return;
-  
-  const ratingStars = document.getElementById('ratingStars');
-  const ratingCount = document.getElementById('ratingCount');
-  
-  if (ratingStars && ratingCount) {
-    ratingStars.innerHTML = '';
-    
-    const averageRating = ratingData.average || 0;
-    const reviewCount = ratingData.count || 0;
-    
-    const fullStars = Math.floor(averageRating);
-    for (let i = 0; i < fullStars; i++) {
-      ratingStars.innerHTML += '<i class="fas fa-star"></i>';
-    }
-    
-    if (averageRating % 1 >= 0.5) {
-      ratingStars.innerHTML += '<i class="fas fa-star-half-alt"></i>';
-    }
-    
-    const emptyStars = 5 - Math.ceil(averageRating);
-    for (let i = 0; i < emptyStars; i++) {
-      ratingStars.innerHTML += '<i class="far fa-star"></i>';
-    }
-    
-    ratingCount.textContent = `(${reviewCount} reviews)`;
-  }
-}
-
-function loadMediaContent(mediaData) {
-  if (!mediaData) return;
-
-  const swiperWrapper = document.querySelector('.swiper-wrapper');
-  const thumbnailsContainer = document.getElementById('thumbnailsContainer');
-  
-  if (swiperWrapper) swiperWrapper.innerHTML = '';
-  if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
-
-  if (mediaData.images && mediaData.images.length > 0) {
-    mediaData.images.forEach((imageUrl, index) => {
-      const slide = document.createElement('div');
-      slide.className = 'swiper-slide';
-      if (index === 0) {
-        slide.innerHTML = `
-          <img src="${imageUrl}" alt="${currentTrip.name}">
-          <div class="tour-title-overlay">
-            <div class="tour-meta">
-               <span class="tour-meta-item"><i class="fas fa-clock"></i> ${currentTrip.duration || ''}</span>
-            </div>
-          </div>
-        `;
-      } else {
-        slide.innerHTML = `<img src="${imageUrl}" alt="${currentTrip.name}">`;
-      }
-      swiperWrapper.appendChild(slide);
-      
-      const thumb = document.createElement('img');
-      thumb.src = imageUrl;
-      thumb.alt = `Thumbnail ${index + 1}`;
-      thumb.className = 'thumbnail';
-      thumb.dataset.index = index;
-      
-      thumb.addEventListener('click', () => {
-        swiper.slideTo(index);
-        updateActiveThumbnail(index);
-      });
-      
-      thumbnailsContainer.appendChild(thumb);
-    });
-  }
-  
-  if (mediaData.videos && mediaData.videos.length > 0) {
-    mediaData.videos.forEach((video, index) => {
-      const videoIndex = mediaData.images ? mediaData.images.length + index : index;
-      
-      const slide = document.createElement('div');
-      slide.className = 'swiper-slide swiper-slide-video';
-      slide.dataset.videoUrl = video.videoUrl;
-      slide.innerHTML = `
-        <img src="${video.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-        <div class="play-button"><i class="fas fa-play"></i></div>
-      `;
-      swiperWrapper.appendChild(slide);
-      
-      const thumb = document.createElement('img');
-      thumb.src = video.thumbnail;
-      thumb.alt = `Video ${index + 1}`;
-      thumb.className = 'thumbnail';
-      thumb.dataset.index = videoIndex;
-      
-      thumb.addEventListener('click', () => {
-        swiper.slideTo(videoIndex);
-        updateActiveThumbnail(videoIndex);
-      });
-      
-      thumbnailsContainer.appendChild(thumb);
-    });
-  }
-  
-  if (!swiper) {
-    swiper = new Swiper('.swiper', {
-      slidesPerView: 1,
-      spaceBetween: 0,
-      loop: true,
-      pagination: { el: '.swiper-pagination', clickable: true },
-      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-      on: {
-        slideChange: function() {
-          updateActiveThumbnail(this.realIndex);
-          if (currentVideoSlide) {
-            const iframe = currentVideoSlide.querySelector('iframe');
-            if (iframe) {
-              iframe.src = '';
-              currentVideoSlide.innerHTML = `
-                <img src="${currentVideoSlide.dataset.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-                <div class="play-button"><i class="fas fa-play"></i></div>
-              `;
-              currentVideoSlide = null;
-            }
-          }
-        }
-      }
-    });
-    
-    document.querySelector('.swiper').addEventListener('click', function(e) {
-      const playButton = e.target.closest('.play-button');
-      if (playButton) {
-        const slide = playButton.closest('.swiper-slide');
-        if (slide && slide.classList.contains('swiper-slide-video')) {
-          playVideo(slide);
-        }
-      }
-    });
-  } else {
-    swiper.update();
-  }
-  
-  if (thumbnailsContainer.firstChild) {
-    thumbnailsContainer.firstChild.classList.add('active');
-  }
-}
-
-function playVideo(slide) {
-  if (currentVideoSlide) {
-    const iframe = currentVideoSlide.querySelector('iframe');
-    if (iframe) {
-      iframe.src = '';
-      currentVideoSlide.innerHTML = `
-        <img src="${currentVideoSlide.dataset.thumbnail}" alt="${currentTrip.name} video" class="video-thumbnail">
-        <div class="play-button"><i class="fas fa-play"></i></div>
-      `;
-    }
-  }
-  
-  const thumbnail = slide.querySelector('img').src;
-  slide.dataset.thumbnail = thumbnail;
-  
-  const videoUrl = slide.dataset.videoUrl;
-  let videoId;
-  
-  if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = videoUrl.match(regExp);
-    videoId = (match && match[2].length === 11) ? match[2] : null;
-    
-    if (videoId) {
-      slide.innerHTML = `
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      `;
-      currentVideoSlide = slide;
-    }
-  }
-}
-
-function updateActiveThumbnail(index) {
-  const thumbnails = document.querySelectorAll('.thumbnail');
-  thumbnails.forEach((thumb, i) => {
-    if (parseInt(thumb.dataset.index) === index) {
-      thumb.classList.add('active');
-    } else {
-      thumb.classList.remove('active');
-    }
-  });
-}
-
-function loadIncludedNotIncluded(tripData) {
-  const includedContainer = document.getElementById('includedItems');
-  const notIncludedContainer = document.getElementById('notIncludedItems');
-  
-  if (includedContainer && tripData.included) {
-    includedContainer.innerHTML = '';
-    tripData.included.forEach(item => {
-      const itemElement = document.createElement('div');
-      itemElement.style.display = 'flex';
-      itemElement.style.alignItems = 'center';
-      itemElement.style.gap = '10px';
-      itemElement.style.marginBottom = '10px';
-      itemElement.innerHTML = `<i class="fas fa-check" style="color: #4CAF50;"></i><span>${item}</span>`;
-      includedContainer.appendChild(itemElement);
-    });
-  }
-  
-  if (notIncludedContainer && tripData.notIncluded) {
-    notIncludedContainer.innerHTML = '';
-    tripData.notIncluded.forEach(item => {
-      const itemElement = document.createElement('div');
-      itemElement.style.display = 'flex';
-      itemElement.style.alignItems = 'center';
-      itemElement.style.gap = '10px';
-      itemElement.style.marginBottom = '10px';
-      itemElement.innerHTML = `<i class="fas fa-times" style="color: #F44336;"></i><span>${item}</span>`;
-      notIncludedContainer.appendChild(itemElement);
-    });
-  }
-}
-
-function loadTimeline(timelineData) {
-  const timelineContainer = document.getElementById('timelineContainer');
-  if (!timelineContainer || !timelineData) return;
-  
-  timelineContainer.innerHTML = '';
-  timelineData.forEach((item) => {
-    const timelineItem = document.createElement('div');
-    timelineItem.className = 'timeline-item';
-    timelineItem.innerHTML = `
-      <div class="timeline-time">${item.time}</div>
-      <div class="timeline-content">
-        <div class="timeline-title">${item.title}</div>
-        <div class="timeline-description">${item.description}</div>
-      </div>
-    `;
-    if (item.time) {
-      const timeElement = timelineItem.querySelector('.timeline-time');
-      timeElement.setAttribute('title', item.time);
-    }
-    timelineContainer.appendChild(timelineItem);
-  });
-}
-
-function loadWhatToBring(whatToBringData) {
-  const whatToBringList = document.getElementById('whatToBringList');
-  if (!whatToBringList || !whatToBringData) return;
-  
-  whatToBringList.innerHTML = '';
-  whatToBringData.forEach(item => {
-    const li = document.createElement('li');
-    
-    li.style.borderBottom = '1px dashed #64748b';
-    li.style.display = 'flex';
-    li.style.alignItems = 'center';
-    li.style.gap = '10px';
-    li.innerHTML = `<i class="fas fa-check" style="color: #f59e0b;"></i> ${item}`;
-    whatToBringList.appendChild(li);
-  });
-}
-
-function populateTripTypeDropdown(tourTypes) {
-  const tripTypeSelect = document.getElementById('tripType');
-  if (!tripTypeSelect) return;
-  
-  tripTypeSelect.style.display = 'none';
-  
-  const existingButton = document.getElementById('openServicesBtn');
-  if (existingButton) existingButton.remove();
-  
-  const selectButton = document.createElement('button');
-  selectButton.id = 'openServicesBtn';
-  selectButton.type = 'button';
-  selectButton.className = 'form-control';
-  selectButton.style.cssText = 'display: flex; align-items: center; justify-content: space-between; cursor: pointer;';
-  selectButton.innerHTML = `
-    <span id="selectedServiceText">No extra services</span>
-    <i class="fas fa-chevron-down"></i>
-  `;
-  
-  selectButton.onclick = openServicesPopup;
-  tripTypeSelect.parentNode.insertBefore(selectButton, tripTypeSelect.nextSibling);
-  
-  selectedTripType = '';
-  updateSelectedServiceText();
-}
-
-function displayTripInfo(tripInfo) {
-  const tripTitle = document.getElementById('tourTitle');
-  const tripName = document.getElementById('tripName');
-  
-  if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
-  if (tripName && tripInfo.name) tripName.value = tripInfo.name;
-}
-
-// ========================================
-// Price Calculation (All in EGP)
+// PRICE CALCULATION
 // ========================================
 
 function calculateBaseTotal() {
@@ -762,7 +149,7 @@ function calculateBaseTotal() {
   
   const basePrice = parseFloat(currentTrip.basePrice);
   const childPrice = parseFloat(currentTrip.cprice) || basePrice * 0.5;
-  return (adults * basePrice) + (childrenUnder12 * childPrice);
+  return parseFloat(((adults * basePrice) + (childrenUnder12 * childPrice)).toFixed(2));
 }
 
 function calculateExtraServicesTotal() {
@@ -771,53 +158,499 @@ function calculateExtraServicesTotal() {
   
   if (selectedTripType && tourTypes[selectedTripType]) {
     const servicePrice = parseFloat(tourTypes[selectedTripType]);
-    return (adults + childrenUnder12) * servicePrice;
+    return parseFloat(((adults + childrenUnder12) * servicePrice).toFixed(2));
   }
   return 0;
 }
 
 function calculateNetTotal() {
-  return calculateBaseTotal() + calculateExtraServicesTotal();
+  return parseFloat((calculateBaseTotal() + calculateExtraServicesTotal()).toFixed(2));
+}
+
+function calculateTaxesOnly() {
+    const netTotal = calculateNetTotal();
+    const threePercent = parseFloat((netTotal * 0.03).toFixed(2));
+    const fourteenPercentOfThreePercent = parseFloat((threePercent * 0.14).toFixed(2));
+    const fixedFee = 3;
+    return parseFloat((threePercent + fourteenPercentOfThreePercent + fixedFee).toFixed(2));
 }
 
 function calculateTotalWithTaxes() {
-    // 1. نحسب إجمالي المبلغ (أساسي + خدمات إضافية)
-    const adults = parseInt(document.getElementById('adults').value) || 0;
-    const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-    
-    // السعر الأساسي للبالغين
-    let baseTotal = 0;
-    if (currentTrip.basePrice) {
-        baseTotal += adults * parseFloat(currentTrip.basePrice);
+    const netTotal = calculateNetTotal();
+    const taxes = calculateTaxesOnly();
+    return parseFloat((netTotal + taxes).toFixed(2));
+}
+
+// ========================================
+// PRICE DISPLAY
+// ========================================
+
+function updatePriceDisplay() {
+  const priceElement = document.getElementById('tourPrice');
+  const mobilePricePreview = document.getElementById('mobilePricePreview');
+  
+  if (priceElement && currentTrip.basePrice) {
+    const netTotal = calculateNetTotal();
+    const formattedPrice = formatPrice(netTotal);
+    priceElement.innerHTML = formattedPrice;
+    priceElement.setAttribute('data-price-egp', parseFloat(netTotal).toFixed(2));
+    priceElement.setAttribute('data-currency', currentCurrency);
+  }
+  
+  // Update mobile price preview
+  if (mobilePricePreview && currentTrip.basePrice) {
+    const netTotal = calculateNetTotal();
+    mobilePricePreview.textContent = 'From ' + formatPrice(netTotal);
+  }
+}
+
+// ========================================
+// FORM NAVIGATION
+// ========================================
+
+function updateProgressBar() {
+  const progressBar = document.getElementById('progressBar');
+  if (progressBar) {
+    const progressPercentage = (currentStep + 1) * 25;
+    progressBar.style.width = `${progressPercentage}%`;
+  }
+  
+  // Update step indicators
+  const steps = document.querySelectorAll('.progress-steps .step');
+  steps.forEach((step, index) => {
+    if (index === currentStep) {
+      step.classList.add('active');
+    } else {
+      step.classList.remove('active');
     }
+  });
+}
+
+function nextStep() {
+  if (!validateCurrentStep()) return;
+  
+  const currentStepElement = document.getElementById(`step${currentStep + 1}`);
+  if (currentStepElement) currentStepElement.classList.remove('active');
+  
+  currentStep++;
+  
+  const nextStepElement = document.getElementById(`step${currentStep + 1}`);
+  if (nextStepElement) nextStepElement.classList.add('active');
+  
+  updateProgressBar();
+  updateSummary();
+}
+
+function prevStep() {
+  const currentStepElement = document.getElementById(`step${currentStep + 1}`);
+  if (currentStepElement) currentStepElement.classList.remove('active');
+  
+  currentStep--;
+  
+  const prevStepElement = document.getElementById(`step${currentStep + 1}`);
+  if (prevStepElement) prevStepElement.classList.add('active');
+  
+  updateProgressBar();
+}
+
+// ========================================
+// EXTRA SERVICES POPUP (NEW)
+// ========================================
+
+function openServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  const content = document.getElementById('servicesPopupContent');
+  
+  if (!popup || !content) return;
+  
+  // Build services list
+  content.innerHTML = '';
+  
+  // "No extra services" option
+  const noServiceDiv = document.createElement('div');
+  noServiceDiv.className = `service-option ${!selectedTripType ? 'selected' : ''}`;
+  noServiceDiv.innerHTML = `
+    <div class="service-option-info">
+      <strong>🚫 No Extra Services</strong>
+      <span>Free</span>
+    </div>
+    <div class="service-option-check"></div>
+  `;
+  noServiceDiv.onclick = function() { 
+    selectedTripType = '';
+    renderServiceOptions();
+  };
+  content.appendChild(noServiceDiv);
+  
+  if (tourTypes && typeof tourTypes === 'object') {
+    Object.keys(tourTypes).forEach(key => {
+      const priceEGP = tourTypes[key];
+      const formattedPrice = formatPrice(priceEGP);
+      const serviceDiv = document.createElement('div');
+      serviceDiv.className = `service-option ${selectedTripType === key ? 'selected' : ''}`;
+      serviceDiv.innerHTML = `
+        <div class="service-option-info">
+          <strong>✨ ${key}</strong>
+          <span>+${formattedPrice} per person</span>
+        </div>
+        <div class="service-option-check"></div>
+      `;
+      serviceDiv.onclick = function() { 
+        selectedTripType = key;
+        renderServiceOptions();
+      };
+      content.appendChild(serviceDiv);
+    });
+  }
+  
+  popup.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderServiceOptions() {
+  const options = document.querySelectorAll('#servicesPopupContent .service-option');
+  let index = 0;
+  options.forEach(opt => {
+    const isNoService = index === 0 && !selectedTripType;
+    const isThisService = index > 0 && opt.querySelector('strong').textContent.includes(selectedTripType);
     
-    // سعر الأطفال (لو موجود)
-    if (currentTrip.cprice) {
-        baseTotal += childrenUnder12 * parseFloat(currentTrip.cprice);
-    } else if (currentTrip.basePrice) {
-        baseTotal += childrenUnder12 * (parseFloat(currentTrip.basePrice) * 0.5);
+    if ((index === 0 && !selectedTripType) || (index > 0 && opt.querySelector('strong').textContent.includes(selectedTripType))) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
     }
-    
-    // الخدمات الإضافية
-    let extraServicesTotal = 0;
+    index++;
+  });
+}
+
+function confirmServiceSelection() {
+  const serviceText = document.getElementById('selectedServiceText');
+  if (serviceText) {
     if (selectedTripType && tourTypes[selectedTripType]) {
-        const servicePrice = parseFloat(tourTypes[selectedTripType]);
-        extraServicesTotal = (adults + childrenUnder12) * servicePrice;
+      serviceText.textContent = selectedTripType;
+    } else {
+      serviceText.textContent = 'No extra services';
     }
+  }
+  
+  closeServicesPopup();
+  updateSummary();
+}
+
+function closeServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  if (popup) {
+    popup.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+}
+
+// ========================================
+// MOBILE BOTTOM SHEET (NEW)
+// ========================================
+
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+function openMobileBottomSheet() {
+  const overlay = document.getElementById('mobileBottomSheetOverlay');
+  const sheet = document.getElementById('mobileBottomSheet');
+  const content = document.getElementById('mobileBookingContent');
+  
+  if (!overlay || !sheet || !content) return;
+  
+  // Clone booking form to mobile sheet if empty
+  if (content.children.length === 0) {
+    const bookingForm = document.getElementById('bookingForm');
+    const progressContainer = document.querySelector('.booking-form-container .progress-container');
+    const formHeader = document.querySelector('.booking-form-container .form-header');
     
-    // الإجمالي قبل الضريبة = الأساسي + الخدمات
-    const totalBeforeTax = baseTotal + extraServicesTotal;
+    if (bookingForm) {
+      const clone = bookingForm.cloneNode(true);
+      clone.id = 'mobileBookingForm';
+      
+      // Clear and rebuild
+      content.innerHTML = '';
+      
+      if (formHeader) {
+        content.appendChild(formHeader.cloneNode(true));
+      }
+      if (progressContainer) {
+        content.appendChild(progressContainer.cloneNode(true));
+      }
+      content.appendChild(clone);
+      
+      // Re-attach event listeners to cloned buttons
+      attachMobileFormEvents();
+    }
+  }
+  
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  
+  // Scroll to top
+  setTimeout(() => {
+    sheet.scrollTop = 0;
+  }, 100);
+  
+  updateSummary();
+}
+
+function closeMobileBottomSheet() {
+  const overlay = document.getElementById('mobileBottomSheetOverlay');
+  const sheet = document.getElementById('mobileBottomSheet');
+  
+  if (overlay) overlay.classList.add('hidden');
+  if (sheet) sheet.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function attachMobileFormEvents() {
+  // Re-attach next/prev buttons
+  const nextBtns = document.querySelectorAll('#mobileBookingContent [onclick*="nextStep"]');
+  const prevBtns = document.querySelectorAll('#mobileBookingContent [onclick*="prevStep"]');
+  
+  nextBtns.forEach(btn => {
+    btn.onclick = function() {
+      nextStepMobile();
+    };
+  });
+  
+  prevBtns.forEach(btn => {
+    btn.onclick = function() {
+      prevStepMobile();
+    };
+  });
+  
+  // Re-attach submit button
+  const submitBtn = document.querySelector('#mobileBookingContent #submitBtn');
+  if (submitBtn) {
+    submitBtn.onclick = submitForm;
+  }
+  
+  // Re-attach number controls
+  initMobileNumberControls();
+  
+  // Re-attach extra services trigger
+  const servicesTrigger = document.querySelector('#mobileBookingContent #extraServicesTrigger');
+  if (servicesTrigger) {
+    servicesTrigger.onclick = openServicesPopup;
+  }
+  
+  const openServicesBtn = document.querySelector('#mobileBookingContent #openServicesBtn');
+  if (openServicesBtn) {
+    openServicesBtn.onclick = openServicesPopup;
+  }
+}
+
+function nextStepMobile() {
+  if (!validateCurrentStep()) return;
+  
+  const steps = document.querySelectorAll('#mobileBookingContent .form-step');
+  steps[currentStep].classList.remove('active');
+  
+  currentStep++;
+  
+  if (steps[currentStep]) {
+    steps[currentStep].classList.add('active');
+  }
+  
+  updateProgressBarMobile();
+  updateSummary();
+  
+  // Scroll to top of sheet
+  const sheet = document.getElementById('mobileBottomSheet');
+  if (sheet) sheet.scrollTop = 0;
+}
+
+function prevStepMobile() {
+  const steps = document.querySelectorAll('#mobileBookingContent .form-step');
+  if (steps[currentStep]) steps[currentStep].classList.remove('active');
+  
+  currentStep--;
+  
+  if (steps[currentStep]) steps[currentStep].classList.add('active');
+  
+  updateProgressBarMobile();
+}
+
+function updateProgressBarMobile() {
+  const progressBar = document.querySelector('#mobileBookingContent #progressBar');
+  if (progressBar) {
+    const progressPercentage = (currentStep + 1) * 25;
+    progressBar.style.width = `${progressPercentage}%`;
+  }
+  
+  const steps = document.querySelectorAll('#mobileBookingContent .progress-steps .step');
+  steps.forEach((step, index) => {
+    if (index === currentStep) {
+      step.classList.add('active');
+    } else {
+      step.classList.remove('active');
+    }
+  });
+}
+
+function initMobileNumberControls() {
+  const container = document.getElementById('mobileBookingContent');
+  if (!container) return;
+  
+  // Adults
+  const adultsPlus = container.querySelector('#adultsPlus');
+  const adultsMinus = container.querySelector('#adultsMinus');
+  if (adultsPlus) {
+    adultsPlus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#adults');
+      if (input && parseInt(input.value) < MAX_PER_TYPE) {
+        input.value = parseInt(input.value) + 1;
+        updateInfantsMax();
+        updateSummary();
+      }
+    };
+  }
+  if (adultsMinus) {
+    adultsMinus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#adults');
+      if (input && parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+        updateInfantsMax();
+        updateSummary();
+      }
+    };
+  }
+  
+  // Children
+  const childrenPlus = container.querySelector('#childrenUnder12Plus');
+  const childrenMinus = container.querySelector('#childrenUnder12Minus');
+  if (childrenPlus) {
+    childrenPlus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#childrenUnder12');
+      if (input && parseInt(input.value) < MAX_PER_TYPE) {
+        input.value = parseInt(input.value) + 1;
+        updateSummary();
+      }
+    };
+  }
+  if (childrenMinus) {
+    childrenMinus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#childrenUnder12');
+      if (input && parseInt(input.value) > 0) {
+        input.value = parseInt(input.value) - 1;
+        updateSummary();
+      }
+    };
+  }
+  
+  // Infants
+  const infantsPlus = container.querySelector('#infantsPlus');
+  const infantsMinus = container.querySelector('#infantsMinus');
+  if (infantsPlus) {
+    infantsPlus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#infants');
+      if (input && parseInt(input.value) < parseInt(input.max)) {
+        input.value = parseInt(input.value) + 1;
+        updateSummary();
+      }
+    };
+  }
+  if (infantsMinus) {
+    infantsMinus.onclick = function(e) {
+      e.preventDefault();
+      const input = container.querySelector('#infants');
+      if (input && parseInt(input.value) > 0) {
+        input.value = parseInt(input.value) - 1;
+        updateSummary();
+      }
+    };
+  }
+}
+
+// ========================================
+// SUMMARY UPDATE
+// ========================================
+
+function updateSummary() {
+  const adults = parseInt(document.getElementById('adults').value) || 0;
+  const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+  const infants = parseInt(document.getElementById('infants').value) || 0;
+  
+  // Update all summary elements (both desktop and mobile)
+  updateSummaryElement('summaryDate', document.getElementById("tripDate")?.value || "Not specified");
+  updateSummaryElement('summaryHotel', sanitizeInput(document.getElementById("hotelName")?.value) || "Not specified yet");
+  updateSummaryElement('summaryRoom', sanitizeInput(document.getElementById("roomNumber")?.value) || "Not specified yet");
+  updateSummaryElement('summaryRef', refNumber);
+  updateSummaryElement('summaryTour', currentTrip.name || 'N/A');
+  updateSummaryElement('summaryAdults', `${adults} Adult${adults !== 1 ? 's' : ''}`);
+  updateSummaryElement('summaryChildrenUnder12', `${childrenUnder12} Child${childrenUnder12 !== 1 ? 'ren' : ''}`);
+  updateSummaryElement('summaryInfants', `${infants} Infant${infants !== 1 ? 's' : ''}`);
+  updateSummaryElement('summaryService', selectedTripType || 'None');
+  
+  // Update total price display
+  const totalPriceDisplay = document.getElementById('totalPriceDisplay');
+  if (totalPriceDisplay && currentTrip.basePrice) {
+    const netTotal = calculateNetTotal();
+    const taxes = calculateTaxesOnly();
+    const totalWithTaxes = calculateTotalWithTaxes();
     
-    // 2. نفس معادلة صفحة البطاقات بالضبط، لكن مطبقة على totalBeforeTax
-    const threePercent = totalBeforeTax * 0.03;           // 3% من الإجمالي
-    const fourteenPercentOfThreePercent = threePercent * 0.14;  // 14% من الـ 3%
-    const fixedFee = 3;                                  // 3 جنيه ثابت
+    totalPriceDisplay.innerHTML = `
+      <div class="font-bold text-xl notranslate">${formatPrice(netTotal)}</div>
+      <div class="text-xs text-gray-400 mt-2 space-y-1">
+        <div class="flex justify-between border-t border-gray-600 pt-1 mt-1">
+          <span class="font-semibold">+ Taxes:</span>
+          <span class="font-semibold">${formatPrice(taxes)}</span>
+        </div>
+        <div class="flex justify-between border-t border-orange-500 pt-1 mt-1 text-orange-400">
+          <span class="font-semibold">Total at Payment:</span>
+          <span class="font-semibold">${formatPrice(totalWithTaxes)}</span>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Also update mobile summary if open
+  updateMobileSummary();
+}
+
+function updateSummaryElement(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+  
+  // Also update mobile version
+  const mobileElement = document.querySelector(`#mobileBookingContent #${id}`);
+  if (mobileElement) mobileElement.textContent = value;
+}
+
+function updateMobileSummary() {
+  const mobileContent = document.getElementById('mobileBookingContent');
+  if (!mobileContent || mobileContent.children.length === 0) return;
+  
+  const totalDisplay = mobileContent.querySelector('#totalPriceDisplay');
+  if (totalDisplay && currentTrip.basePrice) {
+    const netTotal = calculateNetTotal();
+    const taxes = calculateTaxesOnly();
+    const totalWithTaxes = calculateTotalWithTaxes();
     
-    const finalPrice = totalBeforeTax + threePercent + fourteenPercentOfThreePercent + fixedFee;
-    
-    
-    
-    return finalPrice;
+    totalDisplay.innerHTML = `
+      <div class="font-bold text-xl notranslate">${formatPrice(netTotal)}</div>
+      <div class="text-xs text-gray-400 mt-2 space-y-1">
+        <div class="flex justify-between border-t border-gray-600 pt-1 mt-1">
+          <span class="font-semibold">+ Taxes:</span>
+          <span class="font-semibold">${formatPrice(taxes)}</span>
+        </div>
+        <div class="flex justify-between border-t border-orange-500 pt-1 mt-1 text-orange-400">
+          <span class="font-semibold">Total at Payment:</span>
+          <span class="font-semibold">${formatPrice(totalWithTaxes)}</span>
+        </div>
+      </div>
+    `;
+  }
 }
 
 function updateInfantsMax() {
@@ -836,84 +669,9 @@ function updateInfantsMax() {
   infantsInput.max = maxInfants;
 }
 
-function updateSummary() {
-  const adults = parseInt(document.getElementById('adults').value) || 0;
-  const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
-  const infants = parseInt(document.getElementById('infants').value) || 0;
-  
-  const summaryDate = document.getElementById("summaryDate");
-  const summaryHotel = document.getElementById("summaryHotel");
-  const summaryRoom = document.getElementById("summaryRoom");
-  const summaryRef = document.getElementById("summaryRef");
-  const summaryTour = document.getElementById("summaryTour");
-  const summaryAdults = document.getElementById("summaryAdults");
-  const summaryChildrenUnder12 = document.getElementById("summaryChildrenUnder12");
-  const summaryInfants = document.getElementById("summaryInfants");
-  const summaryService = document.getElementById("summaryService");
-  const totalPriceDisplay = document.getElementById("totalPriceDisplay");
-  
-  if (summaryDate) summaryDate.textContent = document.getElementById("tripDate").value || "Not specified";
-  if (summaryHotel) summaryHotel.textContent = sanitizeInput(document.getElementById("hotelName").value) || "Not specified yet";
-  if (summaryRoom) summaryRoom.textContent = sanitizeInput(document.getElementById("roomNumber").value) || "Not specified yet";
-  if (summaryRef) summaryRef.textContent = refNumber;
-  
-  if (currentTrip.basePrice) {
-    if (summaryTour) summaryTour.textContent = currentTrip.name;
-    if (summaryAdults) summaryAdults.textContent = `${adults} Adult${adults !== 1 ? 's' : ''}`;
-    if (summaryChildrenUnder12) summaryChildrenUnder12.textContent = `${childrenUnder12} Child${childrenUnder12 !== 1 ? 'ren' : ''}`;
-    if (summaryInfants) summaryInfants.textContent = `${infants} Infant${infants !== 1 ? 's' : ''}`;
-    
-    if (selectedTripType && tourTypes[selectedTripType]) {
-      if (summaryService) summaryService.textContent = selectedTripType;
-    } else {
-      if (summaryService) summaryService.textContent = 'None';
-    }
-    
-    const totalEGP = calculateTotalWithTaxes();
-    const nettotalEGP = calculateNetTotal();
-    const formattedTotal = totalEGP;
-    const formatedtax = totalEGP - nettotalEGP;
-    
-    if (totalPriceDisplay) {
-      totalPriceDisplay.innerHTML = `
-        <div class="font-bold text-xl notranslate">${formattedTotal.toFixed(2)}</div>
-        <div class="text-xs text-gray-500 mt-1">included taxes ${formatedtax.toFixed(2)}</div>
-      `;
-    }
-  }
-}
-
 // ========================================
-// Form Validation & Submission
+// VALIDATION
 // ========================================
-
-async function populateForm() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  try {
-    const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
-    const userData = userSnapshot.val();
-
-    if (userData) {
-      if (document.getElementById("username")) {
-        document.getElementById("username").value = userData.username || "";
-      }
-      if (document.getElementById("customerEmail")) {
-        document.getElementById("customerEmail").value = userData.email || "";
-      }
-      if (document.getElementById("uid")) {
-        document.getElementById("uid").value = user.uid || "";
-      }
-      if (userData.phone && iti && document.getElementById("phone")) {
-        document.getElementById("phone").value = userData.phone;
-        iti.setNumber(userData.phone);
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
-}
 
 function validateCurrentStep() {
   let isValid = true;
@@ -939,14 +697,13 @@ function validateCurrentStep() {
       clearError('customerEmail');
     }
     
-    const phoneNumber = iti?.getNumber();
-    if (!phoneNumber || !iti?.isValidNumber()) {
-      showError('phone', 'Please enter a valid phone number with country code');
-      isValid = false;
-    } else {
-      clearError('phone');
-      if (document.getElementById("phone")) {
-        document.getElementById("phone").value = phoneNumber;
+    if (iti) {
+      const phoneNumber = iti.getNumber();
+      if (!phoneNumber || !iti.isValidNumber()) {
+        showError('phone', 'Please enter a valid phone number with country code');
+        isValid = false;
+      } else {
+        clearError('phone');
       }
     }
   } else if (currentStep === 1) {
@@ -979,6 +736,10 @@ function validateCurrentStep() {
   return isValid;
 }
 
+// ========================================
+// FORM SUBMISSION
+// ========================================
+
 async function submitForm() {
   if (!validateCurrentStep()) return;
   showSpinner();
@@ -989,41 +750,59 @@ async function submitForm() {
       throw new Error('Please sign in to complete your booking');
     }
 
-    const totalEGP = calculateTotalWithTaxes();
-    const nettotalEGP= calculateNetTotal();
-    const formData = {
-      refNumber,
-      username: sanitizeInput(document.getElementById("username").value),
-      email: sanitizeInput(document.getElementById("customerEmail").value),
-      phone: iti.getNumber(),
-      tripDate: document.getElementById("tripDate").value,
-      tripType: selectedTripType || 'None',
-      tripTypePrice: selectedTripType ? tourTypes[selectedTripType] : 0,
-      hotelName: sanitizeInput(document.getElementById("hotelName").value),
-      roomNumber: sanitizeInput(document.getElementById("roomNumber").value),
-      timestamp: Date.now(),
-      status: "pending",
+    const netTotal = calculateNetTotal();
+    const totalWithTaxes = calculateTotalWithTaxes();
+    const taxes = calculateTaxesOnly();
+    
+    const adults = parseInt(document.getElementById('adults').value) || 0;
+    const childrenUnder12 = parseInt(document.getElementById('childrenUnder12').value) || 0;
+    const infants = parseInt(document.getElementById('infants').value) || 0;
+    const tripDate = document.getElementById("tripDate").value;
+    const hotelName = sanitizeInput(document.getElementById("hotelName").value);
+    const roomNumber = sanitizeInput(document.getElementById("roomNumber").value);
+    const username = sanitizeInput(document.getElementById("username").value);
+    const email = sanitizeInput(document.getElementById("customerEmail").value);
+    const phone = iti ? iti.getNumber() : '';
+    
+    const bookingData = {
+      refNumber: refNumber,
+      username: username,
+      email: email,
+      phone: phone,
       tour: currentTrip.name,
-      id: tripPName,
-      adults: parseInt(document.getElementById('adults').value) || 0,
-      childrenUnder12: parseInt(document.getElementById('childrenUnder12').value) || 0,
-      infants: parseInt(document.getElementById('infants').value) || 0,
-      total: totalEGP,
-      netTotal: nettotalEGP,
+      tripId: tripPName,
+      tripDate: tripDate,
+      adults: adults,
+      childrenUnder12: childrenUnder12,
+      infants: infants,
+      hotelName: hotelName,
+      roomNumber: roomNumber,
+      baseTotal: parseFloat(calculateBaseTotal().toFixed(2)),
+      extraServicesTotal: parseFloat(calculateExtraServicesTotal().toFixed(2)),
+      netTotal: parseFloat(netTotal.toFixed(2)),
+      total: parseFloat(totalWithTaxes.toFixed(2)),
+      taxes: parseFloat(taxes.toFixed(2)),
+      extraServices: selectedTripType || 'None',
+      specialRequests: 'none',
+      status: 'pending',
+      resStatus: 'new',
+      isPaid: false,
+      paymentStatus: 'unpaid',
       uid: user.uid,
-      owner: tripOwnerId
+      owner: tripOwnerId || user.uid,
+      pickuptime: '',
+      createdAt: Date.now(),
+      updatedAt: Date.now()
     };
 
-    // ========================================
-    // KASHIER PAYMENT (UNCHANGED)
-    // ========================================
+    // Kashier Payment
     const response = await fetch('https://kashier-hash.gm-093.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         merchantId: 'MID-33260-3',
         orderId: refNumber,
-        amount: totalEGP,
+        amount: parseFloat(totalWithTaxes.toFixed(2)),
         currency: 'EGP',
       }),
     });
@@ -1038,7 +817,7 @@ async function submitForm() {
     const paymentParams = new URLSearchParams({
       merchantId: 'MID-33260-3',
       orderId: refNumber,
-      amount: totalEGP,
+      amount: parseFloat(totalWithTaxes.toFixed(2)),
       currency: 'EGP',
       hash: data.hash,
       mode: 'live',
@@ -1049,125 +828,359 @@ async function submitForm() {
 
     const kashierUrl = `https://payments.kashier.io/?${paymentParams.toString()}`;
 
-    await db.ref('trip-bookings').child(refNumber).set({
-      ...formData,
-      paymenturl: kashierUrl,
+    // Save to Firebase
+    await db.ref('trip-bookings/' + refNumber).set({
+      ...bookingData,
+      paymenturl: kashierUrl
     });
 
-    // ========================================
-    // SEND NOTIFICATION TO SUPPLIER (ADDED)
-    // ========================================
-    const bookingDataForNotification = {
-      bookingId: refNumber,
-      userName: formData.username,
-      userEmail: formData.email,
-      phone: formData.phone,
-      totalAmount: nettotalEGP,
-      adults: formData.adults,
-      childrenUnder12: formData.childrenUnder12,
-      infants: formData.infants,
-      tripDate: formData.tripDate
-    };
-    
-    await sendBookingNotificationToSupplier(bookingDataForNotification, currentTrip);
+    // Send notification
+    if (currentTrip.supplierId || tripOwnerId) {
+      const notificationId = Date.now().toString();
+      const notificationRef = db.ref(`notifications/${tripOwnerId || currentTrip.supplierId}/${notificationId}`);
+      
+      await notificationRef.set({
+        id: notificationId,
+        title: `New Booking: ${currentTrip.name}`,
+        message: `${username} booked for ${adults} adults, ${childrenUnder12} children, ${infants} infants. Net Total: ${parseFloat(netTotal).toFixed(2)} EGP`,
+        totalAmount: parseFloat(parseFloat(netTotal).toFixed(2)),
+        bookingId: refNumber,
+        tripId: tripPName,
+        tripName: currentTrip.name,
+        userName: username,
+        userEmail: email,
+        phone: phone,
+        adults: adults,
+        children: childrenUnder12,
+        infants: infants,
+        tripDate: tripDate,
+        read: false,
+        timestamp: Date.now(),
+        type: 'new_booking'
+      });
+    }
 
-    sessionStorage.setItem("username", formData.username);
-    sessionStorage.setItem("email", formData.email);
-    sessionStorage.setItem("phone", formData.phone);
+    sessionStorage.setItem("username", username);
+    sessionStorage.setItem("email", email);
+    sessionStorage.setItem("phone", phone);
 
     showToast('Booking submitted! Redirecting to payment...');
     window.location.href = kashierUrl;
     
   } catch (error) {
     console.error('Submission Error:', error);
-    showToast(`Error: ${error.message || 'Failed to process booking.'}`, 'error');
+    showToast('Error: ' + (error.message || 'Failed to process booking.'), 'error');
     hideSpinner();
   }
 }
 
 // ========================================
-// Number Controls
+// TRIP DATA LOADING
+// ========================================
+
+async function fetchAllTripData() {
+  try {
+    showSpinner();
+    const snapshot = await db.ref('trips').once('value');
+    const allTripsData = snapshot.val();
+    
+    if (!allTripsData) {
+      showToast("No trips available at the moment.", 'error');
+      return {};
+    }
+    
+    tripData = allTripsData;
+    
+    if (tripPName && allTripsData[tripPName]) {
+      currentTrip = allTripsData[tripPName];
+      currentTrip.basePrice = currentTrip.price || 0;
+      currentTrip.commissionRate = currentTrip.commission || 0.10;
+      tourTypes = currentTrip.tourtype || {};
+      tripOwnerId = currentTrip.owner || '';
+      currentTrip.supplierId = tripOwnerId;
+      
+      displayTripInfo(currentTrip);
+      loadMediaContent(currentTrip.media);
+      loadIncludedNotIncluded(currentTrip);
+      loadTimeline(currentTrip.timeline);
+      loadWhatToBring(currentTrip.whatToBring);
+      
+      updatePriceDisplay();
+    } else {
+      showToast("Trip not found.", 'error');
+    }
+    
+    return allTripsData;
+  } catch (error) {
+    console.error("Error fetching trip data:", error);
+    showToast("Failed to load trip data.", 'error');
+    throw error;
+  } finally {
+    hideSpinner();
+  }
+}
+
+function displayTripInfo(tripInfo) {
+  const tripTitle = document.getElementById('tourTitle');
+  const tripName = document.getElementById('tripName');
+  const tourDuration = document.getElementById('tourDuration');
+  
+  if (tripTitle && tripInfo.name) tripTitle.textContent = tripInfo.name;
+  if (tripName && tripInfo.name) tripName.value = tripInfo.name;
+  if (tourDuration && tripInfo.duration) tourDuration.textContent = tripInfo.duration;
+}
+
+function loadMediaContent(mediaData) {
+  if (!mediaData) return;
+
+  const swiperWrapper = document.querySelector('.swiper-wrapper');
+  const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+  const thumbnailsOverlay = document.getElementById('thumbnailsOverlay');
+  
+  if (swiperWrapper) swiperWrapper.innerHTML = '';
+  if (thumbnailsContainer) thumbnailsContainer.innerHTML = '';
+  if (thumbnailsOverlay) thumbnailsOverlay.innerHTML = '';
+
+  // Load images
+  if (mediaData.images && mediaData.images.length > 0) {
+    mediaData.images.forEach((imageUrl, index) => {
+      // Swiper slide
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide';
+      slide.innerHTML = `<img src="${imageUrl}" alt="${currentTrip.name || 'Tour image'}">`;
+      swiperWrapper.appendChild(slide);
+      
+      // Thumbnail (for both desktop and overlay)
+      const createThumb = (container) => {
+        if (!container) return;
+        const thumb = document.createElement('img');
+        thumb.src = imageUrl;
+        thumb.alt = `Thumbnail ${index + 1}`;
+        thumb.dataset.index = index;
+        thumb.addEventListener('click', () => {
+          if (swiper) swiper.slideTo(index);
+          updateActiveThumbnail(index);
+        });
+        container.appendChild(thumb);
+      };
+      
+      createThumb(thumbnailsContainer);
+      createThumb(thumbnailsOverlay);
+    });
+  }
+  
+  // Load videos
+  if (mediaData.videos && mediaData.videos.length > 0) {
+    mediaData.videos.forEach((video, index) => {
+      const videoIndex = mediaData.images ? mediaData.images.length + index : index;
+      
+      const slide = document.createElement('div');
+      slide.className = 'swiper-slide swiper-slide-video';
+      slide.dataset.videoUrl = video.videoUrl;
+      slide.dataset.thumbnail = video.thumbnail;
+      slide.innerHTML = `
+        <img src="${video.thumbnail}" alt="Video thumbnail">
+        <div class="play-button"><i class="fas fa-play"></i></div>
+      `;
+      swiperWrapper.appendChild(slide);
+      
+      const createThumb = (container) => {
+        if (!container) return;
+        const thumb = document.createElement('img');
+        thumb.src = video.thumbnail;
+        thumb.alt = `Video ${index + 1}`;
+        thumb.dataset.index = videoIndex;
+        thumb.addEventListener('click', () => {
+          if (swiper) swiper.slideTo(videoIndex);
+          updateActiveThumbnail(videoIndex);
+        });
+        container.appendChild(thumb);
+      };
+      
+      createThumb(thumbnailsContainer);
+      createThumb(thumbnailsOverlay);
+    });
+  }
+  
+  // Initialize or update Swiper
+  if (!swiper) {
+    swiper = new Swiper('.swiper', {
+      slidesPerView: 1,
+      spaceBetween: 0,
+      loop: true,
+      pagination: { 
+        el: '.swiper-pagination', 
+        clickable: true 
+      },
+      navigation: { 
+        nextEl: '.swiper-button-next', 
+        prevEl: '.swiper-button-prev' 
+      },
+      on: {
+        slideChange: function() {
+          updateActiveThumbnail(this.realIndex);
+          stopCurrentVideo();
+        }
+      }
+    });
+    
+    // Video play handler
+    document.querySelector('.swiper')?.addEventListener('click', function(e) {
+      const playButton = e.target.closest('.play-button');
+      if (playButton) {
+        const slide = playButton.closest('.swiper-slide');
+        if (slide?.classList.contains('swiper-slide-video')) {
+          playVideo(slide);
+        }
+      }
+    });
+  } else {
+    swiper.update();
+  }
+  
+  // Set first thumbnail as active
+  updateActiveThumbnail(0);
+}
+
+function playVideo(slide) {
+  stopCurrentVideo();
+  
+  const videoUrl = slide.dataset.videoUrl;
+  let videoId;
+  
+  if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = videoUrl.match(regExp);
+    videoId = (match && match[2].length === 11) ? match[2] : null;
+    
+    if (videoId) {
+      slide.innerHTML = `
+        <iframe width="100%" height="100%" 
+          src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      `;
+      currentVideoSlide = slide;
+    }
+  }
+}
+
+function stopCurrentVideo() {
+  if (currentVideoSlide) {
+    const thumbnail = currentVideoSlide.dataset.thumbnail;
+    const videoUrl = currentVideoSlide.dataset.videoUrl;
+    currentVideoSlide.innerHTML = `
+      <img src="${thumbnail}" alt="Video thumbnail">
+      <div class="play-button"><i class="fas fa-play"></i></div>
+    `;
+    currentVideoSlide = null;
+  }
+}
+
+function updateActiveThumbnail(index) {
+  // Update both thumbnail containers
+  document.querySelectorAll('.thumbnail, .thumbnails-overlay img').forEach(thumb => {
+    if (parseInt(thumb.dataset.index) === index) {
+      thumb.classList.add('active');
+    } else {
+      thumb.classList.remove('active');
+    }
+  });
+}
+
+function loadIncludedNotIncluded(tripData) {
+  const includedContainer = document.getElementById('includedItems');
+  const notIncludedContainer = document.getElementById('notIncludedItems');
+  
+  if (includedContainer && tripData.included) {
+    includedContainer.innerHTML = '';
+    tripData.included.forEach(item => {
+      const itemElement = document.createElement('div');
+      itemElement.className = 'included-item';
+      itemElement.innerHTML = `<i class="fas fa-check" style="color: #22c55e;"></i><span>${item}</span>`;
+      includedContainer.appendChild(itemElement);
+    });
+  }
+  
+  if (notIncludedContainer && tripData.notIncluded) {
+    notIncludedContainer.innerHTML = '';
+    tripData.notIncluded.forEach(item => {
+      const itemElement = document.createElement('div');
+      itemElement.className = 'included-item';
+      itemElement.innerHTML = `<i class="fas fa-times" style="color: #ef4444;"></i><span>${item}</span>`;
+      notIncludedContainer.appendChild(itemElement);
+    });
+  }
+}
+
+function loadTimeline(timelineData) {
+  const timelineContainer = document.getElementById('timelineContainer');
+  if (!timelineContainer || !timelineData) return;
+  
+  timelineContainer.innerHTML = '';
+  timelineData.forEach((item) => {
+    const timelineItem = document.createElement('div');
+    timelineItem.className = 'timeline-item';
+    timelineItem.innerHTML = `
+      <div class="timeline-time">${item.time}</div>
+      <div class="timeline-content">
+        <h4>${item.title}</h4>
+        <p>${item.description}</p>
+      </div>
+    `;
+    timelineContainer.appendChild(timelineItem);
+  });
+}
+
+function loadWhatToBring(whatToBringData) {
+  const whatToBringList = document.getElementById('whatToBringList');
+  if (!whatToBringList || !whatToBringData) return;
+  
+  whatToBringList.innerHTML = '';
+  whatToBringData.forEach(item => {
+    const li = document.createElement('li');
+    li.innerHTML = `<i class="fas fa-check"></i> ${item}`;
+    whatToBringList.appendChild(li);
+  });
+}
+
+// ========================================
+// NUMBER CONTROLS INIT
 // ========================================
 
 function initNumberControls() {
-  const adultsPlus = document.getElementById('adultsPlus');
-  const adultsMinus = document.getElementById('adultsMinus');
+  // Desktop
+  setupStepper('adultsPlus', 'adultsMinus', 'adults', 1, MAX_PER_TYPE, true);
+  setupStepper('childrenUnder12Plus', 'childrenUnder12Minus', 'childrenUnder12', 0, MAX_PER_TYPE, false);
+  setupStepper('infantsPlus', 'infantsMinus', 'infants', 0, MAX_TOTAL_INFANTS, false);
+}
+
+function setupStepper(plusId, minusId, inputId, min, max, updateInfants) {
+  const plusBtn = document.getElementById(plusId);
+  const minusBtn = document.getElementById(minusId);
+  const input = document.getElementById(inputId);
   
-  if (adultsPlus && adultsMinus) {
-    adultsPlus.addEventListener('click', function(e) {
+  if (plusBtn && input) {
+    plusBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const input = document.getElementById('adults');
-      if (!input) return;
       const currentValue = parseInt(input.value);
-      if (currentValue < MAX_PER_TYPE) {
+      if (currentValue < max) {
         input.value = currentValue + 1;
-        updateInfantsMax();
-        updateSummary();
-      }
-    });
-    
-    adultsMinus.addEventListener('click', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('adults');
-      if (!input) return;
-      const currentValue = parseInt(input.value);
-      if (currentValue > 1) {
-        input.value = currentValue - 1;
-        updateInfantsMax();
+        if (updateInfants) updateInfantsMax();
         updateSummary();
       }
     });
   }
-
-  const childrenPlus = document.getElementById('childrenUnder12Plus');
-  const childrenMinus = document.getElementById('childrenUnder12Minus');
   
-  if (childrenPlus && childrenMinus) {
-    childrenPlus.addEventListener('click', function(e) {
+  if (minusBtn && input) {
+    minusBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      const input = document.getElementById('childrenUnder12');
-      if (!input) return;
       const currentValue = parseInt(input.value);
-      if (currentValue < MAX_PER_TYPE) {
-        input.value = currentValue + 1;
-        updateSummary();
-      }
-    });
-    
-    childrenMinus.addEventListener('click', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('childrenUnder12');
-      if (!input) return;
-      const currentValue = parseInt(input.value);
-      if (currentValue > 0) {
+      if (currentValue > min) {
         input.value = currentValue - 1;
-        updateSummary();
-      }
-    });
-  }
-
-  const infantsPlus = document.getElementById('infantsPlus');
-  const infantsMinus = document.getElementById('infantsMinus');
-  
-  if (infantsPlus && infantsMinus) {
-    infantsPlus.addEventListener('click', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('infants');
-      if (!input) return;
-      const currentValue = parseInt(input.value);
-      if (currentValue < input.max) {
-        input.value = currentValue + 1;
-        updateSummary();
-      }
-    });
-    
-    infantsMinus.addEventListener('click', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('infants');
-      if (!input) return;
-      const currentValue = parseInt(input.value);
-      if (currentValue > 0) {
-        input.value = currentValue - 1;
+        if (updateInfants) updateInfantsMax();
         updateSummary();
       }
     });
@@ -1175,7 +1188,66 @@ function initNumberControls() {
 }
 
 // ========================================
-// Application Initialization
+// POPULATE FORM FROM USER DATA
+// ========================================
+
+async function populateForm() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
+    const userData = userSnapshot.val();
+
+    if (userData) {
+      if (document.getElementById("username")) {
+        document.getElementById("username").value = userData.username || "";
+      }
+      if (document.getElementById("customerEmail")) {
+        document.getElementById("customerEmail").value = userData.email || "";
+      }
+      if (document.getElementById("uid")) {
+        document.getElementById("uid").value = user.uid || "";
+      }
+      if (userData.phone && iti && document.getElementById("phone")) {
+        document.getElementById("phone").value = userData.phone;
+        iti.setNumber(userData.phone);
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+}
+
+// ========================================
+// CURRENCY INIT
+// ========================================
+
+function initCurrencyFromHeader() {
+  currentCurrency = getCurrentCurrencyFromHeader();
+  const headerRates = getExchangeRatesFromHeader();
+  
+  if (headerRates) {
+    exchangeRates = headerRates;
+    ratesLoaded = true;
+  }
+  
+  // Listen for currency changes
+  window.addEventListener('currencyChanged', function(event) {
+    if (event.detail && event.detail.currency) {
+      currentCurrency = event.detail.currency;
+      if (event.detail.rates) {
+        exchangeRates = event.detail.rates;
+        ratesLoaded = true;
+      }
+      updatePriceDisplay();
+      updateSummary();
+    }
+  });
+}
+
+// ========================================
+// APPLICATION INITIALIZATION
 // ========================================
 
 window.onload = async function () {
@@ -1184,8 +1256,10 @@ window.onload = async function () {
     return;
   }
 
+  // Initialize currency
   initCurrencyFromHeader();
 
+  // Initialize phone input
   const phoneInput = document.querySelector("#phone");
   if (phoneInput) {
     try {
@@ -1200,49 +1274,57 @@ window.onload = async function () {
     }
   }
 
+  // Initialize number controls
   initNumberControls();
 
+  // Initialize date picker
   flatpickr("#tripDate", {
-    locale: "en",
     minDate: new Date().fp_incr(1),
     dateFormat: "Y-m-d",
-    inline: false,
     disableMobile: true,
-    onReady: function(selectedDates, dateStr, instance) {
-      const elements = [
-        instance.calendarContainer,
-        ...instance.calendarContainer.querySelectorAll('.flatpickr-weekdays, .flatpickr-current-month, .flatpickr-day')
-      ];
-      elements.forEach(el => el?.setAttribute('translate', 'no'));
-    },
     onChange: updateSummary
   });
 
-  const style = document.createElement('style');
-  style.textContent = `
-    .flatpickr-calendar { background: #222 !important; color: #ffc207 !important; border-radius: 10px !important; border: 1px solid #333 !important; }
-    .flatpickr-months, .flatpickr-weekdays { background: #222 !important; }
-    .flatpickr-month, .flatpickr-weekday { color: #ffc207 !important; }
-    .flatpickr-prev-month, .flatpickr-next-month, .flatpickr-prev-month svg, .flatpickr-next-month svg { color: #ffc107 !important; fill: #ffc107 !important; }
-    .flatpickr-day { color: #ffc207 !important; background: #333 !important; border-radius: 8px !important; border: none !important; }
-    .flatpickr-day:not(.flatpickr-disabled):hover { background: #444 !important; color: #ffc207 !important; }
-    .flatpickr-day.selected { background: #ffc207 !important; color: #111 !important; font-weight: bold !important; }
-    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: #666 !important; background: transparent !important; }
-    .flatpickr-day.today { border: 1px solid #ffc107 !important; }
-    .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover { background: #333 !important; color: #666 !important; opacity: 0.4 !important; cursor: not-allowed !important; }
-    .flatpickr-time input, .flatpickr-time .flatpickr-time-separator, .flatpickr-time .flatpickr-am-pm { color: #ffc207 !important; }
-  `;
-  document.head.appendChild(style);
-
-  document.getElementById('submitBtn').addEventListener('click', submitForm);
-
+  // Attach event listeners
+  document.getElementById('submitBtn')?.addEventListener('click', submitForm);
+  
+  // Extra Services Popup
+  document.getElementById('extraServicesTrigger')?.addEventListener('click', openServicesPopup);
+  document.getElementById('openServicesBtn')?.addEventListener('click', openServicesPopup);
   document.getElementById('cancelServicesBtn')?.addEventListener('click', closeServicesPopup);
   document.getElementById('confirmServicesBtn')?.addEventListener('click', confirmServiceSelection);
   document.getElementById('closeServicesPopup')?.addEventListener('click', closeServicesPopup);
+  
+  // Close popup on overlay click
   document.getElementById('extraServicesPopup')?.addEventListener('click', function(e) {
-    if (e.target === this) closeServicesPopup();
+    if (e.target === this || e.target.classList.contains('services-popup-overlay')) {
+      closeServicesPopup();
+    }
   });
+  
+  // Mobile Bottom Sheet
+  document.getElementById('mobileBookNowBtn')?.addEventListener('click', openMobileBottomSheet);
+  document.getElementById('mobileBottomSheetOverlay')?.addEventListener('click', function(e) {
+    if (e.target === this) closeMobileBottomSheet();
+  });
+  
+  // Touch swipe to close mobile sheet
+  const mobileSheet = document.getElementById('mobileBottomSheet');
+  if (mobileSheet) {
+    let touchStartY = 0;
+    mobileSheet.addEventListener('touchstart', function(e) {
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+    
+    mobileSheet.addEventListener('touchend', function(e) {
+      const touchEndY = e.changedTouches[0].screenY;
+      if (touchEndY > touchStartY + 80 && mobileSheet.scrollTop <= 0) {
+        closeMobileBottomSheet();
+      }
+    }, { passive: true });
+  }
 
+  // Auth state listener
   auth.onAuthStateChanged((user) => {
     if (user) {
       currentUserUid = user.uid;
@@ -1252,18 +1334,32 @@ window.onload = async function () {
     }
   });
 
+  // Load trip data
   await fetchAllTripData();
   updateSummary();
   
-  setTimeout(function() {
+  // Delayed price updates
+  setTimeout(() => {
     updatePriceDisplay();
     updateSummary();
-    updateTripTypeDropdownPrices();
-    updateSelectedServiceText();
   }, 500);
   
-  setTimeout(function() {
+  setTimeout(() => {
     updatePriceDisplay();
     updateSummary();
   }, 1500);
 };
+
+// ========================================
+// ADDITIONAL CSS FOR TOAST ANIMATIONS
+// ========================================
+const toastStyle = document.createElement('style');
+toastStyle.textContent = `
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(toastStyle);
+
+console.log('✅ Tour Booking System Initialized - Creative Design v2.0');
