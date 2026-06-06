@@ -1,13 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Isolated Module - Complete
-// ==========================================================================
-
-// ==========================================================================
-// DEPENDENCY CHECK (must be available globally)
-// - Firebase (auth, db) 
-// - intlTelInput (optional)
-// - flatpickr (optional)
+// Isolated Module - No Trip Data Logic
 // ==========================================================================
 
 const BookingSystem = (function() {
@@ -16,29 +9,19 @@ const BookingSystem = (function() {
   // ==========================================================================
   // PRIVATE STATE
   // ==========================================================================
-  let _tripData = {};
-  let _currentTrip = {};
-  let _tourTypes = {};
-  let _selectedTripType = '';
-  let _tripOwnerId = '';
-  let _tripPName = '';
-  
   let _iti = null;
   let _refNumber = '';
+  let _selectedTripType = '';
   
   let _currentStep = 0;
   let _mobileCurrentStep = 0;
-  
-  let _currentCurrency = 'EGP';
-  let _exchangeRates = { EGP: 1 };
-  let _ratesLoaded = false;
   
   const MAX_PER_TYPE = 10;
   const MAX_INFANTS_PER_ADULT = 2;
   const MAX_TOTAL_INFANTS = 10;
 
   // ==========================================================================
-  // CORE UTILITIES
+  // HELPERS
   // ==========================================================================
   function generateReference() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -64,14 +47,15 @@ const BookingSystem = (function() {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.style.cssText = `
-      position: fixed; bottom: 100px; left: 50%; 
-      transform: translateX(-50%); 
-      background: #252526; color: #fff; 
-      padding: 14px 24px; border-radius: 30px; 
-      z-index: 99999; font-size: 14px; font-weight: 600; 
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-      border-left: 4px solid ${type === 'success' ? '#22c55e' : '#ef4444'}; 
+      position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      background: #252526; color: #fff;
+      padding: 14px 24px; border-radius: 30px;
+      z-index: 99999; font-size: 14px; font-weight: 600;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border-left: 4px solid ${type === 'success' ? '#22c55e' : '#ef4444'};
       white-space: nowrap;
+      animation: bookingSlideUp 0.3s ease;
     `;
     toast.textContent = message;
     document.body.appendChild(toast);
@@ -98,54 +82,34 @@ const BookingSystem = (function() {
   }
 
   // ==========================================================================
-  // CURRENCY HELPERS
+  // TRIP DATA ACCESS (via tripModule)
   // ==========================================================================
-  function getCurrentCurrencyFromHeader() {
-    if (window.SharmCurrency?.get) return window.SharmCurrency.get();
-    return localStorage.getItem('preferredCurrency') || 'EGP';
+  function getCurrentTrip() {
+    return window.tripModule?.getCurrentTrip?.() || {};
   }
 
-  function getExchangeRatesFromHeader() {
-    return window.SharmCurrency?.rates || null;
+  function getTourTypes() {
+    return window.tripModule?.getTourTypes?.() || {};
+  }
+
+  function getTripOwnerId() {
+    return window.tripModule?.getTripOwnerId?.() || '';
+  }
+
+  function getTripPName() {
+    return window.tripModule?.getTripPName?.() || 
+           new URLSearchParams(window.location.search).get('trip-id') || '';
   }
 
   function formatPrice(price) {
-    if (!_ratesLoaded || _currentCurrency === 'EGP') {
-      return parseFloat(price).toFixed(2) + ' EGP';
+    if (window.tripModule?.formatPrice) {
+      return window.tripModule.formatPrice(price);
     }
-    const converted = price * _exchangeRates[_currentCurrency];
-    switch (_currentCurrency) {
-      case 'USD': return '$' + converted.toFixed(2);
-      case 'EUR': return '€' + converted.toFixed(2);
-      case 'GBP': return '£' + converted.toFixed(2);
-      default: return price.toFixed(2) + ' EGP';
-    }
-  }
-
-  function initCurrency() {
-    _currentCurrency = getCurrentCurrencyFromHeader();
-    const rates = getExchangeRatesFromHeader();
-    if (rates) {
-      _exchangeRates = rates;
-      _ratesLoaded = true;
-    }
-    
-    window.addEventListener('currencyChanged', (e) => {
-      if (e.detail?.currency) {
-        _currentCurrency = e.detail.currency;
-        if (e.detail.rates) {
-          _exchangeRates = e.detail.rates;
-          _ratesLoaded = true;
-        }
-        updatePriceDisplay();
-        updateSummary();
-        if (isMobile()) updateMobileSummary();
-      }
-    });
+    return parseFloat(price).toFixed(2) + ' EGP';
   }
 
   // ==========================================================================
-  // STEPPER LOGIC
+  // STEPPER
   // ==========================================================================
   function changeValue(id, delta) {
     const input = document.getElementById(id);
@@ -197,16 +161,18 @@ const BookingSystem = (function() {
   // PRICE CALCULATION
   // ==========================================================================
   function calcBase() {
-    if (!_currentTrip.basePrice) return 0;
-    const adultPrice = parseFloat(_currentTrip.basePrice);
-    const childPrice = parseFloat(_currentTrip.cprice) || adultPrice * 0.5;
+    const trip = getCurrentTrip();
+    if (!trip.basePrice) return 0;
+    const adultPrice = parseFloat(trip.basePrice);
+    const childPrice = parseFloat(trip.cprice) || adultPrice * 0.5;
     return parseFloat(((getA() * adultPrice) + (getC() * childPrice)).toFixed(2));
   }
 
   function calcExtra() {
-    if (_selectedTripType && _tourTypes[_selectedTripType]) {
+    const tourTypes = getTourTypes();
+    if (_selectedTripType && tourTypes[_selectedTripType]) {
       return parseFloat(
-        ((getA() + getC()) * parseFloat(_tourTypes[_selectedTripType])).toFixed(2)
+        ((getA() + getC()) * parseFloat(tourTypes[_selectedTripType])).toFixed(2)
       );
     }
     return 0;
@@ -226,16 +192,18 @@ const BookingSystem = (function() {
   }
 
   function calcMobileBase() {
-    if (!_currentTrip.basePrice) return 0;
-    const adultPrice = parseFloat(_currentTrip.basePrice);
-    const childPrice = parseFloat(_currentTrip.cprice) || adultPrice * 0.5;
+    const trip = getCurrentTrip();
+    if (!trip.basePrice) return 0;
+    const adultPrice = parseFloat(trip.basePrice);
+    const childPrice = parseFloat(trip.cprice) || adultPrice * 0.5;
     return parseFloat(((getMA() * adultPrice) + (getMC() * childPrice)).toFixed(2));
   }
 
   function calcMobileExtra() {
-    if (_selectedTripType && _tourTypes[_selectedTripType]) {
+    const tourTypes = getTourTypes();
+    if (_selectedTripType && tourTypes[_selectedTripType]) {
       return parseFloat(
-        ((getMA() + getMC()) * parseFloat(_tourTypes[_selectedTripType])).toFixed(2)
+        ((getMA() + getMC()) * parseFloat(tourTypes[_selectedTripType])).toFixed(2)
       );
     }
     return 0;
@@ -257,13 +225,6 @@ const BookingSystem = (function() {
   // ==========================================================================
   // UPDATE DISPLAYS
   // ==========================================================================
-  function updatePriceDisplay() {
-    const el = document.getElementById('tourPrice');
-    if (el && _currentTrip.basePrice) {
-      el.innerHTML = formatPrice(calcNet());
-    }
-  }
-
   function updateSummary() {
     const set = (id, value) => {
       const el = document.getElementById(id);
@@ -274,14 +235,14 @@ const BookingSystem = (function() {
     set('summaryHotel', sanitizeInput(document.getElementById('hotelName')?.value) || '-');
     set('summaryRoom', sanitizeInput(document.getElementById('roomNumber')?.value) || '-');
     set('summaryRef', _refNumber);
-    set('summaryTour', _currentTrip.name || '-');
+    set('summaryTour', getCurrentTrip().name || '-');
     set('summaryAdults', getA() + ' Adult' + (getA() !== 1 ? 's' : ''));
     set('summaryChildrenUnder12', getC() + ' Child' + (getC() !== 1 ? 'ren' : ''));
     set('summaryInfants', getI() + ' Infant' + (getI() !== 1 ? 's' : ''));
     set('summaryService', _selectedTripType || 'None');
 
     const totalDisplay = document.getElementById('totalPriceDisplay');
-    if (totalDisplay && _currentTrip.basePrice) {
+    if (totalDisplay && getCurrentTrip().basePrice) {
       totalDisplay.innerHTML = `
         ${formatPrice(calcNet())}
         <div style="font-size:11px;color:#a0a0a0;margin-top:8px;">
@@ -308,14 +269,14 @@ const BookingSystem = (function() {
     set('mobileSummaryHotel', document.getElementById('mobileHotelName')?.value || '-');
     set('mobileSummaryRoom', document.getElementById('mobileRoomNumber')?.value || '-');
     set('mobileSummaryRef', _refNumber);
-    set('mobileSummaryTour', _currentTrip.name || '-');
+    set('mobileSummaryTour', getCurrentTrip().name || '-');
     set('mobileSummaryAdults', getMA() + ' Adult' + (getMA() !== 1 ? 's' : ''));
     set('mobileSummaryChildren', getMC() + ' Child' + (getMC() !== 1 ? 'ren' : ''));
     set('mobileSummaryInfants', getMI() + ' Infant' + (getMI() !== 1 ? 's' : ''));
     set('mobileSummaryService', _selectedTripType || 'None');
 
     const totalDisplay = document.getElementById('mobileTotalPrice');
-    if (totalDisplay && _currentTrip.basePrice) {
+    if (totalDisplay && getCurrentTrip().basePrice) {
       totalDisplay.innerHTML = `
         ${formatPrice(calcMobileNet())}
         <div style="font-size:11px;color:#a0a0a0;margin-top:8px;">
@@ -466,9 +427,11 @@ const BookingSystem = (function() {
     content.innerHTML = '';
     
     buildServiceOption('No extra services', 'Free', '');
-    if (_tourTypes) {
-      Object.keys(_tourTypes).forEach(key => {
-        buildServiceOption(key, formatPrice(_tourTypes[key]) + ' (per person)', key);
+    
+    const tourTypes = getTourTypes();
+    if (tourTypes) {
+      Object.keys(tourTypes).forEach(key => {
+        buildServiceOption(key, formatPrice(tourTypes[key]) + ' (per person)', key);
       });
     }
     
@@ -531,7 +494,6 @@ const BookingSystem = (function() {
   // SUBMISSION & PAYMENT
   // ==========================================================================
   function mobileSubmitForm() {
-    // Copy mobile values to desktop fields
     const fields = [
       ['mobileUsername', 'username'],
       ['mobileCustomerEmail', 'customerEmail'],
@@ -562,6 +524,10 @@ const BookingSystem = (function() {
       const user = auth.currentUser;
       if (!user) throw new Error('Please sign in to complete booking');
       
+      const trip = getCurrentTrip();
+      const tripPName = getTripPName();
+      const tripOwnerId = getTripOwnerId();
+      
       const net = calcNet();
       const tax = calcTax();
       const total = calcTotal();
@@ -571,8 +537,8 @@ const BookingSystem = (function() {
         username: sanitizeInput(document.getElementById('username')?.value || ''),
         email: sanitizeInput(document.getElementById('customerEmail')?.value || ''),
         phone: _iti?.getNumber() || '',
-        tour: _currentTrip.name,
-        tripId: _tripPName,
+        tour: trip.name,
+        tripId: tripPName,
         tripDate: document.getElementById('tripDate')?.value || '',
         adults: getA(),
         childrenUnder12: getC(),
@@ -590,7 +556,7 @@ const BookingSystem = (function() {
         isPaid: false,
         paymentStatus: 'unpaid',
         uid: user.uid,
-        owner: _tripOwnerId || user.uid,
+        owner: tripOwnerId || user.uid,
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
@@ -622,21 +588,21 @@ const BookingSystem = (function() {
         redirectMethod: 'get'
       }).toString()}`;
       
-      // Save booking to Firebase
+      // Save booking
       await db.ref('trip-bookings/' + _refNumber).set({
         ...booking,
         paymenturl: paymentUrl
       });
       
-      // Send notification to trip owner
-      if (_tripOwnerId) {
-        await db.ref(`notifications/${_tripOwnerId}/${Date.now()}`).set({
-          title: 'New Booking: ' + _currentTrip.name,
+      // Notify trip owner
+      if (tripOwnerId) {
+        await db.ref(`notifications/${tripOwnerId}/${Date.now()}`).set({
+          title: 'New Booking: ' + trip.name,
           message: `${booking.username} - ${getA()}A/${getC()}C/${getI()}I`,
           totalAmount: parseFloat(net.toFixed(2)),
           bookingId: _refNumber,
-          tripId: _tripPName,
-          tripName: _currentTrip.name,
+          tripId: tripPName,
+          tripName: trip.name,
           userName: booking.username,
           userEmail: booking.email,
           phone: booking.phone,
@@ -650,7 +616,7 @@ const BookingSystem = (function() {
         });
       }
       
-      // Store in session for payment status page
+      // Store session data
       sessionStorage.setItem('username', booking.username);
       sessionStorage.setItem('email', booking.email);
       sessionStorage.setItem('phone', booking.phone);
@@ -662,56 +628,6 @@ const BookingSystem = (function() {
       
     } catch (error) {
       showToast('Error: ' + error.message, 'error');
-      hideSpinner();
-    }
-  }
-
-  // ==========================================================================
-  // TRIP DATA LOADING
-  // ==========================================================================
-  async function fetchTripData() {
-    try {
-      showSpinner();
-      
-      const snap = await db.ref('trips').once('value');
-      const data = snap.val();
-      
-      if (!data) {
-        showToast('No trips available.', 'error');
-        return;
-      }
-      
-      _tripData = data;
-      
-      if (_tripPName && data[_tripPName]) {
-        _currentTrip = data[_tripPName];
-        _currentTrip.basePrice = _currentTrip.price || 0;
-        _tourTypes = _currentTrip.tourtype || {};
-        _tripOwnerId = _currentTrip.owner || '';
-        
-        // Trigger UI updates (these functions should be defined in main app)
-        if (typeof window.displayTripInfo === 'function') {
-          window.displayTripInfo(_currentTrip);
-        }
-        if (typeof window.loadMediaContent === 'function') {
-          window.loadMediaContent(_currentTrip.media);
-        }
-        if (typeof window.loadIncludedNotIncluded === 'function') {
-          window.loadIncludedNotIncluded(_currentTrip);
-        }
-        if (typeof window.loadTimeline === 'function') {
-          window.loadTimeline(_currentTrip.timeline);
-        }
-        if (typeof window.loadWhatToBring === 'function') {
-          window.loadWhatToBring(_currentTrip.whatToBring);
-        }
-        
-        updatePriceDisplay();
-      }
-    } catch (error) {
-      showToast('Failed to load trip data.', 'error');
-      throw error;
-    } finally {
       hideSpinner();
     }
   }
@@ -756,22 +672,17 @@ const BookingSystem = (function() {
   // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
-  function init(options = {}) {
-    // Get trip ID from URL
-    _tripPName = options.tripId || new URLSearchParams(window.location.search).get('trip-id');
+  function init() {
+    const tripPName = getTripPName();
     
-    if (!_tripPName) {
-      console.warn('BookingSystem: No trip-id found in URL');
+    if (!tripPName) {
+      console.warn('BookingSystem: No trip-id found');
       return;
     }
     
-    // Generate booking reference
     _refNumber = generateReference();
     
-    // Initialize currency
-    initCurrency();
-    
-    // Setup phone input
+    // Phone input
     const phoneInput = document.querySelector('#phone');
     if (phoneInput && window.intlTelInput) {
       _iti = window.intlTelInput(phoneInput, {
@@ -782,7 +693,7 @@ const BookingSystem = (function() {
       });
     }
     
-    // Setup date pickers
+    // Date pickers
     if (window.flatpickr) {
       flatpickr('#tripDate', {
         minDate: new Date().fp_incr(1),
@@ -799,23 +710,22 @@ const BookingSystem = (function() {
       });
     }
     
-    // Attach event listeners
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) submitBtn.addEventListener('click', submitForm);
+    // Event listeners
+    document.getElementById('submitBtn')?.addEventListener('click', submitForm);
+    document.getElementById('mobileBookNowBtn')?.addEventListener('click', showMobileBooking);
+    document.getElementById('openServicesBtn')?.addEventListener('click', openServicesPopup);
+    document.getElementById('mobileServicesBtn')?.addEventListener('click', openServicesPopup);
     
-    const mobileBookNowBtn = document.getElementById('mobileBookNowBtn');
-    if (mobileBookNowBtn) mobileBookNowBtn.addEventListener('click', showMobileBooking);
-    
-    // Listen for auth state
+    // Auth listener
     auth.onAuthStateChanged((user) => {
       if (user) populateForm();
     });
     
-    // Load trip data
-    fetchTripData().then(() => {
+    // Initial summary update
+    setTimeout(() => {
       updateSummary();
       updateMobileSummary();
-    });
+    }, 1500);
     
     console.log('✅ BookingSystem initialized - Ref:', _refNumber);
   }
@@ -824,7 +734,6 @@ const BookingSystem = (function() {
   // PUBLIC API
   // ==========================================================================
   return {
-    // Init
     init,
     
     // Navigation
@@ -854,34 +763,26 @@ const BookingSystem = (function() {
     showSpinner,
     hideSpinner,
     
-    // State accessors (read-only)
-    getCurrentTrip: () => _currentTrip,
+    // State
     getRefNumber: () => _refNumber,
     getSelectedTripType: () => _selectedTripType,
-    getCurrentCurrency: () => _currentCurrency,
-    isRatesLoaded: () => _ratesLoaded,
     
-    // Force updates
+    // Updates
     updateSummary,
-    updateMobileSummary,
-    updatePriceDisplay
+    updateMobileSummary
   };
 
 })();
 
 // ==========================================================================
-// AUTO-INITIALIZATION
+// AUTO-INIT
 // ==========================================================================
-if (typeof window !== 'undefined' && !window.BOOKING_SYSTEM_DISABLE_AUTO_INIT) {
-  window.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure Firebase auth is ready
-    setTimeout(() => {
-      BookingSystem.init();
-    }, 500);
-  });
-}
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    BookingSystem.init();
+  }, 800); // Wait for trip module to load first
+});
 
-// Expose globally
 window.BookingSystem = BookingSystem;
 
-console.log('📦 Booking & Payment System module loaded');
+console.log('📦 Booking & Payment System loaded');
