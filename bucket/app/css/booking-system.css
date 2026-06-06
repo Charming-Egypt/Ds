@@ -1,226 +1,1202 @@
 /* ==========================================================================
-   CUSTOM PHONE INPUT - Country Code + Number
+   DISCOVER SHARM - Booking & Payment System
+   Complete CSS - Dark Theme #1e1e1e + Orange #f59e0b
+   Country List Inside Booking Card
    ========================================================================== */
-.phone-input-wrapper {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  width: 100%;
+
+:root {
+  --bs-bg: #1e1e1e;
+  --bs-bg-light: #252525;
+  --bs-bg-lighter: #2a2a2a;
+  --bs-bg-card: #222222;
+  --bs-bg-input: #1a1a1a;
+  
+  --bs-accent: #f59e0b;
+  --bs-accent-dark: #d97706;
+  --bs-accent-light: #fbbf24;
+  --bs-accent-glow: rgba(245, 158, 11, 0.15);
+  
+  --bs-text: #ffffff;
+  --bs-text-secondary: #b0b0b0;
+  --bs-text-muted: #888888;
+  
+  --bs-border: #2e2e2e;
+  --bs-border-light: #333333;
+  --bs-border-accent: rgba(245, 158, 11, 0.3);
+  
+  --bs-success: #22c55e;
+  --bs-error: #ef4444;
+  
+  --bs-radius-sm: 8px;
+  --bs-radius-md: 12px;
+  --bs-radius-lg: 16px;
+  --bs-radius-xl: 20px;
+  --bs-radius-full: 50px;
+  
+  --bs-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --bs-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --bs-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --bs-shadow-orange: 0 4px 20px rgba(245, 158, 11, 0.15);
+  
+  --bs-transition: all 0.2s ease;
 }
 
-/* Country code select */
-.country-code-select {
+/* ==========================================================================
+   BOOKING CARD
+   ========================================================================== */
+.booking-card {
+  background: var(--bs-bg-card);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius-xl);
+  padding: 24px;
+  box-shadow: var(--bs-shadow-md);
   position: relative;
-  flex-shrink: 0;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
-.selected-country {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 48px;
-  background: #1a1a1a;
-  border: 1.5px solid #2e2e2e;
-  border-right: none;
-  border-radius: 12px 0 0 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-
-.selected-country:hover {
-  background: #222;
-}
-
-.selected-country .country-flag {
-  width: 20px;
-  height: 15px;
-  border-radius: 2px;
-  object-fit: cover;
-}
-
-.selected-country span {
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.selected-country i {
-  color: #888;
-  font-size: 10px;
-  transition: transform 0.2s ease;
-}
-
-.country-code-select.open .selected-country i {
-  transform: rotate(180deg);
-}
-
-/* Phone number input */
-.phone-number-input {
-  flex: 1;
-  height: 48px;
-  padding: 0 16px;
-  background: #1a1a1a;
-  border: 1.5px solid #2e2e2e;
-  border-left: none;
-  border-radius: 0 12px 12px 0;
-  color: #fff;
-  font-size: 14px;
-  font-family: inherit;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.phone-number-input:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-}
-
-.phone-number-input::placeholder {
-  color: #555;
-}
-
-/* Country dropdown - appears INSIDE booking card */
-.country-dropdown {
+.booking-card::before {
+  content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: #1e1e1e;
-  border-radius: 20px;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--bs-accent);
+  border-radius: 0 0 3px 3px;
 }
 
-.country-dropdown::before {
-  content: '🌍 Select Country';
+.booking-card-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bs-border);
+}
+
+.booking-card-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  background: var(--bs-accent);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
-  padding: 0 20px;
-  font-size: 17px;
+  font-size: 22px;
+  color: #1a1a1a;
+  box-shadow: var(--bs-shadow-orange);
+}
+
+.booking-card-header h2 {
+  font-size: 20px;
   font-weight: 700;
-  color: #fff;
-  border-bottom: 1px solid #2e2e2e;
-  flex-shrink: 0;
+  color: var(--bs-text);
+  margin-bottom: 6px;
 }
 
-.country-search {
-  margin: 16px;
-  padding: 14px 16px;
-  background: #1a1a1a;
-  border: 1px solid #2e2e2e;
-  border-radius: 12px;
-  color: #fff;
-  font-size: 15px;
-  outline: none;
-  flex-shrink: 0;
+.booking-card-header p {
+  font-size: 13px;
+  color: var(--bs-text-muted);
 }
 
-.country-search:focus {
-  border-color: #f59e0b;
+/* ==========================================================================
+   PROGRESS STEPS
+   ========================================================================== */
+.progress-steps-container {
+  margin-bottom: 24px;
 }
 
-.country-search::placeholder {
-  color: #666;
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--bs-bg-light);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
 }
 
-.country-list-scroll {
-  overflow-y: auto;
-  flex: 1;
-  padding: 0 0 24px;
-  -webkit-overflow-scrolling: touch;
+.progress-fill {
+  height: 100%;
+  background: var(--bs-accent);
+  border-radius: 10px;
+  transition: width 0.5s ease;
 }
 
-.country-item {
+.steps-labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.step-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--bs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: var(--bs-transition);
+}
+
+.step-label.active {
+  color: var(--bs-accent);
+}
+
+/* ==========================================================================
+   FORM STEPS
+   ========================================================================== */
+.form-step {
+  display: none;
+  animation: bsFadeIn 0.3s ease;
+}
+
+.form-step.active {
+  display: block;
+}
+
+@keyframes bsFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   INPUT FIELDS
+   ========================================================================== */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
   display: flex;
   align-items: center;
-  padding: 14px 24px;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bs-text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-group label i {
+  color: var(--bs-accent);
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--bs-bg-input);
+  border: 1.5px solid var(--bs-border);
+  border-radius: var(--bs-radius-md);
+  color: var(--bs-text);
+  font-size: 14px;
+  font-family: inherit;
+  transition: var(--bs-transition);
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+  box-shadow: 0 0 0 3px var(--bs-accent-glow);
+}
+
+.input-field::placeholder {
+  color: #555;
+  font-size: 13px;
+}
+
+.input-field[readonly] {
   cursor: pointer;
-  transition: background 0.15s ease;
-  border-bottom: 1px solid #252525;
 }
 
-.country-item:hover {
-  background: #2a2a2a;
+textarea.input-field {
+  resize: vertical;
+  min-height: 90px;
 }
 
-.country-item.active {
-  background: rgba(245, 158, 11, 0.1);
-  border-left: 3px solid #f59e0b;
+/* ==========================================================================
+   FIELD ERRORS
+   ========================================================================== */
+.field-error {
+  color: #ef4444;
+  font-size: 11px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.2s ease;
 }
 
-.country-item .country-flag {
-  width: 24px;
-  height: 18px;
-  border-radius: 2px;
-  object-fit: cover;
-  margin-right: 12px;
-  flex-shrink: 0;
+.field-error i {
+  font-size: 10px;
 }
 
-.country-item .country-name {
-  color: #fff;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   SERVICES BUTTON
+   ========================================================================== */
+.services-btn {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--bs-bg-input);
+  border: 1.5px solid var(--bs-border);
+  border-radius: var(--bs-radius-md);
+  color: var(--bs-text);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--bs-transition);
+}
+
+.services-btn:hover {
+  border-color: var(--bs-accent);
+}
+
+.services-btn i {
+  color: var(--bs-accent);
+  font-size: 12px;
+}
+
+/* ==========================================================================
+   GUEST CARDS & STEPPER
+   ========================================================================== */
+.guest-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bs-bg-input);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius-md);
+  margin-bottom: 10px;
+}
+
+.guest-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guest-info > span {
+  font-size: 24px;
+}
+
+.guest-info strong {
+  display: block;
+  font-size: 14px;
+  color: var(--bs-text);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.guest-info small {
+  font-size: 11px;
+  color: var(--bs-text-muted);
+}
+
+.stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bs-bg);
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid var(--bs-border);
+}
+
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bs-accent);
+  color: #1a1a1a;
+  font-size: 17px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--bs-transition);
+  user-select: none;
+}
+
+.stepper-btn:hover {
+  background: var(--bs-accent-light);
+  transform: scale(1.05);
+}
+
+.stepper-btn:active {
+  transform: scale(0.95);
+}
+
+.stepper-controls input {
+  width: 36px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--bs-text);
   font-size: 15px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn-primary {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: var(--bs-radius-full);
+  background: var(--bs-accent);
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--bs-transition);
+}
+
+.btn-primary:hover {
+  background: var(--bs-accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(245, 158, 11, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: var(--bs-radius-full);
+  background: var(--bs-bg-light);
+  border: 1.5px solid var(--bs-border);
+  color: var(--bs-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--bs-transition);
+}
+
+.btn-secondary:hover {
+  background: var(--bs-bg-lighter);
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-group .btn-primary {
   flex: 1;
 }
 
-.country-item .country-code {
-  color: #888;
+.pulse {
+  animation: bsPulse 2.5s infinite;
+}
+
+@keyframes bsPulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 6px 28px rgba(245, 158, 11, 0.4), 0 0 0 8px rgba(245, 158, 11, 0.05); }
+}
+
+/* ==========================================================================
+   SUMMARY CARDS
+   ========================================================================== */
+.summary-card {
+  background: var(--bs-bg-input);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius-md);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--bs-border);
+}
+
+.summary-card-header i {
+  color: var(--bs-accent);
+  font-size: 16px;
+}
+
+.summary-card-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bs-text);
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.summary-line span {
+  color: var(--bs-text-muted);
+}
+
+.summary-line strong {
+  color: var(--bs-text);
+  font-weight: 600;
+}
+
+.total-card {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid var(--bs-border-accent);
+  border-radius: var(--bs-radius-md);
+  padding: 18px;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.total-card span {
+  font-size: 11px;
+  color: var(--bs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.total-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--bs-accent);
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   SPINNER
+   ========================================================================== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 9999;
+}
+
+.loading-overlay p {
+  color: var(--bs-text-secondary);
   font-size: 14px;
 }
 
-.country-list-scroll::-webkit-scrollbar {
-  width: 4px;
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--bs-border);
+  border-top-color: var(--bs-accent);
+  border-radius: 50%;
+  animation: bsSpin 0.7s linear infinite;
 }
 
-.country-list-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.country-list-scroll::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 10px;
+@keyframes bsSpin {
+  to { transform: rotate(360deg); }
 }
 
 .hidden {
   display: none !important;
 }
 
-/* Mobile */
+/* ==========================================================================
+   TOAST
+   ========================================================================== */
+.bs-toast {
+  animation: bsSlideUp 0.35s ease;
+}
+
+@keyframes bsSlideUp {
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ==========================================================================
+   SERVICES POPUP
+   ========================================================================== */
+.services-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.services-popup-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.services-popup-container {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: 80vh;
+  background: var(--bs-bg-card);
+  border: 1px solid var(--bs-border);
+  border-radius: var(--bs-radius-xl);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.services-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: var(--bs-accent);
+  color: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.services-popup-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.close-popup-btn {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: #1a1a1a;
+  font-size: 24px;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--bs-transition);
+}
+
+.close-popup-btn:hover {
+  background: rgba(0, 0, 0, 0.35);
+  transform: rotate(90deg);
+}
+
+.services-popup-content {
+  padding: 12px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.services-popup-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid var(--bs-border);
+  flex-shrink: 0;
+  background: var(--bs-bg-card);
+}
+
+.services-popup-footer .btn-primary,
+.services-popup-footer .btn-secondary {
+  flex: 1;
+}
+
+/* ==========================================================================
+   SERVICE OPTION
+   ========================================================================== */
+.service-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  background: var(--bs-bg-input);
+  border: 2px solid transparent;
+  border-radius: var(--bs-radius-md);
+  cursor: pointer;
+  transition: var(--bs-transition);
+}
+
+.service-option:hover {
+  border-color: var(--bs-border);
+}
+
+.service-option.selected {
+  border-color: var(--bs-accent);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.service-option-info {
+  flex: 1;
+}
+
+.service-option-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--bs-text);
+  margin-bottom: 4px;
+}
+
+.service-option-price {
+  font-size: 13px;
+  color: var(--bs-accent);
+}
+
+.service-option-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--bs-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--bs-transition);
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.service-option.selected .service-option-check {
+  background: var(--bs-accent);
+  border-color: var(--bs-accent);
+}
+
+.service-option.selected .service-option-check::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #1a1a1a;
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   INTL-TEL-INPUT - Phone Input
+   ========================================================================== */
+.iti {
+  display: flex !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+.iti__flag-container {
+  position: static !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
+}
+
+.iti__selected-flag {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 12px !important;
+  height: 48px !important;
+  background: #1a1a1a !important;
+  border: 1.5px solid #2e2e2e !important;
+  border-right: none !important;
+  border-radius: 12px 0 0 12px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.iti__selected-flag:hover {
+  background: #222 !important;
+}
+
+.iti__flag {
+  border-radius: 2px;
+  margin: 0 !important;
+}
+
+.iti__selected-dial-code {
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.iti__arrow {
+  border-top: 4px solid #888 !important;
+  border-right: 4px solid transparent !important;
+  border-left: 4px solid transparent !important;
+  margin-left: 4px !important;
+}
+
+.iti__selected-flag:hover .iti__arrow {
+  border-top-color: #f59e0b !important;
+}
+
+.iti input[type="tel"],
+#phone {
+  flex: 1 !important;
+  width: 100% !important;
+  padding: 0 16px !important;
+  height: 48px !important;
+  background: #1a1a1a !important;
+  border: 1.5px solid #2e2e2e !important;
+  border-left: none !important;
+  border-radius: 0 12px 12px 0 !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+}
+
+.iti input[type="tel"]:focus,
+#phone:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+.iti input[type="tel"]::placeholder,
+#phone::placeholder {
+  color: #555;
+}
+
+/* ==========================================================================
+   COUNTRY LIST INSIDE BOOKING CARD
+   ========================================================================== */
+.booking-card .iti__country-list {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  background: #1e1e1e !important;
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+  z-index: 999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Header */
+.booking-card .iti__country-list::before {
+  content: '🌍 Select Country';
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 56px !important;
+  padding: 0 20px !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  background: #1e1e1e !important;
+  border-bottom: 1px solid #2e2e2e !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+
+/* Close button */
+.booking-card .iti__country-list .iti__close-btn {
+  position: absolute !important;
+  right: 16px !important;
+  top: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #2a2a2a !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+.booking-card .iti__country-list .iti__close-btn:hover {
+  background: #3a3a3a !important;
+}
+
+/* Search */
+.booking-card .iti__search-input {
+  margin: 16px !important;
+  width: calc(100% - 32px) !important;
+  padding: 14px 16px !important;
+  font-size: 15px !important;
+  border-radius: 12px !important;
+  background: #1a1a1a !important;
+  border: 1px solid #2e2e2e !important;
+  color: #fff !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.booking-card .iti__search-input:focus {
+  border-color: #f59e0b !important;
+  outline: none !important;
+}
+
+.booking-card .iti__search-input::placeholder {
+  color: #666;
+}
+
+/* Scrollable list */
+.booking-card .iti__country-list .iti__country-list-inner,
+.booking-card .iti__country-list > div {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 !important;
+  padding: 8px 0 24px !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Country items */
+.booking-card .iti__country {
+  display: flex !important;
+  align-items: center !important;
+  padding: 14px 24px !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  border-bottom: 1px solid #252525 !important;
+}
+
+.booking-card .iti__country:hover {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country:active {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country.iti__highlight {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country.iti__active {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-left: 3px solid #f59e0b;
+}
+
+.booking-card .iti__country-name {
+  color: #fff !important;
+  font-size: 15px !important;
+  margin-left: 14px !important;
+  flex: 1 !important;
+}
+
+.booking-card .iti__dial-code {
+  color: #888 !important;
+  font-size: 14px !important;
+}
+
+.booking-card .iti__divider {
+  border-top: 1px solid #2a2a2a !important;
+  margin: 8px 24px !important;
+}
+
+/* Scrollbar */
+.booking-card .iti__country-list-inner::-webkit-scrollbar,
+.booking-card .iti__country-list > div::-webkit-scrollbar {
+  width: 4px;
+}
+
+.booking-card .iti__country-list-inner::-webkit-scrollbar-track,
+.booking-card .iti__country-list > div::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.booking-card .iti__country-list-inner::-webkit-scrollbar-thumb,
+.booking-card .iti__country-list > div::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   FLATPICKR
+   ========================================================================== */
+.flatpickr-calendar {
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+  padding: 10px;
+  width: 290px !important;
+}
+
+.flatpickr-month {
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-current-month {
+  color: #fff !important;
+  font-size: 14px !important;
+}
+
+.flatpickr-current-month .numInputWrapper input {
+  color: #fff !important;
+}
+
+.flatpickr-current-month .numInputWrapper span {
+  border-color: #444 !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  fill: #888 !important;
+  padding: 6px !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  fill: #f59e0b !important;
+}
+
+.flatpickr-weekday {
+  color: #f59e0b !important;
+  font-weight: 600 !important;
+  font-size: 10px !important;
+}
+
+.flatpickr-day {
+  color: #bbb !important;
+  border-radius: 6px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  max-width: 34px !important;
+  font-size: 13px !important;
+  border: none !important;
+}
+
+.flatpickr-day:hover {
+  background: #2a2a2a !important;
+  color: #fff !important;
+}
+
+.flatpickr-day.today {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #f59e0b !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-day.today:hover {
+  background: #f59e0b !important;
+  color: #000 !important;
+}
+
+.flatpickr-day.selected {
+  background: #f59e0b !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+}
+
+.flatpickr-day.selected:hover {
+  background: #d97706 !important;
+}
+
+.flatpickr-day.flatpickr-disabled {
+  color: #444 !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #555 !important;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(245, 158, 11, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #f59e0b !important;
+  color: #000 !important;
+}
+
+.flatpickr-time {
+  border-top: 1px solid #333 !important;
+  background: #1a1a1a !important;
+  max-height: 42px !important;
+}
+
+.flatpickr-time input {
+  color: #fff !important;
+  font-size: 13px !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+  color: #888 !important;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover {
+  color: #f59e0b !important;
+}
+
+.flatpickr-time .flatpickr-time-separator {
+  color: #f59e0b !important;
+}
+
+/* ==========================================================================
+   SCROLLBAR
+   ========================================================================== */
+.booking-card::-webkit-scrollbar,
+.services-popup-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.booking-card::-webkit-scrollbar-thumb,
+.services-popup-content::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
 @media (max-width: 768px) {
-  .selected-country {
-    height: 52px;
+  .booking-card {
+    border-radius: 16px;
+    padding: 20px;
+    max-height: none;
+    overflow-y: visible;
+    box-shadow: none;
   }
   
-  .phone-number-input {
-    height: 52px;
-    font-size: 16px;
+  .booking-card::before {
+    display: none;
   }
   
-  .country-dropdown::before {
-    font-size: 18px;
-    min-height: 60px;
+  .booking-card .input-field {
+    font-size: 16px !important;
+    padding: 15px !important;
   }
   
-  .country-search {
-    padding: 16px;
-    font-size: 16px;
+  .booking-card .btn-primary {
+    padding: 16px 24px !important;
+    font-size: 15px !important;
   }
   
-  .country-item {
-    padding: 16px 24px;
+  .booking-card .btn-secondary {
+    padding: 16px 24px !important;
+    font-size: 15px !important;
   }
   
-  .country-item .country-name {
-    font-size: 16px;
+  .booking-card .stepper-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
   }
+  
+  .iti input[type="tel"],
+  #phone {
+    height: 52px !important;
+    font-size: 16px !important;
+  }
+  
+  .iti__selected-flag {
+    height: 52px !important;
+    padding: 0 14px !important;
+  }
+  
+  .iti__selected-dial-code {
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__country-list::before {
+    font-size: 18px !important;
+    min-height: 60px !important;
+  }
+
+  .booking-card .iti__country-list .iti__close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+  }
+
+  .booking-card .iti__search-input {
+    padding: 16px !important;
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__country {
+    padding: 16px 24px !important;
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__country-name {
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__dial-code {
+    font-size: 15px !important;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.input-field:focus-visible,
+.services-btn:focus-visible,
+.stepper-btn:focus-visible,
+.close-popup-btn:focus-visible {
+  outline: 2px solid var(--bs-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--bs-accent);
+  color: #1a1a1a;
 }
