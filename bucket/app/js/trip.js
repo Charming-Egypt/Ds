@@ -1,7 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Tour Booking System
-// Complete JavaScript Controller v5.0 Final
-// With Fixed Booking Card, Mobile Bottom Sheet, Reviews & User Photos
+// Complete JavaScript Controller v6.0 Final
+// Mobile: Popup | Extra Services: Popup | Reviews: Popup
 // ==========================================================================
 
 // ==========================================================================
@@ -201,10 +201,11 @@ function updateProgressBar() {
     else s.classList.remove('active');
   });
   
-  const mobileBar = document.querySelector('#mobileBookingContent #progressBar');
+  // Update mobile popup progress bar
+  const mobileBar = document.querySelector('#mobileBookingPopupContent #progressBar');
   if (mobileBar) mobileBar.style.width = ((currentStep + 1) * 25) + '%';
   
-  const mobileSteps = document.querySelectorAll('#mobileBookingContent .progress-steps .step');
+  const mobileSteps = document.querySelectorAll('#mobileBookingPopupContent .progress-steps .step');
   mobileSteps.forEach((s, i) => {
     if (i === currentStep) s.classList.add('active');
     else s.classList.remove('active');
@@ -221,7 +222,7 @@ function nextStep() {
   
   updateProgressBar();
   updateSummary();
-  syncMobileSteps();
+  syncMobilePopupSteps();
 }
 
 function prevStep() {
@@ -231,14 +232,14 @@ function prevStep() {
   if (prev) prev.classList.add('active');
   
   updateProgressBar();
-  syncMobileSteps();
+  syncMobilePopupSteps();
 }
 
-function syncMobileSteps() {
-  const mobileContent = document.getElementById('mobileBookingContent');
-  if (!mobileContent || mobileContent.children.length === 0) return;
+function syncMobilePopupSteps() {
+  const popupContent = document.getElementById('mobileBookingPopupContent');
+  if (!popupContent || popupContent.children.length === 0) return;
   
-  const mobileSteps = mobileContent.querySelectorAll('.form-step');
+  const mobileSteps = popupContent.querySelectorAll('.form-step');
   mobileSteps.forEach((s, i) => {
     if (i === currentStep) s.classList.add('active');
     else s.classList.remove('active');
@@ -299,7 +300,7 @@ function updateSummary() {
   const setVal = (id, val) => { 
     const el = document.getElementById(id); 
     if (el) el.textContent = val;
-    const mobileEl = document.querySelector(`#mobileBookingContent #${id}`);
+    const mobileEl = document.querySelector(`#mobileBookingPopupContent #${id}`);
     if (mobileEl) mobileEl.textContent = val;
   };
   
@@ -330,7 +331,7 @@ function updateSummary() {
       </div>`;
     totalDisplay.innerHTML = html;
     
-    const mobileTotalDisplay = document.querySelector('#mobileBookingContent #totalPriceDisplay');
+    const mobileTotalDisplay = document.querySelector('#mobileBookingPopupContent #totalPriceDisplay');
     if (mobileTotalDisplay) mobileTotalDisplay.innerHTML = html;
   }
 }
@@ -500,7 +501,7 @@ function populateTripTypeDropdown(tourTypes) {
   const select = document.getElementById('tripType');
   if (!select) return;
   
-  select.innerHTML = '<option value="">No extra services</option>';
+  select.innerHTML = '<option value="">Select extra services...</option>';
   
   if (tourTypes && typeof tourTypes === 'object') {
     Object.keys(tourTypes).forEach(key => {
@@ -513,9 +514,16 @@ function populateTripTypeDropdown(tourTypes) {
   }
   
   select.value = selectedTripType || '';
-  select.onchange = function() {
-    selectedTripType = this.value;
-    updateSummary();
+  
+  // Open popup when clicking on select
+  select.onclick = function(e) {
+    e.preventDefault();
+    openServicesPopup();
+  };
+  
+  // Prevent default dropdown on mobile
+  select.onmousedown = function(e) {
+    e.preventDefault();
   };
 }
 
@@ -720,31 +728,28 @@ function initFlatpickr() {
 }
 
 // ==========================================================================
-// MOBILE BOTTOM SHEET - COMPLETE WORKING VERSION
+// MOBILE BOOKING POPUP
 // ==========================================================================
 function isMobile() { return window.innerWidth <= 768; }
 
-function openMobileBottomSheet() {
-  const overlay = document.getElementById('mobileBottomSheetOverlay');
-  const sheet = document.getElementById('mobileBottomSheet');
-  const content = document.getElementById('mobileBookingContent');
+function openMobileBookingPopup() {
+  const popup = document.getElementById('mobileBookingPopup');
+  const content = document.getElementById('mobileBookingPopupContent');
   
-  if (!overlay || !sheet || !content) return;
+  if (!popup || !content) return;
   
   const bookingContainer = document.querySelector('.booking-form-container');
   if (!bookingContainer) return;
   
-  // Clone the ENTIRE booking container
+  // Clone the booking form
   content.innerHTML = '';
   const clone = bookingContainer.cloneNode(true);
   clone.style.cssText = 'position:relative;top:auto;max-height:none;display:block;box-shadow:none;border:none;padding:0;background:transparent;';
   content.appendChild(clone);
   
-  overlay.classList.remove('hidden');
-  sheet.classList.remove('hidden');
+  popup.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
   
-  // Initialize cloned elements
   setTimeout(() => {
     // Re-init flatpickr
     const clonedDateInput = content.querySelector('#tripDate');
@@ -761,49 +766,47 @@ function openMobileBottomSheet() {
       });
     }
     
-    // Re-attach select
+    // Re-attach select for extra services
     const clonedSelect = content.querySelector('#tripType');
     if (clonedSelect) {
       clonedSelect.value = selectedTripType || '';
-      clonedSelect.onchange = function() {
-        selectedTripType = this.value;
-        document.getElementById('tripType').value = selectedTripType;
-        updateSummary();
+      clonedSelect.onclick = function(e) {
+        e.preventDefault();
+        openServicesPopup();
+      };
+      clonedSelect.onmousedown = function(e) {
+        e.preventDefault();
       };
     }
     
-    // Re-attach ALL buttons
-    attachAllMobileButtonEvents(content);
+    // Re-attach buttons
+    attachMobilePopupButtons(content);
     
     // Re-attach steppers
     attachMobileSteppers(content);
     
     // Sync steps
-    syncMobileSteps();
+    syncMobilePopupSteps();
     
   }, 200);
   
-  setTimeout(() => { sheet.scrollTop = 0; }, 300);
   updateSummary();
 }
 
-function attachAllMobileButtonEvents(container) {
+function attachMobilePopupButtons(container) {
   if (!container) return;
   
-  // Clone and replace all buttons to remove old events
   const allButtons = container.querySelectorAll('button');
   allButtons.forEach(btn => {
     const newBtn = btn.cloneNode(true);
     if (btn.parentNode) btn.parentNode.replaceChild(newBtn, btn);
   });
   
-  // Get fresh buttons
   const freshButtons = container.querySelectorAll('button');
   
   freshButtons.forEach(btn => {
     const btnText = (btn.textContent || '').trim();
     
-    // NEXT/CONTINUE/REVIEW buttons
     if (btnText.includes('Continue') || btnText.includes('Next') || btnText.includes('Review')) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -829,13 +832,12 @@ function attachAllMobileButtonEvents(container) {
           updateProgressBar();
           updateSummary();
           
-          const sheet = document.getElementById('mobileBottomSheet');
-          if (sheet) sheet.scrollTop = 0;
+          const popupContent = document.getElementById('mobileBookingPopupContent');
+          if (popupContent) popupContent.scrollTop = 0;
         }
       });
     }
     
-    // CONFIRM & PAY button
     if (btnText.includes('Confirm') || btnText.includes('Pay')) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -845,7 +847,6 @@ function attachAllMobileButtonEvents(container) {
       });
     }
     
-    // BACK button
     if (btnText.includes('Back')) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -869,8 +870,8 @@ function attachAllMobileButtonEvents(container) {
         
         updateProgressBar();
         
-        const sheet = document.getElementById('mobileBottomSheet');
-        if (sheet) sheet.scrollTop = 0;
+        const popupContent = document.getElementById('mobileBookingPopupContent');
+        if (popupContent) popupContent.scrollTop = 0;
       });
     }
   });
@@ -903,7 +904,7 @@ function attachMobileSteppers(container) {
     
     if (plusBtn && input) {
       const newPlusBtn = plusBtn.cloneNode(true);
-      plusBtn.parentNode.replaceChild(newPlusBtn, plusBtn);
+      if (plusBtn.parentNode) plusBtn.parentNode.replaceChild(newPlusBtn, plusBtn);
       newPlusBtn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -920,7 +921,7 @@ function attachMobileSteppers(container) {
     
     if (minusBtn && input) {
       const newMinusBtn = minusBtn.cloneNode(true);
-      minusBtn.parentNode.replaceChild(newMinusBtn, minusBtn);
+      if (minusBtn.parentNode) minusBtn.parentNode.replaceChild(newMinusBtn, minusBtn);
       newMinusBtn.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -941,12 +942,93 @@ function attachMobileSteppers(container) {
   setupMobileStepper('#infantsPlus', '#infantsMinus', '#infants', 0, MAX_TOTAL_INFANTS, false);
 }
 
-function closeMobileBottomSheet() {
-  const overlay = document.getElementById('mobileBottomSheetOverlay');
-  const sheet = document.getElementById('mobileBottomSheet');
-  if (overlay) overlay.classList.add('hidden');
-  if (sheet) sheet.classList.add('hidden');
+function closeMobileBookingPopup() {
+  const popup = document.getElementById('mobileBookingPopup');
+  if (popup) popup.classList.add('hidden');
   document.body.style.overflow = '';
+}
+
+// ==========================================================================
+// EXTRA SERVICES POPUP
+// ==========================================================================
+function openServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  const content = document.getElementById('servicesPopupContent');
+  
+  if (!popup || !content) return;
+  
+  content.innerHTML = '';
+  
+  // No extra services option
+  const noServiceDiv = document.createElement('div');
+  noServiceDiv.className = `service-option ${!selectedTripType ? 'selected' : ''}`;
+  noServiceDiv.innerHTML = `
+    <div class="service-option-info">
+      <div class="service-option-name">No extra services</div>
+      <div class="service-option-price">Free</div>
+    </div>
+    <div class="service-option-check"></div>
+  `;
+  noServiceDiv.onclick = function() { 
+    selectedTripType = '';
+    document.getElementById('tripType').value = '';
+    renderServiceOptions(); 
+  };
+  content.appendChild(noServiceDiv);
+  
+  // Tour types
+  if (tourTypes && typeof tourTypes === 'object') {
+    Object.keys(tourTypes).forEach(key => {
+      const priceEGP = tourTypes[key];
+      const formattedPrice = formatPrice(priceEGP);
+      const serviceDiv = document.createElement('div');
+      serviceDiv.className = `service-option ${selectedTripType === key ? 'selected' : ''}`;
+      serviceDiv.innerHTML = `
+        <div class="service-option-info">
+          <div class="service-option-name">${key}</div>
+          <div class="service-option-price">${formattedPrice} (per person)</div>
+        </div>
+        <div class="service-option-check"></div>
+      `;
+      serviceDiv.onclick = function() { 
+        selectedTripType = key;
+        document.getElementById('tripType').value = key;
+        renderServiceOptions(); 
+      };
+      content.appendChild(serviceDiv);
+    });
+  }
+  
+  popup.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderServiceOptions() {
+  const options = document.querySelectorAll('#servicesPopupContent .service-option');
+  options.forEach(opt => {
+    const name = opt.querySelector('.service-option-name').textContent;
+    if (name === 'No extra services' && !selectedTripType) {
+      opt.classList.add('selected');
+    } else if (name === selectedTripType) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+}
+
+function confirmServiceSelection() {
+  document.getElementById('tripType').value = selectedTripType || '';
+  closeServicesPopup();
+  updateSummary();
+}
+
+function closeServicesPopup() {
+  const popup = document.getElementById('extraServicesPopup');
+  if (popup) {
+    popup.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
 }
 
 // ==========================================================================
@@ -1077,7 +1159,7 @@ function createReviewModal() {
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);">
                 <h3 style="font-size: 18px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; margin: 0;">
                     <i class="fas fa-star" style="color: #f59e0b;"></i>
-                    <span>Write a Review</span>
+                    <span id="modalTitle">Write a Review</span>
                 </h3>
                 <button id="closeModalBtn" style="background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s; line-height: 1;">&times;</button>
             </div>
@@ -1106,7 +1188,7 @@ function createReviewModal() {
                     <div style="text-align: right; font-size: 10px; color: #64748b; margin-top: 4px;"><span id="charCount">0</span>/500</div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button id="cancelReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 600; display:flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; transition: 0.2s;">Cancel</button>
+                    <button id="cancelReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s;">Cancel</button>
                     <button id="submitReviewBtn" style="flex: 1; padding: 12px; border-radius: 30px; border: none; background: linear-gradient(135deg, #FF6B35, #FFA630); color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;"><i class="fas fa-paper-plane"></i> Submit</button>
                 </div>
             </div>
@@ -1132,7 +1214,6 @@ async function verifyVoucher(voucherNumber) {
         
         return true;
     } catch (error) {
-        console.error('Voucher verification error:', error);
         showToast('Error verifying voucher.', 'error');
         return false;
     }
@@ -1163,7 +1244,7 @@ async function submitReviewHandler() {
         try {
             const userSnapshot = await db.ref('egy_user/' + user.uid).once('value');
             const userData = userSnapshot.val();
-            if (userData) userName = userData.username || userData.name || user.email?.split('@')[0] || 'Traveler';
+            if (userData) userName = userData.username || user.email?.split('@')[0] || 'Traveler';
             else userName = user.email?.split('@')[0] || 'Traveler';
         } catch (e) { userName = user.email?.split('@')[0] || 'Traveler'; }
         
@@ -1199,7 +1280,6 @@ async function submitReviewHandler() {
         showToast(currentUserReview ? 'Review updated!' : 'Thank you for your review!', 'success');
         
     } catch (error) {
-        console.error('Review submission error:', error);
         showToast('Error: ' + (error.message || 'Unknown error'), 'error');
     } finally {
         submitBtn.innerHTML = originalHTML;
@@ -1256,9 +1336,6 @@ function openReviewModal() {
 }
 
 function setupReviewModalEvents() {
-    const modal = document.getElementById('reviewModal');
-    if (!modal) return;
-    
     const stars = document.querySelectorAll('#starSelector i');
     stars.forEach(star => {
         star.addEventListener('click', () => {
@@ -1357,20 +1434,25 @@ window.onload = async function () {
   initNumberControls();
   initFlatpickr();
 
+  // Desktop submit button
   document.getElementById('submitBtn')?.addEventListener('click', submitForm);
-  document.getElementById('mobileBookNowBtn')?.addEventListener('click', openMobileBottomSheet);
-  document.getElementById('mobileBottomSheetOverlay')?.addEventListener('click', function(e) {
-    if (e.target === this) closeMobileBottomSheet();
+  
+  // Mobile booking popup
+  document.getElementById('mobileBookNowBtn')?.addEventListener('click', openMobileBookingPopup);
+  document.getElementById('closeMobilePopupBtn')?.addEventListener('click', closeMobileBookingPopup);
+  document.getElementById('mobileBookingPopupOverlay')?.addEventListener('click', function(e) {
+    if (e.target === this) closeMobileBookingPopup();
   });
 
-  const mobileSheet = document.getElementById('mobileBottomSheet');
-  if (mobileSheet) {
-    let touchStartY = 0;
-    mobileSheet.addEventListener('touchstart', (e) => { touchStartY = e.changedTouches[0].screenY; }, { passive: true });
-    mobileSheet.addEventListener('touchend', (e) => {
-      if (e.changedTouches[0].screenY > touchStartY + 80 && mobileSheet.scrollTop <= 0) closeMobileBottomSheet();
-    }, { passive: true });
-  }
+  // Extra services popup
+  document.getElementById('cancelServicesBtn')?.addEventListener('click', closeServicesPopup);
+  document.getElementById('confirmServicesBtn')?.addEventListener('click', confirmServiceSelection);
+  document.getElementById('closeServicesPopup')?.addEventListener('click', closeServicesPopup);
+  document.getElementById('extraServicesPopup')?.addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('services-popup-overlay')) {
+      closeServicesPopup();
+    }
+  });
 
   auth.onAuthStateChanged((user) => {
     if (user) { currentUserUid = user.uid; populateForm(); }
@@ -1392,4 +1474,5 @@ window.onload = async function () {
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 1500);
 };
 
-console.log('✅ Discover Sharm - Booking System v5.0 Final');
+console.log('✅ Discover Sharm - Booking System v6.0 Final');
+console.log('✅ Mobile: Popup | Extra Services: Popup | Reviews: Popup');
