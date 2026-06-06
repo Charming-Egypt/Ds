@@ -510,3 +510,66 @@ if (iti) {
     observer.observe(countryList, { attributes: true });
   }
 }
+// ==========================================================================
+// MOVE COUNTRY LIST INSIDE BOOKING CARD ON MOBILE
+// ==========================================================================
+if (iti && window.innerWidth <= 768) {
+  // Wait for country list to be created
+  setTimeout(function() {
+    const countryList = document.querySelector('.iti__country-list');
+    const bookingCard = document.querySelector('.booking-card');
+    
+    if (countryList && bookingCard) {
+      // Move country list inside booking card
+      bookingCard.appendChild(countryList);
+      
+      // Add close button
+      if (!countryList.querySelector('.iti__close-btn')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'iti__close-btn';
+        closeBtn.innerHTML = '✕';
+        closeBtn.type = 'button';
+        closeBtn.onclick = function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          // Close dropdown by clicking flag
+          const flag = document.querySelector('.iti__selected-flag');
+          if (flag) flag.click();
+        };
+        countryList.appendChild(closeBtn);
+      }
+      
+      // Add class to booking card for CSS
+      bookingCard.classList.add('has-country-list');
+    }
+  }, 500);
+}
+
+// Re-check on window resize
+window.addEventListener('resize', function() {
+  if (window.innerWidth <= 768) {
+    setTimeout(function() {
+      const countryList = document.querySelector('.iti__country-list');
+      const bookingCard = document.querySelector('.booking-card');
+      
+      if (countryList && bookingCard && countryList.parentElement !== bookingCard) {
+        bookingCard.appendChild(countryList);
+        bookingCard.classList.add('has-country-list');
+        
+        if (!countryList.querySelector('.iti__close-btn')) {
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'iti__close-btn';
+          closeBtn.innerHTML = '✕';
+          closeBtn.type = 'button';
+          closeBtn.onclick = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            const flag = document.querySelector('.iti__selected-flag');
+            if (flag) flag.click();
+          };
+          countryList.appendChild(closeBtn);
+        }
+      }
+    }, 300);
+  }
+});
