@@ -515,48 +515,115 @@ function initFlatpickr() {
 }
 
 // ==========================================================================
-// EXTRA SERVICES POPUP
+// EXTRA SERVICES POPUP - FIXED
 // ==========================================================================
 function openServicesPopup() {
-  const popup = document.getElementById('extraServicesPopup'), content = document.getElementById('servicesPopupContent');
+  const popup = document.getElementById('extraServicesPopup');
+  const content = document.getElementById('servicesPopupContent');
+  
   if (!popup || !content) return;
+  
   content.innerHTML = '';
   
-  const add = (name, price, value) => {
-    const div = document.createElement('div');
-    div.className = 'service-option' + (selectedTripType === value ? ' selected' : '');
-    div.innerHTML = `<div class="service-option-info"><div class="service-option-name">${name}</div><div class="service-option-price">${price}</div></div><div class="service-option-check"></div>`;
-    div.onclick = () => {
-      selectedTripType = value;
-      document.getElementById('tripType').value = value;
-      if (document.getElementById('mobileTripType')) document.getElementById('mobileTripType').value = value;
-      renderServiceOptions();
-    };
-    content.appendChild(div);
+  // No extra services option
+  const noServiceDiv = document.createElement('div');
+  noServiceDiv.className = 'service-option' + (selectedTripType === '' ? ' selected' : '');
+  noServiceDiv.innerHTML = `
+    <div class="service-option-info">
+      <div class="service-option-name">No extra services</div>
+      <div class="service-option-price">Free</div>
+    </div>
+    <div class="service-option-check"></div>
+  `;
+  noServiceDiv.onclick = function() {
+    selectedTripType = '';
+    // Update both selects
+    const desktopSelect = document.getElementById('tripType');
+    const mobileSelect = document.getElementById('mobileTripType');
+    if (desktopSelect) desktopSelect.value = '';
+    if (mobileSelect) mobileSelect.value = '';
+    renderServiceOptions();
   };
+  content.appendChild(noServiceDiv);
   
-  add('No extra services', 'Free', '');
-  if (tourTypes) Object.keys(tourTypes).forEach(k => add(k, formatPrice(tourTypes[k]) + ' (per person)', k));
+  // Tour type options
+  if (tourTypes && typeof tourTypes === 'object') {
+    Object.keys(tourTypes).forEach(function(key) {
+      const priceEGP = tourTypes[key];
+      const formattedPrice = formatPrice(priceEGP);
+      
+      const serviceDiv = document.createElement('div');
+      serviceDiv.className = 'service-option' + (selectedTripType === key ? ' selected' : '');
+      serviceDiv.innerHTML = `
+        <div class="service-option-info">
+          <div class="service-option-name">${key}</div>
+          <div class="service-option-price">${formattedPrice} (per person)</div>
+        </div>
+        <div class="service-option-check"></div>
+      `;
+      serviceDiv.onclick = function() {
+        selectedTripType = key;
+        // Update both selects
+        const desktopSelect = document.getElementById('tripType');
+        const mobileSelect = document.getElementById('mobileTripType');
+        if (desktopSelect) desktopSelect.value = key;
+        if (mobileSelect) mobileSelect.value = key;
+        renderServiceOptions();
+      };
+      content.appendChild(serviceDiv);
+    });
+  }
   
   popup.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
+
 function renderServiceOptions() {
-  document.querySelectorAll('#servicesPopupContent .service-option').forEach(opt => {
-    const name = opt.querySelector('.service-option-name').textContent;
-    opt.classList.toggle('selected', name === 'No extra services' ? !selectedTripType : name === selectedTripType);
+  const options = document.querySelectorAll('#servicesPopupContent .service-option');
+  options.forEach(function(opt) {
+    const nameEl = opt.querySelector('.service-option-name');
+    if (!nameEl) return;
+    
+    const name = nameEl.textContent;
+    if (name === 'No extra services' && selectedTripType === '') {
+      opt.classList.add('selected');
+    } else if (name === selectedTripType) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
   });
 }
+
 function confirmServiceSelection() {
-  document.getElementById('tripType').value = selectedTripType || '';
-  if (document.getElementById('mobileTripType')) document.getElementById('mobileTripType').value = selectedTripType || '';
+  // Update desktop select
+  const desktopSelect = document.getElementById('tripType');
+  if (desktopSelect) {
+    desktopSelect.value = selectedTripType || '';
+  }
+  
+  // Update mobile select
+  const mobileSelect = document.getElementById('mobileTripType');
+  if (mobileSelect) {
+    mobileSelect.value = selectedTripType || '';
+  }
+  
+  // Close popup
   closeServicesPopup();
+  
+  // Update summaries
   updateSummary();
-  if (isMobile()) updateMobileSummary();
+  if (isMobile()) {
+    updateMobileSummary();
+  }
 }
+
 function closeServicesPopup() {
-  const p = document.getElementById('extraServicesPopup');
-  if (p) { p.classList.add('hidden'); document.body.style.overflow = ''; }
+  const popup = document.getElementById('extraServicesPopup');
+  if (popup) {
+    popup.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
 }
 
 // ==========================================================================
