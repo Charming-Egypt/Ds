@@ -1,6 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete Production Version
+// Country List Inside Booking Card
 // ==========================================================================
 
 (function() {
@@ -310,10 +311,10 @@
   }
 
   // ==========================================================================
-  // COUNTRY LIST INSIDE BOOKING CARD (MOBILE)
+  // COUNTRY LIST - Move inside booking card
   // ==========================================================================
-  function setupCountryListMobile() {
-    if (!iti || !isMobile()) return;
+  function moveCountryListToCard() {
+    if (!iti) return;
     
     setTimeout(function() {
       const countryList = document.querySelector('.iti__country-list');
@@ -337,7 +338,21 @@
           countryList.appendChild(closeBtn);
         }
       }
-    }, 300);
+    }, 100);
+  }
+
+  function watchForCountryList() {
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.classList && node.classList.contains('iti__country-list')) {
+            moveCountryListToCard();
+          }
+        });
+      });
+    });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   // ==========================================================================
@@ -464,8 +479,9 @@
         nationalMode: false,
       });
       
-      // Move country list inside booking card on mobile
-      setupCountryListMobile();
+      // Watch for country list and move to card
+      watchForCountryList();
+      moveCountryListToCard();
     }
     
     // Date picker
@@ -474,7 +490,7 @@
       flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
     }
     
-    // Bind navigation buttons
+    // Bind navigation
     document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
     document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
     document.querySelectorAll('[data-stepper]').forEach(function(b) {
@@ -489,7 +505,7 @@
     const cb = $('confirmServicesBtn'); if (cb) cb.onclick = confirmService;
     const cl = $('cancelServicesBtn'); if (cl) cl.onclick = closeServicesPopup;
     
-    // Close popup buttons
+    // Close popup
     document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
     const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
     
@@ -499,9 +515,17 @@
     // Auth state
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     
-    // Mobile country list reposition on resize
+    // Country list on flag click
+    const flagContainer = document.querySelector('.iti__flag-container');
+    if (flagContainer) {
+      flagContainer.addEventListener('click', function() {
+        setTimeout(moveCountryListToCard, 200);
+      });
+    }
+    
+    // Re-check on resize
     window.addEventListener('resize', function() {
-      setupCountryListMobile();
+      setTimeout(moveCountryListToCard, 300);
     });
     
     // Initial summary
