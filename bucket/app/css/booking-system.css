@@ -238,7 +238,7 @@ textarea.input-field {
 
 .country-code-select {
   flex-shrink: 0;
-  background: #1a1a1a;
+  background: #1e1e1e;
 }
 
 .selected-country {
@@ -247,7 +247,7 @@ textarea.input-field {
   gap: 8px;
   padding: 0 12px;
   height: 48px;
-  background: #1a1a1a;
+  background: #1e1e1e;
   border: 1.5px solid #2e2e2e;
   border-right: none;
   border-radius: 12px 0 0 12px;
@@ -286,7 +286,7 @@ textarea.input-field {
   background: #1a1a1a;
   border: 1.5px solid #2e2e2e;
   border-left: none;
-  border-radius: 0 12px 12px 0;
+  border-radius:  12px;
   color: #fff;
   font-size: 14px;
   font-family: inherit;
