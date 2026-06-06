@@ -601,8 +601,8 @@ textarea.input-field {
 }
 
 .btn-secondary {
-  flex: 1;
-  padding: 14px 24px;
+  flex: 0;
+  padding: 14px;
   border-radius: var(--bs-radius-full);
   background: var(--bs-bg-light);
   border: 1.5px solid var(--bs-border);
