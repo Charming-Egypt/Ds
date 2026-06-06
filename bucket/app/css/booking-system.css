@@ -748,7 +748,7 @@ textarea.input-field {
 
 /* العلم والكود - fixed width */
 .iti__flag-container {
-  position: relative !important;
+  
   flex-shrink: 0 !important;
   width: 100% !important;
 }
