@@ -739,8 +739,11 @@ textarea.input-field {
 
 /* الحاوية الرئيسية لرقم الهاتف */
 .iti {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
   width: 100% !important;
-  display: block !important;
+  position: relative !important;
 }
 
 /* حقل الإدخال */
