@@ -42,12 +42,12 @@
 }
 
 /* ==========================================================================
-   INTL-TEL-INPUT - Phone Input + Country Dropdown
+   INTL-TEL-INPUT - Phone Input + Country Selector
+   Desktop: Dropdown | Mobile: Bottom Sheet
    ========================================================================== */
 
 /* الحاوية الرئيسية */
 .iti {
-  position: relative;
   display: flex !important;
   align-items: stretch !important;
   width: 100% !important;
@@ -132,7 +132,7 @@
 }
 
 /* ==========================================================================
-   COUNTRY DROPDOWN - Simple list under input
+   COUNTRY LIST - DESKTOP (Dropdown)
    ========================================================================== */
 .iti__country-list {
   position: absolute !important;
@@ -175,25 +175,22 @@
   background: rgba(245, 158, 11, 0.1) !important;
 }
 
-/* Country name */
 .iti__country-name {
   color: #ccc !important;
   margin-left: 10px !important;
   flex: 1 !important;
 }
 
-/* Dial code */
 .iti__dial-code {
   color: #888 !important;
 }
 
-/* Divider */
 .iti__divider {
   border-top: 1px solid #2a2a2a !important;
   margin: 4px 16px !important;
 }
 
-/* Search input */
+/* Search */
 .iti__search-input {
   background: #1a1a1a !important;
   border: 1px solid #2e2e2e !important;
@@ -230,7 +227,7 @@
 }
 
 /* ==========================================================================
-   MOBILE
+   MOBILE - Bottom Sheet
    ========================================================================== */
 @media (max-width: 768px) {
   .iti__selected-flag {
@@ -248,13 +245,144 @@
     font-size: 16px !important;
   }
 
+  /* ===== BOTTOM SHEET ===== */
   .iti__country-list {
-    max-height: 250px !important;
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 65vh !important;
+    background: #1e1e1e !important;
+    border: none !important;
+    border-radius: 20px 20px 0 0 !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
+    z-index: 99999 !important;
+    overflow: hidden !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* Header */
+  .iti__country-list::before {
+    content: 'Select Country';
+    display: block;
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: #1e1e1e;
+    border-bottom: 1px solid #2e2e2e;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  /* Drag handle */
+  .iti__country-list::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+    margin: 10px auto 0;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+
+  /* Search */
+  .iti__search-input {
+    margin: 16px !important;
+    width: calc(100% - 32px) !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+    border-radius: 12px !important;
+    position: sticky;
+    top: 50px;
+    z-index: 2;
+  }
+
+  /* Scrollable list */
+  .iti__country-list .iti__country-list-inner,
+  .iti__country-list > div {
+    overflow-y: auto !important;
+    max-height: calc(65vh - 140px) !important;
+    padding: 8px 0 20px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Country items */
   .iti__country {
-    padding: 12px 16px !important;
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    border-bottom: 1px solid #252525;
+  }
+
+  .iti__country:last-child {
+    border-bottom: none;
+  }
+
+  .iti__country:active {
+    background: #2a2a2a !important;
+  }
+
+  .iti__country-name {
+    font-size: 15px !important;
+    color: #fff !important;
+  }
+
+  .iti__dial-code {
     font-size: 14px !important;
+    color: #888 !important;
+  }
+
+  .iti__divider {
+    margin: 8px 20px !important;
+  }
+
+  /* Backdrop overlay */
+  .iti-mobile-open .iti__country-list {
+    display: block !important;
+  }
+}
+
+/* ==========================================================================
+   BACKDROP OVERLAY (Mobile Only)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Overlay appears behind bottom sheet */
+  .iti__overlay {
+    display: none !important;
+  }
+  
+  /* Create overlay with pseudo element on body when country list is open */
+  .iti-mobile-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99998;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 
