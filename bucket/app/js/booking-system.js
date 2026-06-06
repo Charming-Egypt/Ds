@@ -1,83 +1,10 @@
 // ==========================================================================
-// DISCOVER SHARM - Booking System (FINAL WORKING)
-// intl-tel-input: Country code select + phone number beside it
-// flatpickr: Dark themed date picker
-// No fake spinner triggers
+// DISCOVER SHARM - Booking & Payment System
+// Single Booking Card - Desktop & Mobile
 // ==========================================================================
 
 (function() {
   'use strict';
-
-  // ==========================================================================
-  // DEBUG PANEL
-  // ==========================================================================
-  let debugLines = [];
-
-  function createDebugPanel() {
-    const existing = document.getElementById('bsDebugPanel');
-    if (existing) existing.remove();
-
-    const panel = document.createElement('div');
-    panel.id = 'bsDebugPanel';
-    panel.style.cssText = 'position:fixed;top:10px;right:10px;z-index:99999;background:rgba(0,0,0,0.92);color:#0f0;padding:10px;border-radius:8px;font-family:monospace;font-size:10px;max-width:320px;max-height:200px;overflow-y:auto;border:1px solid #444;line-height:1.4;';
-    
-    const title = document.createElement('div');
-    title.textContent = '🔍 Debug';
-    title.style.cssText = 'color:#f59e0b;font-weight:bold;margin-bottom:4px;font-size:11px;border-bottom:1px solid #444;padding-bottom:3px;';
-    panel.appendChild(title);
-    
-    const log = document.createElement('div');
-    log.id = 'bsDebugLog';
-    panel.appendChild(log);
-    
-    const close = document.createElement('button');
-    close.textContent = '✕';
-    close.style.cssText = 'position:absolute;top:4px;right:6px;background:#333;border:none;color:#fff;cursor:pointer;font-size:10px;padding:2px 5px;border-radius:3px;';
-    close.onclick = function() { panel.style.display = 'none'; };
-    panel.appendChild(close);
-    
-    document.body.appendChild(panel);
-    updateDebugPanel();
-  }
-
-  function debug(msg, color) {
-    color = color || '#0f0';
-    const time = new Date().toLocaleTimeString();
-    debugLines.push({ text: '[' + time + '] ' + String(msg), color: color });
-    if (debugLines.length > 30) debugLines.shift();
-    updateDebugPanel();
-  }
-
-  function updateDebugPanel() {
-    const log = document.getElementById('bsDebugLog');
-    if (!log) return;
-    log.innerHTML = debugLines.map(function(l) {
-      return '<div style="color:' + l.color + ';">' + l.text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
-    }).join('');
-    log.scrollTop = log.scrollHeight;
-  }
-
-  setTimeout(createDebugPanel, 300);
-
-  // ==========================================================================
-  // TOAST MESSAGES
-  // ==========================================================================
-  function toast(msg, type) {
-    const old = document.querySelector('.bs-toast');
-    if (old) old.remove();
-    
-    const t = document.createElement('div');
-    t.className = 'bs-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ' + (type === 'error' ? '#ef4444' : '#22c55e') + ';white-space:nowrap;';
-    t.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
-    document.body.appendChild(t);
-    
-    setTimeout(function() {
-      t.style.opacity = '0';
-      t.style.transition = 'opacity 0.3s';
-      setTimeout(function() { t.remove(); }, 300);
-    }, 4000);
-  }
 
   // ==========================================================================
   // STATE
@@ -106,6 +33,18 @@
     let r = 'DS-';
     for (let i = 0; i < 10; i++) r += chars.charAt(Math.floor(Math.random() * chars.length));
     return r;
+  }
+
+  function toast(msg, type) {
+    const old = document.querySelector('.bs-toast');
+    if (old) old.remove();
+    
+    const t = document.createElement('div');
+    t.className = 'bs-toast';
+    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ' + (type === 'error' ? '#ef4444' : '#22c55e') + ';white-space:nowrap;';
+    t.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
+    document.body.appendChild(t);
+    setTimeout(function() { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(function() { t.remove(); }, 300); }, 4000);
   }
 
   // ==========================================================================
@@ -220,18 +159,10 @@
     if (!toStr($('username')?.value)) { toast('Enter your full name', 'error'); $('username')?.focus(); return false; }
     const em = toStr($('customerEmail')?.value);
     if (!em || em.indexOf('@') < 0) { toast('Enter valid email', 'error'); $('customerEmail')?.focus(); return false; }
-    
-    // Phone validation with intl-tel-input
     if (iti) {
-      if (!iti.getNumber() || !iti.isValidNumber()) {
-        toast('Enter valid phone number', 'error');
-        return false;
-      }
+      if (!iti.getNumber() || !iti.isValidNumber()) { toast('Enter valid phone number', 'error'); return false; }
     } else {
-      if (toStr($('phone')?.value).length < 8) {
-        toast('Enter valid phone number', 'error');
-        return false;
-      }
+      if (toStr($('phone')?.value).length < 8) { toast('Enter valid phone number', 'error'); return false; }
     }
     return true;
   }
@@ -266,15 +197,10 @@
     tempService = selectedTripType;
     content.innerHTML = '';
     
-    // None option
     const noneDiv = document.createElement('div');
     noneDiv.className = 'service-option' + (!tempService ? ' selected' : '');
     noneDiv.innerHTML = '<div class="service-option-info"><div class="service-option-name">No extra services</div><div class="service-option-price">Free</div></div><div class="service-option-check"></div>';
-    noneDiv.onclick = function() {
-      tempService = '';
-      content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); });
-      noneDiv.classList.add('selected');
-    };
+    noneDiv.onclick = function() { tempService = ''; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); noneDiv.classList.add('selected'); };
     content.appendChild(noneDiv);
     
     const types = getTourTypes();
@@ -282,11 +208,7 @@
       const div = document.createElement('div');
       div.className = 'service-option' + (tempService === key ? ' selected' : '');
       div.innerHTML = '<div class="service-option-info"><div class="service-option-name">' + key + '</div><div class="service-option-price">' + fmtPrice(types[key]) + ' per person</div></div><div class="service-option-check"></div>';
-      div.onclick = function() {
-        tempService = key;
-        content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); });
-        div.classList.add('selected');
-      };
+      div.onclick = function() { tempService = key; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); div.classList.add('selected'); };
       content.appendChild(div);
     });
     
@@ -405,54 +327,10 @@
       
       if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
       if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
-      
-      if (d.phone && iti) {
-        iti.setNumber(String(d.phone));
-        debug('✅ Phone: ' + d.phone, '#0f0');
-      }
+      if (d.phone && iti) { iti.setNumber(String(d.phone)); }
       
       toast('Your data loaded', 'success');
-    } catch(e) {
-      debug('Load error: ' + e.message, '#ff4444');
-    }
-  }
-
-  // ==========================================================================
-  // MOBILE
-  // ==========================================================================
-  function isMobile() { return window.innerWidth <= 768; }
-
-  function moveBookingToMobile() {
-    const mc = $('mobileBookingContainer'), main = $('mainBookingCard'), ms = $('mobileBookingSection');
-    if (!mc || !main || !ms) return;
-    
-    if (isMobile()) {
-      mc.innerHTML = '';
-      const clone = main.cloneNode(true);
-      clone.id = 'mobileBookingCard';
-      mc.appendChild(clone);
-      ms.style.display = 'block';
-      
-      const card = $('mobileBookingCard');
-      if (card) {
-        card.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
-        card.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
-        card.querySelectorAll('[data-stepper]').forEach(function(b) {
-          b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); };
-        });
-        const sb = card.querySelector('#submitBtn'); if (sb) sb.onclick = submitBooking;
-        const sv = card.querySelector('#openServicesBtn'); if (sv) sv.onclick = openServicesPopup;
-      }
-    } else {
-      ms.style.display = 'none';
-      mc.innerHTML = '';
-    }
-  }
-
-  function showMobileBooking() {
-    moveBookingToMobile();
-    const ms = $('mobileBookingSection');
-    if (ms) setTimeout(function() { ms.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
+    } catch(e) {}
   }
 
   // ==========================================================================
@@ -467,7 +345,7 @@
     const trip = getTrip();
     const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     
-    // ==================== PHONE INPUT ====================
+    // Phone
     const phoneEl = document.querySelector('#phone');
     if (phoneEl && window.intlTelInput) {
       iti = window.intlTelInput(phoneEl, {
@@ -477,21 +355,15 @@
         initialCountry: 'eg',
         nationalMode: false,
       });
-      debug('✅ intl-tel-input ready', '#0f0');
     }
     
-    // ==================== FLATPICKR ====================
+    // Date
     const dateEl = document.querySelector('#tripDate');
     if (dateEl && typeof flatpickr !== 'undefined') {
-      flatpickr(dateEl, {
-        minDate: new Date().fp_incr(1),
-        dateFormat: 'Y-m-d',
-        disableMobile: true,
-      });
-      debug('✅ flatpickr ready', '#0f0');
+      flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
     }
     
-    // ==================== BIND EVENTS ====================
+    // Bind events
     document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
     document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
     document.querySelectorAll('[data-stepper]').forEach(function(b) {
@@ -506,48 +378,26 @@
     document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
     const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
     
-    const mb = $('mobileBookNowBtn'); if (mb) mb.onclick = showMobileBooking;
-    
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeServicesPopup(); });
     
-    // Auth
-    auth.onAuthStateChanged(function(user) {
-      if (user) { setTimeout(loadUserData, 500); }
-    });
-    
-    moveBookingToMobile();
-    window.addEventListener('resize', moveBookingToMobile);
+    auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     
     setTimeout(updateSummary, 1500);
-    
-    debug('✅ Ready! ' + refNumber, '#0f0');
-    toast('Booking system ready', 'success');
+    toast('Ready', 'success');
   }
 
   // ==========================================================================
   // EXPORT
   // ==========================================================================
-  window.BookingSystem = {
-    init, nextStep, prevStep, stepper, openServices: openServicesPopup,
-    closeServices: closeServicesPopup, confirmService, submit: submitBooking,
-    showMobile: showMobileBooking, updateSummary,
-    getRef: function() { return refNumber; },
-    getPhone: function() { return iti ? iti.getNumber() : ''; }
-  };
+  window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: function() { return iti ? iti.getNumber() : ''; } };
 
   // ==========================================================================
   // START
   // ==========================================================================
   function tryInit() {
-    if (typeof auth === 'undefined' || typeof db === 'undefined') {
-      setTimeout(tryInit, 500);
-      return;
-    }
+    if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; }
     init();
   }
-
   setTimeout(tryInit, 800);
-
-  debug('📦 Script loaded', '#888');
 
 })();
