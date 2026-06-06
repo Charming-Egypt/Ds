@@ -1092,7 +1092,7 @@ select.form-control {
      ========================================================================== */
   .mobile-book-now-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
