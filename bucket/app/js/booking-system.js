@@ -480,39 +480,33 @@
 })();
 
 
-// في init() function، بعد iti = window.intlTelInput(...)
-
-// Add overlay class on mobile when country list opens
-if (iti && isMobile()) {
-  const countryList = document.querySelector('.iti__country-list');
-  const flagContainer = document.querySelector('.iti__flag-container');
-  
-  if (flagContainer) {
-    flagContainer.addEventListener('click', function() {
-      document.body.classList.add('iti-mobile-open');
-    });
-  }
-  
-  // Remove overlay when country is selected or clicked outside
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.iti__country-list') && !e.target.closest('.iti__flag-container')) {
-      document.body.classList.remove('iti-mobile-open');
-    }
-  });
-  
-  // Also remove when country is selected
-  if (countryList) {
-    countryList.addEventListener('click', function(e) {
-      if (e.target.closest('.iti__country')) {
-        setTimeout(function() {
-          document.body.classList.remove('iti-mobile-open');
-        }, 100);
+// Add close button to country list on mobile
+if (iti) {
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        const countryList = document.querySelector('.iti__country-list');
+        if (countryList && window.innerWidth <= 768) {
+          // Add close button if not already added
+          if (!countryList.querySelector('.iti__close-btn')) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'iti__close-btn';
+            closeBtn.innerHTML = '✕';
+            closeBtn.onclick = function(e) {
+              e.stopPropagation();
+              // Close the dropdown
+              const flag = document.querySelector('.iti__selected-flag');
+              if (flag) flag.click();
+            };
+            countryList.appendChild(closeBtn);
+          }
+        }
       }
     });
+  });
+  
+  const countryList = document.querySelector('.iti__country-list');
+  if (countryList) {
+    observer.observe(countryList, { attributes: true });
   }
-}
-
-// Helper function
-function isMobile() {
-  return window.innerWidth <= 768;
 }
