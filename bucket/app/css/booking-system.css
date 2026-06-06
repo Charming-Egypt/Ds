@@ -1,11 +1,12 @@
 /* ==========================================================================
    DISCOVER SHARM - Booking & Payment System
-   Redesigned - Dark Theme with Orange Accent
+   Complete CSS - Dark Theme with Orange Accent
    Background: #1e1e1e | Accent: #f59e0b (Orange)
+   Includes: intl-tel-input & flatpickr styles
    ========================================================================== */
 
 :root {
-  /* Primary Colors */
+  /* Background Colors */
   --bs-bg: #1e1e1e;
   --bs-bg-light: #252525;
   --bs-bg-lighter: #2a2a2a;
@@ -18,7 +19,7 @@
   --bs-accent-light: #fbbf24;
   --bs-accent-glow: rgba(245, 158, 11, 0.15);
   
-  /* Text */
+  /* Text Colors */
   --bs-text: #ffffff;
   --bs-text-secondary: #b0b0b0;
   --bs-text-muted: #888888;
@@ -51,6 +52,18 @@
 }
 
 /* ==========================================================================
+   BOOKING CARD WRAPPER (Desktop Sticky)
+   ========================================================================== */
+.booking-card-wrapper {
+  /* Container for sticky behavior */
+}
+
+.booking-card-wrapper .booking-card {
+  position: sticky;
+  top: 24px;
+}
+
+/* ==========================================================================
    BOOKING CARD
    ========================================================================== */
 .booking-card {
@@ -74,14 +87,6 @@
   height: 3px;
   background: var(--bs-accent);
   border-radius: 0 0 3px 3px;
-}
-
-.desktop-booking {
-  position: sticky;
-  top: 24px;
-  height: fit-content;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
 }
 
 /* ==========================================================================
@@ -146,7 +151,7 @@
   position: relative;
 }
 
-/* Glow effect on progress */
+/* Glow effect on progress fill */
 .progress-fill::after {
   content: '';
   position: absolute;
@@ -221,6 +226,7 @@
    ========================================================================== */
 .input-group {
   margin-bottom: 16px;
+  position: relative;
 }
 
 .input-group label {
@@ -271,6 +277,23 @@
 textarea.input-field {
   resize: vertical;
   min-height: 90px;
+}
+
+/* Readonly fields */
+.input-field[readonly] {
+  cursor: pointer;
+  color: var(--bs-text);
+}
+
+/* Number input - hide spinners */
+.input-field[type="number"]::-webkit-inner-spin-button,
+.input-field[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-field[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /* ==========================================================================
@@ -351,7 +374,7 @@ textarea.input-field {
   color: var(--bs-text-muted);
 }
 
-/* Stepper */
+/* Stepper Controls */
 .stepper-controls {
   display: flex;
   align-items: center;
@@ -378,6 +401,7 @@ textarea.input-field {
   justify-content: center;
   transition: var(--bs-transition);
   line-height: 1;
+  user-select: none;
 }
 
 .stepper-btn:hover,
@@ -436,7 +460,7 @@ textarea.input-field {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -454,6 +478,13 @@ textarea.input-field {
 .btn-primary:active,
 .btn-primary-mobile:active {
   transform: translateY(0);
+}
+
+.btn-primary:disabled,
+.btn-primary-mobile:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-secondary,
@@ -583,7 +614,7 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   LOADING OVERLAY
+   LOADING OVERLAY / SPINNER
    ========================================================================== */
 .loading-overlay {
   position: fixed;
@@ -718,7 +749,7 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   SERVICE OPTION
+   SERVICE OPTION (Radio-style)
    ========================================================================== */
 .service-option {
   display: flex;
@@ -789,9 +820,33 @@ textarea.input-field {
 }
 
 /* ==========================================================================
+   STARS SELECTOR (Review Modal)
+   ========================================================================== */
+.stars-selector {
+  display: flex;
+  gap: 6px;
+  font-size: 30px;
+}
+
+.stars-selector i {
+  color: var(--bs-text-muted);
+  cursor: pointer;
+  transition: var(--bs-transition);
+}
+
+.stars-selector i.active,
+.stars-selector i:hover {
+  color: var(--bs-accent);
+}
+
+.stars-selector i.fas {
+  color: var(--bs-accent);
+}
+
+/* ==========================================================================
    TOAST NOTIFICATIONS
    ========================================================================== */
-.toast {
+.bs-toast {
   animation: bsSlideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -834,13 +889,340 @@ textarea.input-field {
 }
 
 /* ==========================================================================
+   INTL-TEL-INPUT CUSTOM STYLES
+   Country code select + phone number beside it
+   ========================================================================== */
+.iti {
+  width: 100%;
+  display: block;
+}
+
+.iti__flag-container {
+  padding: 0;
+}
+
+.iti__selected-flag {
+  background: #1a1a1a !important;
+  border: 1.5px solid #2e2e2e;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  padding: 0 12px !important;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--bs-transition);
+}
+
+.iti__selected-flag:hover {
+  background: #222 !important;
+}
+
+.iti__selected-flag .iti__flag {
+  margin: 0;
+  box-shadow: none;
+}
+
+.iti__selected-flag .iti__arrow {
+  border-top: 4px solid #888;
+  margin-left: 4px;
+}
+
+/* Phone input inside iti */
+.iti input[type="tel"],
+.iti input[type="text"] {
+  padding-left: 60px !important;
+  height: 48px !important;
+  width: 100% !important;
+  background: #1a1a1a !important;
+  border: 1.5px solid #2e2e2e !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+}
+
+.iti input[type="tel"]:focus,
+.iti input[type="text"]:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+  outline: none !important;
+}
+
+/* Country dropdown */
+.iti__country-list {
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+  max-height: 200px !important;
+  z-index: 99999 !important;
+}
+
+.iti__country {
+  color: #fff !important;
+  padding: 8px 12px !important;
+}
+
+.iti__country:hover {
+  background: #2a2a2a !important;
+}
+
+.iti__country.iti__highlight {
+  background: #2a2a2a !important;
+}
+
+.iti__country.iti__active {
+  background: #2a2a2a !important;
+}
+
+.iti__dial-code {
+  color: #888 !important;
+}
+
+.iti__divider {
+  border-color: #333 !important;
+}
+
+/* Search box in dropdown */
+.iti__search-input {
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  color: #fff !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  width: calc(100% - 24px) !important;
+  margin: 8px 12px !important;
+}
+
+.iti__search-input:focus {
+  outline: none;
+  border-color: #f59e0b !important;
+}
+
+/* ==========================================================================
+   FLATPICKR CUSTOM STYLES
+   Dark themed calendar
+   ========================================================================== */
+.flatpickr-calendar {
+  background: #1e1e1e !important;
+  border: 1px solid #333 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
+  z-index: 99999 !important;
+  font-family: inherit !important;
+}
+
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+  border-bottom-color: #333 !important;
+}
+
+.flatpickr-months {
+  padding: 8px 0;
+  background: transparent !important;
+}
+
+.flatpickr-month {
+  color: #fff !important;
+  fill: #fff !important;
+  height: 40px !important;
+}
+
+.flatpickr-current-month {
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+}
+
+.flatpickr-current-month .numInputWrapper {
+  width: 60px;
+}
+
+.flatpickr-current-month .numInputWrapper input {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-current-month .numInputWrapper span {
+  border-color: #444 !important;
+}
+
+.flatpickr-current-month .numInputWrapper span:hover {
+  background: #333 !important;
+}
+
+.flatpickr-weekdays {
+  background: transparent !important;
+  padding: 8px 0;
+}
+
+.flatpickr-weekday {
+  color: #f59e0b !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+}
+
+.flatpickr-days {
+  padding: 4px;
+}
+
+.flatpickr-day {
+  color: #ccc !important;
+  border-radius: 8px !important;
+  border: none !important;
+  font-size: 13px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  max-width: 36px !important;
+  transition: all 0.15s ease !important;
+}
+
+.flatpickr-day:hover {
+  background: #2a2a2a !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.flatpickr-day.today {
+  border: 1.5px solid #f59e0b !important;
+  color: #f59e0b !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-day.today:hover {
+  background: #f59e0b !important;
+  color: #000 !important;
+}
+
+.flatpickr-day.selected {
+  background: #f59e0b !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
+}
+
+.flatpickr-day.selected:hover {
+  background: #d97706 !important;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  color: #444 !important;
+  cursor: not-allowed;
+  background: transparent !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #555 !important;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  padding: 8px !important;
+  fill: #888 !important;
+  transition: var(--bs-transition) !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  fill: #f59e0b !important;
+}
+
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg {
+  fill: #f59e0b !important;
+}
+
+.flatpickr-time {
+  border-top: 1px solid #333 !important;
+  background: #1a1a1a !important;
+  border-radius: 0 0 12px 12px !important;
+  max-height: 45px !important;
+}
+
+.flatpickr-time input {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+  background: #222 !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+  color: #888 !important;
+  font-weight: 600 !important;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover,
+.flatpickr-time .flatpickr-am-pm:focus {
+  background: #222 !important;
+  color: #f59e0b !important;
+}
+
+.flatpickr-time .numInputWrapper span {
+  border-color: #444 !important;
+}
+
+.flatpickr-time .numInputWrapper span:hover {
+  background: #333 !important;
+}
+
+/* ==========================================================================
+   SCROLLBAR STYLES
+   ========================================================================== */
+.booking-card::-webkit-scrollbar,
+.services-popup-content::-webkit-scrollbar,
+.iti__country-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.booking-card::-webkit-scrollbar-track,
+.services-popup-content::-webkit-scrollbar-track,
+.iti__country-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.booking-card::-webkit-scrollbar-thumb,
+.services-popup-content::-webkit-scrollbar-thumb,
+.iti__country-list::-webkit-scrollbar-thumb {
+  background: var(--bs-border-light);
+  border-radius: 10px;
+}
+
+.booking-card::-webkit-scrollbar-thumb:hover,
+.services-popup-content::-webkit-scrollbar-thumb:hover,
+.iti__country-list::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
-  .desktop-booking {
-    display: none;
+  /* Hide desktop booking card on mobile */
+  .booking-card-wrapper {
+    display: none !important;
+  }
+  
+  /* Show mobile booking section */
+  .mobile-booking-section {
+    display: block !important;
   }
 
+  /* Mobile Book Now Button */
   .mobile-book-now-btn {
     display: flex !important;
     position: fixed;
@@ -873,6 +1255,7 @@ textarea.input-field {
     transform: translateX(-50%) translateY(0);
   }
 
+  /* Larger inputs on mobile */
   .mobile-booking-section .input-field {
     font-size: 16px !important;
     padding: 15px !important;
@@ -898,6 +1281,12 @@ textarea.input-field {
     font-size: 16px !important;
     padding: 15px !important;
   }
+  
+  /* Mobile intl-tel-input adjustments */
+  .mobile-booking-section .iti input[type="tel"] {
+    font-size: 16px !important;
+    padding: 15px 15px 15px 60px !important;
+  }
 }
 
 @media (min-width: 769px) {
@@ -911,234 +1300,39 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   THIRD-PARTY OVERRIDES
-   ========================================================================== */
-/* International Telephone Input */
-.iti__country-list {
-  background: var(--bs-bg-card) !important;
-  border: 1px solid var(--bs-border) !important;
-  border-radius: var(--bs-radius-md) !important;
-  box-shadow: var(--bs-shadow-lg) !important;
-}
-
-.iti__country {
-  color: var(--bs-text) !important;
-}
-
-.iti__country:hover {
-  background: var(--bs-bg-lighter) !important;
-}
-
-.iti__country.iti__highlight {
-  background: var(--bs-bg-lighter) !important;
-}
-
-.iti__selected-flag {
-  background: transparent !important;
-}
-
-.iti__flag-container:hover .iti__selected-flag {
-  background: var(--bs-bg-lighter) !important;
-}
-
-/* Flatpickr Date Picker */
-.flatpickr-calendar {
-  background: var(--bs-bg-card) !important;
-  border: 1px solid var(--bs-border) !important;
-  border-radius: var(--bs-radius-lg) !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
-  z-index: 99999 !important;
-}
-
-.flatpickr-day {
-  color: var(--bs-text-secondary) !important;
-  background: transparent !important;
-  border-radius: var(--bs-radius-sm) !important;
-  border: none !important;
-  transition: var(--bs-transition) !important;
-}
-
-.flatpickr-day:hover {
-  background: var(--bs-bg-lighter) !important;
-  color: var(--bs-text) !important;
-}
-
-.flatpickr-day.selected {
-  background: var(--bs-accent) !important;
-  color: #1a1a1a !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
-}
-
-.flatpickr-day.today {
-  border: 1.5px solid var(--bs-accent) !important;
-  color: var(--bs-accent) !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-day.today:hover {
-  background: var(--bs-accent) !important;
-  color: #1a1a1a !important;
-}
-
-.flatpickr-day.flatpickr-disabled {
-  color: #444 !important;
-}
-
-.flatpickr-months {
-  padding: 8px 0;
-}
-
-.flatpickr-month {
-  color: var(--bs-text) !important;
-}
-
-.flatpickr-weekday {
-  color: var(--bs-accent) !important;
-  font-weight: 600 !important;
-  font-size: 11px !important;
-}
-
-.flatpickr-current-month {
-  color: var(--bs-text) !important;
-  font-weight: 700 !important;
-}
-
-.flatpickr-prev-month,
-.flatpickr-next-month {
-  fill: var(--bs-text-secondary) !important;
-  transition: var(--bs-transition) !important;
-}
-
-.flatpickr-prev-month:hover,
-.flatpickr-next-month:hover {
-  fill: var(--bs-accent) !important;
-}
-
-.flatpickr-weekwrapper .flatpickr-weeks {
-  box-shadow: 1px 0 0 var(--bs-border) !important;
-}
-
-/* Scrollbar Styles */
-.booking-card::-webkit-scrollbar,
-.services-popup-content::-webkit-scrollbar {
-  width: 5px;
-}
-
-.booking-card::-webkit-scrollbar-track,
-.services-popup-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.booking-card::-webkit-scrollbar-thumb,
-.services-popup-content::-webkit-scrollbar-thumb {
-  background: var(--bs-border-light);
-  border-radius: 10px;
-}
-
-.booking-card::-webkit-scrollbar-thumb:hover,
-.services-popup-content::-webkit-scrollbar-thumb:hover {
-  background: #444;
-}
-
-/* ==========================================================================
-   REDUCE MOTION (Accessibility)
+   ACCESSIBILITY
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   .form-step,
-  .toast,
+  .bs-toast,
   .progress-fill,
   .step-label,
   .btn-primary,
-  .btn-primary-mobile {
+  .btn-primary-mobile,
+  .pulse,
+  .pulse-mobile {
     animation: none !important;
     transition: none !important;
   }
 }
 
-/* ==========================================================================
-   FOCUS VISIBLE (Accessibility)
-   ========================================================================== */
+/* Focus visible */
 .btn-primary:focus-visible,
 .btn-primary-mobile:focus-visible,
 .btn-secondary:focus-visible,
 .btn-secondary-mobile:focus-visible,
 .input-field:focus-visible,
-.services-btn:focus-visible {
+.services-btn:focus-visible,
+.stepper-btn:focus-visible,
+.stepper-btn-mobile:focus-visible,
+.close-popup-btn:focus-visible,
+.service-option:focus-visible {
   outline: 2px solid var(--bs-accent);
   outline-offset: 2px;
 }
 
-
-
-/* ==========================================================================
-   INTL-TEL-INPUT FIX - Flag beside number
-   ========================================================================== */
-.iti {
-    width: 100%;
-    display: block;
-}
-
-.iti__flag-container {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.iti__selected-flag {
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    height: 100%;
-}
-
-.iti__selected-flag .iti__flag {
-    margin-right: 6px;
-}
-
-.iti__selected-flag .iti__arrow {
-    margin-left: 6px;
-}
-
-/* Input with flag */
-.iti input,
-.iti input[type="tel"],
-.iti input[type="text"] {
-    padding-left: 52px !important;
-    width: 100% !important;
-    background: var(--bs-bg-input) !important;
-    border: 1.5px solid var(--bs-border) !important;
-    border-radius: var(--bs-radius-md) !important;
-    color: var(--bs-text) !important;
-    font-size: 14px !important;
-    height: 48px !important;
-}
-
-.iti input:focus {
-    border-color: var(--bs-accent) !important;
-    box-shadow: 0 0 0 3px var(--bs-accent-glow) !important;
-    outline: none !important;
-}
-
-/* Country dropdown */
-.iti__country-list {
-    background: #1e1e1e !important;
-    border: 1px solid #333 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6) !important;
-    max-height: 200px !important;
-}
-
-.iti__country {
-    color: #fff !important;
-    padding: 8px 12px !important;
-}
-
-.iti__country:hover,
-.iti__country.iti__highlight {
-    background: #2a2a2a !important;
-}
-
-.iti__dial-code {
-    color: #888 !important;
+/* Selection color */
+::selection {
+  background: var(--bs-accent);
+  color: #1a1a1a;
 }
