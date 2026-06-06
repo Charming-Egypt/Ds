@@ -42,7 +42,7 @@
 }
 
 /* ==========================================================================
-   INTL-TEL-INPUT - Country Code Popup Modal
+   INTL-TEL-INPUT - Phone Input Styling
    ========================================================================== */
 
 /* الحاوية الرئيسية */
@@ -131,26 +131,49 @@
 }
 
 /* ==========================================================================
-   COUNTRY POPUP - Modal style
+   COUNTRY POPUP - Centered Modal
    ========================================================================== */
+
+/* Overlay - خلفية معتمة */
+.iti__overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  z-index: 99998 !important;
+  animation: overlayIn 0.2s ease !important;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* القائمة - في منتصف الشاشة */
 .iti__country-list {
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
-  max-height: 400px !important;
   width: 380px !important;
   max-width: 90vw !important;
+  max-height: 70vh !important;
   background: #1e1e1e !important;
   border: 1px solid #333 !important;
   border-radius: 16px !important;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8) !important;
   z-index: 99999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  animation: popupIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   overflow: hidden !important;
-  animation: popupFadeIn 0.25s ease !important;
 }
 
-@keyframes popupFadeIn {
+@keyframes popupIn {
   from {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.9);
@@ -161,49 +184,74 @@
   }
 }
 
-/* Header */
+/* ==========================================================================
+   POPUP HEADER
+   ========================================================================== */
 .iti__country-list::before {
-  content: 'Select Country';
+  content: '🌍 Select Your Country';
   display: block;
-  padding: 16px 20px 12px;
-  font-size: 15px;
+  padding: 18px 20px 14px;
+  font-size: 16px;
   font-weight: 700;
   color: #fff;
+  text-align: center;
   border-bottom: 1px solid #333;
-  margin-bottom: 0;
+  flex-shrink: 0;
+  background: #1e1e1e;
+  border-radius: 16px 16px 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-/* Search inside popup */
+/* ==========================================================================
+   SEARCH INPUT
+   ========================================================================== */
 .iti__search-input {
   display: block !important;
+  width: calc(100% - 32px) !important;
+  margin: 12px 16px !important;
+  padding: 12px 14px !important;
   background: #1a1a1a !important;
   border: 1px solid #333 !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   color: #fff !important;
-  padding: 10px 14px !important;
-  margin: 12px 16px !important;
-  width: calc(100% - 32px) !important;
   font-size: 14px !important;
   box-sizing: border-box !important;
+  flex-shrink: 0;
 }
 
 .iti__search-input:focus {
   outline: none !important;
   border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
 }
 
 .iti__search-input::placeholder {
   color: #666;
+  font-size: 13px;
 }
 
-/* Countries scroll area */
-.iti__country-list .iti__country-list-inner {
-  max-height: 280px !important;
+/* ==========================================================================
+   COUNTRIES SCROLL AREA
+   ========================================================================== */
+.iti__country-list {
+  overflow: hidden !important;
+}
+
+/* Container for scrollable countries */
+.iti__country-list .iti__country-list-inner,
+.iti__country-list > div {
   overflow-y: auto !important;
-  padding: 0 0 8px;
+  overflow-x: hidden !important;
+  flex: 1 !important;
+  padding: 4px 0 8px !important;
+  max-height: calc(70vh - 140px) !important;
+  min-height: 100px !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
-/* Country item */
+/* Individual country item */
 .iti__country {
   display: flex !important;
   align-items: center !important;
@@ -211,17 +259,28 @@
   color: #fff !important;
   font-size: 14px !important;
   cursor: pointer !important;
-  transition: background 0.15s ease !important;
+  transition: all 0.15s ease !important;
+  border-left: 3px solid transparent;
 }
 
-.iti__country:hover,
+.iti__country:hover {
+  background: #2a2a2a !important;
+  border-left-color: #f59e0b;
+}
+
 .iti__country.iti__highlight {
   background: #2a2a2a !important;
+  border-left-color: #f59e0b;
 }
 
 .iti__country.iti__active {
   background: rgba(245, 158, 11, 0.1) !important;
-  border-left: 3px solid #f59e0b;
+  border-left-color: #f59e0b;
+}
+
+/* Country flag */
+.iti__country .iti__flag-box {
+  margin-right: 4px;
 }
 
 /* Country name */
@@ -235,57 +294,77 @@
 .iti__dial-code {
   color: #888 !important;
   font-weight: 500;
+  font-size: 13px;
 }
 
-/* Divider between country groups */
+/* Preferred countries separator */
 .iti__divider {
-  border-color: #2a2a2a !important;
-  margin: 4px 20px !important;
+  border: none !important;
+  border-top: 1px solid #2a2a2a !important;
+  margin: 8px 20px !important;
+  padding: 0 !important;
+  height: 0 !important;
 }
 
-/* Close button */
-.iti__country-list::after {
-  content: '';
+/* "Suggested" label */
+.iti__divider::before {
+  content: 'Frequently Used';
   display: block;
-  padding: 12px;
-  text-align: center;
-  border-top: 1px solid #333;
-  margin-top: 0;
+  color: #666;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 0 8px;
 }
 
-/* Backdrop overlay */
-.iti__overlay {
-  position: fixed !important;
-  inset: 0 !important;
-  background: rgba(0, 0, 0, 0.7) !important;
-  z-index: 99998 !important;
-  animation: overlayFadeIn 0.25s ease !important;
-}
-
-@keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Scrollbar */
+/* ==========================================================================
+   SCROLLBAR STYLING
+   ========================================================================== */
 .iti__country-list::-webkit-scrollbar,
-.iti__country-list-inner::-webkit-scrollbar {
-  width: 5px;
+.iti__country-list-inner::-webkit-scrollbar,
+.iti__country-list > div::-webkit-scrollbar {
+  width: 6px;
 }
 
 .iti__country-list::-webkit-scrollbar-track,
-.iti__country-list-inner::-webkit-scrollbar-track {
+.iti__country-list-inner::-webkit-scrollbar-track,
+.iti__country-list > div::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .iti__country-list::-webkit-scrollbar-thumb,
-.iti__country-list-inner::-webkit-scrollbar-thumb {
-  background: #333;
+.iti__country-list-inner::-webkit-scrollbar-thumb,
+.iti__country-list > div::-webkit-scrollbar-thumb {
+  background: #444;
   border-radius: 10px;
 }
 
+.iti__country-list::-webkit-scrollbar-thumb:hover,
+.iti__country-list-inner::-webkit-scrollbar-thumb:hover,
+.iti__country-list > div::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* ==========================================================================
-   MOBILE
+   CLOSE BUTTON (X)
+   ========================================================================== */
+/* Add a subtle close hint */
+.iti__country-list::after {
+  content: '✕ Press ESC to close';
+  display: block;
+  padding: 10px;
+  text-align: center;
+  color: #555;
+  font-size: 11px;
+  border-top: 1px solid #2a2a2a;
+  flex-shrink: 0;
+  background: #1e1e1e;
+  border-radius: 0 0 16px 16px;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
   .iti__selected-flag {
@@ -305,25 +384,25 @@
 
   .iti__country-list {
     width: 95vw !important;
-    max-height: 80vh !important;
-    border-radius: 20px 20px 0 0 !important;
-    top: auto !important;
-    bottom: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    max-width: 400px !important;
+    max-height: 75vh !important;
+    border-radius: 20px !important;
   }
 
-  @keyframes popupFadeIn {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+  .iti__country {
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+  }
+
+  .iti__search-input {
+    font-size: 16px !important;
+    padding: 14px !important;
   }
 }
+
+
+
+
 
 
 
