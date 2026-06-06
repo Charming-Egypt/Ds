@@ -1,6 +1,7 @@
 /* ==========================================================================
    DISCOVER SHARM - Booking & Payment System
    Complete CSS - Dark Theme #1e1e1e + Orange #f59e0b
+   Country List Inside Booking Card
    ========================================================================== */
 
 :root {
@@ -264,7 +265,6 @@ textarea.input-field {
 .services-btn i {
   color: var(--bs-accent);
   font-size: 12px;
-  transition: var(--bs-transition);
 }
 
 /* ==========================================================================
@@ -793,234 +793,164 @@ textarea.input-field {
   color: #555;
 }
 
-/* Country Dropdown - Desktop */
-.iti__country-list {
+/* ==========================================================================
+   COUNTRY LIST INSIDE BOOKING CARD
+   ========================================================================== */
+.booking-card .iti__country-list {
   position: absolute !important;
-  top: 100% !important;
+  top: 0 !important;
+  bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  max-height: 220px !important;
   width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
   background: #1e1e1e !important;
-  border: 1px solid #2e2e2e !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6) !important;
-  z-index: 99999 !important;
-  overflow-y: auto !important;
-  margin-top: 4px !important;
-  list-style: none !important;
-  padding: 4px 0 !important;
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+  z-index: 999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
 }
 
-.iti__country {
+/* Header */
+.booking-card .iti__country-list::before {
+  content: '🌍 Select Country';
   display: flex !important;
   align-items: center !important;
-  padding: 10px 16px !important;
-  color: #ccc !important;
-  font-size: 13px !important;
+  justify-content: center !important;
+  min-height: 56px !important;
+  padding: 0 20px !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  background: #1e1e1e !important;
+  border-bottom: 1px solid #2e2e2e !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+
+/* Close button */
+.booking-card .iti__country-list .iti__close-btn {
+  position: absolute !important;
+  right: 16px !important;
+  top: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #2a2a2a !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  font-size: 18px !important;
   cursor: pointer !important;
-  transition: background 0.1s ease !important;
+  z-index: 10 !important;
 }
 
-.iti__country:hover {
-  background: #2a2a2a !important;
+.booking-card .iti__country-list .iti__close-btn:hover {
+  background: #3a3a3a !important;
 }
 
-.iti__country.iti__highlight {
-  background: #2a2a2a !important;
-}
-
-.iti__country.iti__active {
-  background: rgba(245, 158, 11, 0.1) !important;
-}
-
-.iti__country-name {
-  color: #ccc !important;
-  margin-left: 10px !important;
-  flex: 1 !important;
-}
-
-.iti__dial-code {
-  color: #888 !important;
-}
-
-.iti__divider {
-  border-top: 1px solid #2a2a2a !important;
-  margin: 4px 16px !important;
-}
-
-.iti__search-input {
+/* Search */
+.booking-card .iti__search-input {
+  margin: 16px !important;
+  width: calc(100% - 32px) !important;
+  padding: 14px 16px !important;
+  font-size: 15px !important;
+  border-radius: 12px !important;
   background: #1a1a1a !important;
   border: 1px solid #2e2e2e !important;
-  border-radius: 6px !important;
   color: #fff !important;
-  padding: 10px 12px !important;
-  margin: 8px 12px !important;
-  width: calc(100% - 24px) !important;
-  font-size: 13px !important;
+  flex-shrink: 0 !important;
   box-sizing: border-box !important;
 }
 
-.iti__search-input:focus {
-  outline: none !important;
+.booking-card .iti__search-input:focus {
   border-color: #f59e0b !important;
+  outline: none !important;
 }
 
-.iti__search-input::placeholder {
-  color: #555;
+.booking-card .iti__search-input::placeholder {
+  color: #666;
 }
 
-.iti__country-list::-webkit-scrollbar {
-  width: 5px;
+/* Scrollable list */
+.booking-card .iti__country-list .iti__country-list-inner,
+.booking-card .iti__country-list > div {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 !important;
+  padding: 8px 0 24px !important;
+  -webkit-overflow-scrolling: touch !important;
 }
 
-.iti__country-list::-webkit-scrollbar-track {
+/* Country items */
+.booking-card .iti__country {
+  display: flex !important;
+  align-items: center !important;
+  padding: 14px 24px !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  border-bottom: 1px solid #252525 !important;
+}
+
+.booking-card .iti__country:hover {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country:active {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country.iti__highlight {
+  background: #2a2a2a !important;
+}
+
+.booking-card .iti__country.iti__active {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-left: 3px solid #f59e0b;
+}
+
+.booking-card .iti__country-name {
+  color: #fff !important;
+  font-size: 15px !important;
+  margin-left: 14px !important;
+  flex: 1 !important;
+}
+
+.booking-card .iti__dial-code {
+  color: #888 !important;
+  font-size: 14px !important;
+}
+
+.booking-card .iti__divider {
+  border-top: 1px solid #2a2a2a !important;
+  margin: 8px 24px !important;
+}
+
+/* Scrollbar */
+.booking-card .iti__country-list-inner::-webkit-scrollbar,
+.booking-card .iti__country-list > div::-webkit-scrollbar {
+  width: 4px;
+}
+
+.booking-card .iti__country-list-inner::-webkit-scrollbar-track,
+.booking-card .iti__country-list > div::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.iti__country-list::-webkit-scrollbar-thumb {
-  background: #333;
+.booking-card .iti__country-list-inner::-webkit-scrollbar-thumb,
+.booking-card .iti__country-list > div::-webkit-scrollbar-thumb {
+  background: #444;
   border-radius: 10px;
-}
-
-/* ==========================================================================
-   COUNTRY LIST INSIDE BOOKING CARD - Mobile
-   ========================================================================== */
-@media (max-width: 768px) {
-  .booking-card.has-country-list {
-    position: relative !important;
-    overflow: hidden !important;
-  }
-
-  .booking-card .iti__country-list {
-    position: absolute !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    background: #1e1e1e !important;
-    border: none !important;
-    border-radius: 20px !important;
-    box-shadow: none !important;
-    z-index: 999 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
-  }
-
-  .booking-card .iti__country-list::before {
-    content: 'Select Country';
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 56px !important;
-    padding: 0 20px !important;
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    background: #1e1e1e !important;
-    border-bottom: 1px solid #2e2e2e !important;
-    flex-shrink: 0 !important;
-  }
-
-  .booking-card .iti__country-list .iti__close-btn {
-    position: absolute !important;
-    right: 16px !important;
-    top: 12px !important;
-    width: 32px !important;
-    height: 32px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #2a2a2a !important;
-    border: none !important;
-    border-radius: 50% !important;
-    color: #fff !important;
-    font-size: 18px !important;
-    cursor: pointer !important;
-    z-index: 10 !important;
-  }
-
-  .booking-card .iti__search-input {
-    margin: 16px !important;
-    width: calc(100% - 32px) !important;
-    padding: 16px !important;
-    font-size: 16px !important;
-    border-radius: 12px !important;
-    background: #1a1a1a !important;
-    border: 1px solid #2e2e2e !important;
-    color: #fff !important;
-    flex-shrink: 0 !important;
-  }
-
-  .booking-card .iti__search-input:focus {
-    border-color: #f59e0b !important;
-    outline: none !important;
-  }
-
-  .booking-card .iti__search-input::placeholder {
-    color: #666;
-  }
-
-  .booking-card .iti__country-list-inner,
-  .booking-card .iti__country-list > div {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    flex: 1 !important;
-    padding: 8px 0 24px !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  .booking-card .iti__country {
-    padding: 16px 24px !important;
-    font-size: 16px !important;
-    border-bottom: 1px solid #252525 !important;
-  }
-
-  .booking-card .iti__country:active {
-    background: #2a2a2a !important;
-  }
-
-  .booking-card .iti__country.iti__active {
-    background: rgba(245, 158, 11, 0.1) !important;
-  }
-
-  .booking-card .iti__country-name {
-    font-size: 16px !important;
-    color: #fff !important;
-    margin-left: 14px !important;
-  }
-
-  .booking-card .iti__dial-code {
-    font-size: 15px !important;
-    color: #888 !important;
-  }
-
-  .booking-card .iti__divider {
-    margin: 8px 24px !important;
-  }
-
-  .booking-card .iti__country-list-inner::-webkit-scrollbar,
-  .booking-card .iti__country-list > div::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .booking-card .iti__country-list-inner::-webkit-scrollbar-track,
-  .booking-card .iti__country-list > div::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .booking-card .iti__country-list-inner::-webkit-scrollbar-thumb,
-  .booking-card .iti__country-list > div::-webkit-scrollbar-thumb {
-    background: #444;
-    border-radius: 10px;
-  }
 }
 
 /* ==========================================================================
@@ -1214,6 +1144,35 @@ textarea.input-field {
   
   .iti__selected-dial-code {
     font-size: 16px !important;
+  }
+
+  .booking-card .iti__country-list::before {
+    font-size: 18px !important;
+    min-height: 60px !important;
+  }
+
+  .booking-card .iti__country-list .iti__close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+  }
+
+  .booking-card .iti__search-input {
+    padding: 16px !important;
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__country {
+    padding: 16px 24px !important;
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__country-name {
+    font-size: 16px !important;
+  }
+
+  .booking-card .iti__dial-code {
+    font-size: 15px !important;
   }
 }
 
