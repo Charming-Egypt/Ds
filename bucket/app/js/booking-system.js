@@ -1,7 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete Production Version
-// Country List Inside Booking Card - Forced
+// intl-tel-input with Country List Inside Booking Card
 // ==========================================================================
 
 (function() {
@@ -311,58 +311,6 @@
   }
 
   // ==========================================================================
-  // COUNTRY LIST - Force inside booking card
-  // ==========================================================================
-  function moveCountryListToCard() {
-    const countryList = document.querySelector('.iti__country-list');
-    const bookingCard = document.querySelector('.booking-card');
-    
-    if (!countryList || !bookingCard) return;
-    
-    if (countryList.parentElement !== bookingCard) {
-      bookingCard.appendChild(countryList);
-      bookingCard.classList.add('has-country-list');
-      
-      if (!countryList.querySelector('.iti__close-btn')) {
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'iti__close-btn';
-        closeBtn.innerHTML = '✕';
-        closeBtn.type = 'button';
-        closeBtn.style.cssText = 'position:absolute;right:16px;top:12px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#2a2a2a;border:none;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;z-index:10;';
-        closeBtn.onclick = function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-          const flag = document.querySelector('.iti__selected-flag');
-          if (flag) flag.click();
-        };
-        countryList.appendChild(closeBtn);
-      }
-    }
-  }
-
-  function startWatchingCountryList() {
-    setInterval(function() {
-      const countryList = document.querySelector('.iti__country-list');
-      const bookingCard = document.querySelector('.booking-card');
-      
-      if (countryList && bookingCard && countryList.parentElement !== bookingCard) {
-        moveCountryListToCard();
-      }
-    }, 100);
-    
-    const observer = new MutationObserver(function() {
-      setTimeout(moveCountryListToCard, 50);
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: false,
-      characterData: false
-    });
-  }
-
-  // ==========================================================================
   // SUBMIT
   // ==========================================================================
   async function submitBooking() {
@@ -475,7 +423,7 @@
     const trip = getTrip();
     const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     
-    // Phone input
+    // Phone input - intl-tel-input
     const phoneEl = document.querySelector('#phone');
     if (phoneEl && window.intlTelInput) {
       iti = window.intlTelInput(phoneEl, {
@@ -485,18 +433,6 @@
         initialCountry: 'eg',
         nationalMode: false,
       });
-      
-      // Force country list inside booking card
-      startWatchingCountryList();
-      
-      const flagContainer = document.querySelector('.iti__flag-container');
-      if (flagContainer) {
-        flagContainer.addEventListener('click', function() {
-          setTimeout(moveCountryListToCard, 50);
-          setTimeout(moveCountryListToCard, 200);
-          setTimeout(moveCountryListToCard, 500);
-        });
-      }
     }
     
     // Date picker
@@ -529,11 +465,6 @@
     
     // Auth state
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
-    
-    // Re-check on resize
-    window.addEventListener('resize', function() {
-      setTimeout(moveCountryListToCard, 200);
-    });
     
     // Initial summary
     setTimeout(updateSummary, 1500);
