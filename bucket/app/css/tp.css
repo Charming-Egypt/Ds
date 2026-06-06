@@ -1135,8 +1135,8 @@ select.form-control option,
     transform: translateX(-50%);
     background: linear-gradient(135deg, #FF6B35, #FFA630);
     color: #fff;
-    padding: 14px 32px;
-    border-radius: 30px;
+    padding: 32px;
+    border-radius: 100%;
     display: flex;
     align-items: center;
     gap: 10px;
