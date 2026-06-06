@@ -1,11 +1,10 @@
 // ==========================================================================
-// DISCOVER SHARM - Complete Booking System
-// Works on Desktop & Mobile
+// DISCOVER SHARM - Original Booking System Restored
 // ==========================================================================
 
 let swiper, currentVideoSlide = null;
 let tripData = {}, currentTrip = {}, tourTypes = {}, selectedTripType = "";
-let iti, mobileIti;
+let iti;
 const refNumber = generateReference();
 let currentUserUid = '', tripOwnerId = '';
 const MAX_PER_TYPE = 10, MAX_INFANTS_PER_ADULT = 2, MAX_TOTAL_INFANTS = 10;
@@ -42,7 +41,7 @@ function isMobile() { return window.innerWidth <= 768; }
 function showToast(m, t='success') {
   const existing = document.querySelector('.toast'); if (existing) existing.remove();
   const toast = document.createElement('div');
-  toast.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1f35;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ${t==='success'?'#22c55e':'#ef4444'};white-space:nowrap;`;
+  toast.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#252526;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ${t==='success'?'#22c55e':'#ef4444'};white-space:nowrap;`;
   toast.textContent = m; document.body.appendChild(toast);
   setTimeout(() => { toast.style.opacity='0'; toast.style.transition='0.3s'; setTimeout(()=>toast.remove(),300); }, 4000);
 }
@@ -62,9 +61,7 @@ function changeValue(id, delta) {
   input.value = val;
   if (id === 'adults') updateInfantsMax();
   updateSummary();
-  if (isMobile()) updateMobileSummary();
 }
-
 function changeMobileValue(id, delta) {
   const input = document.getElementById(id);
   if (!input) return;
@@ -75,7 +72,6 @@ function changeMobileValue(id, delta) {
   input.value = val;
   updateMobileSummary();
 }
-
 function updateInfantsMax() {
   const a = document.getElementById('adults'), inf = document.getElementById('infants');
   if (!a || !inf) return;
@@ -210,7 +206,7 @@ function updateSummary() {
   
   const td = document.getElementById('totalPriceDisplay');
   if (td && currentTrip.basePrice) {
-    td.innerHTML = `${formatPrice(calcNet())}<div style="font-size:11px;color:#94a3b8;margin-top:8px;"><div style="display:flex;justify-content:space-between;border-top:1px solid #334155;padding-top:4px;margin-top:4px;"><span>+ Taxes:</span><span>${formatPrice(calcTax())}</span></div><div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;margin-top:4px;color:#f59e0b;"><span>Total at Payment:</span><span>${formatPrice(calcTotal())}</span></div></div>`;
+    td.innerHTML = `${formatPrice(calcNet())}<div style="font-size:11px;color:#a0a0a0;margin-top:8px;"><div style="display:flex;justify-content:space-between;border-top:1px solid #3a3a3a;padding-top:4px;margin-top:4px;"><span>+ Taxes:</span><span>${formatPrice(calcTax())}</span></div><div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;margin-top:4px;color:#f59e0b;"><span>Total at Payment:</span><span>${formatPrice(calcTotal())}</span></div></div>`;
   }
 }
 function updateMobileSummary() {
@@ -227,7 +223,7 @@ function updateMobileSummary() {
   
   const td = document.getElementById('mobileTotalPrice');
   if (td && currentTrip.basePrice) {
-    td.innerHTML = `${formatPrice(calcMobileNet())}<div style="font-size:11px;color:#94a3b8;margin-top:8px;"><div style="display:flex;justify-content:space-between;border-top:1px solid #334155;padding-top:4px;">+ Taxes: ${formatPrice(calcMobileTax())}</div><div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;color:#f59e0b;">Total: ${formatPrice(calcMobileTotal())}</div></div>`;
+    td.innerHTML = `${formatPrice(calcMobileNet())}<div style="font-size:11px;color:#a0a0a0;margin-top:8px;"><div style="display:flex;justify-content:space-between;border-top:1px solid #3a3a3a;padding-top:4px;">+ Taxes: ${formatPrice(calcMobileTax())}</div><div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;color:#f59e0b;">Total: ${formatPrice(calcMobileTotal())}</div></div>`;
   }
 }
 
@@ -475,7 +471,7 @@ function renderReviews() {
   c.innerHTML = tripReviews.map(r => {
     const d = new Date(r.date), date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const init = (r.userName||'U').charAt(0).toUpperCase();
-    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;margin-bottom:12px;">
+    return `<div style="background:#2d2d30;border:1px solid #3a3a3a;border-radius:12px;padding:16px;margin-bottom:12px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
         <div style="display:flex;align-items:center;gap:12px;">
           <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#FF6B35,#FFA630);flex-shrink:0;">
@@ -483,12 +479,12 @@ function renderReviews() {
             <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;">${init}</div>
           </div>
           <div><div style="font-weight:600;color:#fff;font-size:14px;">${r.userName||'User'}</div>
-            <div style="display:flex;gap:2px;font-size:11px;margin-top:2px;">${Array(5).fill().map((_,i)=>i<r.rating?'<i class="fas fa-star" style="color:#f59e0b;"></i>':'<i class="far fa-star" style="color:#64748b;"></i>').join('')}</div>
+            <div style="display:flex;gap:2px;font-size:11px;margin-top:2px;">${Array(5).fill().map((_,i)=>i<r.rating?'<i class="fas fa-star" style="color:#f59e0b;"></i>':'<i class="far fa-star" style="color:#989b9f;"></i>').join('')}</div>
           </div>
         </div>
-        <span style="font-size:11px;color:#64748b;">${date}</span>
+        <span style="font-size:11px;color:#989b9f;">${date}</span>
       </div>
-      <p style="font-size:13px;color:#94a3b8;line-height:1.6;margin:0;">${r.comment||''}</p>
+      <p style="font-size:13px;color:#a0a0a0;line-height:1.6;margin:0;">${r.comment||''}</p>
     </div>`;
   }).join('');
 }
@@ -609,4 +605,4 @@ window.onload = async function () {
   setTimeout(() => { updatePriceDisplay(); updateSummary(); }, 1500);
 };
 
-console.log('✅ Discover Sharm - Complete Booking System Ready');
+console.log('✅ Discover Sharm - Booking System Ready');
