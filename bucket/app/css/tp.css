@@ -1057,7 +1057,7 @@ select.form-control option,
   }
 
   .swiper {
-    height: 250px;
+    height: 280px;
     border-radius: 0 0 28px 28px;
   }
 
@@ -1107,7 +1107,7 @@ select.form-control option,
   }
 
   .tour-info-section {
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-md) var(--space-md);
   }
 
   .section-block {
