@@ -1,7 +1,7 @@
 /* ==========================================================================
    DISCOVER SHARM - Booking & Payment System
    Complete CSS - Dark Theme #1e1e1e + Orange #f59e0b
-   Country List Inside Booking Card
+   Custom Phone Input + Country Modal
    ========================================================================== */
 
 :root {
@@ -23,9 +23,6 @@
   --bs-border: #2e2e2e;
   --bs-border-light: #333333;
   --bs-border-accent: rgba(245, 158, 11, 0.3);
-  
-  --bs-success: #22c55e;
-  --bs-error: #ef4444;
   
   --bs-radius-sm: 8px;
   --bs-radius-md: 12px;
@@ -227,16 +224,232 @@ textarea.input-field {
   display: flex;
   align-items: center;
   gap: 4px;
-  animation: fadeIn 0.2s ease;
 }
 
-.field-error i {
+/* ==========================================================================
+   CUSTOM PHONE INPUT
+   ========================================================================== */
+.phone-input-wrapper {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+}
+
+.country-code-select {
+  flex-shrink: 0;
+}
+
+.selected-country {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 48px;
+  background: #1a1a1a;
+  border: 1.5px solid #2e2e2e;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.selected-country:hover {
+  background: #222;
+}
+
+.selected-country .country-flag {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  object-fit: cover;
+}
+
+.selected-country span {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.selected-country i {
+  color: #888;
   font-size: 10px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-2px); }
-  to { opacity: 1; transform: translateY(0); }
+.phone-number-input {
+  flex: 1;
+  height: 48px;
+  padding: 0 16px;
+  background: #1a1a1a;
+  border: 1.5px solid #2e2e2e;
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phone-number-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.phone-number-input::placeholder {
+  color: #555;
+}
+
+/* ==========================================================================
+   COUNTRY MODAL
+   ========================================================================== */
+.country-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.country-modal-container {
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  max-height: 80vh;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.country-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #2e2e2e;
+  flex-shrink: 0;
+}
+
+.country-modal-header h3 {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.country-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-modal-close:hover {
+  background: #3a3a3a;
+}
+
+.country-modal-search {
+  margin: 16px;
+  padding: 14px 16px;
+  background: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.country-modal-search:focus {
+  border-color: #f59e0b;
+}
+
+.country-modal-search::placeholder {
+  color: #666;
+}
+
+.country-modal-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.country-modal-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid #252525;
+}
+
+.country-modal-item:hover {
+  background: #2a2a2a;
+}
+
+.country-modal-item.selected {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+}
+
+.country-modal-flag {
+  width: 28px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+.country-modal-name {
+  color: #fff;
+  font-size: 15px;
+  flex: 1;
+}
+
+.country-modal-code {
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.country-modal-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.country-modal-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.country-modal-list::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
 }
 
 /* ==========================================================================
@@ -709,251 +922,6 @@ textarea.input-field {
 }
 
 /* ==========================================================================
-   INTL-TEL-INPUT - Phone Input
-   ========================================================================== */
-.iti {
-  display: flex !important;
-  align-items: stretch !important;
-  width: 100% !important;
-  position: relative !important;
-}
-
-.iti__flag-container {
-  position: static !important;
-  flex-shrink: 0 !important;
-  width: auto !important;
-}
-
-.iti__selected-flag {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 0 12px !important;
-  height: 48px !important;
-  background: #1a1a1a !important;
-  border: 1.5px solid #2e2e2e !important;
-  border-right: none !important;
-  border-radius: 12px 0 0 12px !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
-  transition: all 0.2s ease !important;
-}
-
-.iti__selected-flag:hover {
-  background: #222 !important;
-}
-
-.iti__flag {
-  border-radius: 2px;
-  margin: 0 !important;
-}
-
-.iti__selected-dial-code {
-  color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-}
-
-.iti__arrow {
-  border-top: 4px solid #888 !important;
-  border-right: 4px solid transparent !important;
-  border-left: 4px solid transparent !important;
-  margin-left: 4px !important;
-}
-
-.iti__selected-flag:hover .iti__arrow {
-  border-top-color: #f59e0b !important;
-}
-
-.iti input[type="tel"],
-#phone {
-  flex: 1 !important;
-  width: 100% !important;
-  padding: 0 16px !important;
-  height: 48px !important;
-  background: #1a1a1a !important;
-  border: 1.5px solid #2e2e2e !important;
-  border-left: none !important;
-  border-radius: 0 12px 12px 0 !important;
-  color: #fff !important;
-  font-size: 14px !important;
-  font-family: inherit !important;
-  box-sizing: border-box !important;
-  outline: none !important;
-}
-
-.iti input[type="tel"]:focus,
-#phone:focus {
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
-}
-
-.iti input[type="tel"]::placeholder,
-#phone::placeholder {
-  color: #555;
-}
-
-/* ==========================================================================
-   COUNTRY LIST INSIDE BOOKING CARD
-   ========================================================================== */
-.booking-card .iti__country-list {
-  position: absolute !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  background: #1e1e1e !important;
-  border: none !important;
-  border-radius: 20px !important;
-  box-shadow: none !important;
-  z-index: 999 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-}
-
-/* Header */
-.booking-card .iti__country-list::before {
-  content: '🌍 Select Country';
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-height: 56px !important;
-  padding: 0 20px !important;
-  font-size: 17px !important;
-  font-weight: 700 !important;
-  color: #fff !important;
-  background: #1e1e1e !important;
-  border-bottom: 1px solid #2e2e2e !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-/* Close button */
-.booking-card .iti__country-list .iti__close-btn {
-  position: absolute !important;
-  right: 16px !important;
-  top: 12px !important;
-  width: 32px !important;
-  height: 32px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: #2a2a2a !important;
-  border: none !important;
-  border-radius: 50% !important;
-  color: #fff !important;
-  font-size: 18px !important;
-  cursor: pointer !important;
-  z-index: 10 !important;
-}
-
-.booking-card .iti__country-list .iti__close-btn:hover {
-  background: #3a3a3a !important;
-}
-
-/* Search */
-.booking-card .iti__search-input {
-  margin: 16px !important;
-  width: calc(100% - 32px) !important;
-  padding: 14px 16px !important;
-  font-size: 15px !important;
-  border-radius: 12px !important;
-  background: #1a1a1a !important;
-  border: 1px solid #2e2e2e !important;
-  color: #fff !important;
-  flex-shrink: 0 !important;
-  box-sizing: border-box !important;
-}
-
-.booking-card .iti__search-input:focus {
-  border-color: #f59e0b !important;
-  outline: none !important;
-}
-
-.booking-card .iti__search-input::placeholder {
-  color: #666;
-}
-
-/* Scrollable list */
-.booking-card .iti__country-list .iti__country-list-inner,
-.booking-card .iti__country-list > div {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  flex: 1 !important;
-  padding: 8px 0 24px !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-
-/* Country items */
-.booking-card .iti__country {
-  display: flex !important;
-  align-items: center !important;
-  padding: 14px 24px !important;
-  font-size: 15px !important;
-  cursor: pointer !important;
-  transition: background 0.15s ease !important;
-  border-bottom: 1px solid #252525 !important;
-}
-
-.booking-card .iti__country:hover {
-  background: #2a2a2a !important;
-}
-
-.booking-card .iti__country:active {
-  background: #2a2a2a !important;
-}
-
-.booking-card .iti__country.iti__highlight {
-  background: #2a2a2a !important;
-}
-
-.booking-card .iti__country.iti__active {
-  background: rgba(245, 158, 11, 0.1) !important;
-  border-left: 3px solid #f59e0b;
-}
-
-.booking-card .iti__country-name {
-  color: #fff !important;
-  font-size: 15px !important;
-  margin-left: 14px !important;
-  flex: 1 !important;
-}
-
-.booking-card .iti__dial-code {
-  color: #888 !important;
-  font-size: 14px !important;
-}
-
-.booking-card .iti__divider {
-  border-top: 1px solid #2a2a2a !important;
-  margin: 8px 24px !important;
-}
-
-/* Scrollbar */
-.booking-card .iti__country-list-inner::-webkit-scrollbar,
-.booking-card .iti__country-list > div::-webkit-scrollbar {
-  width: 4px;
-}
-
-.booking-card .iti__country-list-inner::-webkit-scrollbar-track,
-.booking-card .iti__country-list > div::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.booking-card .iti__country-list-inner::-webkit-scrollbar-thumb,
-.booking-card .iti__country-list > div::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 10px;
-}
-
-/* ==========================================================================
    FLATPICKR
    ========================================================================== */
 .flatpickr-calendar {
@@ -961,54 +929,19 @@ textarea.input-field {
   border: 1px solid #333 !important;
   border-radius: 12px !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
-  padding: 10px;
-  width: 290px !important;
 }
 
 .flatpickr-month {
   color: #fff !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-current-month {
-  color: #fff !important;
-  font-size: 14px !important;
-}
-
-.flatpickr-current-month .numInputWrapper input {
-  color: #fff !important;
-}
-
-.flatpickr-current-month .numInputWrapper span {
-  border-color: #444 !important;
-}
-
-.flatpickr-months .flatpickr-prev-month,
-.flatpickr-months .flatpickr-next-month {
-  fill: #888 !important;
-  padding: 6px !important;
-}
-
-.flatpickr-months .flatpickr-prev-month:hover,
-.flatpickr-months .flatpickr-next-month:hover {
-  fill: #f59e0b !important;
 }
 
 .flatpickr-weekday {
   color: #f59e0b !important;
-  font-weight: 600 !important;
-  font-size: 10px !important;
 }
 
 .flatpickr-day {
   color: #bbb !important;
   border-radius: 6px !important;
-  height: 34px !important;
-  line-height: 34px !important;
-  max-width: 34px !important;
-  font-size: 13px !important;
-  border: none !important;
 }
 
 .flatpickr-day:hover {
@@ -1019,77 +952,39 @@ textarea.input-field {
 .flatpickr-day.today {
   background: rgba(245, 158, 11, 0.1) !important;
   color: #f59e0b !important;
-  font-weight: 600 !important;
-}
-
-.flatpickr-day.today:hover {
-  background: #f59e0b !important;
-  color: #000 !important;
 }
 
 .flatpickr-day.selected {
   background: #f59e0b !important;
   color: #000 !important;
-  font-weight: 700 !important;
-}
-
-.flatpickr-day.selected:hover {
-  background: #d97706 !important;
 }
 
 .flatpickr-day.flatpickr-disabled {
   color: #444 !important;
 }
 
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-  color: #555 !important;
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  fill: #888 !important;
 }
 
-.flatpickr-day.inRange {
-  background: rgba(245, 158, 11, 0.08) !important;
-  box-shadow: none !important;
-}
-
-.flatpickr-day.startRange,
-.flatpickr-day.endRange {
-  background: #f59e0b !important;
-  color: #000 !important;
-}
-
-.flatpickr-time {
-  border-top: 1px solid #333 !important;
-  background: #1a1a1a !important;
-  max-height: 42px !important;
-}
-
-.flatpickr-time input {
-  color: #fff !important;
-  font-size: 13px !important;
-}
-
-.flatpickr-time .flatpickr-am-pm {
-  color: #888 !important;
-}
-
-.flatpickr-time .flatpickr-am-pm:hover {
-  color: #f59e0b !important;
-}
-
-.flatpickr-time .flatpickr-time-separator {
-  color: #f59e0b !important;
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+  fill: #f59e0b !important;
 }
 
 /* ==========================================================================
    SCROLLBAR
    ========================================================================== */
 .booking-card::-webkit-scrollbar,
-.services-popup-content::-webkit-scrollbar {
+.services-popup-content::-webkit-scrollbar,
+.country-modal-list::-webkit-scrollbar {
   width: 5px;
 }
 
 .booking-card::-webkit-scrollbar-thumb,
-.services-popup-content::-webkit-scrollbar-thumb {
+.services-popup-content::-webkit-scrollbar-thumb,
+.country-modal-list::-webkit-scrollbar-thumb {
   background: #333;
   border-radius: 10px;
 }
@@ -1131,48 +1026,18 @@ textarea.input-field {
     font-size: 18px !important;
   }
   
-  .iti input[type="tel"],
-  #phone {
-    height: 52px !important;
-    font-size: 16px !important;
+  .selected-country {
+    height: 52px;
   }
   
-  .iti__selected-flag {
-    height: 52px !important;
-    padding: 0 14px !important;
+  .phone-number-input {
+    height: 52px;
+    font-size: 16px;
   }
   
-  .iti__selected-dial-code {
-    font-size: 16px !important;
-  }
-
-  .booking-card .iti__country-list::before {
-    font-size: 18px !important;
-    min-height: 60px !important;
-  }
-
-  .booking-card .iti__country-list .iti__close-btn {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 20px !important;
-  }
-
-  .booking-card .iti__search-input {
-    padding: 16px !important;
-    font-size: 16px !important;
-  }
-
-  .booking-card .iti__country {
-    padding: 16px 24px !important;
-    font-size: 16px !important;
-  }
-
-  .booking-card .iti__country-name {
-    font-size: 16px !important;
-  }
-
-  .booking-card .iti__dial-code {
-    font-size: 15px !important;
+  .country-modal-container {
+    width: 95%;
+    max-height: 85vh;
   }
 }
 
