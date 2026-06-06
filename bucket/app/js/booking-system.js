@@ -1,6 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete - Custom Phone Input + Modal Country Selector
+// Fixed: Error below input + Auto-load phone from database
 // ==========================================================================
 
 (function() {
@@ -96,21 +97,41 @@
   }
 
   function showFieldError(inputId, msg) {
+    // Remove existing error for this field
     const existing = document.querySelector('.field-error[data-field="' + inputId + '"]');
     if (existing) existing.remove();
     
     const input = $(inputId);
     if (!input) return;
     
+    // Reset border
+    input.style.borderColor = '#ef4444';
+    
+    // Find the phone wrapper if it's the phone field
+    let targetParent = input.parentNode;
+    if (inputId === 'phone') {
+      targetParent = input.closest('.input-group') || targetParent;
+    }
+    
+    // Create error element
     const error = document.createElement('div');
     error.className = 'field-error';
     error.setAttribute('data-field', inputId);
-    error.style.cssText = 'color:#ef4444;font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px;';
     error.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
     
-    input.style.borderColor = '#ef4444';
-    input.parentNode.appendChild(error);
+    // Insert error AFTER the parent (phone wrapper or input group)
+    if (inputId === 'phone') {
+      const phoneWrapper = input.closest('.phone-input-wrapper');
+      if (phoneWrapper) {
+        phoneWrapper.after(error);
+      } else {
+        targetParent.appendChild(error);
+      }
+    } else {
+      targetParent.appendChild(error);
+    }
     
+    // Remove error when user types
     input.addEventListener('input', function() {
       input.style.borderColor = '';
       if (error.parentNode) error.remove();
@@ -119,7 +140,7 @@
 
   function clearAllFieldErrors() {
     document.querySelectorAll('.field-error').forEach(function(e) { e.remove(); });
-    document.querySelectorAll('.input-field').forEach(function(e) { e.style.borderColor = ''; });
+    document.querySelectorAll('.input-field, .phone-number-input').forEach(function(e) { e.style.borderColor = ''; });
   }
 
   function getPhoneNumber() {
@@ -132,7 +153,6 @@
   // COUNTRY MODAL
   // ==========================================================================
   function createCountryModal() {
-    // Remove existing modal
     const existing = document.getElementById('countryModal');
     if (existing) existing.remove();
     
@@ -153,15 +173,13 @@
     
     document.body.appendChild(modal);
     
-    // Bind events
     modal.querySelector('.country-modal-overlay').addEventListener('click', closeCountryModal);
-    modal.querySelector('.country-modal-close').addEventListener('click', closeCountryModal);
-    modal.querySelector('.country-modal-search').addEventListener('input', function() {
+    document.getElementById('countryModalClose').addEventListener('click', closeCountryModal);
+    document.getElementById('countryModalSearch').addEventListener('input', function() {
       renderCountryList(this.value);
     });
     
-    // ESC key
-    modal.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') closeCountryModal();
     });
   }
@@ -182,9 +200,7 @@
 
   function closeCountryModal() {
     const modal = document.getElementById('countryModal');
-    if (modal) {
-      modal.style.display = 'none';
-    }
+    if (modal) modal.style.display = 'none';
     document.body.style.overflow = '';
   }
 
@@ -218,7 +234,6 @@
     selectedCountryName = country.name;
     selectedCountryFlag = country.flag;
     
-    // Update display
     const selectedCountry = document.getElementById('selectedCountry');
     if (selectedCountry) {
       selectedCountry.querySelector('img').src = country.flag;
@@ -227,6 +242,32 @@
     }
     
     closeCountryModal();
+  }
+
+  // ==========================================================================
+  // PARSE PHONE NUMBER - Extract code and number
+  // ==========================================================================
+  function parsePhoneNumber(fullPhone) {
+    if (!fullPhone) return { code: '+20', number: '' };
+    
+    const phoneStr = String(fullPhone).trim();
+    
+    // Sort countries by code length (longest first) to match correctly
+    const sortedCountries = [...countries].sort(function(a, b) {
+      return b.code.length - a.code.length;
+    });
+    
+    for (let i = 0; i < sortedCountries.length; i++) {
+      if (phoneStr.startsWith(sortedCountries[i].code)) {
+        return {
+          code: sortedCountries[i].code,
+          number: phoneStr.substring(sortedCountries[i].code.length)
+        };
+      }
+    }
+    
+    // If no country code found, return default
+    return { code: '+20', number: phoneStr };
   }
 
   // ==========================================================================
@@ -530,7 +571,7 @@
   }
 
   // ==========================================================================
-  // LOAD USER DATA
+  // LOAD USER DATA - Fixed: Parse phone number correctly
   // ==========================================================================
   async function loadUserData() {
     if (!auth?.currentUser) return;
@@ -539,11 +580,44 @@
       const d = snap.val();
       if (!d) return;
       
-      if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
-      if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
-      if (d.phone) { 
-        const e = $('phone'); 
-        if (e) e.value = String(d.phone).replace(/^\+[0-9]+/, ''); 
+      if (d.username) { 
+        const e = $('username'); 
+        if (e) e.value = String(d.username); 
+      }
+      
+      if (d.email) { 
+        const e = $('customerEmail'); 
+        if (e) e.value = String(d.email); 
+      }
+      
+      // Load phone number: parse country code and number
+      if (d.phone) {
+        const fullPhone = String(d.phone).trim();
+        const parsed = parsePhoneNumber(fullPhone);
+        
+        // Set country code
+        selectedCountryCode = parsed.code;
+        
+        // Find country info
+        const country = countries.find(function(c) { return c.code === parsed.code; });
+        if (country) {
+          selectedCountryName = country.name;
+          selectedCountryFlag = country.flag;
+          
+          // Update display
+          const selectedCountry = document.getElementById('selectedCountry');
+          if (selectedCountry) {
+            selectedCountry.querySelector('img').src = country.flag;
+            selectedCountry.querySelector('img').alt = country.name;
+            selectedCountry.querySelector('span').textContent = country.code;
+          }
+        }
+        
+        // Set phone number
+        const phoneInput = $('phone');
+        if (phoneInput) {
+          phoneInput.value = parsed.number;
+        }
       }
     } catch(e) {}
   }
