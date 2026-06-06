@@ -1,7 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Complete Production Version
-// intl-tel-input with Country List Inside Booking Card
+// Complete - Custom Phone Input + Modal Country Selector
 // ==========================================================================
 
 (function() {
@@ -10,11 +9,52 @@
   // ==========================================================================
   // STATE
   // ==========================================================================
-  let iti = null;
   let refNumber = '';
   let selectedTripType = '';
   let currentStep = 0;
   let toastTimer = null;
+  
+  // Phone state
+  let selectedCountryCode = '+20';
+  let selectedCountryName = 'Egypt';
+  let selectedCountryFlag = 'https://flagcdn.com/w40/eg.png';
+  let countryModalOpen = false;
+
+  // ==========================================================================
+  // COUNTRIES DATA
+  // ==========================================================================
+  const countries = [
+    { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
+    { code: '+44', name: 'United Kingdom', flag: 'https://flagcdn.com/w40/gb.png' },
+    { code: '+1', name: 'United States', flag: 'https://flagcdn.com/w40/us.png' },
+    { code: '+49', name: 'Germany', flag: 'https://flagcdn.com/w40/de.png' },
+    { code: '+7', name: 'Russia', flag: 'https://flagcdn.com/w40/ru.png' },
+    { code: '+90', name: 'Turkey', flag: 'https://flagcdn.com/w40/tr.png' },
+    { code: '+39', name: 'Italy', flag: 'https://flagcdn.com/w40/it.png' },
+    { code: '+966', name: 'Saudi Arabia', flag: 'https://flagcdn.com/w40/sa.png' },
+    { code: '+971', name: 'UAE', flag: 'https://flagcdn.com/w40/ae.png' },
+    { code: '+33', name: 'France', flag: 'https://flagcdn.com/w40/fr.png' },
+    { code: '+34', name: 'Spain', flag: 'https://flagcdn.com/w40/es.png' },
+    { code: '+31', name: 'Netherlands', flag: 'https://flagcdn.com/w40/nl.png' },
+    { code: '+46', name: 'Sweden', flag: 'https://flagcdn.com/w40/se.png' },
+    { code: '+41', name: 'Switzerland', flag: 'https://flagcdn.com/w40/ch.png' },
+    { code: '+81', name: 'Japan', flag: 'https://flagcdn.com/w40/jp.png' },
+    { code: '+86', name: 'China', flag: 'https://flagcdn.com/w40/cn.png' },
+    { code: '+91', name: 'India', flag: 'https://flagcdn.com/w40/in.png' },
+    { code: '+61', name: 'Australia', flag: 'https://flagcdn.com/w40/au.png' },
+    { code: '+55', name: 'Brazil', flag: 'https://flagcdn.com/w40/br.png' },
+    { code: '+52', name: 'Mexico', flag: 'https://flagcdn.com/w40/mx.png' },
+    { code: '+48', name: 'Poland', flag: 'https://flagcdn.com/w40/pl.png' },
+    { code: '+380', name: 'Ukraine', flag: 'https://flagcdn.com/w40/ua.png' },
+    { code: '+40', name: 'Romania', flag: 'https://flagcdn.com/w40/ro.png' },
+    { code: '+30', name: 'Greece', flag: 'https://flagcdn.com/w40/gr.png' },
+    { code: '+32', name: 'Belgium', flag: 'https://flagcdn.com/w40/be.png' },
+    { code: '+43', name: 'Austria', flag: 'https://flagcdn.com/w40/at.png' },
+    { code: '+45', name: 'Denmark', flag: 'https://flagcdn.com/w40/dk.png' },
+    { code: '+47', name: 'Norway', flag: 'https://flagcdn.com/w40/no.png' },
+    { code: '+358', name: 'Finland', flag: 'https://flagcdn.com/w40/fi.png' },
+    { code: '+351', name: 'Portugal', flag: 'https://flagcdn.com/w40/pt.png' },
+  ];
 
   // ==========================================================================
   // HELPERS
@@ -35,10 +75,6 @@
     let r = 'DS-';
     for (let i = 0; i < 10; i++) r += chars.charAt(Math.floor(Math.random() * chars.length));
     return r;
-  }
-
-  function isMobile() {
-    return window.innerWidth <= 768;
   }
 
   function toast(msg, type) {
@@ -69,7 +105,7 @@
     const error = document.createElement('div');
     error.className = 'field-error';
     error.setAttribute('data-field', inputId);
-    error.style.cssText = 'color:#ef4444;font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px;animation:fadeIn 0.2s ease;';
+    error.style.cssText = 'color:#ef4444;font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px;';
     error.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
     
     input.style.borderColor = '#ef4444';
@@ -84,6 +120,113 @@
   function clearAllFieldErrors() {
     document.querySelectorAll('.field-error').forEach(function(e) { e.remove(); });
     document.querySelectorAll('.input-field').forEach(function(e) { e.style.borderColor = ''; });
+  }
+
+  function getPhoneNumber() {
+    const phoneEl = $('phone');
+    const phone = phoneEl ? toStr(phoneEl.value) : '';
+    return selectedCountryCode + phone;
+  }
+
+  // ==========================================================================
+  // COUNTRY MODAL
+  // ==========================================================================
+  function createCountryModal() {
+    // Remove existing modal
+    const existing = document.getElementById('countryModal');
+    if (existing) existing.remove();
+    
+    const modal = document.createElement('div');
+    modal.id = 'countryModal';
+    modal.className = 'country-modal';
+    modal.innerHTML = `
+      <div class="country-modal-overlay"></div>
+      <div class="country-modal-container">
+        <div class="country-modal-header">
+          <h3>🌍 Select Country</h3>
+          <button class="country-modal-close" id="countryModalClose">&times;</button>
+        </div>
+        <input type="text" class="country-modal-search" id="countryModalSearch" placeholder="Search country..." />
+        <div class="country-modal-list" id="countryModalList"></div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Bind events
+    modal.querySelector('.country-modal-overlay').addEventListener('click', closeCountryModal);
+    modal.querySelector('.country-modal-close').addEventListener('click', closeCountryModal);
+    modal.querySelector('.country-modal-search').addEventListener('input', function() {
+      renderCountryList(this.value);
+    });
+    
+    // ESC key
+    modal.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeCountryModal();
+    });
+  }
+
+  function openCountryModal() {
+    createCountryModal();
+    const modal = document.getElementById('countryModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      renderCountryList('');
+      setTimeout(function() {
+        const search = document.getElementById('countryModalSearch');
+        if (search) search.focus();
+      }, 300);
+    }
+  }
+
+  function closeCountryModal() {
+    const modal = document.getElementById('countryModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    document.body.style.overflow = '';
+  }
+
+  function renderCountryList(filter) {
+    const list = document.getElementById('countryModalList');
+    if (!list) return;
+    
+    const filtered = filter ? countries.filter(function(c) {
+      return c.name.toLowerCase().indexOf(filter.toLowerCase()) > -1 || c.code.indexOf(filter) > -1;
+    }) : countries;
+    
+    list.innerHTML = '';
+    
+    filtered.forEach(function(country) {
+      const div = document.createElement('div');
+      div.className = 'country-modal-item' + (country.code === selectedCountryCode ? ' selected' : '');
+      div.innerHTML = `
+        <img src="${country.flag}" alt="${country.name}" class="country-modal-flag" />
+        <span class="country-modal-name">${country.name}</span>
+        <span class="country-modal-code">${country.code}</span>
+      `;
+      div.addEventListener('click', function() {
+        selectCountry(country);
+      });
+      list.appendChild(div);
+    });
+  }
+
+  function selectCountry(country) {
+    selectedCountryCode = country.code;
+    selectedCountryName = country.name;
+    selectedCountryFlag = country.flag;
+    
+    // Update display
+    const selectedCountry = document.getElementById('selectedCountry');
+    if (selectedCountry) {
+      selectedCountry.querySelector('img').src = country.flag;
+      selectedCountry.querySelector('img').alt = country.name;
+      selectedCountry.querySelector('span').textContent = country.code;
+    }
+    
+    closeCountryModal();
   }
 
   // ==========================================================================
@@ -217,16 +360,10 @@
       valid = false;
     }
     
-    if (iti) {
-      if (!iti.getNumber() || !iti.isValidNumber()) {
-        showFieldError('phone', 'Please enter a valid phone number with country code');
-        valid = false;
-      }
-    } else {
-      if (toStr($('phone')?.value).length < 8) {
-        showFieldError('phone', 'Please enter a valid phone number');
-        valid = false;
-      }
+    const phone = toStr($('phone')?.value);
+    if (!phone || phone.length < 7) {
+      showFieldError('phone', 'Please enter a valid phone number');
+      valid = false;
     }
     
     return valid;
@@ -330,10 +467,7 @@
       const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
       const ownerId = getOwnerId();
       
-      let phone = '';
-      if (iti) phone = iti.getNumber();
-      if (!phone) phone = toStr($('phone')?.value);
-      
+      const phone = getPhoneNumber();
       const net = calcNet();
       const tax = calcTax();
       const total = calcTotal();
@@ -407,7 +541,10 @@
       
       if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
       if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
-      if (d.phone && iti) { iti.setNumber(String(d.phone)); }
+      if (d.phone) { 
+        const e = $('phone'); 
+        if (e) e.value = String(d.phone).replace(/^\+[0-9]+/, ''); 
+      }
     } catch(e) {}
   }
 
@@ -423,15 +560,12 @@
     const trip = getTrip();
     const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     
-    // Phone input - intl-tel-input
-    const phoneEl = document.querySelector('#phone');
-    if (phoneEl && window.intlTelInput) {
-      iti = window.intlTelInput(phoneEl, {
-        utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
-        preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it', 'sa'],
-        separateDialCode: true,
-        initialCountry: 'eg',
-        nationalMode: false,
+    // Country selector - open modal on click
+    const countryCodeSelect = $('countryCodeSelect');
+    if (countryCodeSelect) {
+      countryCodeSelect.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openCountryModal();
       });
     }
     
@@ -461,7 +595,12 @@
     const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
     
     // Escape key
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeServicesPopup(); });
+    document.addEventListener('keydown', function(e) { 
+      if (e.key === 'Escape') {
+        closeServicesPopup();
+        closeCountryModal();
+      }
+    });
     
     // Auth state
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
@@ -484,7 +623,7 @@
     submit: submitBooking,
     updateSummary: updateSummary,
     getRef: function() { return refNumber; },
-    getPhone: function() { return iti ? iti.getNumber() : ''; }
+    getPhone: getPhoneNumber
   };
 
   // ==========================================================================
