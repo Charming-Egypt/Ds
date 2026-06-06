@@ -1,13 +1,17 @@
 /* ==========================================================================
-   DISCOVER SHARM - Tour Booking Stylesheet
-   All styles inside .tour-booking-container
+   ✦ DISCOVER SHARM ✦
+   Premium Tour Booking Experience
+   All styles scoped within .tour-booking-container
    ========================================================================== */
 
+/* ==========================================================================
+   1. VARIABLES & CORE SETUP (Scoped)
+   ========================================================================== */
 .tour-booking-container {
-  /* Variables */
+  /* Colors */
   --accent-color: #f59e0b;
   --accent-hover: #d97706;
-  --accent-glow: rgba(245, 158, 11, 0.2);
+  --accent-glow: rgba(245, 158, 11, 0.25);
   
   --bg-primary: #0a0e1a;
   --bg-secondary: #111827;
@@ -19,23 +23,12 @@
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.12);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-light: rgba(255, 255, 255, 0.1);
   
   --sunset-start: #FF6B35;
   --sunset-end: #FFA630;
   
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-  
-  --transition: all 0.25s ease;
-
   /* Layout */
   display: flex;
   gap: 24px;
@@ -48,27 +41,50 @@
 }
 
 /* ==========================================================================
-   LEFT COLUMN - Tour Details
+   2. MAIN COLUMNS
    ========================================================================== */
 .tour-details {
   flex: 1;
   min-width: 0;
 }
 
+.booking-form-container {
+  flex: 0 0 380px;
+  background: var(--bg-secondary);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  position: sticky;
+  top: 16px;
+  height: fit-content;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
 /* ==========================================================================
-   GALLERY & SWIPER
+   3. 🎬 MEGA CINEMATIC SWIPER - The Masterpiece
    ========================================================================== */
 .tour-gallery {
   background: #000;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
 
 .swiper {
   width: 100%;
-  height: 450px;
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Slide Ken Burns Effect */
+.swiper-slide {
+  position: relative;
+  overflow: hidden;
 }
 
 .swiper-slide img,
@@ -76,49 +92,149 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Navigation Arrows */
+.swiper-slide-active img,
+.swiper-slide-active iframe {
+  transform: scale(1.12);
+}
+
+/* Multi-layer Gradient Overlays */
+.swiper-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(180deg, 
+      rgba(10, 14, 26, 0.6) 0%, 
+      transparent 25%,
+      transparent 55%,
+      rgba(10, 14, 26, 0.9) 100%
+    );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.swiper-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(10, 14, 26, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ==========================================================================
+   4. NAVIGATION ARROWS - Glass Art
+   ========================================================================== */
 .swiper-button-next,
 .swiper-button-prev {
-  color: #fff;
-  background: rgba(0, 0, 0, 0.5);
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  backdrop-filter: blur(6px);
-  transition: var(--transition);
+  color: #fff;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+  opacity: 0;
 }
 
-.swiper-button-next:after,
-.swiper-button-prev:after {
-  font-size: 18px;
-  font-weight: bold;
+.swiper:hover .swiper-button-next,
+.swiper:hover .swiper-button-prev {
+  opacity: 1;
 }
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  background: var(--accent-color);
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  border-color: transparent;
+  box-shadow: 
+    0 0 40px rgba(255, 107, 53, 0.5),
+    0 0 80px rgba(255, 166, 48, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
   color: #000;
 }
 
-/* Pagination */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* Ring pulse on hover */
+.swiper-button-next:hover::before,
+.swiper-button-prev:hover::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 166, 48, 0.4);
+  animation: ringPulse 1.5s infinite;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* ==========================================================================
+   5. PAGINATION - Floating Animated Pills
+   ========================================================================== */
+.swiper-pagination {
+  bottom: 28px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  width: auto !important;
+  background: rgba(10, 14, 26, 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 24px;
+  border-radius: 30px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
 .swiper-pagination-bullet {
-  background: rgba(255, 255, 255, 0.6);
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
   opacity: 1;
+  margin: 0 3px !important;
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .swiper-pagination-bullet-active {
-  background: var(--accent-color);
+  background: var(--accent-color) !important;
+  width: 32px;
+  border-radius: 4px;
+  box-shadow: 
+    0 0 12px var(--accent-glow),
+    0 0 24px rgba(245, 158, 11, 0.3);
 }
 
-/* Thumbnail Gallery */
+/* ==========================================================================
+   6. THUMBNAIL GALLERY - Interactive Filmstrip
+   ========================================================================== */
 .thumbnail-gallery {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
-  padding: 0 16px 12px;
+  padding: 14px 16px;
+  background: var(--bg-primary);
   overflow-x: auto;
+  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 
@@ -127,49 +243,53 @@
 }
 
 .thumbnail-gallery img {
-  width: 80px;
-  height: 60px;
+  width: 85px;
+  height: 56px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  opacity: 0.6;
-  transition: var(--transition);
   border: 2px solid transparent;
+  opacity: 0.45;
+  filter: grayscale(20%) brightness(0.7);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
 }
 
-.thumbnail-gallery img:hover,
+.thumbnail-gallery img:hover {
+  opacity: 0.8;
+  filter: grayscale(0%) brightness(0.9);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
 .thumbnail-gallery img.active {
   opacity: 1;
+  filter: grayscale(0%) brightness(1.1);
   border-color: var(--accent-color);
+  box-shadow: 
+    0 4px 16px var(--accent-glow),
+    0 0 0 2px rgba(245, 158, 11, 0.2);
+  transform: translateY(-4px) scale(1.05);
 }
 
 /* ==========================================================================
-   TOUR HEADER
+   7. TOUR TITLE & RATING
    ========================================================================== */
-.tour-details h1 {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
 .rating-container {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin: 10px 0;
+  margin: 12px 0;
 }
 
-#tourPrice {
-  font-size: clamp(28px, 4vw, 36px);
-  font-weight: 700;
-  margin: 10px 0;
-  color: var(--accent-color);
+.rating-container i.text-yellow-500 {
+  font-size: 14px;
+  filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.5));
 }
 
 /* ==========================================================================
-   INCLUDED / EXCLUDED
+   8. INCLUDED / EXCLUDED GRID
    ========================================================================== */
 .included-grid {
   display: grid;
@@ -186,21 +306,22 @@
   border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 14px;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .included-item:hover {
   background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-light);
 }
 
 .included-item i {
   color: var(--accent-color);
   width: 20px;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* ==========================================================================
-   TIMELINE
+   9. TIMELINE
    ========================================================================== */
 .timeline-container {
   display: flex;
@@ -216,10 +337,11 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   border-left: 3px solid var(--accent-color);
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .timeline-item:hover {
+  border-left-color: var(--accent-hover);
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -233,6 +355,7 @@
 .timeline-content h4 {
   font-weight: 600;
   margin-bottom: 6px;
+  color: var(--text-primary);
 }
 
 .timeline-content p {
@@ -242,7 +365,7 @@
 }
 
 /* ==========================================================================
-   WHAT TO BRING
+   10. WHAT TO BRING
    ========================================================================== */
 .what-to-bring-list {
   display: flex;
@@ -260,11 +383,12 @@
   border: 1px solid var(--border-color);
   border-radius: 30px;
   font-size: 13px;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .what-to-bring-list li:hover {
   border-color: var(--accent-color);
+  background: rgba(245, 158, 11, 0.08);
 }
 
 .what-to-bring-list li i {
@@ -272,48 +396,53 @@
 }
 
 /* ==========================================================================
-   RIGHT COLUMN - Booking Form
+   11. PROGRESS BAR
    ========================================================================== */
-.booking-form-container {
-  flex: 0 0 380px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-  border: 1px solid var(--border-color);
-  position: sticky;
-  top: 16px;
-  height: fit-content;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  box-shadow: var(--shadow-card);
+.booking-form-container .mb-6 {
+  margin-bottom: 24px;
 }
 
-/* ==========================================================================
-   PROGRESS BAR
-   ========================================================================== */
+.booking-form-container .w-full.h-2 {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
 #progressBar {
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end));
+  border-radius: 9999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* ==========================================================================
-   FORM STEPS
+   12. FORM STEPS
    ========================================================================== */
 .form-step {
   display: none;
-  animation: fadeIn 0.3s ease;
+  animation: fadeSlideUp 0.35s ease-out;
 }
 
 .form-step.active {
   display: block;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
-   FORM CONTROLS
+   13. FORM CONTROLS
    ========================================================================== */
 .form-group {
   margin-bottom: 18px;
@@ -324,10 +453,10 @@
   padding: 12px 16px;
   background: var(--bg-input);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   color: var(--text-primary);
   font-size: 14px;
-  transition: var(--transition);
+  transition: all 0.25s ease;
 }
 
 .form-control:focus {
@@ -336,12 +465,16 @@
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
 select.form-control {
   cursor: pointer;
 }
 
 /* ==========================================================================
-   NUMBER STEPPER
+   14. NUMBER STEPPER
    ========================================================================== */
 .number-container {
   display: flex;
@@ -357,12 +490,12 @@ select.form-control {
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
   padding: 15px;
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
 }
 
 .number-box label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   margin-bottom: 12px;
   color: var(--text-secondary);
@@ -372,7 +505,7 @@ select.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 14px;
 }
 
 .bb {
@@ -385,7 +518,7 @@ select.form-control {
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -393,8 +526,13 @@ select.form-control {
 
 .bb:hover {
   background: var(--accent-color);
-  color: #fff;
+  color: #000;
   border-color: var(--accent-color);
+  transform: scale(1.1);
+}
+
+.bb:active {
+  transform: scale(0.95);
 }
 
 .button-container input {
@@ -408,15 +546,15 @@ select.form-control {
 }
 
 /* ==========================================================================
-   BUTTONS
+   15. BUTTONS
    ========================================================================== */
 .btn {
   padding: 12px 24px;
   border-radius: 40px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s ease;
   border: none;
   text-align: center;
   display: flex;
@@ -428,11 +566,16 @@ select.form-control {
 .btn-primary {
   background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
   color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 8px 28px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
@@ -446,14 +589,23 @@ select.form-control {
 }
 
 /* ==========================================================================
-   SUMMARY
+   16. SUMMARY SECTIONS
    ========================================================================== */
 .summary-section {
   background: var(--bg-glass);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   padding: 16px;
   margin-bottom: 16px;
+}
+
+.summary-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-color);
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .summary-item {
@@ -461,7 +613,7 @@ select.form-control {
   justify-content: space-between;
   padding: 8px 0;
   border-bottom: 1px solid var(--border-color);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .summary-item:last-child {
@@ -480,8 +632,13 @@ select.form-control {
 }
 
 /* ==========================================================================
-   REVIEWS
+   17. REVIEWS SECTION
    ========================================================================== */
+#reviewsListContainer {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 #reviewsListContainer::-webkit-scrollbar {
   width: 4px;
 }
@@ -497,14 +654,11 @@ select.form-control {
 }
 
 /* ==========================================================================
-   SERVICES POPUP
+   18. SERVICES POPUP
    ========================================================================== */
 .services-popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 99990000;
   display: flex;
   align-items: center;
@@ -513,30 +667,27 @@ select.form-control {
 
 .services-popup-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
 }
 
 .services-popup-container {
   position: relative;
   width: 90%;
-  max-width: 500px;
+  max-width: 480px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: 20px;
-  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
   z-index: 10001;
   overflow: hidden;
-  animation: popupSlideIn 0.3s ease;
+  animation: popupBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes popupSlideIn {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes popupBounce {
+  from { opacity: 0; transform: translateY(-40px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .services-popup-header {
@@ -568,7 +719,7 @@ select.form-control {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .close-popup-btn:hover {
@@ -592,6 +743,7 @@ select.form-control {
   flex: 1;
 }
 
+/* Service Option Cards */
 .service-option {
   display: flex;
   align-items: center;
@@ -602,11 +754,12 @@ select.form-control {
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.25s ease;
 }
 
 .service-option:hover {
   background: rgba(255, 255, 255, 0.05);
+  transform: translateX(5px);
 }
 
 .service-option.selected {
@@ -639,7 +792,7 @@ select.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
 
 .service-option.selected .service-option-check {
@@ -654,7 +807,7 @@ select.form-control {
 }
 
 /* ==========================================================================
-   SPINNER
+   19. SPINNER
    ========================================================================== */
 .spinner {
   width: 50px;
@@ -670,11 +823,12 @@ select.form-control {
 }
 
 /* ==========================================================================
-   THIRD-PARTY OVERRIDES
+   20. THIRD-PARTY OVERRIDES
    ========================================================================== */
 .iti__country-list {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-light) !important;
+  border-radius: 12px !important;
 }
 
 .iti__country {
@@ -688,7 +842,8 @@ select.form-control {
 .flatpickr-calendar {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-light) !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 16px !important;
 }
 
 .flatpickr-day {
@@ -698,6 +853,7 @@ select.form-control {
 .flatpickr-day.selected {
   background: var(--accent-color) !important;
   border-color: var(--accent-color) !important;
+  color: #000 !important;
 }
 
 .flatpickr-day.today {
@@ -714,7 +870,7 @@ select.form-control {
 }
 
 /* ==========================================================================
-   RESPONSIVE - Tablet
+   21. RESPONSIVE - TABLET
    ========================================================================== */
 @media (max-width: 1024px) {
   .tour-booking-container {
@@ -731,10 +887,14 @@ select.form-control {
     max-width: 600px;
     margin: 0 auto;
   }
+  
+  .swiper {
+    height: 400px;
+  }
 }
 
 /* ==========================================================================
-   RESPONSIVE - Mobile
+   22. RESPONSIVE - MOBILE (App-Like)
    ========================================================================== */
 @media (max-width: 640px) {
   .tour-booking-container {
@@ -742,51 +902,100 @@ select.form-control {
     gap: 0;
   }
   
+  /* Full Width Swiper */
   .tour-gallery {
     border-radius: 0;
     margin-bottom: 0;
   }
   
   .swiper {
-    height: 280px;
+    height: 300px;
     border-radius: 0;
   }
   
+  /* Mobile Navigation - Always Visible */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
   }
   
-  .swiper-button-next:after,
-  .swiper-button-prev:after {
-    font-size: 15px;
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 16px;
   }
   
+  .swiper-button-next {
+    right: 10px;
+  }
+  
+  .swiper-button-prev {
+    left: 10px;
+  }
+  
+  /* Mobile Pagination */
+  .swiper-pagination {
+    bottom: 20px !important;
+    background: rgba(10, 14, 26, 0.7) !important;
+    backdrop-filter: blur(16px);
+    padding: 6px 20px;
+  }
+  
+  .swiper-pagination-bullet {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .swiper-pagination-bullet-active {
+    width: 24px;
+  }
+  
+  /* Mobile Thumbnails */
   .thumbnail-gallery {
-    margin-top: 8px;
-    padding: 8px 12px;
+    padding: 10px 12px;
+    background: var(--bg-primary);
   }
   
   .thumbnail-gallery img {
-    width: 64px;
-    height: 48px;
+    width: 60px;
+    height: 44px;
   }
   
+  /* Content Padding */
   .tour-details > div:not(.tour-gallery) {
     padding-left: 16px;
     padding-right: 16px;
   }
   
+  /* Form Card - Bottom Sheet Style */
   .booking-form-container {
     border-radius: 24px 24px 0 0;
     margin-top: -16px;
     position: relative;
     z-index: 100;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
     padding: 20px 16px;
   }
   
+  /* Timeline Mobile */
+  .timeline-item {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .timeline-time {
+    min-width: auto;
+  }
+  
+  /* Grids */
+  .included-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Number Stepper */
   .number-container {
     flex-direction: column;
     gap: 12px;
@@ -803,10 +1012,7 @@ select.form-control {
     margin-bottom: 0;
   }
   
-  .included-grid {
-    grid-template-columns: 1fr;
-  }
-  
+  /* Summary */
   .summary-item {
     flex-direction: column;
     gap: 4px;
@@ -816,17 +1022,28 @@ select.form-control {
     text-align: left;
   }
   
+  /* Reviews */
   #reviewsListContainer {
     max-height: 350px;
   }
   
+  /* Popup */
   .services-popup-container {
     width: 95%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .services-popup-content {
+    flex: 1;
+    overflow-y: auto;
+    max-height: none;
   }
 }
 
 /* ==========================================================================
-   UTILITY
+   23. UTILITY
    ========================================================================== */
 .hidden {
   display: none !important;
