@@ -552,17 +552,31 @@ async function submitReview() {
 // INIT
 // ==========================================================================
 async function populateForm() {
-  const u = auth.currentUser; if (!u) return;
+  const user = auth.currentUser;
+  if (!user) return;
+
   try {
-    const s = await db.ref('egy_user/' + u.uid).once('value'); const d = s.val();
-    if (d) {
-      if (document.getElementById('username')) document.getElementById('username').value = d.username || '';
-      if (document.getElementById('mobileUsername')) document.getElementById('mobileUsername').value = d.username || '';
-      if (document.getElementById('customerEmail')) document.getElementById('customerEmail').value = d.email || '';
-      if (document.getElementById('mobileCustomerEmail')) document.getElementById('mobileCustomerEmail').value = d.email || '';
-      if (d.phone && iti) { document.getElementById('phone').value = d.phone; iti.setNumber(d.phone); }
+    const userSnapshot = await db.ref('egy_user').child(user.uid).once('value');
+    const userData = userSnapshot.val();
+
+    if (userData) {
+      if (document.getElementById("username")) {
+        document.getElementById("username").value = userData.username || "";
+      }
+      if (document.getElementById("customerEmail")) {
+        document.getElementById("customerEmail").value = userData.email || "";
+      }
+      if (document.getElementById("uid")) {
+        document.getElementById("uid").value = user.uid || "";
+      }
+      // 👇 هذا السطر الجديد فقط - يجيب رقم الهاتف مع كود الدولة
+      if (userData.phone && iti && document.getElementById("phone")) {
+        iti.setNumber(userData.phone);
+      }
     }
-  } catch (e) {}
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 }
 function initCurrency() {
   currentCurrency = getCurrentCurrencyFromHeader();
@@ -585,8 +599,21 @@ window.onload = async function () {
   if (!tripPName) { showToast("No trip specified.", 'error'); return; }
   initCurrency();
   
-  const pi = document.querySelector("#phone");
-  if (pi) try { iti = window.intlTelInput(pi, { utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js", preferredCountries: ['eg','gb','de','ru','tr','it'], separateDialCode: true, initialCountry: "eg" }); } catch (e) {}
+
+const phoneInput = document.querySelector("#phone");
+if (phoneInput) {
+  try {
+    iti = window.intlTelInput(phoneInput, {
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      preferredCountries: ['eg', 'gb', 'de', 'ru', 'tr', 'it'],
+      separateDialCode: true,
+      initialCountry: "eg",
+    });
+  } catch (error) {
+    console.error("intlTelInput initialization failed:", error);
+  }
+}
+
   
   flatpickr("#tripDate", { minDate: new Date().fp_incr(1), dateFormat: "Y-m-d", disableMobile: true, onChange: updateSummary });
   flatpickr("#mobileTripDate", { minDate: new Date().fp_incr(1), dateFormat: "Y-m-d", disableMobile: true, onChange: updateMobileSummary });
