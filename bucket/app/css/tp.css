@@ -1,6 +1,6 @@
 /* ==========================================================================
    ✦ DISCOVER SHARM - Premium Booking Experience ✦
-   Complete Creative Design System
+   Complete Creative Design System v5.0 Final
    Scoped to .tour-booking-container | Desktop & Mobile
    ========================================================================== */
 
@@ -495,296 +495,337 @@
 }
 
 /* ==========================================================================
-   11. BOOKING FORM - Compact
+   11. COMPLETE BOOKING CARD REDESIGN
    ========================================================================== */
+
+/* Container */
 .booking-form-container {
-  background: linear-gradient(145deg, var(--navy), var(--dark-slate));
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  background: linear-gradient(160deg, #1a1f35 0%, #252d3f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px;
   position: sticky;
-  top: var(--space-md);
+  top: 20px;
   height: fit-content;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* Form Header */
 .form-header {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .form-header-icon {
-  width: 52px;
-  height: 52px;
-  margin: 0 auto var(--space-sm);
-  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
-  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 10px;
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 16px var(--gold-glow);
+  font-size: 22px;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
 .form-header h2 {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 2px;
+  color: #fff;
+  margin-bottom: 4px;
 }
 
 .form-header p {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #94a3b8;
+  margin: 0;
 }
 
-/* ==========================================================================
-   12. PROGRESS
-   ========================================================================== */
+/* Progress */
 .progress-container {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 20px;
 }
 
 .progress-bar {
   width: 100%;
   height: 6px;
-  background: var(--border-subtle);
-  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: var(--space-sm);
+  margin-bottom: 10px;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end));
-  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, #FF6B35, #FFA630);
+  border-radius: 10px;
   transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
 }
 
 .progress-steps {
   display: flex;
   justify-content: space-between;
+  padding: 0 4px;
 }
 
 .progress-steps .step {
   font-size: 10px;
-  color: var(--text-dim);
   font-weight: 600;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: var(--transition-fast);
+  transition: all 0.3s ease;
 }
 
 .progress-steps .step.active {
-  color: var(--gold);
+  color: #f59e0b;
 }
 
-/* ==========================================================================
-   13. FORM ELEMENTS
-   ========================================================================== */
+/* Form Steps */
 .form-step {
   display: none;
+  animation: fadeInUp 0.3s ease;
 }
 
 .form-step.active {
   display: block;
-  animation: fadeSlideIn 0.35s ease-out;
 }
 
-@keyframes fadeSlideIn {
+@keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Form Groups */
 .form-group {
-  margin-bottom: var(--space-md);
+  margin-bottom: 14px;
 }
 
 .form-group label {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 700;
-  color: var(--text-soft);
-  margin-bottom: var(--space-xs);
+  color: #cbd5e1;
+  margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .form-group label i {
-  color: var(--gold);
+  color: #f59e0b;
   font-size: 13px;
+  width: 16px;
+  text-align: center;
 }
 
+/* Input Fields */
 .form-control {
   width: 100%;
-  padding: 12px 14px;
-  background: var(--glass-bg);
-  border: 2px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--text-bright);
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
   font-size: 13px;
-  font-weight: 500;
-  transition: var(--transition-fast);
+  font-weight: 400;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow);
-  background: rgba(255,255,255,0.05);
+  border-color: #f59e0b;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
 .form-control::placeholder {
-  color: var(--text-dim);
+  color: #64748b;
 }
 
-select.form-control {
-  cursor: pointer;
+/* Extra Services Select */
+select.form-control,
+#tripType {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f59e0b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f59e0b' d='M6 8L1 2h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 14px center;
   padding-right: 36px;
+  cursor: pointer;
 }
 
-.error-message {
-  color: #ef4444;
-  font-size: 11px;
-  margin-top: 4px;
-  font-weight: 500;
+select.form-control option,
+#tripType option {
+  background: #1a1f35;
+  color: #fff;
+  padding: 10px;
 }
 
-/* ==========================================================================
-   14. GUEST SELECTOR
-   ========================================================================== */
+/* Guest Cards */
 .guests-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .guest-type-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--glass-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.guest-type-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .guest-info {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 10px;
 }
 
 .guest-icon {
-  font-size: 24px;
+  font-size: 22px;
+  width: 28px;
+  text-align: center;
 }
 
 .guest-info strong {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
+  color: #fff;
   margin-bottom: 1px;
 }
 
 .guest-info small {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 10px;
+  color: #94a3b8;
 }
 
+/* Stepper */
 .stepper {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  background: rgba(0,0,0,0.3);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
   padding: 3px;
-  border-radius: var(--radius-full);
+  border-radius: 25px;
 }
 
 .stepper-btn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: var(--gold);
-  border: none;
+  background: #f59e0b;
   color: #000;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
+  border: none;
   cursor: pointer;
-  transition: var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
+  line-height: 1;
+  padding: 0;
 }
 
 .stepper-btn:hover {
-  background: var(--gold-dark);
+  background: #d97706;
+  transform: scale(1.05);
+}
+
+.stepper-btn:active {
+  transform: scale(0.95);
 }
 
 .stepper input {
-  width: 36px;
+  width: 32px;
   text-align: center;
   background: transparent;
   border: none;
-  color: var(--text-bright);
-  font-size: 16px;
+  color: #fff;
+  font-size: 14px;
   font-weight: 700;
+  padding: 0;
 }
 
 /* ==========================================================================
-   15. BUTTONS - Smaller & Elevated
+   12. BUTTONS
    ========================================================================== */
 .btn {
-  padding: 10px 18px;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  font-size: 12px;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  border: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  letter-spacing: 0.3px;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
   width: 100%;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  line-height: 1.4;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
   color: #fff;
-  box-shadow: 0 4px 16px var(--gold-glow);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px var(--gold-glow);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 107, 53, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background: transparent;
-  border: 2px solid var(--border-medium);
-  color: var(--text-bright);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .btn-secondary:hover {
-  background: var(--glass-hover);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .btn-group {
   display: flex;
-  gap: var(--space-sm);
-  padding-bottom: 16px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .btn-group .btn {
   flex: 1;
+}
+
+.form-step > .btn {
+  margin-top: 8px;
 }
 
 .pulse {
@@ -792,84 +833,95 @@ select.form-control {
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 4px 16px var(--gold-glow); }
-  50% { box-shadow: 0 6px 28px var(--gold-glow), 0 0 0 6px rgba(245,158,11,0.1); }
+  0%, 100% { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25); }
+  50% { box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4), 0 0 0 5px rgba(255, 107, 53, 0.08); }
 }
 
 /* ==========================================================================
-   16. SUMMARY CARDS
+   13. SUMMARY CARDS
    ========================================================================== */
 .summary-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  margin-bottom: var(--space-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
 }
 
 .summary-header {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--border-subtle);
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .summary-header i {
-  color: var(--gold);
-  font-size: 18px;
+  color: #f59e0b;
+  font-size: 16px;
 }
 
 .summary-header h3 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+  color: #fff;
+  margin: 0;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 5px 0;
   font-size: 12px;
 }
 
 .summary-row span {
-  color: var(--text-muted);
+  color: #94a3b8;
 }
 
 .summary-row strong {
-  color: var(--text-bright);
+  color: #fff;
   font-weight: 600;
 }
 
 .total-price-card {
+  background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(255,166,48,0.08));
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 12px;
+  padding: 14px;
   text-align: center;
-  padding: var(--space-md);
-  background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(255,166,48,0.1));
-  border: 1px solid var(--border-glow);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-md);
+  margin: 14px 0;
 }
 
 .total-price-card span {
   display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: var(--space-xs);
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .total-amount {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  background: linear-gradient(135deg, #FF6B35, #FFA630);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+.error-message {
+  color: #ef4444;
+  font-size: 10px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
 /* ==========================================================================
-   17. REVIEWS
+   14. REVIEWS
    ========================================================================== */
 .reviews-section {
   padding: var(--space-lg) 0;
@@ -926,7 +978,7 @@ select.form-control {
 }
 
 /* ==========================================================================
-   18. LOADING
+   15. LOADING & UTILITIES
    ========================================================================== */
 .loading-overlay {
   position: fixed;
@@ -937,46 +989,39 @@ select.form-control {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-md);
-  z-index: var(--z-modal);
+  gap: 12px;
+  z-index: 9999;
+}
+
+.loading-overlay p {
+  color: #94a3b8;
+  font-size: 13px;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border: 3px solid rgba(255,255,255,0.1);
-  border-top-color: var(--gold);
+  border-top-color: #f59e0b;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ==========================================================================
-   19. UTILITIES
-   ========================================================================== */
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* ==========================================================================
-   20. THIRD-PARTY OVERRIDES
+   16. THIRD-PARTY OVERRIDES
    ========================================================================== */
 .iti__country-list {
-  background: var(--navy) !important;
-  border: 1px solid var(--border-medium) !important;
-  border-radius: var(--radius-sm) !important;
+  background: #1a1f35 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 10px !important;
 }
+.iti__country { color: #fff !important; }
+.iti__country:hover { background: rgba(255,255,255,0.05) !important; }
 
-.iti__country {
-  color: var(--text-bright) !important;
-}
-
-.iti__country:hover {
-  background: var(--glass-hover) !important;
-}
-
-/* Flatpickr Styling */
 .flatpickr-calendar {
   background: #1a1f35 !important;
   border: 1px solid rgba(255,255,255,0.1) !important;
@@ -987,12 +1032,7 @@ select.form-control {
 .flatpickr-months, .flatpickr-weekdays { background: #1a1f35 !important; }
 .flatpickr-month, .flatpickr-weekday { color: #f59e0b !important; }
 .flatpickr-prev-month svg, .flatpickr-next-month svg { fill: #f59e0b !important; }
-.flatpickr-day {
-  color: #e2e8f0 !important;
-  background: #252d3f !important;
-  border-radius: 8px !important;
-  border: none !important;
-}
+.flatpickr-day { color: #e2e8f0 !important; background: #252d3f !important; border-radius: 8px !important; border: none !important; }
 .flatpickr-day:hover { background: #334155 !important; color: #f59e0b !important; }
 .flatpickr-day.selected { background: #f59e0b !important; color: #000 !important; font-weight: bold !important; }
 .flatpickr-day.today { border: 1px solid #f59e0b !important; }
@@ -1000,7 +1040,7 @@ select.form-control {
 .flatpickr-day.flatpickr-disabled { color: #475569 !important; background: #1a1f35 !important; opacity: 0.4 !important; cursor: not-allowed !important; }
 
 /* ==========================================================================
-   MOBILE - APP-LIKE EXPERIENCE (Max 768px)
+   17. MOBILE - APP-LIKE EXPERIENCE (Max 768px)
    ========================================================================== */
 @media (max-width: 768px) {
   
@@ -1039,7 +1079,7 @@ select.form-control {
     background: rgba(0,0,0,0.6);
     backdrop-filter: blur(10px);
     padding: 6px 18px;
-    border-radius: var(--radius-full);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -1087,27 +1127,25 @@ select.form-control {
     display: none;
   }
 
-  /* ==========================================================================
-     MOBILE - FLOATING BOOK NOW BUTTON (No Price)
-     ========================================================================== */
+  /* Floating Book Now Button */
   .mobile-book-now-btn {
     position: fixed;
-    bottom: 10px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+    background: linear-gradient(135deg, #FF6B35, #FFA630);
     color: #fff;
     padding: 14px 32px;
-    border-radius: var(--radius-full);
+    border-radius: 30px;
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 700;
     font-size: 15px;
-    z-index: var(--z-sticky);
+    z-index: 100;
     box-shadow: 0 8px 30px rgba(255,107,53,0.5);
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: all 0.3s ease;
     border: none;
     white-space: nowrap;
   }
@@ -1125,15 +1163,13 @@ select.form-control {
     font-size: 18px;
   }
 
-  /* ==========================================================================
-     MOBILE - BOTTOM SHEET
-     ========================================================================== */
+  /* Bottom Sheet */
   .mobile-bottom-sheet-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.7);
     backdrop-filter: blur(4px);
-    z-index: var(--z-overlay);
+    z-index: 200;
     animation: fadeIn 0.3s ease;
   }
 
@@ -1143,9 +1179,9 @@ select.form-control {
     left: 0;
     right: 0;
     max-height: 85vh;
-    background: linear-gradient(180deg, var(--navy), var(--dark-slate));
+    background: linear-gradient(180deg, #1a1f35, #252d3f);
     border-radius: 28px 28px 0 0;
-    z-index: var(--z-modal);
+    z-index: 300;
     overflow-y: auto;
     box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
     animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1164,25 +1200,47 @@ select.form-control {
   .bottom-sheet-handle {
     width: 36px;
     height: 5px;
-    background: var(--border-medium);
-    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
     margin: 12px auto 0;
   }
 
   .bottom-sheet-content {
-    padding: var(--space-lg) var(--space-md);
-    padding-bottom: 40px;
+    padding: 20px 16px 40px;
   }
 
   .bottom-sheet-content .booking-form-container {
     display: block;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
     position: relative;
     top: auto;
     max-height: none;
-    box-shadow: none;
-    border: none;
-    padding: 0;
-    background: transparent;
+  }
+
+  .bottom-sheet-content .btn {
+    padding: 14px 20px;
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .bottom-sheet-content .stepper-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+
+  .bottom-sheet-content .form-control {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .bottom-sheet-content select.form-control,
+  .bottom-sheet-content #tripType {
+    font-size: 16px;
   }
 }
 
@@ -1193,262 +1251,4 @@ select.form-control {
   .mobile-bottom-sheet {
     display: none !important;
   }
-}
-
-
-
-/* ==========================================================================
-   FIXES - Booking Form Buttons & Extra Services
-   ========================================================================== */
-
-/* أزرار الحجز - تصغير وتحسين المظهر */
-.booking-form-container .btn,
-#mobileBookingContent .btn {
-  padding: 12px 20px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  border-radius: 30px !important;
-  letter-spacing: 0.3px !important;
-  transition: all 0.25s ease !important;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #FF6B35, #FFA630) !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3) !important;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4) !important;
-}
-
-.btn-primary:active {
-  transform: translateY(0) !important;
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #fff !important;
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-}
-
-/* مجموعة الأزرار */
-.btn-group {
-  display: flex !important;
-  gap: 10px !important;
-  margin-top: 16px !important;
-  padding-bottom: 8px !important;
-}
-
-.btn-group .btn {
-  flex: 1 !important;
-}
-
-/* أزرار الـ stepper */
-.stepper-btn {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  background: #f59e0b !important;
-  color: #000 !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  border: none !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.2s ease !important;
-}
-
-.stepper-btn:hover {
-  background: #d97706 !important;
-  transform: scale(1.1) !important;
-}
-
-.stepper-btn:active {
-  transform: scale(0.95) !important;
-}
-
-/* ==========================================================================
-   EXTRA SERVICES SELECT - Premium Styling
-   ========================================================================== */
-#tripType,
-select.form-control {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23f59e0b' d='M7 10L2 4h10z'/%3E%3C/svg%3E") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 14px center !important;
-  padding-right: 40px !important;
-  border: 2px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 10px !important;
-  color: #fff !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.25s ease !important;
-  min-height: 44px !important;
-}
-
-#tripType:hover,
-select.form-control:hover {
-  border-color: rgba(245, 158, 11, 0.4) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-#tripType:focus,
-select.form-control:focus {
-  outline: none !important;
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-#tripType option,
-select.form-control option {
-  background-color: #1a1f35 !important;
-  color: #fff !important;
-  padding: 12px !important;
-  font-size: 13px !important;
-}
-
-/* تحسين مظهر الـ form-group */
-.form-group {
-  margin-bottom: 16px !important;
-}
-
-.form-group label {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  color: #e2e8f0 !important;
-  margin-bottom: 6px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-}
-
-.form-group label i {
-  color: #f59e0b !important;
-  font-size: 14px !important;
-}
-
-/* الحقول النصية */
-.form-control[type="text"],
-.form-control[type="email"],
-.form-control[type="tel"],
-.form-control[type="number"],
-.form-control[type="date"] {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 2px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 10px !important;
-  color: #fff !important;
-  font-size: 13px !important;
-  padding: 12px 14px !important;
-  transition: all 0.25s ease !important;
-}
-
-.form-control[type="text"]:focus,
-.form-control[type="email"]:focus,
-.form-control[type="tel"]:focus,
-.form-control[type="number"]:focus {
-  outline: none !important;
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-/* تحسين guest cards */
-.guest-type-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 12px !important;
-  padding: 12px 16px !important;
-  margin-bottom: 8px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-}
-
-.guest-info {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-
-.guest-icon {
-  font-size: 24px !important;
-}
-
-.guest-info strong {
-  display: block !important;
-  font-size: 14px !important;
-  color: #fff !important;
-  margin-bottom: 2px !important;
-}
-
-.guest-info small {
-  font-size: 11px !important;
-  color: #94a3b8 !important;
-}
-
-/* ملخص الحجز */
-.summary-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
-  margin-bottom: 12px !important;
-}
-
-.summary-row {
-  display: flex !important;
-  justify-content: space-between !important;
-  padding: 6px 0 !important;
-  font-size: 13px !important;
-  color: #94a3b8 !important;
-}
-
-.summary-row strong {
-  color: #fff !important;
-  font-weight: 600 !important;
-}
-
-.total-price-card {
-  background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(255,166,48,0.1)) !important;
-  border: 1px solid rgba(245,158,11,0.3) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
-  text-align: center !important;
-  margin: 16px 0 !important;
-}
-
-.total-amount {
-  font-size: 28px !important;
-  font-weight: 800 !important;
-  background: linear-gradient(135deg, #FF6B35, #FFA630) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-}
-
-/* زر النبض للدفع */
-.pulse {
-  animation: pulse 2s infinite !important;
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
-  50% { box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5), 0 0 0 6px rgba(255, 107, 53, 0.1); }
 }
