@@ -1,90 +1,111 @@
 /* ==========================================================================
-   ✦ DISCOVER SHARM ✦
-   Premium Tour Booking Experience
+   DISCOVER SHARM - Tour Booking Stylesheet
    All styles scoped within .tour-booking-container
+   Desktop & Mobile Creative Design
    ========================================================================== */
 
 /* ==========================================================================
-   1. VARIABLES & CORE SETUP (Scoped)
+   1. CSS VARIABLES (Scoped to container)
    ========================================================================== */
 .tour-booking-container {
-  /* Colors */
-  --accent-color: #f59e0b;
-  --accent-hover: #d97706;
-  --accent-glow: rgba(245, 158, 11, 0.25);
-  
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-card: #1a1f35;
-  --bg-input: #1a1f2e;
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
-  
+  /* Brand Colors */
+  --gold: #f59e0b;
+  --gold-dark: #d97706;
+  --gold-light: #fbbf24;
+  --gold-glow: rgba(245, 158, 11, 0.2);
   --sunset-start: #FF6B35;
   --sunset-end: #FFA630;
   
-  /* Layout */
+  /* Backgrounds */
+  --bg-deep: #0a0e1a;
+  --bg-dark: #0f172a;
+  --bg-card: #1a1f35;
+  --bg-card-alt: #1e293b;
+  --bg-input: #1a1f2e;
+  --bg-glass: rgba(255, 255, 255, 0.03);
+  
+  /* Text */
+  --text-bright: #ffffff;
+  --text-soft: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-gold: rgba(245, 158, 11, 0.3);
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(245, 158, 11, 0.15);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-smooth: 300ms ease;
+  
+  /* Z-Index */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  
+  /* Container Setup */
   display: flex;
   gap: 24px;
   padding: 16px;
   max-width: 1400px;
   margin: 0 auto;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color: var(--text-primary);
+  color: var(--text-bright);
   line-height: 1.6;
 }
 
 /* ==========================================================================
-   2. MAIN COLUMNS
+   2. LEFT COLUMN - TOUR DETAILS
    ========================================================================== */
 .tour-details {
   flex: 1;
   min-width: 0;
 }
 
-.booking-form-container {
-  flex: 0 0 380px;
-  background: var(--bg-secondary);
-  border-radius: 24px;
-  padding: 24px;
-  border: 1px solid var(--border-color);
-  position: sticky;
-  top: 16px;
-  height: fit-content;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-}
-
 /* ==========================================================================
-   3. 🎬 MEGA CINEMATIC SWIPER - The Masterpiece
+   3. SWIPER GALLERY - Cinematic Design
    ========================================================================== */
 .tour-gallery {
-  background: #000;
+  background: var(--bg-card);
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-  position: relative;
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .swiper {
   width: 100%;
-  height: 500px;
+  height: 450px;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
 }
 
-/* Slide Ken Burns Effect */
 .swiper-slide {
   position: relative;
-  overflow: hidden;
 }
 
 .swiper-slide img,
@@ -92,58 +113,32 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1);
-  transition: transform 7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 6s ease;
 }
 
-.swiper-slide-active img,
-.swiper-slide-active iframe {
-  transform: scale(1.12);
+.swiper-slide-active img {
+  transform: scale(1.04);
 }
 
-/* Multi-layer Gradient Overlays */
 .swiper-slide::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: 
-    linear-gradient(180deg, 
-      rgba(10, 14, 26, 0.6) 0%, 
-      transparent 25%,
-      transparent 55%,
-      rgba(10, 14, 26, 0.9) 100%
-    );
+  background: linear-gradient(to top, rgba(10, 14, 26, 0.4) 0%, transparent 40%);
   pointer-events: none;
-  z-index: 2;
 }
 
-.swiper-slide::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 40%,
-    rgba(10, 14, 26, 0.4) 100%
-  );
-  pointer-events: none;
-  z-index: 3;
-}
-
-/* ==========================================================================
-   4. NAVIGATION ARROWS - Glass Art
-   ========================================================================== */
+/* Navigation Arrows - Glass Design */
 .swiper-button-next,
 .swiper-button-prev {
-  width: 56px;
-  height: 56px;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
   color: #fff;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition-smooth);
   opacity: 0;
 }
 
@@ -154,87 +149,46 @@
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
-  border-color: transparent;
-  box-shadow: 
-    0 0 40px rgba(255, 107, 53, 0.5),
-    0 0 80px rgba(255, 166, 48, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  background: var(--gold);
   color: #000;
+  border-color: var(--gold);
+  box-shadow: var(--shadow-glow);
 }
 
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
 }
 
-/* Ring pulse on hover */
-.swiper-button-next:hover::before,
-.swiper-button-prev:hover::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 166, 48, 0.4);
-  animation: ringPulse 1.5s infinite;
-}
-
-@keyframes ringPulse {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.4); opacity: 0; }
-}
-
-/* ==========================================================================
-   5. PAGINATION - Floating Animated Pills
-   ========================================================================== */
+/* Pagination - Animated Dots */
 .swiper-pagination {
-  bottom: 28px !important;
-  left: 50% !important;
-  transform: translateX(-50%);
-  width: auto !important;
-  background: rgba(10, 14, 26, 0.7) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 8px 24px;
-  border-radius: 30px;
-  display: flex !important;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
+  bottom: 20px !important;
 }
 
 .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: rgba(255, 255, 255, 0.4);
   opacity: 1;
-  margin: 0 3px !important;
-  border-radius: 4px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin: 0 5px !important;
+  transition: var(--transition-smooth);
 }
 
 .swiper-pagination-bullet-active {
-  background: var(--accent-color) !important;
-  width: 32px;
-  border-radius: 4px;
-  box-shadow: 
-    0 0 12px var(--accent-glow),
-    0 0 24px rgba(245, 158, 11, 0.3);
+  background: var(--gold) !important;
+  width: 28px;
+  border-radius: 5px;
 }
 
 /* ==========================================================================
-   6. THUMBNAIL GALLERY - Interactive Filmstrip
+   4. THUMBNAIL STRIP
    ========================================================================== */
 .thumbnail-gallery {
   display: flex;
   gap: 10px;
-  padding: 14px 16px;
-  background: var(--bg-primary);
+  padding: 12px 16px;
   overflow-x: auto;
-  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 
@@ -243,58 +197,91 @@
 }
 
 .thumbnail-gallery img {
-  width: 85px;
-  height: 56px;
+  width: 72px;
+  height: 54px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   border: 2px solid transparent;
-  opacity: 0.45;
-  filter: grayscale(20%) brightness(0.7);
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0.5;
+  transition: var(--transition-smooth);
   flex-shrink: 0;
 }
 
 .thumbnail-gallery img:hover {
   opacity: 0.8;
-  filter: grayscale(0%) brightness(0.9);
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .thumbnail-gallery img.active {
   opacity: 1;
-  filter: grayscale(0%) brightness(1.1);
-  border-color: var(--accent-color);
-  box-shadow: 
-    0 4px 16px var(--accent-glow),
-    0 0 0 2px rgba(245, 158, 11, 0.2);
-  transform: translateY(-4px) scale(1.05);
+  border-color: var(--gold);
 }
 
 /* ==========================================================================
-   7. TOUR TITLE & RATING
+   5. TOUR HEADER & INFO
    ========================================================================== */
+.tour-details h1 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--text-bright);
+}
+
 .rating-container {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin: 12px 0;
 }
 
-.rating-container i.text-yellow-500 {
+.tour-details .notranslate#tourPrice {
+  color: var(--gold);
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.per-person {
+  color: var(--text-muted);
   font-size: 14px;
-  filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.5));
 }
 
 /* ==========================================================================
-   8. INCLUDED / EXCLUDED GRID
+   6. SECTION DIVIDERS
+   ========================================================================== */
+.section-divider {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 20px 0;
+}
+
+.section-spacing {
+  padding: 20px 0;
+}
+
+.section-divider h2,
+.section-spacing h2 {
+  display: flex;
+  align-items: center;
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: var(--text-bright);
+}
+
+.section-divider h2 i,
+.section-spacing h2 i {
+  color: var(--gold);
+}
+
+/* ==========================================================================
+   7. INCLUDED / EXCLUDED GRID
    ========================================================================== */
 .included-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
+  margin-bottom: 20px;
 }
 
 .included-item {
@@ -303,30 +290,31 @@
   gap: 10px;
   padding: 10px 14px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .included-item:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: var(--border-light);
+  border-color: var(--border-medium);
 }
 
 .included-item i {
-  color: var(--accent-color);
+  color: var(--gold);
   width: 20px;
   font-size: 16px;
 }
 
 /* ==========================================================================
-   9. TIMELINE
+   8. TIMELINE - Modern Design
    ========================================================================== */
 .timeline-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: relative;
 }
 
 .timeline-item {
@@ -334,38 +322,38 @@
   gap: 16px;
   padding: 16px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  border-left: 3px solid var(--accent-color);
-  transition: all 0.2s ease;
+  border-left: 3px solid var(--gold);
+  transition: var(--transition-smooth);
 }
 
 .timeline-item:hover {
-  border-left-color: var(--accent-hover);
+  border-left-color: var(--gold-light);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .timeline-time {
   min-width: 100px;
   font-weight: 600;
-  color: var(--accent-color);
+  color: var(--gold);
   font-size: 14px;
 }
 
 .timeline-content h4 {
   font-weight: 600;
   margin-bottom: 6px;
-  color: var(--text-primary);
+  color: var(--text-bright);
 }
 
 .timeline-content p {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
 /* ==========================================================================
-   10. WHAT TO BRING
+   9. WHAT TO BRING - Tag Cloud
    ========================================================================== */
 .what-to-bring-list {
   display: flex;
@@ -380,42 +368,90 @@
   gap: 8px;
   padding: 8px 16px;
   background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 30px;
   font-size: 13px;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .what-to-bring-list li:hover {
-  border-color: var(--accent-color);
+  border-color: var(--gold);
   background: rgba(245, 158, 11, 0.08);
 }
 
 .what-to-bring-list li i {
-  color: var(--accent-color);
+  color: var(--gold);
+}
+
+/* ==========================================================================
+   10. RIGHT COLUMN - BOOKING FORM
+   ========================================================================== */
+.booking-form-container {
+  flex: 0 0 380px;
+  background: var(--bg-card-alt);
+  border-radius: 24px;
+  padding: 24px;
+  border: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 16px;
+  height: fit-content;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.booking-form-container > h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+
+.booking-form-container > h2 i {
+  font-size: 20px;
 }
 
 /* ==========================================================================
    11. PROGRESS BAR
    ========================================================================== */
-.booking-form-container .mb-6 {
+.progress-wrapper {
   margin-bottom: 24px;
 }
 
-.booking-form-container .w-full.h-2 {
+.progress-track {
   width: 100%;
-  height: 6px;
-  background: var(--border-color);
-  border-radius: 9999px;
+  height: 8px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
-#progressBar {
+.progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end));
-  border-radius: 9999px;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 10px var(--accent-glow);
+  background: var(--gold);
+  border-radius: var(--radius-full);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.progress-labels span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: var(--transition-fast);
+}
+
+.progress-labels span[data-active="true"] {
+  color: var(--gold);
 }
 
 /* ==========================================================================
@@ -423,17 +459,17 @@
    ========================================================================== */
 .form-step {
   display: none;
-  animation: fadeSlideUp 0.35s ease-out;
+  animation: fadeSlideIn 0.35s ease-out;
 }
 
 .form-step.active {
   display: block;
 }
 
-@keyframes fadeSlideUp {
+@keyframes fadeSlideIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -442,35 +478,57 @@
 }
 
 /* ==========================================================================
-   13. FORM CONTROLS
+   13. FORM ELEMENTS
    ========================================================================== */
 .form-group {
   margin-bottom: 18px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.form-group label i {
+  color: var(--gold);
+  font-size: 14px;
 }
 
 .form-control {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg-input);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-medium);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: var(--text-bright);
   font-size: 14px;
-  transition: all 0.25s ease;
+  transition: var(--transition-smooth);
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
 }
 
 .form-control::placeholder {
-  color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 select.form-control {
   cursor: pointer;
+}
+
+.error-msg {
+  color: #ef4444;
+  font-size: 11px;
+  margin-top: 6px;
+  font-weight: 500;
 }
 
 /* ==========================================================================
@@ -488,7 +546,7 @@ select.form-control {
   min-width: 100px;
   text-align: center;
   background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   padding: 15px;
   border-radius: 16px;
 }
@@ -498,7 +556,7 @@ select.form-control {
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 12px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .button-container {
@@ -512,27 +570,22 @@ select.form-control {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  color: var(--accent-color);
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-medium);
+  color: var(--gold);
   font-size: 20px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .bb:hover {
-  background: var(--accent-color);
+  background: var(--gold);
   color: #000;
-  border-color: var(--accent-color);
-  transform: scale(1.1);
-}
-
-.bb:active {
-  transform: scale(0.95);
+  border-color: var(--gold);
 }
 
 .button-container input {
@@ -542,25 +595,26 @@ select.form-control {
   border: none;
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-bright);
 }
 
 /* ==========================================================================
    15. BUTTONS
    ========================================================================== */
 .btn {
-  padding: 12px 24px;
+  padding: 12px 20px;
   border-radius: 40px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-smooth);
   border: none;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  flex: 1;
 }
 
 .btn-primary {
@@ -571,21 +625,22 @@ select.form-control {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255, 107, 53, 0.4);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
+  box-shadow: 0 6px 24px rgba(255, 107, 53, 0.35);
 }
 
 .btn-secondary {
   background: transparent;
-  border: 1px solid var(--border-light);
-  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  color: var(--text-bright);
 }
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-row {
+  display: flex;
+  gap: 12px;
 }
 
 /* ==========================================================================
@@ -593,64 +648,125 @@ select.form-control {
    ========================================================================== */
 .summary-section {
   background: var(--bg-glass);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 16px;
 }
 
 .summary-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 16px;
   font-weight: 700;
-  color: var(--accent-color);
+  color: var(--gold);
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .summary-item {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid var(--border-color);
   font-size: 13px;
 }
 
-.summary-item:last-child {
-  border-bottom: none;
+.summary-item:not(:last-child) {
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .summary-label {
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .summary-value {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-bright);
   word-break: break-word;
   text-align: right;
+}
+
+.total-box {
+  text-align: center;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 166, 48, 0.08));
+  border: 1px solid var(--border-gold);
+}
+
+.total-box .text-2xl {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-top: 8px;
 }
 
 /* ==========================================================================
    17. REVIEWS SECTION
    ========================================================================== */
-#reviewsListContainer {
-  max-height: 500px;
-  overflow-y: auto;
+.reviews-wrapper {
+  margin-top: 48px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 32px;
 }
 
-#reviewsListContainer::-webkit-scrollbar {
+.reviews-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.reviews-top h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.reviews-top button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.reviews-top button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.reviews-scroll {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.reviews-scroll::-webkit-scrollbar {
   width: 4px;
 }
 
-#reviewsListContainer::-webkit-scrollbar-track {
-  background: var(--border-color);
+.reviews-scroll::-webkit-scrollbar-thumb {
+  background: var(--gold);
   border-radius: 10px;
 }
 
-#reviewsListContainer::-webkit-scrollbar-thumb {
-  background: var(--accent-color);
-  border-radius: 10px;
+.empty-reviews {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-muted);
 }
 
 /* ==========================================================================
@@ -676,18 +792,18 @@ select.form-control {
   position: relative;
   width: 90%;
   max-width: 480px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-medium);
   border-radius: 20px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--shadow-lg);
   z-index: 10001;
   overflow: hidden;
-  animation: popupBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: popupSlideIn 0.3s ease;
 }
 
-@keyframes popupBounce {
-  from { opacity: 0; transform: translateY(-40px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes popupSlideIn {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .services-popup-header {
@@ -719,7 +835,7 @@ select.form-control {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .close-popup-btn:hover {
@@ -736,7 +852,7 @@ select.form-control {
   display: flex;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .services-popup-footer .btn {
@@ -754,7 +870,7 @@ select.form-control {
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition-smooth);
 }
 
 .service-option:hover {
@@ -763,7 +879,7 @@ select.form-control {
 }
 
 .service-option.selected {
-  border-color: #FF6B35;
+  border-color: var(--sunset-start);
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 166, 48, 0.1));
 }
 
@@ -775,29 +891,29 @@ select.form-control {
   font-weight: 600;
   font-size: 15px;
   margin-bottom: 4px;
-  color: var(--text-primary);
+  color: var(--text-bright);
 }
 
 .service-option-price {
   font-size: 13px;
-  color: #FFA630;
+  color: var(--gold-light);
 }
 
 .service-option-check {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--bg-secondary);
-  border: 2px solid var(--border-light);
+  background: transparent;
+  border: 2px solid var(--border-medium);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .service-option.selected .service-option-check {
-  background: #FF6B35;
-  border-color: #FF6B35;
+  background: var(--sunset-start);
+  border-color: var(--sunset-start);
 }
 
 .service-option.selected .service-option-check::after {
@@ -807,13 +923,24 @@ select.form-control {
 }
 
 /* ==========================================================================
-   19. SPINNER
+   19. SPINNER OVERLAY
    ========================================================================== */
+.spinner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.2);
-  border-top-color: var(--accent-color);
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--gold);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -826,13 +953,12 @@ select.form-control {
    20. THIRD-PARTY OVERRIDES
    ========================================================================== */
 .iti__country-list {
-  background: var(--bg-secondary) !important;
-  border: 1px solid var(--border-light) !important;
-  border-radius: 12px !important;
+  background: var(--bg-card-alt) !important;
+  border: 1px solid var(--border-medium) !important;
 }
 
 .iti__country {
-  color: var(--text-primary) !important;
+  color: var(--text-bright) !important;
 }
 
 .iti__country:hover {
@@ -840,33 +966,27 @@ select.form-control {
 }
 
 .flatpickr-calendar {
-  background: var(--bg-secondary) !important;
-  border: 1px solid var(--border-light) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 16px !important;
+  background: var(--bg-card-alt) !important;
+  border: 1px solid var(--border-medium) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 .flatpickr-day {
-  color: var(--text-primary) !important;
+  color: var(--text-bright) !important;
 }
 
 .flatpickr-day.selected {
-  background: var(--accent-color) !important;
-  border-color: var(--accent-color) !important;
+  background: var(--gold) !important;
+  border-color: var(--gold) !important;
   color: #000 !important;
 }
 
 .flatpickr-day.today {
-  border-color: var(--accent-color) !important;
+  border-color: var(--gold) !important;
 }
 
 .flatpickr-day:hover {
   background: var(--bg-glass) !important;
-}
-
-.flatpickr-months .flatpickr-month,
-.flatpickr-weekdays {
-  color: var(--text-primary) !important;
 }
 
 /* ==========================================================================
@@ -889,7 +1009,7 @@ select.form-control {
   }
   
   .swiper {
-    height: 400px;
+    height: 380px;
   }
 }
 
@@ -902,66 +1022,66 @@ select.form-control {
     gap: 0;
   }
   
-  /* Full Width Swiper */
+  /* Swiper Full Width */
   .tour-gallery {
     border-radius: 0;
     margin-bottom: 0;
   }
   
   .swiper {
-    height: 300px;
+    height: 280px;
     border-radius: 0;
   }
   
-  /* Mobile Navigation - Always Visible */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     opacity: 1;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.7);
   }
   
   .swiper-button-next::after,
   .swiper-button-prev::after {
-    font-size: 16px;
+    font-size: 15px;
   }
   
-  .swiper-button-next {
-    right: 10px;
-  }
-  
-  .swiper-button-prev {
-    left: 10px;
-  }
-  
-  /* Mobile Pagination */
   .swiper-pagination {
-    bottom: 20px !important;
-    background: rgba(10, 14, 26, 0.7) !important;
-    backdrop-filter: blur(16px);
-    padding: 6px 20px;
+    bottom: 14px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: auto !important;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(10px);
+    padding: 6px 18px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   
   .swiper-pagination-bullet {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
+    margin: 0 2px !important;
   }
   
   .swiper-pagination-bullet-active {
-    width: 24px;
+    width: 22px;
+    border-radius: 4px;
   }
   
-  /* Mobile Thumbnails */
+  /* Thumbnails */
   .thumbnail-gallery {
     padding: 10px 12px;
-    background: var(--bg-primary);
+    gap: 8px;
+    background: var(--bg-dark);
   }
   
   .thumbnail-gallery img {
-    width: 60px;
-    height: 44px;
+    width: 56px;
+    height: 42px;
+    border-radius: 6px;
   }
   
   /* Content Padding */
@@ -970,13 +1090,13 @@ select.form-control {
     padding-right: 16px;
   }
   
-  /* Form Card - Bottom Sheet Style */
+  /* Form Card */
   .booking-form-container {
     border-radius: 24px 24px 0 0;
     margin-top: -16px;
     position: relative;
-    z-index: 100;
-    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.6);
+    z-index: var(--z-sticky);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
     padding: 20px 16px;
   }
   
@@ -990,7 +1110,7 @@ select.form-control {
     min-width: auto;
   }
   
-  /* Grids */
+  /* Grids Mobile */
   .included-grid {
     grid-template-columns: 1fr;
   }
@@ -1008,10 +1128,6 @@ select.form-control {
     justify-content: space-between;
   }
   
-  .number-box label {
-    margin-bottom: 0;
-  }
-  
   /* Summary */
   .summary-item {
     flex-direction: column;
@@ -1020,11 +1136,6 @@ select.form-control {
   
   .summary-value {
     text-align: left;
-  }
-  
-  /* Reviews */
-  #reviewsListContainer {
-    max-height: 350px;
   }
   
   /* Popup */
@@ -1039,6 +1150,10 @@ select.form-control {
     flex: 1;
     overflow-y: auto;
     max-height: none;
+  }
+  
+  .reviews-scroll {
+    max-height: 350px;
   }
 }
 
