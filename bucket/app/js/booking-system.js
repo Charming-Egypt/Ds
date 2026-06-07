@@ -450,34 +450,61 @@ function startPaymentPolling() {
   function showPaymentSuccess() {
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
+    
     bookingCard.classList.add('payment-mode');
     bookingCard.innerHTML = `
       <div class="payment-status-container">
         <div class="payment-status-icon success"><i class="fas fa-check-circle"></i></div>
         <h2 class="payment-status-title">Payment Successful! 🎉</h2>
         <p class="payment-status-message">Your booking has been confirmed.</p>
-        <div class="payment-status-details"><div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div></div>
-        <button class="btn-primary" onclick="location.reload()"><i class="fas fa-check"></i> Done</button>
+        <div class="payment-status-details">
+          <div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div>
+          <div class="payment-status-line"><span>Trip:</span><strong>${getTrip().name || 'Trip'}</strong></div>
+        </div>
+        <p class="payment-status-note">A confirmation has been sent to your WhatsApp and email.</p>
+        <button class="btn-primary" onclick="location.reload()">
+          <i class="fas fa-check"></i> Done
+        </button>
       </div>
     `;
-  }
+}
 
-  function showPaymentFailed() {
+function showPaymentFailed() {
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
+    
     bookingCard.classList.add('payment-mode');
     bookingCard.innerHTML = `
       <div class="payment-status-container">
         <div class="payment-status-icon failed"><i class="fas fa-times-circle"></i></div>
         <h2 class="payment-status-title">Payment Failed</h2>
         <p class="payment-status-message">Your payment could not be processed.</p>
-        <button class="btn-primary" id="retryPaymentBtn" style="margin-bottom:10px;"><i class="fas fa-redo"></i> Try Again</button>
-        <button class="btn-secondary" id="backToFormBtn"><i class="fas fa-arrow-left"></i> Edit Details</button>
+        <button class="btn-primary" id="retryPaymentBtn" style="margin-bottom:10px;">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+        <button class="btn-secondary" id="backToFormBtn">
+          <i class="fas fa-arrow-left"></i> Edit Details
+        </button>
       </div>
     `;
-    document.getElementById('retryPaymentBtn').addEventListener('click', function() { submitBooking(); });
-    document.getElementById('backToFormBtn').addEventListener('click', hidePaymentIframe);
-  }
+    
+    document.getElementById('retryPaymentBtn').addEventListener('click', function() {
+        submitBooking();
+    });
+    
+    document.getElementById('backToFormBtn').addEventListener('click', function() {
+        const bookingCard = document.querySelector('.booking-card');
+        const originalContent = bookingCard.getAttribute('data-original-content');
+        if (originalContent) {
+            bookingCard.innerHTML = originalContent;
+            bookingCard.classList.remove('payment-mode');
+            bookingCard.removeAttribute('data-original-content');
+            initEvents();
+        } else {
+            location.reload();
+        }
+    });
+}
 
   // ==========================================================================
   // SUBMIT
