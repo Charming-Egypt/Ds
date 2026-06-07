@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// Complete - With Notifications System
+// Complete - Payment Inside Booking Card (Iframe)
 // ==========================================================================
 
 (function() {
@@ -235,16 +235,13 @@
 
   function toast(msg, type) {
     if (toastTimer) clearTimeout(toastTimer);
-    
     const old = document.querySelector('.bs-toast');
     if (old) old.remove();
-    
     const t = document.createElement('div');
     t.className = 'bs-toast';
     t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1e1e1e;color:#fff;padding:14px 24px;border-radius:30px;z-index:99999;font-size:14px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.5);border-left:4px solid ' + (type === 'error' ? '#ef4444' : '#22c55e') + ';white-space:nowrap;opacity:1;transition:opacity 0.3s;';
     t.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
     document.body.appendChild(t);
-    
     toastTimer = setTimeout(function() {
       t.style.opacity = '0';
       setTimeout(function() { if (t.parentNode) t.remove(); }, 300);
@@ -254,28 +251,19 @@
   function showFieldError(inputId, msg) {
     const existing = document.querySelector('.field-error[data-field="' + inputId + '"]');
     if (existing) existing.remove();
-    
     const input = $(inputId);
     if (!input) return;
-    
     input.style.borderColor = '#ef4444';
-    
     const error = document.createElement('div');
     error.className = 'field-error';
     error.setAttribute('data-field', inputId);
     error.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + msg;
-    
     if (inputId === 'phone') {
       const phoneWrapper = input.closest('.phone-input-wrapper');
-      if (phoneWrapper) {
-        phoneWrapper.after(error);
-      } else {
-        input.closest('.input-group').appendChild(error);
-      }
+      if (phoneWrapper) { phoneWrapper.after(error); } else { input.closest('.input-group').appendChild(error); }
     } else {
       input.parentNode.appendChild(error);
     }
-    
     input.addEventListener('input', function() {
       input.style.borderColor = '';
       if (error.parentNode) error.remove();
@@ -299,47 +287,21 @@
   function createCountryModal() {
     const existing = document.getElementById('countryModal');
     if (existing) existing.remove();
-    
     const modal = document.createElement('div');
     modal.id = 'countryModal';
     modal.className = 'country-modal';
-    modal.innerHTML = `
-      <div class="country-modal-overlay"></div>
-      <div class="country-modal-container">
-        <div class="country-modal-header">
-          <h3>🌍 Select Country</h3>
-          <button class="country-modal-close" id="countryModalClose">&times;</button>
-        </div>
-        <input type="text" class="country-modal-search" id="countryModalSearch" placeholder="Search country..." />
-        <div class="country-modal-list" id="countryModalList"></div>
-      </div>
-    `;
-    
+    modal.innerHTML = '<div class="country-modal-overlay"></div><div class="country-modal-container"><div class="country-modal-header"><h3>🌍 Select Country</h3><button class="country-modal-close" id="countryModalClose">&times;</button></div><input type="text" class="country-modal-search" id="countryModalSearch" placeholder="Search country..." /><div class="country-modal-list" id="countryModalList"></div></div>';
     document.body.appendChild(modal);
-    
     modal.querySelector('.country-modal-overlay').addEventListener('click', closeCountryModal);
     document.getElementById('countryModalClose').addEventListener('click', closeCountryModal);
-    document.getElementById('countryModalSearch').addEventListener('input', function() {
-      renderCountryList(this.value);
-    });
-    
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeCountryModal();
-    });
+    document.getElementById('countryModalSearch').addEventListener('input', function() { renderCountryList(this.value); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeCountryModal(); });
   }
 
   function openCountryModal() {
     createCountryModal();
     const modal = document.getElementById('countryModal');
-    if (modal) {
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      renderCountryList('');
-      setTimeout(function() {
-        const search = document.getElementById('countryModalSearch');
-        if (search) search.focus();
-      }, 300);
-    }
+    if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; renderCountryList(''); setTimeout(function() { const search = document.getElementById('countryModalSearch'); if (search) search.focus(); }, 300); }
   }
 
   function closeCountryModal() {
@@ -351,89 +313,40 @@
   function renderCountryList(filter) {
     const list = document.getElementById('countryModalList');
     if (!list) return;
-    
-    const filtered = filter ? countries.filter(function(c) {
-      return c.name.toLowerCase().indexOf(filter.toLowerCase()) > -1 || c.code.indexOf(filter) > -1;
-    }) : countries;
-    
+    const filtered = filter ? countries.filter(function(c) { return c.name.toLowerCase().indexOf(filter.toLowerCase()) > -1 || c.code.indexOf(filter) > -1; }) : countries;
     list.innerHTML = '';
-    
     filtered.forEach(function(country) {
       const div = document.createElement('div');
       div.className = 'country-modal-item' + (country.code === selectedCountryCode ? ' selected' : '');
-      div.innerHTML = `
-        <img src="${country.flag}" alt="${country.name}" class="country-modal-flag" />
-        <span class="country-modal-name">${country.name}</span>
-        <span class="country-modal-code">${country.code}</span>
-      `;
-      div.addEventListener('click', function() {
-        selectCountry(country);
-      });
+      div.innerHTML = '<img src="' + country.flag + '" alt="' + country.name + '" class="country-modal-flag" /><span class="country-modal-name">' + country.name + '</span><span class="country-modal-code">' + country.code + '</span>';
+      div.addEventListener('click', function() { selectCountry(country); });
       list.appendChild(div);
     });
   }
 
   function selectCountry(country) {
-    selectedCountryCode = country.code;
-    selectedCountryName = country.name;
-    selectedCountryFlag = country.flag;
-    
+    selectedCountryCode = country.code; selectedCountryName = country.name; selectedCountryFlag = country.flag;
     const selectedCountry = document.getElementById('selectedCountry');
-    if (selectedCountry) {
-      selectedCountry.querySelector('img').src = country.flag;
-      selectedCountry.querySelector('img').alt = country.name;
-      selectedCountry.querySelector('span').textContent = country.code;
-    }
-    
+    if (selectedCountry) { selectedCountry.querySelector('img').src = country.flag; selectedCountry.querySelector('img').alt = country.name; selectedCountry.querySelector('span').textContent = country.code; }
     closeCountryModal();
   }
 
-  // ==========================================================================
-  // PARSE PHONE NUMBER
-  // ==========================================================================
   function parsePhoneNumber(fullPhone) {
     if (!fullPhone) return { code: '+20', number: '' };
-    
     const phoneStr = String(fullPhone).trim();
-    
-    const sortedCountries = [...countries].sort(function(a, b) {
-      return b.code.length - a.code.length;
-    });
-    
-    for (let i = 0; i < sortedCountries.length; i++) {
-      if (phoneStr.startsWith(sortedCountries[i].code)) {
-        return {
-          code: sortedCountries[i].code,
-          number: phoneStr.substring(sortedCountries[i].code.length)
-        };
-      }
-    }
-    
+    const sortedCountries = [...countries].sort(function(a, b) { return b.code.length - a.code.length; });
+    for (let i = 0; i < sortedCountries.length; i++) { if (phoneStr.startsWith(sortedCountries[i].code)) { return { code: sortedCountries[i].code, number: phoneStr.substring(sortedCountries[i].code.length) }; } }
     return { code: '+20', number: phoneStr };
   }
 
   // ==========================================================================
   // TRIP DATA
   // ==========================================================================
-  function getTrip() {
-    try { return (window.tripModule?.getCurrentTrip?.()) || {}; } catch(e) { return {}; }
-  }
-  
-  function getTourTypes() {
-    try { return (window.tripModule?.getTourTypes?.()) || {}; } catch(e) { return {}; }
-  }
-  
-  function getOwnerId() {
-    try { return toStr(window.tripModule?.getTripOwnerId?.()); } catch(e) { return ''; }
-  }
-  
-  function getTripId() {
-    try { return toStr(window.tripModule?.getTripPName?.()); } catch(e) { return ''; }
-  }
-  
-  function fmtPrice(p) {
-    try { return window.tripModule?.formatPrice?.(p) || (parseFloat(p)||0).toFixed(2) + ' EGP'; } catch(e) { return (parseFloat(p)||0).toFixed(2) + ' EGP'; }
-  }
+  function getTrip() { try { return (window.tripModule?.getCurrentTrip?.()) || {}; } catch(e) { return {}; } }
+  function getTourTypes() { try { return (window.tripModule?.getTourTypes?.()) || {}; } catch(e) { return {}; } }
+  function getOwnerId() { try { return toStr(window.tripModule?.getTripOwnerId?.()); } catch(e) { return ''; } }
+  function getTripId() { try { return toStr(window.tripModule?.getTripPName?.()); } catch(e) { return ''; } }
+  function fmtPrice(p) { try { return window.tripModule?.formatPrice?.(p) || (parseFloat(p)||0).toFixed(2) + ' EGP'; } catch(e) { return (parseFloat(p)||0).toFixed(2) + ' EGP'; } }
 
   // ==========================================================================
   // GUEST COUNTERS
@@ -446,22 +359,8 @@
   // ==========================================================================
   // PRICE
   // ==========================================================================
-  function calcBase() {
-    const t = getTrip();
-    const bp = parseFloat(t.basePrice) || 0;
-    if (!bp) return 0;
-    const cp = parseFloat(t.cprice) || bp * 0.5;
-    return parseFloat(((adults() * bp) + (children() * cp)).toFixed(2));
-  }
-  
-  function calcExtra() {
-    const tt = getTourTypes();
-    if (selectedTripType && tt[selectedTripType]) {
-      return parseFloat(((adults() + children()) * parseFloat(tt[selectedTripType])).toFixed(2));
-    }
-    return 0;
-  }
-  
+  function calcBase() { const t = getTrip(); const bp = parseFloat(t.basePrice) || 0; if (!bp) return 0; const cp = parseFloat(t.cprice) || bp * 0.5; return parseFloat(((adults() * bp) + (children() * cp)).toFixed(2)); }
+  function calcExtra() { const tt = getTourTypes(); if (selectedTripType && tt[selectedTripType]) { return parseFloat(((adults() + children()) * parseFloat(tt[selectedTripType])).toFixed(2)); } return 0; }
   function calcNet() { return parseFloat((calcBase() + calcExtra()).toFixed(2)); }
   function calcTax() { const n = calcNet(); return parseFloat((n * 0.03 + n * 0.03 * 0.14 + 3).toFixed(2)); }
   function calcTotal() { return parseFloat((calcNet() + calcTax()).toFixed(2)); }
@@ -469,42 +368,16 @@
   // ==========================================================================
   // STEPPER
   // ==========================================================================
-  function stepper(id, delta) {
-    const inp = $(id);
-    if (!inp) return;
-    let v = parseInt(inp.value) || 0;
-    const max = id === 'infants' ? 2 : 10;
-    const min = id === 'adults' ? 1 : 0;
-    v = Math.max(min, Math.min(max, v + delta));
-    inp.value = v;
-    if (currentStep === 3) updateSummary();
-  }
+  function stepper(id, delta) { const inp = $(id); if (!inp) return; let v = parseInt(inp.value) || 0; const max = id === 'infants' ? 2 : 10; const min = id === 'adults' ? 1 : 0; v = Math.max(min, Math.min(max, v + delta)); inp.value = v; if (currentStep === 3) updateSummary(); }
 
   // ==========================================================================
   // SUMMARY
   // ==========================================================================
   function setText(id, val) { const e = $(id); if (e) e.textContent = toStr(val); }
-
   function updateSummary() {
-    setText('summaryRef', refNumber);
-    setText('summaryTour', getTrip().name || '-');
-    setText('summaryDate', $('tripDate')?.value || '-');
-    setText('summaryHotel', clean($('hotelName')?.value) || '-');
-    setText('summaryRoom', clean($('roomNumber')?.value) || '-');
-    setText('summaryAdults', adults() + ' Adult' + (adults() !== 1 ? 's' : ''));
-    setText('summaryChildrenUnder12', children() + ' Child' + (children() !== 1 ? 'ren' : ''));
-    setText('summaryInfants', infants() + ' Infant' + (infants() !== 1 ? 's' : ''));
-    setText('summaryService', selectedTripType || 'None');
-
+    setText('summaryRef', refNumber); setText('summaryTour', getTrip().name || '-'); setText('summaryDate', $('tripDate')?.value || '-'); setText('summaryHotel', clean($('hotelName')?.value) || '-'); setText('summaryRoom', clean($('roomNumber')?.value) || '-'); setText('summaryAdults', adults() + ' Adult' + (adults() !== 1 ? 's' : '')); setText('summaryChildrenUnder12', children() + ' Child' + (children() !== 1 ? 'ren' : '')); setText('summaryInfants', infants() + ' Infant' + (infants() !== 1 ? 's' : '')); setText('summaryService', selectedTripType || 'None');
     const td = $('totalPriceDisplay');
-    if (td && getTrip().basePrice) {
-      td.innerHTML = fmtPrice(calcNet()) +
-        '<div style="font-size:11px;color:#a0a0a0;margin-top:8px;">' +
-        '<div style="display:flex;justify-content:space-between;border-top:1px solid #3a3a3a;padding-top:4px;">' +
-        '<span>+ Taxes:</span><span>' + fmtPrice(calcTax()) + '</span></div>' +
-        '<div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;color:#f59e0b;font-weight:700;">' +
-        '<span>Total:</span><span>' + fmtPrice(calcTotal()) + '</span></div></div>';
-    }
+    if (td && getTrip().basePrice) { td.innerHTML = fmtPrice(calcNet()) + '<div style="font-size:11px;color:#a0a0a0;margin-top:8px;"><div style="display:flex;justify-content:space-between;border-top:1px solid #3a3a3a;padding-top:4px;"><span>+ Taxes:</span><span>' + fmtPrice(calcTax()) + '</span></div><div style="display:flex;justify-content:space-between;border-top:1px solid #f59e0b;padding-top:4px;color:#f59e0b;font-weight:700;"><span>Total:</span><span>' + fmtPrice(calcTotal()) + '</span></div></div>'; }
   }
 
   // ==========================================================================
@@ -512,215 +385,145 @@
   // ==========================================================================
   function goToStep(n) {
     clearAllFieldErrors();
-    
     document.querySelectorAll('.form-step').forEach(function(s) { s.classList.remove('active'); });
-    const tgt = document.querySelector('.form-step[data-step="' + n + '"]');
-    if (tgt) tgt.classList.add('active');
+    const tgt = document.querySelector('.form-step[data-step="' + n + '"]'); if (tgt) tgt.classList.add('active');
     currentStep = n;
-    
-    const pb = $('progressBar');
-    if (pb) pb.style.width = ((n + 1) / 4 * 100) + '%';
-    
-    document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) {
-      l.classList.toggle('active', i === n);
-    });
-    
+    const pb = $('progressBar'); if (pb) pb.style.width = ((n + 1) / 4 * 100) + '%';
+    document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) { l.classList.toggle('active', i === n); });
     if (n === 3) updateSummary();
   }
 
   function validateStep1() {
-    clearAllFieldErrors();
-    let valid = true;
-    
-    if (!toStr($('username')?.value)) {
-      showFieldError('username', 'Please enter your full name');
-      valid = false;
-    }
-    
-    const em = toStr($('customerEmail')?.value);
-    if (!em || em.indexOf('@') < 0 || em.indexOf('.') < 0) {
-      showFieldError('customerEmail', 'Please enter a valid email address');
-      valid = false;
-    }
-    
-    const phone = toStr($('phone')?.value);
-    if (!phone || phone.length < 7) {
-      showFieldError('phone', 'Please enter a valid phone number');
-      valid = false;
-    }
-    
+    clearAllFieldErrors(); let valid = true;
+    if (!toStr($('username')?.value)) { showFieldError('username', 'Please enter your full name'); valid = false; }
+    const em = toStr($('customerEmail')?.value); if (!em || em.indexOf('@') < 0 || em.indexOf('.') < 0) { showFieldError('customerEmail', 'Please enter a valid email address'); valid = false; }
+    const phone = toStr($('phone')?.value); if (!phone || phone.length < 7) { showFieldError('phone', 'Please enter a valid phone number'); valid = false; }
     return valid;
   }
 
   function validateStep2() {
-    clearAllFieldErrors();
-    let valid = true;
-    
-    if (!toStr($('tripDate')?.value)) {
-      showFieldError('tripDate', 'Please select a date for your trip');
-      valid = false;
-    }
-    
-    if (!toStr($('hotelName')?.value)) {
-      showFieldError('hotelName', 'Please enter your hotel name');
-      valid = false;
-    }
-    
-    if (!toStr($('roomNumber')?.value)) {
-      showFieldError('roomNumber', 'Please enter your room number');
-      valid = false;
-    }
-    
+    clearAllFieldErrors(); let valid = true;
+    if (!toStr($('tripDate')?.value)) { showFieldError('tripDate', 'Please select a date for your trip'); valid = false; }
+    if (!toStr($('hotelName')?.value)) { showFieldError('hotelName', 'Please enter your hotel name'); valid = false; }
+    if (!toStr($('roomNumber')?.value)) { showFieldError('roomNumber', 'Please enter your room number'); valid = false; }
     return valid;
   }
 
-  function nextStep() {
-    if (currentStep === 0 && !validateStep1()) return;
-    if (currentStep === 1 && !validateStep2()) return;
-    if (currentStep < 3) goToStep(currentStep + 1);
-  }
-
-  function prevStep() {
-    if (currentStep > 0) goToStep(currentStep - 1);
-  }
+  function nextStep() { if (currentStep === 0 && !validateStep1()) return; if (currentStep === 1 && !validateStep2()) return; if (currentStep < 3) goToStep(currentStep + 1); }
+  function prevStep() { if (currentStep > 0) goToStep(currentStep - 1); }
 
   // ==========================================================================
   // SERVICES POPUP
   // ==========================================================================
   let tempService = '';
-
   function openServicesPopup() {
-    const popup = $('extraServicesPopup');
-    const content = $('servicesPopupContent');
-    if (!popup || !content) return;
-    
-    tempService = selectedTripType;
-    content.innerHTML = '';
-    
-    const noneDiv = document.createElement('div');
-    noneDiv.className = 'service-option' + (!tempService ? ' selected' : '');
-    noneDiv.innerHTML = '<div class="service-option-info"><div class="service-option-name">No extra services</div><div class="service-option-price">Free</div></div><div class="service-option-check"></div>';
-    noneDiv.onclick = function() { tempService = ''; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); noneDiv.classList.add('selected'); };
-    content.appendChild(noneDiv);
-    
+    const popup = $('extraServicesPopup'), content = $('servicesPopupContent'); if (!popup || !content) return;
+    tempService = selectedTripType; content.innerHTML = '';
+    const noneDiv = document.createElement('div'); noneDiv.className = 'service-option' + (!tempService ? ' selected' : ''); noneDiv.innerHTML = '<div class="service-option-info"><div class="service-option-name">No extra services</div><div class="service-option-price">Free</div></div><div class="service-option-check"></div>';
+    noneDiv.onclick = function() { tempService = ''; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); noneDiv.classList.add('selected'); }; content.appendChild(noneDiv);
     const types = getTourTypes();
-    Object.keys(types || {}).forEach(function(key) {
-      const div = document.createElement('div');
-      div.className = 'service-option' + (tempService === key ? ' selected' : '');
-      div.innerHTML = '<div class="service-option-info"><div class="service-option-name">' + key + '</div><div class="service-option-price">' + fmtPrice(types[key]) + ' per person</div></div><div class="service-option-check"></div>';
-      div.onclick = function() { tempService = key; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); div.classList.add('selected'); };
-      content.appendChild(div);
-    });
+    Object.keys(types || {}).forEach(function(key) { const div = document.createElement('div'); div.className = 'service-option' + (tempService === key ? ' selected' : ''); div.innerHTML = '<div class="service-option-info"><div class="service-option-name">' + key + '</div><div class="service-option-price">' + fmtPrice(types[key]) + ' per person</div></div><div class="service-option-check"></div>'; div.onclick = function() { tempService = key; content.querySelectorAll('.service-option').forEach(function(o) { o.classList.remove('selected'); }); div.classList.add('selected'); }; content.appendChild(div); });
+    popup.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+  }
+  function confirmService() { selectedTripType = tempService; const tt = $('tripType'); if (tt) tt.value = selectedTripType; const st = $('selectedServiceText'); if (st) st.textContent = selectedTripType || 'No extra services'; closeServicesPopup(); updateSummary(); }
+  function closeServicesPopup() { const popup = $('extraServicesPopup'); if (popup) popup.classList.add('hidden'); document.body.style.overflow = ''; }
+
+  // ==========================================================================
+  // PAYMENT IFRAME - Inside Booking Card
+  // ==========================================================================
+  function showPaymentIframe(paymentUrl) {
+    const bookingCard = document.querySelector('.booking-card');
+    if (!bookingCard) return;
     
-    popup.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    // Save original content
+    const originalContent = bookingCard.innerHTML;
+    
+    // Replace card content with payment iframe
+    bookingCard.innerHTML = `
+      <div class="payment-iframe-container">
+        <div class="payment-iframe-header">
+          <h3><i class="fas fa-lock"></i> Secure Payment</h3>
+          <p>Complete your payment to confirm booking</p>
+          <button class="payment-back-btn" id="paymentBackBtn">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+        </div>
+        <div class="payment-iframe-wrapper">
+          <iframe src="${paymentUrl}" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="payment-iframe-footer">
+          <small><i class="fas fa-shield-alt"></i> Secured by Kashier</small>
+        </div>
+      </div>
+    `;
+    
+    // Store original content for back button
+    bookingCard.setAttribute('data-original-content', originalContent);
+    bookingCard.classList.add('payment-mode');
+    
+    // Back button
+    document.getElementById('paymentBackBtn').addEventListener('click', function() {
+      hidePaymentIframe();
+    });
   }
 
-  function confirmService() {
-    selectedTripType = tempService;
-    const tt = $('tripType'); if (tt) tt.value = selectedTripType;
-    const st = $('selectedServiceText'); if (st) st.textContent = selectedTripType || 'No extra services';
-    closeServicesPopup();
-    updateSummary();
-  }
-
-  function closeServicesPopup() {
-    const popup = $('extraServicesPopup');
-    if (popup) popup.classList.add('hidden');
-    document.body.style.overflow = '';
+  function hidePaymentIframe() {
+    const bookingCard = document.querySelector('.booking-card');
+    if (!bookingCard) return;
+    
+    const originalContent = bookingCard.getAttribute('data-original-content');
+    if (originalContent) {
+      bookingCard.innerHTML = originalContent;
+      bookingCard.classList.remove('payment-mode');
+      bookingCard.removeAttribute('data-original-content');
+      
+      // Re-bind all events
+      initEvents();
+    }
   }
 
   // ==========================================================================
-  // SUBMIT - WITH NOTIFICATIONS
+  // SUBMIT
   // ==========================================================================
   async function submitBooking() {
     const spinner = $('spinner');
     const submitBtn = $('submitBtn');
-    
     if (spinner) spinner.classList.remove('hidden');
     if (submitBtn) submitBtn.disabled = true;
     
     try {
-      if (typeof auth === 'undefined') throw new Error('Authentication not loaded. Please refresh the page.');
-      if (typeof db === 'undefined') throw new Error('Database not loaded. Please refresh the page.');
-      if (!auth.currentUser) throw new Error('Please sign in to complete your booking.');
+      if (typeof auth === 'undefined') throw new Error('Authentication not loaded.');
+      if (typeof db === 'undefined') throw new Error('Database not loaded.');
+      if (!auth.currentUser) throw new Error('Please sign in.');
       
-      const user = auth.currentUser;
-      const trip = getTrip();
-      const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
-      const ownerId = getOwnerId();
+      const user = auth.currentUser, trip = getTrip(), tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || ''), ownerId = getOwnerId();
+      const phone = getPhoneNumber(), net = calcNet(), tax = calcTax(), total = calcTotal();
       
-      const phone = getPhoneNumber();
-      const net = calcNet();
-      const tax = calcTax();
-      const total = calcTotal();
+      const booking = { refNumber, username: clean($('username')?.value), email: clean($('customerEmail')?.value), phone, tour: toStr(trip.name), tripId, tripDate: toStr($('tripDate')?.value), adults: adults(), childrenUnder12: children(), infants: infants(), hotelName: clean($('hotelName')?.value), roomNumber: clean($('roomNumber')?.value), baseTotal: calcBase(), extraServicesTotal: calcExtra(), netTotal: net, total, taxes: tax, extraServices: selectedTripType || 'None', status: 'pending', resStatus: 'new', isPaid: false, paymentStatus: 'unpaid', uid: user.uid, owner: ownerId || user.uid, createdAt: Date.now(), updatedAt: Date.now() };
       
-      const booking = {
-        refNumber, username: clean($('username')?.value), email: clean($('customerEmail')?.value),
-        phone, tour: toStr(trip.name), tripId, tripDate: toStr($('tripDate')?.value),
-        adults: adults(), childrenUnder12: children(), infants: infants(),
-        hotelName: clean($('hotelName')?.value), roomNumber: clean($('roomNumber')?.value),
-        baseTotal: calcBase(), extraServicesTotal: calcExtra(), netTotal: net, total, taxes: tax,
-        extraServices: selectedTripType || 'None',
-        status: 'pending', resStatus: 'new', isPaid: false, paymentStatus: 'unpaid',
-        uid: user.uid, owner: ownerId || user.uid, createdAt: Date.now(), updatedAt: Date.now()
-      };
-      
-      const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP' })
-      });
-      
-      if (!resp.ok) throw new Error('Payment service temporarily unavailable. Please try again.');
+      const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP' }) });
+      if (!resp.ok) throw new Error('Payment service unavailable.');
       const hashData = await resp.json();
-      if (!hashData.hash) throw new Error('Payment verification failed. Please try again.');
+      if (!hashData.hash) throw new Error('Payment verification failed.');
       
-      const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
-        merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP',
-        hash: hashData.hash, mode: 'live',
-        merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html',
-        failureRedirect: 'false', redirectMethod: 'get'
-      }).toString();
+      const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP', hash: hashData.hash, mode: 'live', merchantRedirect: 'https://www.discover-sharm.com/p/payment-status.html', failureRedirect: 'false', redirectMethod: 'get' }).toString();
       
-      // Save booking to Firebase
       await db.ref('trip-bookings/' + refNumber).set({ ...booking, paymenturl: paymentUrl });
       
-      // ==========================================================================
-      // SEND NOTIFICATION TO TRIP OWNER
-      // ==========================================================================
+      // Notify owner
       if (ownerId && ownerId !== user.uid) {
-        try {
-          await db.ref('notifications/' + ownerId + '/' + Date.now()).set({
-            title: 'New Booking: ' + (trip.name || 'Trip'),
-            message: booking.username + ' - ' + adults() + 'A/' + children() + 'C/' + infants() + 'I',
-            totalAmount: net,
-            bookingId: refNumber,
-            tripId: tripId,
-            tripName: trip.name || '',
-            userName: booking.username,
-            userEmail: booking.email,
-            phone: booking.phone,
-            adults: adults(),
-            children: children(),
-            infants: infants(),
-            tripDate: booking.tripDate,
-            read: false,
-            timestamp: Date.now(),
-            type: 'new_booking'
-          });
-        } catch(e) {
-          console.warn('Failed to send notification:', e);
-        }
+        try { await db.ref('notifications/' + ownerId + '/' + Date.now()).set({ title: 'New Booking: ' + (trip.name || 'Trip'), message: booking.username + ' - ' + adults() + 'A/' + children() + 'C/' + infants() + 'I', totalAmount: net, bookingId: refNumber, tripId, tripName: trip.name || '', userName: booking.username, userEmail: booking.email, phone: booking.phone, adults: adults(), children: children(), infants: infants(), tripDate: booking.tripDate, read: false, timestamp: Date.now(), type: 'new_booking' }); } catch(e) {}
       }
       
-      // Save to session for payment status page
       sessionStorage.setItem('username', booking.username);
       sessionStorage.setItem('email', booking.email);
       sessionStorage.setItem('phone', booking.phone);
       sessionStorage.setItem('refNumber', refNumber);
       
-      toast('Redirecting to payment gateway...', 'success');
-      setTimeout(function() { window.location.href = paymentUrl; }, 1500);
+      if (spinner) spinner.classList.add('hidden');
+      
+      // Show payment inside card
+      showPaymentIframe(paymentUrl);
       
     } catch(e) {
       toast(e.message, 'error');
@@ -735,36 +538,26 @@
   async function loadUserData() {
     if (!auth?.currentUser) return;
     try {
-      const snap = await db.ref('egy_user/' + auth.currentUser.uid).once('value');
-      const d = snap.val();
-      if (!d) return;
-      
+      const snap = await db.ref('egy_user/' + auth.currentUser.uid).once('value'), d = snap.val(); if (!d) return;
       if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
       if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
-      
-      if (d.phone) {
-        const fullPhone = String(d.phone).trim();
-        const parsed = parsePhoneNumber(fullPhone);
-        
-        selectedCountryCode = parsed.code;
-        
-        const country = countries.find(function(c) { return c.code === parsed.code; });
-        if (country) {
-          selectedCountryName = country.name;
-          selectedCountryFlag = country.flag;
-          
-          const selectedCountry = document.getElementById('selectedCountry');
-          if (selectedCountry) {
-            selectedCountry.querySelector('img').src = country.flag;
-            selectedCountry.querySelector('img').alt = country.name;
-            selectedCountry.querySelector('span').textContent = country.code;
-          }
-        }
-        
-        const phoneInput = $('phone');
-        if (phoneInput) phoneInput.value = parsed.number;
-      }
+      if (d.phone) { const parsed = parsePhoneNumber(String(d.phone).trim()); selectedCountryCode = parsed.code; const country = countries.find(function(c) { return c.code === parsed.code; }); if (country) { const sc = document.getElementById('selectedCountry'); if (sc) { sc.querySelector('img').src = country.flag; sc.querySelector('span').textContent = country.code; } } const pi = $('phone'); if (pi) pi.value = parsed.number; }
     } catch(e) {}
+  }
+
+  // ==========================================================================
+  // EVENT BINDING
+  // ==========================================================================
+  function initEvents() {
+    document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
+    document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
+    document.querySelectorAll('[data-stepper]').forEach(function(b) { b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); }; });
+    const sb = $('submitBtn'); if (sb) sb.onclick = submitBooking;
+    const sv = $('openServicesBtn'); if (sv) sv.onclick = openServicesPopup;
+    const cb = $('confirmServicesBtn'); if (cb) cb.onclick = confirmService;
+    const cl = $('cancelServicesBtn'); if (cl) cl.onclick = closeServicesPopup;
+    document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
+    const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
   }
 
   // ==========================================================================
@@ -773,79 +566,22 @@
   function init() {
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
     if (!tripId) { toast('No trip specified in URL', 'error'); return; }
-    
     refNumber = generateRef();
-    
-    const trip = getTrip();
-    const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
-    
-    const countryCodeSelect = $('countryCodeSelect');
-    if (countryCodeSelect) {
-      countryCodeSelect.addEventListener('click', function(e) {
-        e.stopPropagation();
-        openCountryModal();
-      });
-    }
-    
-    const dateEl = document.querySelector('#tripDate');
-    if (dateEl && typeof flatpickr !== 'undefined') {
-      flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
-    }
-    
-    document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
-    document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
-    document.querySelectorAll('[data-stepper]').forEach(function(b) {
-      b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); };
-    });
-    
-    const sb = $('submitBtn'); if (sb) sb.onclick = submitBooking;
-    const sv = $('openServicesBtn'); if (sv) sv.onclick = openServicesPopup;
-    const cb = $('confirmServicesBtn'); if (cb) cb.onclick = confirmService;
-    const cl = $('cancelServicesBtn'); if (cl) cl.onclick = closeServicesPopup;
-    
-    document.querySelectorAll('#extraServicesPopup .close-popup-btn').forEach(function(b) { b.onclick = closeServicesPopup; });
-    const ov = document.querySelector('#extraServicesPopup .services-popup-overlay'); if (ov) ov.onclick = closeServicesPopup;
-    
-    document.addEventListener('keydown', function(e) { 
-      if (e.key === 'Escape') {
-        closeServicesPopup();
-        closeCountryModal();
-      }
-    });
-    
+    const trip = getTrip(); const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
+    const countryCodeSelect = $('countryCodeSelect'); if (countryCodeSelect) { countryCodeSelect.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
+    const dateEl = document.querySelector('#tripDate'); if (dateEl && typeof flatpickr !== 'undefined') { flatpickr(dateEl, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true }); }
+    initEvents();
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeServicesPopup(); closeCountryModal(); } });
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
-    
     setTimeout(updateSummary, 1500);
   }
 
   // ==========================================================================
   // PUBLIC API
   // ==========================================================================
-  window.BookingSystem = {
-    init: init,
-    nextStep: nextStep,
-    prevStep: prevStep,
-    stepper: stepper,
-    openServices: openServicesPopup,
-    closeServices: closeServicesPopup,
-    confirmService: confirmService,
-    submit: submitBooking,
-    updateSummary: updateSummary,
-    getRef: function() { return refNumber; },
-    getPhone: getPhoneNumber
-  };
+  window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
-  // ==========================================================================
-  // AUTO START
-  // ==========================================================================
-  function tryInit() {
-    if (typeof auth === 'undefined' || typeof db === 'undefined') {
-      setTimeout(tryInit, 500);
-      return;
-    }
-    init();
-  }
-  
+  function tryInit() { if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; } init(); }
   setTimeout(tryInit, 800);
 
 })();
