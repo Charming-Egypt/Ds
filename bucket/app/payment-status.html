@@ -3,40 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Status</title>
+    <title>Payment Status | Discover Sharm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
+            font-family: 'Poppins', sans-serif;
             background: #1e1e1e;
             color: #fff;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+        }
+        .container {
+            background: #222;
+            border: 1px solid #2e2e2e;
+            border-radius: 20px;
+            padding: 40px 32px;
             text-align: center;
-            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         .spinner {
-            width: 40px; height: 40px;
+            width: 44px; height: 44px;
             border: 3px solid #2e2e2e;
             border-top-color: #f59e0b;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .icon { font-size: 48px; margin-bottom: 16px; }
-        .icon.success { color: #22c55e; }
-        .icon.failed { color: #ef4444; }
-        .text { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .subtext { font-size: 13px; color: #888; }
+        .icon-circle {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+        .icon-circle.success { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .icon-circle.failed { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { font-size: 13px; color: #888; margin-bottom: 16px; }
+        .progress {
+            width: 100%; height: 3px;
+            background: #2e2e2e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #f59e0b;
+            border-radius: 10px;
+            width: 70%;
+            animation: progressPulse 1.5s infinite;
+        }
+        @keyframes progressPulse {
+            0%, 100% { width: 70%; }
+            50% { width: 90%; }
+        }
     </style>
 </head>
 <body>
-    <div id="status">
+    <div class="container" id="status">
         <div class="spinner"></div>
-        <p class="text">Processing payment...</p>
+        <h2 class="title">Processing Payment</h2>
+        <p class="subtitle">Please wait while we confirm your payment</p>
+        <div class="progress"><div class="progress-fill"></div></div>
     </div>
 
     <script>
@@ -45,7 +82,6 @@
             var refNumber = params.get('ref') || params.get('merchantOrderId') || '';
             var tripId = params.get('tripId') || '';
             
-            // Get booking from session
             var bookingData = null;
             try {
                 var data = sessionStorage.getItem('pendingBooking');
@@ -54,9 +90,9 @@
             
             var status = 'pending';
             
-            async function checkPayment() {
+            async function process() {
+                // Check payment status
                 try {
-                    // Check with Kashier API
                     var resp = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/paymentStatus', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -65,13 +101,10 @@
                     
                     if (resp.ok) {
                         var apiData = await resp.json();
-                        if (apiData.status === 'paid' || apiData.status === 'success') {
-                            status = 'success';
-                        } else if (apiData.status === 'failed' || apiData.status === 'declined') {
-                            status = 'failed';
-                        }
+                        if (apiData.status === 'paid' || apiData.status === 'success') status = 'success';
+                        else if (apiData.status === 'failed' || apiData.status === 'declined') status = 'failed';
                     } else {
-                        status = 'success'; // Redirected here = success
+                        status = 'success';
                     }
                 } catch(e) {
                     status = 'success';
@@ -79,105 +112,73 @@
                 
                 // Save to Firebase if success
                 if (status === 'success' && bookingData && bookingData.refNumber) {
-                    await saveToFirebase(bookingData);
+                    try {
+                        if (typeof firebaseConfig !== 'undefined') {
+                            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                        }
+                        var db = firebase.database();
+                        var ref = bookingData.refNumber;
+                        
+                        // Check if already saved
+                        var snap = await db.ref('trip-bookings/' + ref).once('value');
+                        if (!snap.val() || snap.val().paymentStatus !== 'paid') {
+                            var finalBooking = {
+                                ...bookingData,
+                                paymentStatus: 'paid', status: 'confirmed', isPaid: true,
+                                resStatus: 'new',
+                                paymentDate: firebase.database.ServerValue.TIMESTAMP,
+                                updatedAt: firebase.database.ServerValue.TIMESTAMP
+                            };
+                            await db.ref('trip-bookings/' + ref).set(finalBooking);
+                            
+                            // Notify owner
+                            if (finalBooking.owner && finalBooking.owner !== finalBooking.uid) {
+                                await db.ref('notifications/' + finalBooking.owner + '/' + Date.now()).set({
+                                    title: 'New Booking: ' + (finalBooking.tour || 'Trip'),
+                                    message: (finalBooking.username || 'Guest') + ' - ' + 
+                                             (finalBooking.adults || 0) + 'A/' + 
+                                             (finalBooking.childrenUnder12 || 0) + 'C/' + 
+                                             (finalBooking.infants || 0) + 'I',
+                                    totalAmount: finalBooking.netTotal || finalBooking.total || 0,
+                                    bookingId: ref, tripId: finalBooking.tripId,
+                                    tripName: finalBooking.tour, userName: finalBooking.username,
+                                    userEmail: finalBooking.email, phone: finalBooking.phone,
+                                    adults: finalBooking.adults || 0,
+                                    children: finalBooking.childrenUnder12 || 0,
+                                    infants: finalBooking.infants || 0,
+                                    tripDate: finalBooking.tripDate,
+                                    read: false, timestamp: Date.now(), type: 'new_booking'
+                                });
+                            }
+                            
+                            sessionStorage.removeItem('pendingBooking');
+                            sessionStorage.removeItem('refNumber');
+                        }
+                    } catch(e) {}
                 }
                 
-                // Show result and redirect back
-                showResultAndRedirect();
+                // Show result
+                var container = document.getElementById('status');
+                if (status === 'success') {
+                    container.innerHTML = '<div class="icon-circle success"><i class="fas fa-check"></i></div><h2 class="title">Payment Successful!</h2><p class="subtitle">Returning to your booking...</p>';
+                } else {
+                    container.innerHTML = '<div class="icon-circle failed"><i class="fas fa-times"></i></div><h2 class="title">Payment Failed</h2><p class="subtitle">Returning to your booking...</p>';
+                }
+                
+                // Redirect back to booking page
+                var redirectUrl = 'https://www.discover-sharm.com/p/tour.html';
+                if (tripId) redirectUrl += '?trip-id=' + tripId + '&payment=' + status + '&ref=' + refNumber;
+                else redirectUrl += '?payment=' + status + '&ref=' + refNumber;
+                
+                setTimeout(function() { window.location.href = redirectUrl; }, 2000);
             }
             
-            async function saveToFirebase(data) {
-                try {
-                    if (typeof firebaseConfig !== 'undefined') {
-                        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-                    }
-                    
-                    var db = firebase.database();
-                    var ref = data.refNumber;
-                    
-                    // Prevent duplicate
-                    var snap = await db.ref('trip-bookings/' + ref).once('value');
-                    if (snap.val() && snap.val().paymentStatus === 'paid') return;
-                    
-                    var finalBooking = {
-                        ...data,
-                        paymentStatus: 'paid',
-                        status: 'confirmed',
-                        isPaid: true,
-                        resStatus: 'new',
-                        paymentDate: firebase.database.ServerValue.TIMESTAMP,
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    
-                    await db.ref('trip-bookings/' + ref).set(finalBooking);
-                    
-                    // Notify owner (ONCE)
-                    if (finalBooking.owner && finalBooking.owner !== finalBooking.uid) {
-                        await db.ref('notifications/' + finalBooking.owner + '/' + Date.now()).set({
-                            title: '💰 New Booking: ' + (finalBooking.tour || 'Trip'),
-                            message: (finalBooking.username || 'Guest') + ' - ' + 
-                                     (finalBooking.adults || 0) + 'A/' + 
-                                     (finalBooking.childrenUnder12 || 0) + 'C/' + 
-                                     (finalBooking.infants || 0) + 'I',
-                            totalAmount: finalBooking.netTotal || finalBooking.total || 0,
-                            bookingId: ref,
-                            tripId: finalBooking.tripId,
-                            tripName: finalBooking.tour,
-                            userName: finalBooking.username,
-                            userEmail: finalBooking.email,
-                            phone: finalBooking.phone,
-                            adults: finalBooking.adults || 0,
-                            children: finalBooking.childrenUnder12 || 0,
-                            infants: finalBooking.infants || 0,
-                            tripDate: finalBooking.tripDate,
-                            read: false,
-                            timestamp: Date.now(),
-                            type: 'new_booking'
-                        });
-                    }
-                    
-                    // Clear session
-                    sessionStorage.removeItem('pendingBooking');
-                    sessionStorage.removeItem('refNumber');
-                    
-                } catch(e) {}
-            }
-            
-       function showResultAndRedirect() {
-    var statusDiv = document.getElementById('status');
-    
-    if (status === 'success') {
-        statusDiv.innerHTML = '<div class="icon success">✅</div><p class="text">Payment Successful!</p><p class="subtext">Returning to booking...</p>';
-    } else {
-        statusDiv.innerHTML = '<div class="icon failed">❌</div><p class="text">Payment Failed</p><p class="subtext">Returning to booking...</p>';
-    }
-    
-    // 🔥 رجوع لصفحة الحجز بالظبط
-    var redirectUrl = 'https://www.discover-sharm.com/p/tour.html';
-    
-    if (tripId) {
-        redirectUrl += '?trip-id=' + tripId;
-        redirectUrl += '&payment=' + status;
-        redirectUrl += '&ref=' + refNumber;
-    } else {
-        redirectUrl += '?payment=' + status + '&ref=' + refNumber;
-    }
-    
-    console.log('🔀 Redirecting to:', redirectUrl);
-    
-    setTimeout(function() {
-        window.location.href = redirectUrl;
-    }, 1500);
-}
-            
-            if (refNumber) {
-                checkPayment();
-            } else {
-                document.getElementById('status').innerHTML = '<div class="icon failed">❌</div><p class="text">No booking reference found</p>';
+            if (refNumber) process();
+            else {
+                document.getElementById('status').innerHTML = '<div class="icon-circle failed"><i class="fas fa-times"></i></div><h2 class="title">Error</h2><p class="subtitle">No booking reference found</p>';
             }
         })();
     </script>
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="/app/js/cof.js"></script>
