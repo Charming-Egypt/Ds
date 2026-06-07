@@ -19,8 +19,6 @@
             'danger-dark': '#dc2626',
             success: '#22c55e',
             warning: '#f59e0b',
-            'warning-dark': '#d97706',
-            processing: '#f59e0b',
           }
         }
       }
@@ -41,31 +39,31 @@
     }
   </style>
 </head>
-<body class="h-svh">
+<body class="min-h-screen">
   <div>
-    <div class="p-4 md:p-8 max-w-2xl mx-auto h-full">
+    <div class="p-4 md:p-8 max-w-2xl mx-auto">
       
       <!-- ==================================================================
            LOADING STATE
            ================================================================== -->
-      <div id="loadingState" class="text-center py-5" aria-live="polite" aria-busy="true">
+      <div id="loadingState" class="text-center py-5">
         <div class="relative w-24 h-24 mx-auto mb-6">
-          <div class="absolute w-full h-full rounded-full bg-processing opacity-15"></div>
-          <div class="relative w-full h-full flex items-center justify-center text-4xl" aria-hidden="true">
-            <i class="fas fa-spinner animate-spin text-processing"></i>
+          <div class="absolute w-full h-full rounded-full bg-warning opacity-15"></div>
+          <div class="relative w-full h-full flex items-center justify-center text-4xl">
+            <i class="fas fa-spinner animate-spin text-primary"></i>
           </div>
         </div>
         <h2 class="text-xl font-semibold mb-3 text-white">Processing Payment</h2>
         <p class="text-gray-400 mb-6">We're verifying your payment details.</p>
         
         <div class="w-full h-1.5 bg-gray-700 rounded-full mb-5 overflow-hidden">
-          <div class="h-full bg-gradient-to-r from-processing to-primary-dark rounded-full animate-pulse" style="width: 65%"></div>
+          <div class="h-full bg-gradient-to-r from-primary to-primary-dark rounded-full animate-pulse" style="width: 65%"></div>
         </div>
         
         <div class="bg-gray-800 rounded-xl p-4 mb-7 border border-gray-700">
           <div class="flex justify-between py-3 border-b border-gray-700">
             <span class="text-sm text-gray-400">Ref</span>
-            <span class="font-medium text-right text-white notranslate" id="loading-orderId">------</span>
+            <span class="font-medium text-right text-white notranslate" id="loadingRef">------</span>
           </div>
           <div class="flex justify-between py-3">
             <span class="text-sm text-gray-400">Status</span>
@@ -73,7 +71,7 @@
           </div>
         </div>
         
-        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Please don't close this page while we process your payment</p>
+        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Please don't close this page</p>
       </div>
       
       <!-- ==================================================================
@@ -81,12 +79,9 @@
            ================================================================== -->
       <div id="successState" class="text-center py-5 hidden">
         <div class="relative w-24 h-24 mx-auto mb-6">
-          <div class="absolute w-full h-full rounded-full opacity-15"></div>
-          <div class="relative w-full h-full flex items-center justify-center">
-            <dotlottie-player src="https://lottie.host/93cc57a8-5c1e-4f91-b31d-67edf2d3d053/fpdToZLbdX.lottie"
-             background="transparent" speed="1" class="w-full h-full" autoplay>
-            </dotlottie-player>
-          </div>
+          <dotlottie-player src="https://lottie.host/93cc57a8-5c1e-4f91-b31d-67edf2d3d053/fpdToZLbdX.lottie"
+           background="transparent" speed="1" class="w-full h-full" autoplay>
+          </dotlottie-player>
         </div>
         <h2 class="text-xl font-semibold mb-3 text-green-500">Payment Successful! 🎉</h2>
         <p class="text-gray-400 mb-6">Your booking is confirmed. We wish you a pleasant vacation.</p>
@@ -94,57 +89,52 @@
         <div class="bg-gray-800 rounded-xl p-4 mb-7 border border-gray-700">
           <div class="flex justify-between py-3 border-b border-gray-700">
             <span class="text-sm text-gray-400">Ref</span>
-            <span class="font-medium text-right text-white notranslate" id="success-orderId"></span>
+            <span class="font-medium text-right text-white notranslate" id="successRef"></span>
           </div>
           <div class="flex justify-between py-3 border-b border-gray-700">
             <span class="text-sm text-gray-400">Amount Paid</span>
-            <span class="font-medium text-right text-white notranslate" id="success-amount"></span>
+            <span class="font-medium text-right text-white notranslate" id="successAmount"></span>
           </div>
           <div class="flex justify-between py-3">
             <span class="text-sm text-gray-400">Payment Method</span>
-            <span class="font-medium text-right text-white notranslate" id="success-card"></span>
+            <span class="font-medium text-right text-white notranslate" id="successMethod"></span>
           </div>
         </div>
         
-        <button class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition flex items-center justify-center" onclick="handlePrintVoucher()">
-          <i class="fas fa-print ml-2 mr-2"></i> View Voucher
+        <button class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition flex items-center justify-center" onclick="window.open('/p/voucher.html?id=' + orderId, '_blank')">
+          <i class="fas fa-print mr-2"></i> View Voucher
         </button>
-        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Your booking voucher has been sent to your email</p>
+        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Confirmation sent to your email & WhatsApp</p>
       </div>
       
       <!-- ==================================================================
            FAILED STATE
            ================================================================== -->
       <div id="failedState" class="text-center py-5 hidden">
-        <div class="relative w-24 h-24 mx-auto mb-6">
-          <div class="absolute w-full h-full rounded-full opacity-15"></div>
-          <div class="relative w-full h-full flex items-center justify-center">
-            <dotlottie-player src="https://lottie.host/1b463481-aea7-4239-bedb-eeed5afd2fdc/HBOf7NOEAA.lottie" 
-             background="transparent" speed="1" class="w-full h-full" autoplay>
-            </dotlottie-player>
-          </div>
-        </div>
+        <dotlottie-player src="https://lottie.host/1b463481-aea7-4239-bedb-eeed5afd2fdc/HBOf7NOEAA.lottie" 
+         background="transparent" speed="1" class="w-24 h-24 mx-auto mb-6" autoplay>
+        </dotlottie-player>
         <h2 class="text-xl font-semibold mb-3 text-red-500">Payment Failed</h2>
-        <p class="text-gray-400 mb-6" id="failed-message"></p>
+        <p class="text-gray-400 mb-6" id="failedMessage"></p>
         
         <div class="bg-gray-800 rounded-xl p-4 mb-7 border border-gray-700">
           <div class="flex justify-between py-3">
             <span class="text-sm text-gray-400">Ref</span>
-            <span class="font-medium text-right text-white notranslate" id="failed-orderId"></span>
+            <span class="font-medium text-right text-white notranslate" id="failedRef"></span>
           </div>
         </div>
         
-        <div id="retryButtonContainer" class="hidden">
+        <div id="retryContainer" class="hidden">
           <button class="w-full flex items-center justify-center py-3.5 px-6 rounded-lg bg-danger text-white font-medium mb-3 hover:bg-danger-dark shadow-md transition-all" onclick="retryPayment()">
-            <i class="fas fa-redo ml-2 mr-2"></i> Try Payment Again
+            <i class="fas fa-redo mr-2"></i> Try Payment Again
           </button>
         </div>
         
-        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-5 text-start">
+        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-5 text-left">
           <h4 class="font-medium text-red-500 mb-3 flex items-center">
             <i class="fas fa-lightbulb mr-2"></i> Common Solutions
           </h4>
-          <ul class="text-red-400 list-disc ps-5">
+          <ul class="text-red-400 list-disc pl-5">
             <li>Ensure your card details are correct</li>
             <li>Check your account has sufficient funds</li>
             <li>Try a different payment method</li>
@@ -152,7 +142,7 @@
           </ul>
         </div>
         
-        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Need help? Email us at <br><a href="mailto:info@discover-sharm.com" class="text-primary font-medium notranslate">info@discover-sharm.com</a></p>
+        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Need help? <a href="mailto:info@discover-sharm.com" class="text-primary">info@discover-sharm.com</a></p>
       </div>
       
       <!-- ==================================================================
@@ -162,317 +152,212 @@
         <div class="relative w-24 h-24 mx-auto mb-6">
           <div class="absolute w-full h-full rounded-full bg-warning opacity-15"></div>
           <div class="relative w-full h-full flex items-center justify-center text-4xl">
-            <i class="fas fa-clock animate-bounce text-warning"></i>
+            <i class="fas fa-clock animate-bounce text-primary"></i>
           </div>
         </div>
         <h2 class="text-xl font-semibold mb-3 text-white">Payment Pending</h2>
-        <p class="text-gray-400 mb-6" id="pending-message">Your payment is being processed</p>
+        <p class="text-gray-400 mb-6" id="pendingMessage">Your payment is being processed.</p>
         
         <div class="bg-gray-800 rounded-xl p-4 mb-7 border border-gray-700">
           <div class="flex justify-between py-3 border-b border-gray-700">
-            <span class="text-sm text-gray-400">Order ID</span>
-            <span class="font-medium text-right text-white notranslate" id="pending-orderId"></span>
+            <span class="text-sm text-gray-400">Ref</span>
+            <span class="font-medium text-right text-white notranslate" id="pendingRef"></span>
           </div>
           <div class="flex justify-between py-3 border-b border-gray-700">
             <span class="text-sm text-gray-400">Amount</span>
-            <span class="font-medium text-right text-white notranslate" id="pending-amount"></span>
+            <span class="font-medium text-right text-white notranslate" id="pendingAmount"></span>
           </div>
           <div class="flex justify-between py-3">
             <span class="text-sm text-gray-400">Status</span>
-            <span class="font-medium text-right text-primary" id="pending-status">Pending</span>
+            <span class="font-medium text-right text-primary">Pending</span>
           </div>
         </div>
         
-        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">Some payments may take up to 24 hours to process. We'll notify you by email.</p>
+        <p class="text-xs text-gray-500 mt-5 pt-4 border-t border-gray-700">We'll notify you by email when completed</p>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      let orderId = null;
-      let db, auth;
-      let bookingData = null;
-      
-      // ======================================================================
-      // FIREBASE INIT
-      // ======================================================================
-      function initFirebase() {
-        try {
-          if (typeof firebaseConfig !== 'undefined') {
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-          } else if (typeof Config !== 'undefined') {
-            if (!firebase.apps.length) firebase.initializeApp(Config);
-          } else {
-            throw new Error('Firebase config not found');
-          }
-          db = firebase.database();
-          auth = firebase.auth();
-          return true;
-        } catch(e) { return false; }
-      }
-      
-      // ======================================================================
-      // SESSION STORAGE
-      // ======================================================================
-      function getBookingFromSession() {
-        try {
-          const data = sessionStorage.getItem('pendingBooking');
-          if (data) return JSON.parse(data);
-          
-          const ref = sessionStorage.getItem('refNumber');
-          if (ref) {
-            return {
-              refNumber: ref,
-              username: sessionStorage.getItem('username'),
-              email: sessionStorage.getItem('email'),
-              phone: sessionStorage.getItem('phone')
-            };
-          }
-          return null;
-        } catch(e) { return null; }
-      }
-      
-      // ======================================================================
-      // SAVE BOOKING TO FIREBASE (ONLY ON SUCCESS)
-      // ======================================================================
-      async function saveBookingToFirebase(data) {
-        if (!data || !data.refNumber) return false;
+    let orderId = null;
+    let db, auth, bookingData = null;
+    
+    // ======================================================================
+    // FIREBASE INIT
+    // ======================================================================
+    function initFirebase() {
+      try {
+        if (typeof firebaseConfig !== 'undefined') { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); }
+        else if (typeof Config !== 'undefined') { if (!firebase.apps.length) firebase.initializeApp(Config); }
+        else throw new Error('No config');
+        db = firebase.database();
+        auth = firebase.auth();
+        return true;
+      } catch(e) { return false; }
+    }
+    
+    // ======================================================================
+    // SESSION
+    // ======================================================================
+    function getBookingFromSession() {
+      try {
+        const d = sessionStorage.getItem('pendingBooking');
+        if (d) return JSON.parse(d);
+        const ref = sessionStorage.getItem('refNumber');
+        if (ref) return { refNumber: ref, username: sessionStorage.getItem('username'), email: sessionStorage.getItem('email'), phone: sessionStorage.getItem('phone') };
+        return null;
+      } catch(e) { return null; }
+    }
+    
+    // ======================================================================
+    // SAVE TO FIREBASE
+    // ======================================================================
+    async function saveBooking(data) {
+      if (!data || !data.refNumber) return false;
+      const ref = data.refNumber;
+      try {
+        const snap = await db.ref('trip-bookings/' + ref).once('value');
+        if (snap.val() && snap.val().paymentStatus === 'paid') return true;
         
-        const ref = data.refNumber;
+        const final = { ...data, paymentStatus: 'paid', status: 'confirmed', isPaid: true, resStatus: 'new', paymentDate: firebase.database.ServerValue.TIMESTAMP, updatedAt: firebase.database.ServerValue.TIMESTAMP };
+        await db.ref('trip-bookings/' + ref).set(final);
         
-        try {
-          // Check if already saved
-          const snap = await db.ref('trip-bookings/' + ref).once('value');
-          if (snap.val() && snap.val().paymentStatus === 'paid') {
-            console.log('Already saved, skipping');
-            return true;
-          }
-          
-          const finalBooking = {
-            ...data,
-            paymentStatus: 'paid',
-            status: 'confirmed',
-            isPaid: true,
-            resStatus: 'new',
-            paymentDate: firebase.database.ServerValue.TIMESTAMP,
-            updatedAt: firebase.database.ServerValue.TIMESTAMP
-          };
-          
-          await db.ref('trip-bookings/' + ref).set(finalBooking);
-          console.log('✅ Booking saved:', ref);
-          
-          // Notify owner (ONCE)
-          if (finalBooking.owner && finalBooking.owner !== finalBooking.uid) {
-            try {
-              await db.ref('notifications/' + finalBooking.owner + '/' + Date.now()).set({
-                title: '💰 New Booking: ' + (finalBooking.tour || 'Trip'),
-                message: (finalBooking.username || 'Guest') + ' - ' + 
-                         (finalBooking.adults || 0) + 'A/' + 
-                         (finalBooking.childrenUnder12 || 0) + 'C/' + 
-                         (finalBooking.infants || 0) + 'I',
-                totalAmount: finalBooking.netTotal || finalBooking.total || 0,
-                bookingId: ref,
-                tripId: finalBooking.tripId,
-                tripName: finalBooking.tour,
-                userName: finalBooking.username,
-                userEmail: finalBooking.email,
-                phone: finalBooking.phone,
-                adults: finalBooking.adults || 0,
-                children: finalBooking.childrenUnder12 || 0,
-                infants: finalBooking.infants || 0,
-                tripDate: finalBooking.tripDate,
-                read: false, timestamp: Date.now(), type: 'new_booking'
-              });
-            } catch(e) {}
-          }
-          
-          // Clear session
-          sessionStorage.removeItem('pendingBooking');
-          sessionStorage.removeItem('refNumber');
-          
-          return true;
-        } catch(e) {
-          console.error('Save error:', e);
-          return false;
-        }
-      }
-      
-      // ======================================================================
-      // CHECK PAYMENT STATUS
-      // ======================================================================
-      async function checkPaymentStatus() {
-        showLoadingState();
-        
-        // Get booking from session
-        bookingData = getBookingFromSession();
-        
-        if (!bookingData) {
-          showErrorState('Booking data not found. Please contact support.');
-          return;
+        if (final.owner && final.owner !== final.uid) {
+          try {
+            await db.ref('notifications/' + final.owner + '/' + Date.now()).set({
+              title: '💰 New Booking: ' + (final.tour || 'Trip'),
+              message: (final.username || 'Guest') + ' - ' + (final.adults || 0) + 'A/' + (final.childrenUnder12 || 0) + 'C/' + (final.infants || 0) + 'I',
+              totalAmount: final.netTotal || final.total || 0, bookingId: ref, tripId: final.tripId,
+              tripName: final.tour, userName: final.username, userEmail: final.email, phone: final.phone,
+              adults: final.adults || 0, children: final.childrenUnder12 || 0, infants: final.infants || 0,
+              tripDate: final.tripDate, read: false, timestamp: Date.now(), type: 'new_booking'
+            });
+          } catch(e) {}
         }
         
-        let status = 'pending';
-        
-        // Check with Kashier API
-        try {
-          const resp = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/paymentStatus', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ merchantOrderId: orderId })
-          });
-          
-          if (resp.ok) {
-            const apiData = await resp.json();
-            if (apiData.status === 'paid' || apiData.status === 'success') {
-              status = 'paid';
-            } else if (apiData.status === 'failed' || apiData.status === 'declined') {
-              status = 'failed';
-            }
-          } else {
-            status = 'paid'; // Redirected here = success
-          }
-        } catch(e) {
-          status = 'paid';
-        }
-        
-        console.log('💳 Payment status:', status);
-        
-        if (status === 'paid') {
-          // Save booking now
-          const saved = await saveBookingToFirebase(bookingData);
-          
-          if (saved) {
-            showSuccess({
-              paymentId: orderId,
-              status: 'paid',
-              card: bookingData.paymentMethod || 'Online Payment'
-            }, parseFloat(bookingData.total || bookingData.netTotal || 0).toFixed(2) + ' EGP');
-            
-            launchConfetti();
-            
-            // Send message to parent if in iframe
-            if (window.parent !== window) {
-              window.parent.postMessage({
-                type: 'payment_complete',
-                status: 'success',
-                refNumber: orderId
-              }, '*');
-            }
-          } else {
-            showErrorState('Failed to save booking. Please contact support.');
-          }
-        } else if (status === 'failed') {
-          showFailed({ paymentId: orderId, status: 'failed' });
-          
-          if (window.parent !== window) {
-            window.parent.postMessage({
-              type: 'payment_complete',
-              status: 'failed',
-              refNumber: orderId
-            }, '*');
-          }
-        } else {
-          showPending({ paymentId: orderId }, parseFloat(bookingData.total || bookingData.netTotal || 0).toFixed(2) + ' EGP');
-        }
-      }
+        sessionStorage.removeItem('pendingBooking');
+        sessionStorage.removeItem('refNumber');
+        return true;
+      } catch(e) { return false; }
+    }
+    
+    // ======================================================================
+    // CHECK PAYMENT
+    // ======================================================================
+    async function checkPayment() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('successState').classList.add('hidden');
+      document.getElementById('failedState').classList.add('hidden');
+      document.getElementById('pendingState').classList.add('hidden');
       
-      // ======================================================================
-      // UI FUNCTIONS
-      // ======================================================================
-      function showOnly(id) {
-        ['loadingState','successState','failedState','pendingState'].forEach(function(s) {
-          document.getElementById(s).classList.add('hidden');
+      bookingData = getBookingFromSession();
+      if (!bookingData) { showError('Booking data not found'); return; }
+      
+      let status = 'pending';
+      try {
+        const r = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/paymentStatus', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ merchantOrderId: orderId })
         });
-        document.getElementById(id).classList.remove('hidden');
-      }
+        if (r.ok) {
+          const d = await r.json();
+          if (d.status === 'paid' || d.status === 'success') status = 'paid';
+          else if (d.status === 'failed' || d.status === 'declined') status = 'failed';
+        } else { status = 'paid'; }
+      } catch(e) { status = 'paid'; }
       
-      function showLoadingState() {
-        showOnly('loadingState');
-        if (orderId) document.getElementById('loading-orderId').textContent = orderId;
-      }
-      
-      function showSuccess(data, amount) {
-        showOnly('successState');
-        document.getElementById('success-orderId').textContent = data.paymentId || orderId;
-        document.getElementById('success-amount').textContent = amount;
-        document.getElementById('success-card').textContent = data.card || 'Online Payment';
-      }
-      
-      function showFailed(data) {
-        showOnly('failedState');
-        document.getElementById('failed-orderId').textContent = data.paymentId || orderId;
-        document.getElementById('failed-message').textContent = 'Your payment was declined. No charges were made.';
-        
-        if (bookingData && (bookingData.paymentUrl || bookingData.paymenturl)) {
-          document.getElementById('retryButtonContainer').classList.remove('hidden');
-        } else {
-          document.getElementById('retryButtonContainer').classList.add('hidden');
+      if (status === 'paid') {
+        await saveBooking(bookingData);
+        showSuccess();
+        if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#f59e0b','#22c55e','#3b82f6'] });
+        // 🔥 إرسال إشارة للـ parent (صفحة الحجز) إن الدفع نجح
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'payment_complete', status: 'success', refNumber: orderId }, '*');
         }
-      }
-      
-      function showPending(data, amount) {
-        showOnly('pendingState');
-        document.getElementById('pending-orderId').textContent = data.paymentId || orderId;
-        document.getElementById('pending-amount').textContent = amount;
-        document.getElementById('pending-message').textContent = 'Your payment is being processed.';
-      }
-      
-      function showErrorState(msg) {
-        showOnly('failedState');
-        document.getElementById('failed-message').textContent = msg;
-        document.getElementById('failed-orderId').textContent = orderId || 'N/A';
-        document.getElementById('retryButtonContainer').classList.add('hidden');
-      }
-      
-      // ======================================================================
-      // UTILS
-      // ======================================================================
-      function launchConfetti() {
-        if (typeof confetti === 'function') {
-          confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#f59e0b', '#22c55e', '#3b82f6'] });
+      } else if (status === 'failed') {
+        showFailed();
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'payment_complete', status: 'failed', refNumber: orderId }, '*');
         }
+      } else {
+        showPending();
       }
-      
-      function retryPayment() {
-        if (bookingData && (bookingData.paymentUrl || bookingData.paymenturl)) {
-          window.location.href = bookingData.paymentUrl || bookingData.paymenturl;
-        }
+    }
+    
+    // ======================================================================
+    // UI
+    // ======================================================================
+    function hideAll() {
+      ['loadingState','successState','failedState','pendingState'].forEach(function(id) {
+        document.getElementById(id).classList.add('hidden');
+      });
+    }
+    
+    function showSuccess() {
+      hideAll();
+      document.getElementById('successState').classList.remove('hidden');
+      document.getElementById('successRef').textContent = orderId;
+      document.getElementById('successAmount').textContent = parseFloat(bookingData?.total || bookingData?.netTotal || 0).toFixed(2) + ' EGP';
+      document.getElementById('successMethod').textContent = bookingData?.paymentMethod || 'Online Payment';
+    }
+    
+    function showFailed() {
+      hideAll();
+      document.getElementById('failedState').classList.remove('hidden');
+      document.getElementById('failedRef').textContent = orderId;
+      document.getElementById('failedMessage').textContent = 'Your payment was declined. No charges were made.';
+      if (bookingData && (bookingData.paymentUrl || bookingData.paymenturl)) {
+        document.getElementById('retryContainer').classList.remove('hidden');
       }
-      
-      function handlePrintVoucher() {
-        if (orderId) window.open('/p/voucher.html?id=' + orderId, '_blank');
+    }
+    
+    function showPending() {
+      hideAll();
+      document.getElementById('pendingState').classList.remove('hidden');
+      document.getElementById('pendingRef').textContent = orderId;
+      document.getElementById('pendingAmount').textContent = parseFloat(bookingData?.total || bookingData?.netTotal || 0).toFixed(2) + ' EGP';
+    }
+    
+    function showError(msg) {
+      hideAll();
+      document.getElementById('failedState').classList.remove('hidden');
+      document.getElementById('failedMessage').textContent = msg;
+      document.getElementById('failedRef').textContent = orderId || 'N/A';
+    }
+    
+    function retryPayment() {
+      if (bookingData && (bookingData.paymentUrl || bookingData.paymenturl)) {
+        window.location.href = bookingData.paymentUrl || bookingData.paymenturl;
       }
-      
-      // ======================================================================
-      // INIT
-      // ======================================================================
-      const params = new URLSearchParams(window.location.search);
-      orderId = params.get('ref') || params.get('merchantOrderId') || params.get('orderId');
-      
+    }
+    
+    // ======================================================================
+    // INIT
+    // ======================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      const p = new URLSearchParams(window.location.search);
+      orderId = p.get('ref') || p.get('merchantOrderId') || p.get('orderId');
       if (!orderId) {
-        const sessionData = getBookingFromSession();
-        if (sessionData && sessionData.refNumber) orderId = sessionData.refNumber;
-        else { showErrorState('No booking reference found'); return; }
+        const s = getBookingFromSession();
+        if (s && s.refNumber) orderId = s.refNumber;
+        else { showError('No booking reference found'); return; }
       }
       
-      if (!initFirebase()) { showErrorState('System initialization failed'); return; }
+      if (!initFirebase()) { showError('System initialization failed'); return; }
       
-      document.getElementById('loading-orderId').textContent = orderId;
+      document.getElementById('loadingRef').textContent = orderId;
       
-      // Wait for auth then process
+      // 🔥 مش بنحول لصفحة تانية - بنفضل هنا
       auth.onAuthStateChanged(function(user) {
         if (user) {
-          setTimeout(checkPaymentStatus, 1000);
+          setTimeout(checkPayment, 1000);
         } else {
-          showErrorState('Please login to view payment status');
+          showError('Please login to view payment status');
         }
       });
-      
-      window.checkPaymentStatus = checkPaymentStatus;
-      window.retryPayment = retryPayment;
-      window.handlePrintVoucher = handlePrintVoucher;
     });
+    
+    window.retryPayment = retryPayment;
   </script>
 </body>
 </html>
