@@ -369,14 +369,17 @@
   function closeServicesPopup() { const popup = $('extraServicesPopup'); if (popup) popup.classList.add('hidden'); document.body.style.overflow = ''; }
 
   // ==========================================================================
-  // PAYMENT IFRAME - Replace tour-booking-container
-  // ==========================================================================
-  function showPaymentIframe(paymentUrl) {
+// PAYMENT IFRAME - Replace tour-booking-container
+// ==========================================================================
+function showPaymentIframe(paymentUrl) {
     const container = document.querySelector('.tour-booking-container');
     if (!container) return;
     
     // Save original HTML
     container.setAttribute('data-original-html', container.innerHTML);
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     // Replace with iframe
     container.innerHTML = `
@@ -403,9 +406,9 @@
     
     container.classList.add('payment-active');
     document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentIframe);
-  }
+}
 
-  function hidePaymentIframe() {
+function hidePaymentIframe() {
     const container = document.querySelector('.tour-booking-container');
     if (!container) return;
     
@@ -414,9 +417,27 @@
       container.innerHTML = originalHTML;
       container.classList.remove('payment-active');
       container.removeAttribute('data-original-html');
+      
+      // Reset to step 1
+      currentStep = 0;
+      goToStep(0);
+      
+      // Update progress bar
+      const pb = $('progressBar');
+      if (pb) pb.style.width = '25%';
+      
+      // Update step labels
+      document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) {
+        l.classList.toggle('active', i === 0);
+      });
+      
+      // Re-bind events
       initEvents();
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
+}
 
   // ==========================================================================
   // SUBMIT
