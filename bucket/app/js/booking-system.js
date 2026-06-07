@@ -1,7 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete Final Version
-// Full Screen Payment Iframe + Session Storage Booking
+// Payment Iframe replaces tour-booking-container
 // ==========================================================================
 
 (function() {
@@ -369,26 +369,19 @@
   function closeServicesPopup() { const popup = $('extraServicesPopup'); if (popup) popup.classList.add('hidden'); document.body.style.overflow = ''; }
 
   // ==========================================================================
-  // FULL SCREEN PAYMENT OVERLAY
+  // PAYMENT IFRAME - Replace tour-booking-container
   // ==========================================================================
-  function showPaymentOverlay(paymentUrl) {
-    // Hide the tour container
-    const tourContainer = document.querySelector('.tour-booking-container');
-    if (tourContainer) tourContainer.style.display = 'none';
+  function showPaymentIframe(paymentUrl) {
+    const container = document.querySelector('.tour-booking-container');
+    if (!container) return;
     
-    // Create or show overlay
-    let overlay = document.getElementById('paymentFullOverlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'paymentFullOverlay';
-      document.body.appendChild(overlay);
-    }
+    // Save original HTML
+    container.setAttribute('data-original-html', container.innerHTML);
     
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:#1e1e1e;';
-    
-    overlay.innerHTML = `
-      <div style="display:flex;flex-direction:column;height:100vh;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #2e2e2e;flex-shrink:0;min-height:48px;">
+    // Replace with iframe
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;min-height:100vh;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #2e2e2e;flex-shrink:0;">
           <button id="paymentBackBtn" style="background:#2a2a2a;border:none;color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
             <i class="fas fa-arrow-left"></i> Back
           </button>
@@ -397,7 +390,7 @@
           </span>
           <span style="width:60px;"></span>
         </div>
-        <div style="flex:1;background:#fff;">
+        <div style="flex:1;background:#fff;min-height:500px;">
           <iframe src="${paymentUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
         </div>
         <div style="text-align:center;padding:10px;background:#1e1e1e;border-top:1px solid #2e2e2e;flex-shrink:0;">
@@ -408,20 +401,21 @@
       </div>
     `;
     
-    overlay.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    
-    document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentOverlay);
+    container.classList.add('payment-active');
+    document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentIframe);
   }
 
-  function hidePaymentOverlay() {
-    const overlay = document.getElementById('paymentFullOverlay');
-    if (overlay) overlay.style.display = 'none';
+  function hidePaymentIframe() {
+    const container = document.querySelector('.tour-booking-container');
+    if (!container) return;
     
-    const tourContainer = document.querySelector('.tour-booking-container');
-    if (tourContainer) tourContainer.style.display = '';
-    
-    document.body.style.overflow = '';
+    const originalHTML = container.getAttribute('data-original-html');
+    if (originalHTML) {
+      container.innerHTML = originalHTML;
+      container.classList.remove('payment-active');
+      container.removeAttribute('data-original-html');
+      initEvents();
+    }
   }
 
   // ==========================================================================
@@ -470,7 +464,7 @@
       }).toString();
       
       if (spinner) spinner.classList.add('hidden');
-      showPaymentOverlay(paymentUrl);
+      showPaymentIframe(paymentUrl);
       
     } catch(e) {
       toast(e.message, 'error');
