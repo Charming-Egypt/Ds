@@ -1,8 +1,7 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
 // Complete Final Version
-// Payment inside card via iframe
-// Booking saved ONLY after successful payment
+// Full Screen Payment Iframe + Session Storage Booking
 // ==========================================================================
 
 (function() {
@@ -16,7 +15,6 @@
   let currentStep = 0;
   let toastTimer = null;
   let pendingBooking = null;
-  let paymentPollingInterval = null;
   
   // Phone state
   let selectedCountryCode = '+20';
@@ -371,140 +369,60 @@
   function closeServicesPopup() { const popup = $('extraServicesPopup'); if (popup) popup.classList.add('hidden'); document.body.style.overflow = ''; }
 
   // ==========================================================================
-  // PAYMENT IFRAME
+  // FULL SCREEN PAYMENT OVERLAY
   // ==========================================================================
-  function showPaymentIframe(paymentUrl) {
-    const bookingCard = document.querySelector('.booking-card');
-    if (!bookingCard) return;
+  function showPaymentOverlay(paymentUrl) {
+    // Hide the tour container
+    const tourContainer = document.querySelector('.tour-booking-container');
+    if (tourContainer) tourContainer.style.display = 'none';
     
-    const originalContent = bookingCard.innerHTML;
-    bookingCard.setAttribute('data-original-content', originalContent);
-    bookingCard.classList.add('payment-mode');
-    
-    bookingCard.innerHTML = `
-      <div class="payment-iframe-container">
-        <div class="payment-iframe-header">
-          <h3><i class="fas fa-lock"></i> Secure Payment</h3>
-          <p>Complete your payment to confirm booking</p>
-          <button class="payment-back-btn" id="paymentBackBtn"><i class="fas fa-arrow-left"></i> Back</button>
-        </div>
-        <div class="payment-iframe-wrapper">
-          <iframe src="${paymentUrl}" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="payment-iframe-footer">
-          <small><i class="fas fa-shield-alt"></i> Secured by Kashier</small>
-        </div>
-      </div>
-    `;
-    
-    document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentIframe);
-    window.addEventListener('message', handlePaymentMessage);
-  }
-
-  function hidePaymentIframe() {
-    stopPaymentPolling();
-    window.removeEventListener('message', handlePaymentMessage);
-    const bookingCard = document.querySelector('.booking-card');
-    if (!bookingCard) return;
-    const originalContent = bookingCard.getAttribute('data-original-content');
-    if (originalContent) { bookingCard.innerHTML = originalContent; bookingCard.classList.remove('payment-mode'); bookingCard.removeAttribute('data-original-content'); initEvents(); }
-  }
-
-  function handlePaymentMessage(event) {
-    if (!event.data || event.data.type !== 'payment_complete') return;
-    const { status, refNumber: paymentRef } = event.data;
-    if (paymentRef && paymentRef !== refNumber) refNumber = paymentRef;
-    window.removeEventListener('message', handlePaymentMessage);
-    stopPaymentPolling();
-    
-    if (status === 'success') {
-      showPaymentSuccess();
-    } else if (status === 'failed') {
-      showPaymentFailed();
-    } else {
-      startPaymentPolling();
+    // Create or show overlay
+    let overlay = document.getElementById('paymentFullOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'paymentFullOverlay';
+      document.body.appendChild(overlay);
     }
+    
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:#1e1e1e;';
+    
+    overlay.innerHTML = `
+      <div style="display:flex;flex-direction:column;height:100vh;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #2e2e2e;flex-shrink:0;min-height:48px;">
+          <button id="paymentBackBtn" style="background:#2a2a2a;border:none;color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <span style="color:#fff;font-size:14px;font-weight:600;">
+            <i class="fas fa-lock" style="color:#f59e0b;margin-right:6px;"></i>Secure Payment
+          </span>
+          <span style="width:60px;"></span>
+        </div>
+        <div style="flex:1;background:#fff;">
+          <iframe src="${paymentUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
+        </div>
+        <div style="text-align:center;padding:10px;background:#1e1e1e;border-top:1px solid #2e2e2e;flex-shrink:0;">
+          <small style="color:#666;font-size:11px;">
+            <i class="fas fa-shield-alt" style="color:#22c55e;margin-right:4px;"></i>Secured by Kashier
+          </small>
+        </div>
+      </div>
+    `;
+    
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentOverlay);
   }
 
-  // في booking-system.js - عدل startPaymentPolling
-function startPaymentPolling() {
-    if (paymentPollingInterval) clearInterval(paymentPollingInterval);
-    paymentPollingInterval = setInterval(async function() {
-      try {
-        const snap = await db.ref('trip-bookings/' + refNumber).once('value');
-        const booking = snap.val();
-        if (booking && booking.paymentStatus === 'paid') { 
-          stopPaymentPolling(); 
-          showPaymentSuccess(); // بس يعرض النجاح، ما يبعتش إشعار
-        }
-        else if (booking && booking.paymentStatus === 'failed') { 
-          stopPaymentPolling(); 
-          showPaymentFailed(); 
-        }
-      } catch(e) {}
-    }, 3000);
-}
-
-  function stopPaymentPolling() { if (paymentPollingInterval) { clearInterval(paymentPollingInterval); paymentPollingInterval = null; } }
-
-  function showPaymentSuccess() {
-    const bookingCard = document.querySelector('.booking-card');
-    if (!bookingCard) return;
+  function hidePaymentOverlay() {
+    const overlay = document.getElementById('paymentFullOverlay');
+    if (overlay) overlay.style.display = 'none';
     
-    bookingCard.classList.add('payment-mode');
-    bookingCard.innerHTML = `
-      <div class="payment-status-container">
-        <div class="payment-status-icon success"><i class="fas fa-check-circle"></i></div>
-        <h2 class="payment-status-title">Payment Successful! 🎉</h2>
-        <p class="payment-status-message">Your booking has been confirmed.</p>
-        <div class="payment-status-details">
-          <div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div>
-          <div class="payment-status-line"><span>Trip:</span><strong>${getTrip().name || 'Trip'}</strong></div>
-        </div>
-        <p class="payment-status-note">A confirmation has been sent to your WhatsApp and email.</p>
-        <button class="btn-primary" onclick="location.reload()">
-          <i class="fas fa-check"></i> Done
-        </button>
-      </div>
-    `;
-}
-
-function showPaymentFailed() {
-    const bookingCard = document.querySelector('.booking-card');
-    if (!bookingCard) return;
+    const tourContainer = document.querySelector('.tour-booking-container');
+    if (tourContainer) tourContainer.style.display = '';
     
-    bookingCard.classList.add('payment-mode');
-    bookingCard.innerHTML = `
-      <div class="payment-status-container">
-        <div class="payment-status-icon failed"><i class="fas fa-times-circle"></i></div>
-        <h2 class="payment-status-title">Payment Failed</h2>
-        <p class="payment-status-message">Your payment could not be processed.</p>
-        <button class="btn-primary" id="retryPaymentBtn" style="margin-bottom:10px;">
-          <i class="fas fa-redo"></i> Try Again
-        </button>
-        <button class="btn-secondary" id="backToFormBtn">
-          <i class="fas fa-arrow-left"></i> Edit Details
-        </button>
-      </div>
-    `;
-    
-    document.getElementById('retryPaymentBtn').addEventListener('click', function() {
-        submitBooking();
-    });
-    
-    document.getElementById('backToFormBtn').addEventListener('click', function() {
-        const bookingCard = document.querySelector('.booking-card');
-        const originalContent = bookingCard.getAttribute('data-original-content');
-        if (originalContent) {
-            bookingCard.innerHTML = originalContent;
-            bookingCard.classList.remove('payment-mode');
-            bookingCard.removeAttribute('data-original-content');
-            initEvents();
-        } else {
-            location.reload();
-        }
-    });
-}
+    document.body.style.overflow = '';
+  }
 
   // ==========================================================================
   // SUBMIT
@@ -540,7 +458,7 @@ function showPaymentFailed() {
       const hashData = await resp.json();
       if (!hashData.hash) throw new Error('Payment verification failed.');
       
-      const paymentStatusUrl = window.location.origin + '/p/payment-status.html';
+      const paymentStatusUrl = window.location.origin + '/app/payment-status.html';
       const redirectWithParams = paymentStatusUrl + '?ref=' + refNumber + '&tripId=' + tripId;
       
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
@@ -552,7 +470,7 @@ function showPaymentFailed() {
       }).toString();
       
       if (spinner) spinner.classList.add('hidden');
-      showPaymentIframe(paymentUrl);
+      showPaymentOverlay(paymentUrl);
       
     } catch(e) {
       toast(e.message, 'error');
@@ -590,92 +508,24 @@ function showPaymentFailed() {
   }
 
   // ==========================================================================
-// INIT
-// ==========================================================================
-function init() {
+  // INIT
+  // ==========================================================================
+  function init() {
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
     if (!tripId) { toast('No trip specified', 'error'); return; }
     refNumber = generateRef();
-    
-    const trip = getTrip(); 
-    const tn = $('tripName'); 
-    if (tn && trip.name) tn.value = String(trip.name);
-    
-    // Country selector - open modal on click
-    const ccs = $('countryCodeSelect'); 
-    if (ccs) { 
-        ccs.addEventListener('click', function(e) { 
-            e.stopPropagation(); 
-            openCountryModal(); 
-        }); 
-    }
-    
-    // Date picker
-    const de = document.querySelector('#tripDate'); 
-    if (de && typeof flatpickr !== 'undefined') { 
-        flatpickr(de, { 
-            minDate: new Date().fp_incr(1), 
-            dateFormat: 'Y-m-d', 
-            disableMobile: true 
-        }); 
-    }
-    
-    // Bind all events
+    const trip = getTrip(); const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
+    const ccs = $('countryCodeSelect'); if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
+    const de = document.querySelector('#tripDate'); if (de && typeof flatpickr !== 'undefined') { flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true }); }
     initEvents();
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) { 
-        if (e.key === 'Escape') { 
-            closeServicesPopup(); 
-            closeCountryModal(); 
-        } 
-    });
-    
-    // Auth state listener
-    auth.onAuthStateChanged(function(user) { 
-        if (user) setTimeout(loadUserData, 500); 
-    });
-    
-    // Initial summary update
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeServicesPopup(); closeCountryModal(); } });
+    auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
     setTimeout(updateSummary, 1500);
-    
-    // Check if returning from payment page
-    checkPaymentOnReturn();
-}
+  }
 
-// ==========================================================================
-// CHECK PAYMENT ON RETURN
-// ==========================================================================
-function checkPaymentOnReturn() {
-    const params = new URLSearchParams(location.search);
-    const paymentStatus = params.get('payment');
-    const paymentRef = params.get('ref');
-    
-    if (!paymentStatus || !paymentRef) return;
-    
-    console.log('🔙 Returning from payment:', paymentStatus, paymentRef);
-    
-    // Update ref number
-    refNumber = paymentRef;
-    
-    if (paymentStatus === 'success') {
-        setTimeout(function() {
-            showPaymentSuccess();
-        }, 800);
-    } else if (paymentStatus === 'failed') {
-        setTimeout(function() {
-            showPaymentFailed();
-        }, 800);
-    }
-    
-    // Clean URL - keep only trip-id
-    const tripId = getTripId() || params.get('trip-id') || '';
-    if (tripId) {
-        window.history.replaceState({}, document.title, '/p/tour.html?trip-id=' + tripId);
-    }
-}
-}
-
+  // ==========================================================================
+  // PUBLIC API
+  // ==========================================================================
   window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
   function tryInit() { if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; } init(); }
