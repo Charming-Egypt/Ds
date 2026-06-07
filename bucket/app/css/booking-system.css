@@ -76,7 +76,7 @@
 
 /* Phone */
 .phone-input-wrapper { display: flex; align-items: stretch; width: 100%; }
-.country-code-select { flex-shrink: 0; }
+.country-code-select { flex-shrink: 0; background: #222;}
 .selected-country { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 48px; background: #1a1a1a; border: 1.5px solid #2e2e2e; border-right: none; border-radius: 12px 0 0 12px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; user-select: none; }
 .selected-country:hover { background: #222; }
 .selected-country .country-flag { width: 20px; height: 15px; border-radius: 2px; object-fit: cover; }
