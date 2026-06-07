@@ -563,20 +563,94 @@ function startPaymentPolling() {
   }
 
   // ==========================================================================
-  // INIT
-  // ==========================================================================
-  function init() {
+// INIT
+// ==========================================================================
+function init() {
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
     if (!tripId) { toast('No trip specified', 'error'); return; }
     refNumber = generateRef();
-    const trip = getTrip(); const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
-    const ccs = $('countryCodeSelect'); if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
-    const de = document.querySelector('#tripDate'); if (de && typeof flatpickr !== 'undefined') { flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true }); }
+    
+    const trip = getTrip(); 
+    const tn = $('tripName'); 
+    if (tn && trip.name) tn.value = String(trip.name);
+    
+    // Country selector - open modal on click
+    const ccs = $('countryCodeSelect'); 
+    if (ccs) { 
+        ccs.addEventListener('click', function(e) { 
+            e.stopPropagation(); 
+            openCountryModal(); 
+        }); 
+    }
+    
+    // Date picker
+    const de = document.querySelector('#tripDate'); 
+    if (de && typeof flatpickr !== 'undefined') { 
+        flatpickr(de, { 
+            minDate: new Date().fp_incr(1), 
+            dateFormat: 'Y-m-d', 
+            disableMobile: true 
+        }); 
+    }
+    
+    // Bind all events
     initEvents();
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeServicesPopup(); closeCountryModal(); } });
-    auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) { 
+        if (e.key === 'Escape') { 
+            closeServicesPopup(); 
+            closeCountryModal(); 
+        } 
+    });
+    
+    // Auth state listener
+    auth.onAuthStateChanged(function(user) { 
+        if (user) setTimeout(loadUserData, 500); 
+    });
+    
+    // Initial summary update
     setTimeout(updateSummary, 1500);
-  }
+    
+    // Check if returning from payment page
+    checkPaymentOnReturn();
+}
+
+// ==========================================================================
+// CHECK PAYMENT ON RETURN
+// ==========================================================================
+function checkPaymentOnReturn() {
+    const params = new URLSearchParams(location.search);
+    const paymentStatus = params.get('payment');
+    const paymentRef = params.get('ref');
+    
+    if (!paymentStatus || !paymentRef) return;
+    
+    console.log('🔙 Returning from payment:', paymentStatus, paymentRef);
+    
+    // Update ref number
+    refNumber = paymentRef;
+    
+    if (paymentStatus === 'success') {
+        // Show success after short delay (wait for DOM)
+        setTimeout(function() {
+            showPaymentSuccess();
+        }, 800);
+    } else if (paymentStatus === 'failed') {
+        // Show failed
+        setTimeout(function() {
+            showPaymentFailed();
+        }, 800);
+    }
+    
+    // Clean URL (remove payment params)
+    const tripId = getTripId();
+    if (tripId) {
+        window.history.replaceState({}, document.title, window.location.pathname + '?trip-id=' + tripId);
+    } else {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
 
   window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
