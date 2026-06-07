@@ -426,17 +426,24 @@
     }
   }
 
-  function startPaymentPolling() {
+  // في booking-system.js - عدل startPaymentPolling
+function startPaymentPolling() {
     if (paymentPollingInterval) clearInterval(paymentPollingInterval);
     paymentPollingInterval = setInterval(async function() {
       try {
         const snap = await db.ref('trip-bookings/' + refNumber).once('value');
         const booking = snap.val();
-        if (booking && booking.paymentStatus === 'paid') { stopPaymentPolling(); showPaymentSuccess(); }
-        else if (booking && booking.paymentStatus === 'failed') { stopPaymentPolling(); showPaymentFailed(); }
+        if (booking && booking.paymentStatus === 'paid') { 
+          stopPaymentPolling(); 
+          showPaymentSuccess(); // بس يعرض النجاح، ما يبعتش إشعار
+        }
+        else if (booking && booking.paymentStatus === 'failed') { 
+          stopPaymentPolling(); 
+          showPaymentFailed(); 
+        }
       } catch(e) {}
     }, 3000);
-  }
+}
 
   function stopPaymentPolling() { if (paymentPollingInterval) { clearInterval(paymentPollingInterval); paymentPollingInterval = null; } }
 
