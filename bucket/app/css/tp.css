@@ -100,6 +100,8 @@
   background: rgba(10,14,26,0.7); backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
   color: #fff; transition: var(--transition); opacity: 0; z-index: 5;
+  top: auto !important;
+  bottom: 20px !important;
 }
 
 .swiper:hover .swiper-button-next, 
