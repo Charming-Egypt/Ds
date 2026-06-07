@@ -143,32 +143,32 @@
                 } catch(e) {}
             }
             
-            function showResultAndRedirect() {
-                var statusDiv = document.getElementById('status');
-                
-                if (status === 'success') {
-                    statusDiv.innerHTML = '<div class="icon success">✅</div><p class="text">Payment Successful!</p><p class="subtext">Returning to booking...</p>';
-                } else {
-                    statusDiv.innerHTML = '<div class="icon failed">❌</div><p class="text">Payment Failed</p><p class="subtext">Returning to booking...</p>';
-                }
-                
-                // 🔥 المفتاح: الرجوع لصفحة الحجز مع نتيجة الدفع في الرابط
-                var redirectUrl = window.location.origin + window.location.pathname.replace(/\/app\/payment-status\.html.*/, '/');
-                
-                // ضيف trip-id لو موجود
-                if (tripId) {
-                    redirectUrl += '?trip-id=' + tripId;
-                    redirectUrl += '&payment=' + status;
-                    redirectUrl += '&ref=' + refNumber;
-                } else {
-                    redirectUrl += '?payment=' + status + '&ref=' + refNumber;
-                }
-                
-                // رجوع سريع (1.5 ثانية)
-                setTimeout(function() {
-                    window.location.href = redirectUrl;
-                }, 1500);
-            }
+       function showResultAndRedirect() {
+    var statusDiv = document.getElementById('status');
+    
+    if (status === 'success') {
+        statusDiv.innerHTML = '<div class="icon success">✅</div><p class="text">Payment Successful!</p><p class="subtext">Returning to booking...</p>';
+    } else {
+        statusDiv.innerHTML = '<div class="icon failed">❌</div><p class="text">Payment Failed</p><p class="subtext">Returning to booking...</p>';
+    }
+    
+    // 🔥 رجوع لصفحة الحجز بالظبط
+    var redirectUrl = 'https://www.discover-sharm.com/p/tour.html';
+    
+    if (tripId) {
+        redirectUrl += '?trip-id=' + tripId;
+        redirectUrl += '&payment=' + status;
+        redirectUrl += '&ref=' + refNumber;
+    } else {
+        redirectUrl += '?payment=' + status + '&ref=' + refNumber;
+    }
+    
+    console.log('🔀 Redirecting to:', redirectUrl);
+    
+    setTimeout(function() {
+        window.location.href = redirectUrl;
+    }, 1500);
+}
             
             if (refNumber) {
                 checkPayment();
