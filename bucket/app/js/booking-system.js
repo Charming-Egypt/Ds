@@ -632,24 +632,21 @@ function checkPaymentOnReturn() {
     refNumber = paymentRef;
     
     if (paymentStatus === 'success') {
-        // Show success after short delay (wait for DOM)
         setTimeout(function() {
             showPaymentSuccess();
         }, 800);
     } else if (paymentStatus === 'failed') {
-        // Show failed
         setTimeout(function() {
             showPaymentFailed();
         }, 800);
     }
     
-    // Clean URL (remove payment params)
-    const tripId = getTripId();
+    // Clean URL - keep only trip-id
+    const tripId = getTripId() || params.get('trip-id') || '';
     if (tripId) {
-        window.history.replaceState({}, document.title, window.location.pathname + '?trip-id=' + tripId);
-    } else {
-        window.history.replaceState({}, document.title, window.location.pathname);
+        window.history.replaceState({}, document.title, '/p/tour.html?trip-id=' + tripId);
     }
+}
 }
 
   window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
