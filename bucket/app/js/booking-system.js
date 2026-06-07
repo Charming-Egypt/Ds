@@ -540,7 +540,7 @@ function showPaymentFailed() {
       const hashData = await resp.json();
       if (!hashData.hash) throw new Error('Payment verification failed.');
       
-      const paymentStatusUrl = window.location.origin + '/app/payment-status.html';
+      const paymentStatusUrl = window.location.origin + '/p/payment-status.html';
       const redirectWithParams = paymentStatusUrl + '?ref=' + refNumber + '&tripId=' + tripId;
       
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
