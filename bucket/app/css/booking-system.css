@@ -411,6 +411,91 @@ input[type="text"]#tripDate {
   .mobile-book-now-btn { display: flex !important; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bs-accent); color: #1a1a1a; padding: 15px 32px; border-radius: var(--bs-radius-full); font-weight: 700; font-size: 15px; z-index: 100; box-shadow: 0 8px 32px rgba(245, 158, 11, 0.35); cursor: pointer; border: none; align-items: center; gap: 10px; white-space: nowrap; }
 }
 
+
+
+
+
+        /* ===== SINGLE BOOKING CARD - RESPONSIVE ===== */
+        .tour-booking-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        .booking-card-wrapper {
+            position: sticky;
+            top: 24px;
+            height: fit-content;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+        }
+        
+        /* On mobile: booking card moves below trip details */
+        @media (max-width: 768px) {
+            .tour-booking-container {
+                grid-template-columns: 1fr;
+                gap: 0;
+                padding: 0;
+            }
+            
+            .booking-card-wrapper {
+                position: static;
+                max-height: none;
+                overflow-y: visible;
+                padding: 16px;
+                background: #1a1a1a;
+            }
+            
+            .booking-card-wrapper .booking-card {
+                box-shadow: none;
+                border-radius: 16px;
+            }
+            
+            .booking-card-wrapper .booking-card::before {
+                display: none;
+            }
+            
+            /* Larger inputs on mobile */
+            .booking-card .input-field {
+                font-size: 16px !important;
+                padding: 15px !important;
+            }
+            
+            .booking-card .btn-primary {
+                padding: 16px 24px !important;
+                font-size: 15px !important;
+            }
+            
+            .booking-card .btn-secondary {
+                padding: 16px 24px !important;
+                font-size: 15px !important;
+            }
+            
+            .booking-card .stepper-btn {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 18px !important;
+            }
+            
+            .booking-card .services-btn {
+                font-size: 16px !important;
+                padding: 15px !important;
+            }
+            
+            .booking-card .iti input[type="tel"] {
+                font-size: 16px !important;
+                padding: 15px 15px 15px 60px !important;
+            }
+        }
+    
+
+
+
+
+
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 .btn-primary:focus-visible, .btn-secondary:focus-visible, .input-field:focus-visible, .services-btn:focus-visible, .stepper-btn:focus-visible, .close-popup-btn:focus-visible { outline: 2px solid var(--bs-accent); outline-offset: 2px; }
