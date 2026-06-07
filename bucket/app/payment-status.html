@@ -1,742 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Status | Discover Sharm</title>
-    
-    <!-- Lottie Player -->
-    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#f59e0b',
-                        'primary-dark': '#d97706',
-                        danger: '#ef4444',
-                        'danger-dark': '#dc2626',
-                        success: '#22c55e',
-                        warning: '#f59e0b',
-                        'warning-dark': '#d97706',
-                    }
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Status | Discover Sharm</title>
+  <!-- Lottie Player -->
+  <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#f59e0b',
+            'primary-dark': '#d97706',
+            danger: '#ef4444',
+            'danger-dark': '#dc2626',
+            success: '#22c55e',
+            warning: '#f59e0b',
+          }
         }
-    </script>
-    
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="/app/js/cof.js"></script>
-    
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #1e1e1e;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-        }
-        
-        .card {
-            background: #222;
-            border: 1px solid #2e2e2e;
-            border-radius: 20px;
-            padding: 32px 24px;
-            text-align: center;
-        }
-        
-        .icon-wrapper {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
-        }
-        
-        .icon-wrapper.loading {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .icon-wrapper.success {
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-        }
-        
-        .icon-wrapper.failed {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-        
-        .icon-wrapper.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        .title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .subtitle {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 20px;
-        }
-        
-        .details-card {
-            background: #1a1a1a;
-            border: 1px solid #2e2e2e;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-        
-        .detail-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 13px;
-            border-bottom: 1px solid #252525;
-        }
-        
-        .detail-line:last-child {
-            border-bottom: none;
-        }
-        
-        .detail-line .label {
-            color: #888;
-        }
-        
-        .detail-line .value {
-            color: #fff;
-            font-weight: 600;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            border: none;
-            margin-bottom: 10px;
-        }
-        
-        .btn-primary {
-            background: #f59e0b;
-            color: #1a1a1a;
-        }
-        
-        .btn-primary:hover {
-            background: #d97706;
-            transform: translateY(-2px);
-        }
-        
-        .btn-danger {
-            background: #ef4444;
-            color: #fff;
-        }
-        
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid #2e2e2e;
-            color: #fff;
-        }
-        
-        .btn-outline:hover {
-            background: #2a2a2a;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .note {
-            font-size: 11px;
-            color: #666;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #2e2e2e;
-        }
-        
-        .note a {
-            color: #f59e0b;
-            text-decoration: none;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #2e2e2e;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #d97706, #f59e0b, #fbbf24);
-            border-radius: 10px;
-            width: 60%;
-            animation: progressPulse 1.5s infinite;
-        }
-        
-        @keyframes progressPulse {
-            0%, 100% { width: 60%; }
-            50% { width: 80%; }
-        }
-        
-        .tips-card {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: left;
-            margin-bottom: 16px;
-        }
-        
-        .tips-card h4 {
-            color: #ef4444;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .tips-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .tips-card ul li {
-            color: #ccc;
-            font-size: 12px;
-            padding: 4px 0;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .tips-card ul li::before {
-            content: '•';
-            position: absolute;
-            left: 4px;
-            color: #ef4444;
-        }
-        
-        .lottie-container {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-        }
-    </style>
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="/app/js/cof.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 480px; padding: 20px; }
+    .card { background: #222; border: 1px solid #2e2e2e; border-radius: 20px; padding: 32px 24px; text-align: center; }
+    .icon-wrap { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px; }
+    .icon-wrap.loading { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .icon-wrap.success { background: rgba(34,197,94,0.1); color: #22c55e; }
+    .icon-wrap.failed { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .icon-wrap.pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .icon-wrap.warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .animate-spin { animation: spin 1s linear infinite; }
+    .title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 20px; }
+    .details { background: #1a1a1a; border: 1px solid #2e2e2e; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #252525; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row .lbl { color: #888; }
+    .detail-row .val { color: #fff; font-weight: 600; }
+    .btn { width: 100%; padding: 14px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease; border: none; margin-bottom: 10px; }
+    .btn-primary { background: #f59e0b; color: #1a1a1a; }
+    .btn-primary:hover { background: #d97706; transform: translateY(-2px); }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-outline { background: transparent; border: 1.5px solid #2e2e2e; color: #fff; }
+    .btn-outline:hover { background: #2a2a2a; }
+    .hidden { display: none !important; }
+    .note { font-size: 11px; color: #666; margin-top: 16px; padding-top: 16px; border-top: 1px solid #2e2e2e; }
+    .note a { color: #f59e0b; text-decoration: none; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-success { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .badge-failed { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .badge-info { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .status-table { width: 100%; margin-bottom: 20px; }
+    .status-table td { padding: 10px 12px; font-size: 13px; }
+    .status-table td:first-child { color: #888; }
+    .status-table td:last-child { color: #fff; font-weight: 500; text-align: right; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        
-        <!-- ==========================================================================
-             LOADING STATE
-             ========================================================================== -->
-        <div class="card" id="loadingState">
-            <div class="icon-wrapper loading">
-                <i class="fas fa-spinner animate-spin"></i>
-            </div>
-            <h2 class="title">Processing Payment</h2>
-            <p class="subtitle">We're verifying your payment details. This usually takes less than a minute.</p>
-            
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            
-            <div class="details-card">
-                <div class="detail-line">
-                    <span class="label">Reference</span>
-                    <span class="value" id="loading-ref">------</span>
-                </div>
-                <div class="detail-line">
-                    <span class="label">Status</span>
-                    <span class="value" style="color:#f59e0b;">Processing</span>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="checkPaymentStatus()">
-                <i class="fas fa-sync-alt"></i> Refresh Status
-            </button>
-            
-            <p class="note">Please don't close this page while we process your payment</p>
-        </div>
-        
-        <!-- ==========================================================================
-             SUCCESS STATE
-             ========================================================================== -->
-        <div class="card hidden" id="successState">
-            <div class="lottie-container">
-                <dotlottie-player 
-                    src="https://lottie.host/93cc57a8-5c1e-4f91-b31d-67edf2d3d053/fpdToZLbdX.lottie"
-                    background="transparent" 
-                    speed="1" 
-                    style="width:100%;height:100%;" 
-                    autoplay>
-                </dotlottie-player>
-            </div>
-            <h2 class="title" style="color:#22c55e;">Payment Successful! 🎉</h2>
-            <p class="subtitle">Your booking is confirmed. We wish you a pleasant vacation.</p>
-            
-            <div class="details-card">
-                <div class="detail-line">
-                    <span class="label">Reference</span>
-                    <span class="value" id="success-ref"></span>
-                </div>
-                <div class="detail-line">
-                    <span class="label">Amount Paid</span>
-                    <span class="value" id="success-amount"></span>
-                </div>
-                <div class="detail-line">
-                    <span class="label">Payment Method</span>
-                    <span class="value" id="success-method"></span>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="window.location.href='/'">
-                <i class="fas fa-home"></i> Back to Home
-            </button>
-            
-            <p class="note">A confirmation has been sent to your email and WhatsApp</p>
-        </div>
-        
-        <!-- ==========================================================================
-             FAILED STATE
-             ========================================================================== -->
-        <div class="card hidden" id="failedState">
-            <div class="lottie-container">
-                <dotlottie-player 
-                    src="https://lottie.host/1b463481-aea7-4239-bedb-eeed5afd2fdc/HBOf7NOEAA.lottie"
-                    background="transparent" 
-                    speed="1" 
-                    style="width:100%;height:100%;" 
-                    autoplay>
-                </dotlottie-player>
-            </div>
-            <h2 class="title" style="color:#ef4444;">Payment Failed</h2>
-            <p class="subtitle" id="failed-message">We couldn't process your payment. Please try again.</p>
-            
-            <div class="details-card">
-                <div class="detail-line">
-                    <span class="label">Reference</span>
-                    <span class="value" id="failed-ref"></span>
-                </div>
-            </div>
-            
-            <div id="retryContainer">
-                <button class="btn btn-danger" id="retryBtn">
-                    <i class="fas fa-redo"></i> Try Again
-                </button>
-            </div>
-            
-            <button class="btn btn-outline" onclick="window.location.href='/'">
-                <i class="fas fa-home"></i> Back to Home
-            </button>
-            
-            <div class="tips-card">
-                <h4><i class="fas fa-lightbulb"></i> Common Solutions</h4>
-                <ul>
-                    <li>Ensure your card details are correct</li>
-                    <li>Check your account has sufficient funds</li>
-                    <li>Try a different payment method</li>
-                    <li>Contact your bank if you see repeated declines</li>
-                </ul>
-            </div>
-            
-            <p class="note">Need help? Email us at <a href="mailto:info@discover-sharm.com">info@discover-sharm.com</a></p>
-        </div>
-        
-        <!-- ==========================================================================
-             PENDING STATE
-             ========================================================================== -->
-        <div class="card hidden" id="pendingState">
-            <div class="icon-wrapper pending">
-                <i class="fas fa-clock"></i>
-            </div>
-            <h2 class="title" style="color:#f59e0b;">Payment Pending</h2>
-            <p class="subtitle" id="pending-message">Your payment is being processed. This may take a few minutes.</p>
-            
-            <div class="details-card">
-                <div class="detail-line">
-                    <span class="label">Reference</span>
-                    <span class="value" id="pending-ref"></span>
-                </div>
-                <div class="detail-line">
-                    <span class="label">Amount</span>
-                    <span class="value" id="pending-amount"></span>
-                </div>
-                <div class="detail-line">
-                    <span class="label">Status</span>
-                    <span class="value" style="color:#f59e0b;">Pending</span>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="checkPaymentStatus()">
-                <i class="fas fa-sync-alt"></i> Check Status Again
-            </button>
-            
-            <p class="note">Some payments may take up to 24 hours to process. We'll notify you by email.</p>
-        </div>
-        
+  <div class="container">
+    
+    <!-- ==========================================================================
+         LOADING STATE
+         ========================================================================== -->
+    <div class="card" id="loadingState">
+      <div class="icon-wrap loading"><i class="fas fa-spinner animate-spin"></i></div>
+      <h2 class="title">Checking Payment Status</h2>
+      <p class="subtitle">Please wait while we verify your payment with Kashier...</p>
+      <div class="details">
+        <div class="detail-row"><span class="lbl">Reference</span><span class="val" id="loadingRef">------</span></div>
+        <div class="detail-row"><span class="lbl">Status</span><span class="val" style="color:#f59e0b;">Verifying...</span></div>
+      </div>
+      <p class="note">Please don't close this page</p>
     </div>
 
-    <script>
-        // ==========================================================================
-        // PAYMENT STATUS - Complete Logic
-        // ==========================================================================
-        
-        let orderId = null;
-        let db = null;
-        let auth = null;
-        let bookingData = null;
-        
-        // ==========================================================================
-        // INITIALIZE FIREBASE
-        // ==========================================================================
-        function initFirebase() {
-            try {
-                if (typeof firebase === 'undefined') {
-                    throw new Error('Firebase not loaded');
-                }
-                
-                // Config should be loaded from cof.js
-                if (typeof firebaseConfig !== 'undefined') {
-                    if (!firebase.apps.length) {
-                        firebase.initializeApp(firebaseConfig);
-                    }
-                } else if (typeof Config !== 'undefined') {
-                    if (!firebase.apps.length) {
-                        firebase.initializeApp(Config);
-                    }
-                } else {
-                    throw new Error('Firebase config not found');
-                }
-                
-                db = firebase.database();
-                auth = firebase.auth();
-                
-                console.log('✅ Firebase initialized');
-                return true;
-            } catch (error) {
-                console.error('❌ Firebase init error:', error);
-                showError('System initialization failed. Please try again later.');
-                return false;
-            }
+    <!-- ==========================================================================
+         SUCCESS STATE
+         ========================================================================== -->
+    <div class="card hidden" id="successState">
+      <div class="icon-wrap success"><i class="fas fa-check-circle"></i></div>
+      <h2 class="title" style="color:#22c55e;">Payment Confirmed! ✅</h2>
+      <p class="subtitle">Your payment has been verified by Kashier.</p>
+      
+      <div class="details">
+        <table class="status-table">
+          <tr><td>Reference</td><td id="successRef">-</td></tr>
+          <tr><td>Amount</td><td id="successAmount">-</td></tr>
+          <tr><td>Status</td><td><span class="badge badge-success">Paid</span></td></tr>
+        </table>
+      </div>
+      
+      <p class="subtitle" style="color:#22c55e;">Your booking is being saved now...</p>
+      
+      <div id="saveResult" style="margin-bottom:16px;"></div>
+      
+      <button class="btn btn-primary" onclick="window.location.href='/'">
+        <i class="fas fa-home"></i> Back to Home
+      </button>
+      <p class="note">Confirmation sent to your email & WhatsApp</p>
+    </div>
+
+    <!-- ==========================================================================
+         FAILED STATE
+         ========================================================================== -->
+    <div class="card hidden" id="failedState">
+      <div class="icon-wrap failed"><i class="fas fa-times-circle"></i></div>
+      <h2 class="title" style="color:#ef4444;">Payment Declined ❌</h2>
+      <p class="subtitle" id="failedReason">Your payment was declined by Kashier.</p>
+      
+      <div class="details">
+        <table class="status-table">
+          <tr><td>Reference</td><td id="failedRef">-</td></tr>
+          <tr><td>Status</td><td><span class="badge badge-failed">Failed</span></td></tr>
+        </table>
+      </div>
+      
+      <p class="subtitle" style="color:#f59e0b;"><i class="fas fa-info-circle"></i> No booking has been created. You can try again.</p>
+      
+      <div id="retryContainer">
+        <button class="btn btn-danger" id="retryBtn"><i class="fas fa-redo"></i> Try Payment Again</button>
+      </div>
+      
+      <button class="btn btn-outline" onclick="window.location.href='/'">
+        <i class="fas fa-home"></i> Back to Home
+      </button>
+    </div>
+
+    <!-- ==========================================================================
+         PENDING STATE
+         ========================================================================== -->
+    <div class="card hidden" id="pendingState">
+      <div class="icon-wrap pending"><i class="fas fa-clock"></i></div>
+      <h2 class="title" style="color:#f59e0b;">Payment Pending ⏳</h2>
+      <p class="subtitle">Your payment is still being processed by Kashier.</p>
+      
+      <div class="details">
+        <table class="status-table">
+          <tr><td>Reference</td><td id="pendingRef">-</td></tr>
+          <tr><td>Amount</td><td id="pendingAmount">-</td></tr>
+          <tr><td>Status</td><td><span class="badge badge-pending">Pending</span></td></tr>
+        </table>
+      </div>
+      
+      <p class="subtitle" style="color:#f59e0b;"><i class="fas fa-info-circle"></i> Booking will be created once payment is confirmed.</p>
+      
+      <button class="btn btn-primary" onclick="checkPaymentStatus()">
+        <i class="fas fa-sync-alt"></i> Check Again
+      </button>
+    </div>
+
+    <!-- ==========================================================================
+         NOT LOGGED IN STATE
+         ========================================================================== -->
+    <div class="card hidden" id="notLoggedInState">
+      <div class="icon-wrap warning"><i class="fas fa-user-lock"></i></div>
+      <h2 class="title" style="color:#f59e0b;">Login Required</h2>
+      <p class="subtitle">You must be logged in to confirm your booking.</p>
+      <div class="details">
+        <table class="status-table">
+          <tr><td>Reference</td><td id="notLoggedInRef">-</td></tr>
+          <tr><td>Status</td><td><span class="badge badge-info">Waiting for login</span></td></tr>
+        </table>
+      </div>
+      <button class="btn btn-primary" onclick="window.location.href='/?trip-id=' + (new URLSearchParams(window.location.search).get('tripId') || '')">
+        <i class="fas fa-sign-in-alt"></i> Go to Login
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // ======================================================================
+      // STATE
+      // ======================================================================
+      let orderId = null;
+      let db = null;
+      let auth = null;
+      let bookingData = null;
+      let paymentStatus = 'unknown';
+      
+      // ======================================================================
+      // FIREBASE INIT
+      // ======================================================================
+      function initFirebase() {
+        try {
+          if (typeof firebaseConfig !== 'undefined') {
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          } else if (typeof Config !== 'undefined') {
+            if (!firebase.apps.length) firebase.initializeApp(Config);
+          } else {
+            throw new Error('Firebase config not found');
+          }
+          db = firebase.database();
+          auth = firebase.auth();
+          return true;
+        } catch(e) {
+          showError('System initialization failed');
+          return false;
         }
-        
-        // ==========================================================================
-        // SHOW STATE
-        // ==========================================================================
-        function showOnly(id) {
-            document.querySelectorAll('.card').forEach(function(c) {
-                c.classList.add('hidden');
-            });
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('hidden');
-        }
-        
-        function showError(message) {
-            showOnly('failedState');
-            document.getElementById('failed-message').textContent = message;
-            document.getElementById('failed-ref').textContent = orderId || 'N/A';
-            document.getElementById('retryContainer').classList.add('hidden');
-        }
-        
-        // ==========================================================================
-        // CHECK PAYMENT STATUS
-        // ==========================================================================
-        async function checkPaymentStatus() {
-            if (!orderId) {
-                showError('No booking reference found');
-                return;
-            }
-            
-            showOnly('loadingState');
-            document.getElementById('loading-ref').textContent = orderId;
-            
-            try {
-                // Check if user is logged in
-                const user = auth.currentUser;
-                
-                // Get booking from Firebase
-                const snap = await db.ref('trip-bookings/' + orderId).once('value');
-                bookingData = snap.val();
-                
-                if (!bookingData) {
-                    // Booking not saved yet - check if this is a new payment
-                    // Try to get from pending data
-                    const pendingSnap = await db.ref('pending-payments/' + orderId).once('value');
-                    const pendingData = pendingSnap.val();
-                    
-                    if (pendingData) {
-                        bookingData = pendingData;
-                    } else {
-                        throw new Error('Booking not found');
-                    }
-                }
-                
-                console.log('📦 Booking data:', bookingData);
-                
-                // Check payment status via API
-                let paymentStatus = bookingData.paymentStatus || 'unknown';
-                
-                // Try to verify with payment API
-                try {
-                    const resp = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/paymentStatus', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ merchantOrderId: orderId })
-                    });
-                    
-                    if (resp.ok) {
-                        const apiData = await resp.json();
-                        console.log('💳 API response:', apiData);
-                        
-                        if (apiData.status === 'paid' || apiData.status === 'success') {
-                            paymentStatus = 'paid';
-                        } else if (apiData.status === 'failed' || apiData.status === 'declined') {
-                            paymentStatus = 'failed';
-                        } else if (apiData.status === 'pending') {
-                            paymentStatus = 'pending';
-                        }
-                    }
-                } catch (apiError) {
-                    console.warn('⚠️ API check failed, using local status:', apiError.message);
-                }
-                
-                // Update Firebase with payment status
-                if (paymentStatus === 'paid' && bookingData.paymentStatus !== 'paid') {
-                    await db.ref('trip-bookings/' + orderId).update({
-                        paymentStatus: 'paid',
-                        status: 'confirmed',
-                        isPaid: true,
-                        resStatus: 'new',
-                        paymentDate: firebase.database.ServerValue.TIMESTAMP,
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    
-                    // Send notification to owner
-                    if (bookingData.owner && bookingData.owner !== bookingData.uid) {
-                        try {
-                            await db.ref('notifications/' + bookingData.owner + '/' + Date.now()).set({
-                                title: '💰 Payment Confirmed: ' + (bookingData.tour || 'Trip'),
-                                message: bookingData.username + ' - ' + (bookingData.adults || 0) + 'A/' + (bookingData.childrenUnder12 || 0) + 'C/' + (bookingData.infants || 0) + 'I',
-                                totalAmount: bookingData.netTotal || bookingData.total,
-                                bookingId: orderId,
-                                tripId: bookingData.tripId,
-                                tripName: bookingData.tour,
-                                userName: bookingData.username,
-                                userEmail: bookingData.email,
-                                phone: bookingData.phone,
-                                adults: bookingData.adults || 0,
-                                children: bookingData.childrenUnder12 || 0,
-                                infants: bookingData.infants || 0,
-                                tripDate: bookingData.tripDate,
-                                read: false,
-                                timestamp: Date.now(),
-                                type: 'payment_confirmed'
-                            });
-                        } catch(e) {
-                            console.warn('⚠️ Notification failed:', e);
-                        }
-                    }
-                } else if (paymentStatus === 'failed' && bookingData.paymentStatus !== 'failed') {
-                    await db.ref('trip-bookings/' + orderId).update({
-                        paymentStatus: 'failed',
-                        status: 'failed',
-                        updatedAt: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
-                
-                // Show appropriate UI
-                displayPaymentStatus(paymentStatus);
-                
-            } catch (error) {
-                console.error('❌ Check error:', error);
-                showError(error.message || 'Failed to check payment status');
-            }
-        }
-        
-        // ==========================================================================
-        // DISPLAY PAYMENT STATUS
-        // ==========================================================================
-        function displayPaymentStatus(status) {
-            const refNum = orderId || 'N/A';
-            
-            if (status === 'paid' || status === 'success') {
-                showOnly('successState');
-                document.getElementById('success-ref').textContent = refNum;
-                
-                // Get amount
-                const amount = bookingData?.total || bookingData?.netTotal || 0;
-                document.getElementById('success-amount').textContent = parseFloat(amount).toFixed(2) + ' EGP';
-                document.getElementById('success-method').textContent = bookingData?.paymentMethod || 'Online Payment';
-                
-                // Launch confetti
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 },
-                        colors: ['#f59e0b', '#22c55e', '#3b82f6']
-                    });
-                }
-                
-                // Send message to parent window (if in iframe)
-                if (window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'payment_complete',
-                        status: 'success',
-                        refNumber: refNum
-                    }, '*');
-                }
-                
-            } else if (status === 'failed' || status === 'declined') {
-                showOnly('failedState');
-                document.getElementById('failed-ref').textContent = refNum;
-                document.getElementById('failed-message').textContent = 'Your payment was ' + status + '. Please try again.';
-                
-                // Show retry button if payment URL exists
-                if (bookingData?.paymentUrl || bookingData?.paymenturl) {
-                    document.getElementById('retryContainer').classList.remove('hidden');
-                    document.getElementById('retryBtn').onclick = function() {
-                        const url = bookingData.paymentUrl || bookingData.paymenturl;
-                        if (url) window.location.href = url;
-                    };
-                } else {
-                    document.getElementById('retryContainer').classList.add('hidden');
-                }
-                
-                // Send message to parent window
-                if (window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'payment_complete',
-                        status: 'failed',
-                        refNumber: refNum
-                    }, '*');
-                }
-                
-            } else {
-                showOnly('pendingState');
-                document.getElementById('pending-ref').textContent = refNum;
-                
-                const amount = bookingData?.total || bookingData?.netTotal || 0;
-                document.getElementById('pending-amount').textContent = parseFloat(amount).toFixed(2) + ' EGP';
-                document.getElementById('pending-message').textContent = 'Your payment is still processing. This usually takes a few minutes.';
-            }
-        }
-        
-        // ==========================================================================
-        // RETRY PAYMENT
-        // ==========================================================================
-        function retryPayment() {
-            if (bookingData?.paymentUrl || bookingData?.paymenturl) {
-                const url = bookingData.paymentUrl || bookingData.paymenturl;
-                window.location.href = url;
-            } else {
-                showError('Payment link not available. Please contact support.');
-            }
-        }
-        
-        // ==========================================================================
-        // INIT
-        // ==========================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Payment status page loaded');
-            
-            // Get order ID from URL
-            const params = new URLSearchParams(window.location.search);
-            orderId = params.get('merchantOrderId') || 
-                     params.get('orderId') || 
-                     params.get('order_id') || 
-                     params.get('ref') ||
-                     params.get('refNumber');
-            
-            console.log('📋 Order ID:', orderId);
-            
-            if (!orderId) {
-                showError('No booking reference provided');
-                return;
-            }
-            
-            // Initialize Firebase
-            if (!initFirebase()) {
-                return;
-            }
-            
-            // Show loading
-            showOnly('loadingState');
-            document.getElementById('loading-ref').textContent = orderId;
-            
-            // Wait for auth then check
-            auth.onAuthStateChanged(function(user) {
-                console.log('👤 Auth state:', user ? 'Logged in' : 'Not logged in');
-                
-                // Check payment even without auth (for guest payments)
-                setTimeout(checkPaymentStatus, 1000);
-            });
+      }
+      
+      // ======================================================================
+      // SESSION STORAGE
+      // ======================================================================
+      function getBookingFromSession() {
+        try {
+          const data = sessionStorage.getItem('pendingBooking');
+          if (data) return JSON.parse(data);
+          
+          const ref = sessionStorage.getItem('refNumber');
+          if (ref) {
+            return {
+              refNumber: ref,
+              username: sessionStorage.getItem('username'),
+              email: sessionStorage.getItem('email'),
+              phone: sessionStorage.getItem('phone')
+            };
+          }
+          return null;
+        } catch(e) { return null; }
+      }
+      
+      // ======================================================================
+      // UI HELPERS
+      // ======================================================================
+      function show(id) {
+        ['loadingState','successState','failedState','pendingState','notLoggedInState'].forEach(function(s) {
+          document.getElementById(s).classList.add('hidden');
         });
+        document.getElementById(id).classList.remove('hidden');
+      }
+      
+      function showError(msg) {
+        show('failedState');
+        document.getElementById('failedReason').textContent = msg;
+        document.getElementById('failedRef').textContent = orderId || 'N/A';
+        document.getElementById('retryContainer').classList.add('hidden');
+      }
+      
+      // ======================================================================
+      // CHECK PAYMENT STATUS FROM KASHIER API
+      // ======================================================================
+      async function checkPaymentWithKashier() {
+        try {
+          console.log('🔍 Checking payment with Kashier API...');
+          
+          const response = await fetch('https://api-discover-sharm.netlify.app/.netlify/functions/paymentStatus', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ merchantOrderId: orderId })
+          });
+          
+          if (!response.ok) {
+            throw new Error('API responded with ' + response.status);
+          }
+          
+          const data = await response.json();
+          console.log('💳 Kashier response:', data);
+          
+          // Map Kashier status to our status
+          if (data.status === 'paid' || data.status === 'success' || data.status === 'completed') {
+            return 'paid';
+          } else if (data.status === 'failed' || data.status === 'declined' || data.status === 'error' || data.status === 'cancelled') {
+            return 'failed';
+          } else if (data.status === 'pending' || data.status === 'processing' || data.status === 'under_review') {
+            return 'pending';
+          } else {
+            // Unknown status - check URL params
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('status') === 'failed') return 'failed';
+            if (params.get('status') === 'success') return 'paid';
+            // Default: if redirected from Kashier, assume success
+            return 'paid';
+          }
+          
+        } catch(error) {
+          console.warn('⚠️ Kashier API error:', error.message);
+          
+          // If API fails, check URL for status
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('status') === 'failed') return 'failed';
+          if (params.get('status') === 'success') return 'paid';
+          
+          // If no status in URL and API failed, mark as pending for manual check
+          return 'pending';
+        }
+      }
+      
+      // ======================================================================
+      // SAVE BOOKING TO FIREBASE (ONLY IF PAID)
+      // ======================================================================
+      async function saveBookingToFirebase() {
+        if (!bookingData || !bookingData.refNumber) {
+          console.error('❌ No booking data');
+          return false;
+        }
         
-        // Global functions
-        window.checkPaymentStatus = checkPaymentStatus;
-        window.retryPayment = retryPayment;
-    </script>
+        const ref = bookingData.refNumber;
+        
+        try {
+          const finalBooking = {
+            ...bookingData,
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            isPaid: true,
+            resStatus: 'new',
+            paymentDate: firebase.database.ServerValue.TIMESTAMP,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+          };
+          
+          // Save to Firebase
+          await db.ref('trip-bookings/' + ref).set(finalBooking);
+          console.log('✅ Booking saved:', ref);
+          
+          // Notify owner
+          if (finalBooking.owner && finalBooking.owner !== finalBooking.uid) {
+            try {
+              await db.ref('notifications/' + finalBooking.owner + '/' + Date.now()).set({
+                title: '💰 New Booking: ' + (finalBooking.tour || 'Trip'),
+                message: (finalBooking.username || 'Guest') + ' - ' + 
+                         (finalBooking.adults || 0) + 'A/' + 
+                         (finalBooking.childrenUnder12 || 0) + 'C/' + 
+                         (finalBooking.infants || 0) + 'I',
+                totalAmount: finalBooking.netTotal || finalBooking.total || 0,
+                bookingId: ref,
+                tripId: finalBooking.tripId,
+                tripName: finalBooking.tour,
+                userName: finalBooking.username,
+                userEmail: finalBooking.email,
+                phone: finalBooking.phone,
+                adults: finalBooking.adults || 0,
+                children: finalBooking.childrenUnder12 || 0,
+                infants: finalBooking.infants || 0,
+                tripDate: finalBooking.tripDate,
+                read: false,
+                timestamp: Date.now(),
+                type: 'new_booking'
+              });
+            } catch(e) {}
+          }
+          
+          // Send message to parent window (if in iframe)
+          if (window.parent !== window) {
+            window.parent.postMessage({
+              type: 'payment_complete',
+              status: 'success',
+              refNumber: ref
+            }, '*');
+          }
+          
+          // Clear session
+          sessionStorage.removeItem('pendingBooking');
+          sessionStorage.removeItem('refNumber');
+          
+          return true;
+        } catch(e) {
+          console.error('❌ Save error:', e);
+          return false;
+        }
+      }
+      
+      // ======================================================================
+      // MAIN PROCESS
+      // ======================================================================
+      async function processPayment() {
+        show('loadingState');
+        document.getElementById('loadingRef').textContent = orderId || '...';
+        
+        // Step 1: Check if user is logged in
+        const user = auth.currentUser;
+        
+        if (!user) {
+          console.log('❌ User not logged in');
+          show('notLoggedInState');
+          document.getElementById('notLoggedInRef').textContent = orderId || 'N/A';
+          return;
+        }
+        
+        console.log('✅ User logged in:', user.uid);
+        
+        // Step 2: Get booking data from session
+        bookingData = getBookingFromSession();
+        
+        if (!bookingData) {
+          // Try Firebase as fallback
+          try {
+            const snap = await db.ref('trip-bookings/' + orderId).once('value');
+            bookingData = snap.val();
+          } catch(e) {}
+        }
+        
+        if (!bookingData) {
+          showError('Booking data not found. Please contact support.');
+          return;
+        }
+        
+        console.log('📦 Booking data loaded');
+        
+        // Step 3: Check payment status from Kashier API
+        paymentStatus = await checkPaymentWithKashier();
+        
+        console.log('💳 Payment status:', paymentStatus);
+        
+        // Step 4: Act based on status
+        if (paymentStatus === 'paid') {
+          // Show success first
+          show('successState');
+          document.getElementById('successRef').textContent = orderId;
+          document.getElementById('successAmount').textContent = 
+            parseFloat(bookingData.total || bookingData.netTotal || 0).toFixed(2) + ' EGP';
+          
+          // Save booking now
+          const saved = await saveBookingToFirebase();
+          
+          if (saved) {
+            document.getElementById('saveResult').innerHTML = 
+              '<span class="badge badge-success">✓ Booking confirmed & saved</span>';
+            
+            // Confetti
+            if (typeof confetti === 'function') {
+              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#f59e0b', '#22c55e', '#3b82f6'] });
+            }
+          } else {
+            document.getElementById('saveResult').innerHTML = 
+              '<span class="badge badge-failed">⚠ Failed to save booking. Contact support.</span>';
+          }
+          
+        } else if (paymentStatus === 'failed') {
+          // Show failed - DON'T save anything
+          show('failedState');
+          document.getElementById('failedRef').textContent = orderId;
+          document.getElementById('failedReason').textContent = 
+            'Your payment was declined by the payment gateway. No charges were made.';
+          
+          // Show retry button if payment URL exists
+          if (bookingData.paymentUrl || bookingData.paymenturl) {
+            document.getElementById('retryContainer').classList.remove('hidden');
+            document.getElementById('retryBtn').onclick = function() {
+              window.location.href = bookingData.paymentUrl || bookingData.paymenturl;
+            };
+          } else {
+            document.getElementById('retryContainer').classList.add('hidden');
+          }
+          
+          // Send message to parent
+          if (window.parent !== window) {
+            window.parent.postMessage({
+              type: 'payment_complete',
+              status: 'failed',
+              refNumber: orderId
+            }, '*');
+          }
+          
+        } else {
+          // Pending - DON'T save
+          show('pendingState');
+          document.getElementById('pendingRef').textContent = orderId;
+          document.getElementById('pendingAmount').textContent = 
+            parseFloat(bookingData.total || bookingData.netTotal || 0).toFixed(2) + ' EGP';
+        }
+      }
+      
+      // ======================================================================
+      // INIT
+      // ======================================================================
+      const params = new URLSearchParams(window.location.search);
+      orderId = params.get('merchantOrderId') || params.get('orderId') || params.get('ref') || params.get('refNumber');
+      
+      if (!orderId) {
+        const sessionData = getBookingFromSession();
+        if (sessionData && sessionData.refNumber) {
+          orderId = sessionData.refNumber;
+        } else {
+          showError('No booking reference found');
+          return;
+        }
+      }
+      
+      if (!initFirebase()) return;
+      
+      show('loadingState');
+      document.getElementById('loadingRef').textContent = orderId;
+      
+      // Wait for auth state, then process
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          setTimeout(processPayment, 1500);
+        } else {
+          // Not logged in - show login required
+          show('notLoggedInState');
+          document.getElementById('notLoggedInRef').textContent = orderId;
+          
+          // But still listen for auth changes
+          auth.onAuthStateChanged(function(updatedUser) {
+            if (updatedUser) {
+              show('loadingState');
+              document.getElementById('loadingRef').textContent = orderId;
+              setTimeout(processPayment, 1500);
+            }
+          });
+        }
+      });
+      
+      // Global functions
+      window.checkPaymentStatus = processPayment;
+    });
+  </script>
 </body>
 </html>
