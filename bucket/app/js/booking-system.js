@@ -433,6 +433,8 @@ function hidePaymentIframe() {
       
       // Re-bind events
       initEvents();
+      // Re-populate user data
+      loadUserData();
       
       // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
