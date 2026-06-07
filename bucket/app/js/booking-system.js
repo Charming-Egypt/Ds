@@ -1,7 +1,8 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// COMPLETE PRODUCTION VERSION
-// All Features: Booking, Payment, Notifications, User Data, Country Selector
+// COMPLETE FINAL VERSION
+// Booking saved ONLY after successful payment
+// Payment inside card via iframe + postMessage
 // ==========================================================================
 
 (function() {
@@ -18,12 +19,13 @@
   let paymentPollingInterval = null;
   let savedPaymentUrl = null;
   
+  // Phone state
   let selectedCountryCode = '+20';
   let selectedCountryName = 'Egypt';
   let selectedCountryFlag = 'https://flagcdn.com/w40/eg.png';
 
   // ==========================================================================
-  // COUNTRIES DATA (240+ Countries & Territories)
+  // COUNTRIES DATA
   // ==========================================================================
   const countries = [
     { code: '+93', name: 'Afghanistan', flag: 'https://flagcdn.com/w40/af.png' },
@@ -31,16 +33,13 @@
     { code: '+213', name: 'Algeria', flag: 'https://flagcdn.com/w40/dz.png' },
     { code: '+376', name: 'Andorra', flag: 'https://flagcdn.com/w40/ad.png' },
     { code: '+244', name: 'Angola', flag: 'https://flagcdn.com/w40/ao.png' },
-    { code: '+1-268', name: 'Antigua and Barbuda', flag: 'https://flagcdn.com/w40/ag.png' },
     { code: '+54', name: 'Argentina', flag: 'https://flagcdn.com/w40/ar.png' },
     { code: '+374', name: 'Armenia', flag: 'https://flagcdn.com/w40/am.png' },
     { code: '+61', name: 'Australia', flag: 'https://flagcdn.com/w40/au.png' },
     { code: '+43', name: 'Austria', flag: 'https://flagcdn.com/w40/at.png' },
     { code: '+994', name: 'Azerbaijan', flag: 'https://flagcdn.com/w40/az.png' },
-    { code: '+1-242', name: 'Bahamas', flag: 'https://flagcdn.com/w40/bs.png' },
     { code: '+973', name: 'Bahrain', flag: 'https://flagcdn.com/w40/bh.png' },
     { code: '+880', name: 'Bangladesh', flag: 'https://flagcdn.com/w40/bd.png' },
-    { code: '+1-246', name: 'Barbados', flag: 'https://flagcdn.com/w40/bb.png' },
     { code: '+375', name: 'Belarus', flag: 'https://flagcdn.com/w40/by.png' },
     { code: '+32', name: 'Belgium', flag: 'https://flagcdn.com/w40/be.png' },
     { code: '+501', name: 'Belize', flag: 'https://flagcdn.com/w40/bz.png' },
@@ -74,8 +73,6 @@
     { code: '+420', name: 'Czech Republic', flag: 'https://flagcdn.com/w40/cz.png' },
     { code: '+45', name: 'Denmark', flag: 'https://flagcdn.com/w40/dk.png' },
     { code: '+253', name: 'Djibouti', flag: 'https://flagcdn.com/w40/dj.png' },
-    { code: '+1-767', name: 'Dominica', flag: 'https://flagcdn.com/w40/dm.png' },
-    { code: '+1-809', name: 'Dominican Republic', flag: 'https://flagcdn.com/w40/do.png' },
     { code: '+593', name: 'Ecuador', flag: 'https://flagcdn.com/w40/ec.png' },
     { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
     { code: '+503', name: 'El Salvador', flag: 'https://flagcdn.com/w40/sv.png' },
@@ -93,7 +90,6 @@
     { code: '+49', name: 'Germany', flag: 'https://flagcdn.com/w40/de.png' },
     { code: '+233', name: 'Ghana', flag: 'https://flagcdn.com/w40/gh.png' },
     { code: '+30', name: 'Greece', flag: 'https://flagcdn.com/w40/gr.png' },
-    { code: '+1-473', name: 'Grenada', flag: 'https://flagcdn.com/w40/gd.png' },
     { code: '+502', name: 'Guatemala', flag: 'https://flagcdn.com/w40/gt.png' },
     { code: '+224', name: 'Guinea', flag: 'https://flagcdn.com/w40/gn.png' },
     { code: '+245', name: 'Guinea-Bissau', flag: 'https://flagcdn.com/w40/gw.png' },
@@ -171,9 +167,6 @@
     { code: '+40', name: 'Romania', flag: 'https://flagcdn.com/w40/ro.png' },
     { code: '+7', name: 'Russia', flag: 'https://flagcdn.com/w40/ru.png' },
     { code: '+250', name: 'Rwanda', flag: 'https://flagcdn.com/w40/rw.png' },
-    { code: '+1-869', name: 'Saint Kitts and Nevis', flag: 'https://flagcdn.com/w40/kn.png' },
-    { code: '+1-758', name: 'Saint Lucia', flag: 'https://flagcdn.com/w40/lc.png' },
-    { code: '+1-784', name: 'Saint Vincent and the Grenadines', flag: 'https://flagcdn.com/w40/vc.png' },
     { code: '+685', name: 'Samoa', flag: 'https://flagcdn.com/w40/ws.png' },
     { code: '+378', name: 'San Marino', flag: 'https://flagcdn.com/w40/sm.png' },
     { code: '+239', name: 'São Tomé and Príncipe', flag: 'https://flagcdn.com/w40/st.png' },
@@ -204,7 +197,6 @@
     { code: '+670', name: 'Timor-Leste', flag: 'https://flagcdn.com/w40/tl.png' },
     { code: '+228', name: 'Togo', flag: 'https://flagcdn.com/w40/tg.png' },
     { code: '+676', name: 'Tonga', flag: 'https://flagcdn.com/w40/to.png' },
-    { code: '+1-868', name: 'Trinidad and Tobago', flag: 'https://flagcdn.com/w40/tt.png' },
     { code: '+216', name: 'Tunisia', flag: 'https://flagcdn.com/w40/tn.png' },
     { code: '+90', name: 'Turkey', flag: 'https://flagcdn.com/w40/tr.png' },
     { code: '+993', name: 'Turkmenistan', flag: 'https://flagcdn.com/w40/tm.png' },
@@ -232,7 +224,6 @@
   function toStr(v) { if (v === null || v === undefined) return ''; return String(v).trim(); }
   function clean(v) { return toStr(v).replace(/[<>]/g, ''); }
   function generateRef() { const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r = 'DS-'; for (let i = 0; i < 10; i++) r += chars.charAt(Math.floor(Math.random() * chars.length)); return r; }
-  function isMobile() { return window.innerWidth <= 768; }
   
   function toast(msg, type) {
     if (toastTimer) clearTimeout(toastTimer);
@@ -273,7 +264,6 @@
     modal.querySelector('.country-modal-overlay').addEventListener('click', closeCountryModal);
     document.getElementById('countryModalClose').addEventListener('click', closeCountryModal);
     document.getElementById('countryModalSearch').addEventListener('input', function() { renderCountryList(this.value); });
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeCountryModal(); });
   }
   function openCountryModal() { createCountryModal(); const m = document.getElementById('countryModal'); if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; renderCountryList(''); setTimeout(function() { const s = document.getElementById('countryModalSearch'); if (s) s.focus(); }, 300); } }
   function closeCountryModal() { const m = document.getElementById('countryModal'); if (m) m.style.display = 'none'; document.body.style.overflow = ''; }
@@ -410,15 +400,80 @@
     `;
     
     document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentIframe);
-    startPaymentPolling();
+    window.addEventListener('message', handlePaymentMessage);
   }
 
   function hidePaymentIframe() {
     stopPaymentPolling();
+    window.removeEventListener('message', handlePaymentMessage);
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
     const originalContent = bookingCard.getAttribute('data-original-content');
     if (originalContent) { bookingCard.innerHTML = originalContent; bookingCard.classList.remove('payment-mode'); bookingCard.removeAttribute('data-original-content'); initEvents(); }
+  }
+
+  // ==========================================================================
+  // HANDLE PAYMENT MESSAGE FROM IFRAME
+  // ==========================================================================
+  function handlePaymentMessage(event) {
+    if (!event.data || event.data.type !== 'payment_complete') return;
+    
+    const { status, refNumber: paymentRef } = event.data;
+    console.log('📩 Payment message:', status, paymentRef);
+    
+    if (paymentRef && paymentRef !== refNumber) refNumber = paymentRef;
+    
+    window.removeEventListener('message', handlePaymentMessage);
+    stopPaymentPolling();
+    
+    if (status === 'success') {
+      saveBookingToFirebase();
+      setTimeout(function() { showPaymentSuccess(pendingBooking || getTrip()); }, 500);
+    } else if (status === 'failed') {
+      showPaymentFailed();
+    } else {
+      startPaymentPolling();
+    }
+  }
+
+  // ==========================================================================
+  // SAVE BOOKING TO FIREBASE (Only after payment)
+  // ==========================================================================
+  async function saveBookingToFirebase() {
+    if (!pendingBooking) { console.error('No pending booking'); return; }
+    
+    try {
+      pendingBooking.paymentStatus = 'paid';
+      pendingBooking.status = 'confirmed';
+      pendingBooking.isPaid = true;
+      pendingBooking.resStatus = 'new';
+      pendingBooking.paymentDate = Date.now();
+      pendingBooking.updatedAt = Date.now();
+      
+      await db.ref('trip-bookings/' + refNumber).set(pendingBooking);
+      console.log('✅ Booking saved:', refNumber);
+      
+      // Notify owner
+      if (pendingBooking.owner && pendingBooking.owner !== pendingBooking.uid) {
+        try {
+          await db.ref('notifications/' + pendingBooking.owner + '/' + Date.now()).set({
+            title: 'New Booking: ' + (pendingBooking.tour || 'Trip'),
+            message: pendingBooking.username + ' - ' + pendingBooking.adults + 'A/' + pendingBooking.childrenUnder12 + 'C/' + pendingBooking.infants + 'I',
+            totalAmount: pendingBooking.netTotal || pendingBooking.total,
+            bookingId: refNumber, tripId: pendingBooking.tripId, tripName: pendingBooking.tour,
+            userName: pendingBooking.username, userEmail: pendingBooking.email, phone: pendingBooking.phone,
+            adults: pendingBooking.adults, children: pendingBooking.childrenUnder12, infants: pendingBooking.infants,
+            tripDate: pendingBooking.tripDate, read: false, timestamp: Date.now(), type: 'new_booking'
+          });
+        } catch(e) {}
+      }
+      
+      sessionStorage.setItem('username', pendingBooking.username || '');
+      sessionStorage.setItem('email', pendingBooking.email || '');
+      sessionStorage.setItem('phone', pendingBooking.phone || '');
+      sessionStorage.setItem('refNumber', refNumber);
+      
+    } catch(e) { console.error('❌ Save error:', e); }
   }
 
   // ==========================================================================
@@ -431,30 +486,19 @@
         const snap = await db.ref('trip-bookings/' + refNumber).once('value');
         const booking = snap.val();
         if (booking) {
-          if (booking.paymentStatus === 'paid') {
-            stopPaymentPolling();
-            sessionStorage.setItem('username', booking.username || '');
-            sessionStorage.setItem('email', booking.email || '');
-            sessionStorage.setItem('phone', booking.phone || '');
-            sessionStorage.setItem('refNumber', refNumber);
-            showPaymentSuccess(booking);
-          } else if (booking.paymentStatus === 'failed') {
-            stopPaymentPolling();
-            showPaymentFailed();
-          }
+          if (booking.paymentStatus === 'paid') { stopPaymentPolling(); showPaymentSuccess(booking); }
+          else if (booking.paymentStatus === 'failed') { stopPaymentPolling(); showPaymentFailed(); }
         }
       } catch(e) {}
     }, 3000);
   }
 
-  function stopPaymentPolling() {
-    if (paymentPollingInterval) { clearInterval(paymentPollingInterval); paymentPollingInterval = null; }
-  }
+  function stopPaymentPolling() { if (paymentPollingInterval) { clearInterval(paymentPollingInterval); paymentPollingInterval = null; } }
 
   // ==========================================================================
-  // PAYMENT SUCCESS
+  // SHOW PAYMENT STATUS
   // ==========================================================================
-  function showPaymentSuccess(booking) {
+  function showPaymentSuccess(data) {
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
     bookingCard.classList.add('payment-mode');
@@ -465,8 +509,8 @@
         <p class="payment-status-message">Your booking has been confirmed.</p>
         <div class="payment-status-details">
           <div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div>
-          <div class="payment-status-line"><span>Trip:</span><strong>${booking.tour || getTrip().name || 'Trip'}</strong></div>
-          <div class="payment-status-line"><span>Date:</span><strong>${booking.tripDate || '-'}</strong></div>
+          <div class="payment-status-line"><span>Trip:</span><strong>${data.tour || data.name || 'Trip'}</strong></div>
+          <div class="payment-status-line"><span>Date:</span><strong>${data.tripDate || '-'}</strong></div>
         </div>
         <p class="payment-status-note">A confirmation has been sent to your WhatsApp and email.</p>
         <button class="btn-primary" onclick="location.reload()"><i class="fas fa-check"></i> Done</button>
@@ -474,9 +518,6 @@
     `;
   }
 
-  // ==========================================================================
-  // PAYMENT FAILED
-  // ==========================================================================
   function showPaymentFailed() {
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
@@ -495,7 +536,7 @@
   }
 
   // ==========================================================================
-  // SUBMIT - DON'T SAVE TO FIREBASE UNTIL PAYMENT CONFIRMED
+  // SUBMIT - Don't save until payment confirmed
   // ==========================================================================
   async function submitBooking() {
     const spinner = $('spinner');
@@ -510,6 +551,7 @@
       const user = auth.currentUser, trip = getTrip(), tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || ''), ownerId = getOwnerId();
       const phone = getPhoneNumber(), net = calcNet(), tax = calcTax(), total = calcTotal();
       
+      // Build booking but DON'T save to Firebase
       pendingBooking = {
         refNumber, username: clean($('username')?.value), email: clean($('customerEmail')?.value),
         phone, tour: toStr(trip.name), tripId, tripDate: toStr($('tripDate')?.value),
@@ -521,24 +563,25 @@
         uid: user.uid, owner: ownerId || user.uid, createdAt: Date.now(), updatedAt: Date.now()
       };
       
+      // Backup in session
+      sessionStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
+      sessionStorage.setItem('refNumber', refNumber);
+      
+      // Get payment hash
       const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP' }) });
       if (!resp.ok) throw new Error('Payment service unavailable.');
       const hashData = await resp.json();
       if (!hashData.hash) throw new Error('Payment verification failed.');
       
+      // Build payment URL
+      const paymentStatusUrl = window.location.origin + '/p/payment-status.html';
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
         merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP',
         hash: hashData.hash, mode: 'live',
-        merchantRedirect: window.location.origin + '/p/payment-status.html',
-        failureRedirect: window.location.origin + '/p/payment-status.html',
+        merchantRedirect: paymentStatusUrl + '?ref=' + refNumber,
+        failureRedirect: paymentStatusUrl + '?ref=' + refNumber,
         redirectMethod: 'get'
       }).toString();
-      
-      sessionStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
-      sessionStorage.setItem('username', pendingBooking.username);
-      sessionStorage.setItem('email', pendingBooking.email);
-      sessionStorage.setItem('phone', pendingBooking.phone);
-      sessionStorage.setItem('refNumber', refNumber);
       
       if (spinner) spinner.classList.add('hidden');
       showPaymentIframe(paymentUrl);
@@ -564,20 +607,6 @@
   }
 
   // ==========================================================================
-  // MOBILE
-  // ==========================================================================
-  function moveBookingToMobile() {
-    const mc = $('mobileBookingContainer'), main = $('mainBookingCard'), ms = $('mobileBookingSection');
-    if (!mc || !main || !ms) return;
-    if (isMobile()) {
-      mc.innerHTML = ''; const clone = main.cloneNode(true); clone.id = 'mobileBookingCard'; mc.appendChild(clone); ms.style.display = 'block';
-      const card = $('mobileBookingCard');
-      if (card) { card.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; }); card.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; }); card.querySelectorAll('[data-stepper]').forEach(function(b) { b.onclick = function() { stepper(this.getAttribute('data-stepper'), parseInt(this.getAttribute('data-delta'))); }; }); const sb = card.querySelector('#submitBtn'); if (sb) sb.onclick = submitBooking; const sv = card.querySelector('#openServicesBtn'); if (sv) sv.onclick = openServicesPopup; }
-    } else { ms.style.display = 'none'; mc.innerHTML = ''; }
-  }
-  function showMobileBooking() { moveBookingToMobile(); const ms = $('mobileBookingSection'); if (ms) setTimeout(function() { ms.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200); }
-
-  // ==========================================================================
   // EVENT BINDING
   // ==========================================================================
   function initEvents() {
@@ -597,7 +626,7 @@
   // ==========================================================================
   function init() {
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
-    if (!tripId) { toast('No trip specified in URL', 'error'); return; }
+    if (!tripId) { toast('No trip specified', 'error'); return; }
     refNumber = generateRef();
     
     const trip = getTrip(); const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
@@ -606,11 +635,6 @@
     initEvents();
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeServicesPopup(); closeCountryModal(); } });
     auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
-    
-    moveBookingToMobile();
-    window.addEventListener('resize', moveBookingToMobile);
-    const mb = $('mobileBookNowBtn'); if (mb) mb.onclick = showMobileBooking;
-    
     setTimeout(updateSummary, 1500);
   }
 
@@ -619,9 +643,6 @@
   // ==========================================================================
   window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
-  // ==========================================================================
-  // AUTO START
-  // ==========================================================================
   function tryInit() { if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; } init(); }
   setTimeout(tryInit, 800);
 
