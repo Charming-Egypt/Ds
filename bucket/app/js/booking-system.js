@@ -1,8 +1,8 @@
 // ==========================================================================
 // DISCOVER SHARM - Booking & Payment System
-// COMPLETE FINAL VERSION
+// Complete Final Version
+// Payment inside card via iframe
 // Booking saved ONLY after successful payment
-// Payment inside card via iframe + postMessage
 // ==========================================================================
 
 (function() {
@@ -17,7 +17,6 @@
   let toastTimer = null;
   let pendingBooking = null;
   let paymentPollingInterval = null;
-  let savedPaymentUrl = null;
   
   // Phone state
   let selectedCountryCode = '+20';
@@ -372,10 +371,9 @@
   function closeServicesPopup() { const popup = $('extraServicesPopup'); if (popup) popup.classList.add('hidden'); document.body.style.overflow = ''; }
 
   // ==========================================================================
-  // PAYMENT IFRAME - Inside Card
+  // PAYMENT IFRAME
   // ==========================================================================
   function showPaymentIframe(paymentUrl) {
-    savedPaymentUrl = paymentUrl;
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
     
@@ -412,23 +410,15 @@
     if (originalContent) { bookingCard.innerHTML = originalContent; bookingCard.classList.remove('payment-mode'); bookingCard.removeAttribute('data-original-content'); initEvents(); }
   }
 
-  // ==========================================================================
-  // HANDLE PAYMENT MESSAGE FROM IFRAME
-  // ==========================================================================
   function handlePaymentMessage(event) {
     if (!event.data || event.data.type !== 'payment_complete') return;
-    
     const { status, refNumber: paymentRef } = event.data;
-    console.log('📩 Payment message:', status, paymentRef);
-    
     if (paymentRef && paymentRef !== refNumber) refNumber = paymentRef;
-    
     window.removeEventListener('message', handlePaymentMessage);
     stopPaymentPolling();
     
     if (status === 'success') {
-      saveBookingToFirebase();
-      setTimeout(function() { showPaymentSuccess(pendingBooking || getTrip()); }, 500);
+      showPaymentSuccess();
     } else if (status === 'failed') {
       showPaymentFailed();
     } else {
@@ -436,69 +426,21 @@
     }
   }
 
-  // ==========================================================================
-  // SAVE BOOKING TO FIREBASE (Only after payment)
-  // ==========================================================================
-  async function saveBookingToFirebase() {
-    if (!pendingBooking) { console.error('No pending booking'); return; }
-    
-    try {
-      pendingBooking.paymentStatus = 'paid';
-      pendingBooking.status = 'confirmed';
-      pendingBooking.isPaid = true;
-      pendingBooking.resStatus = 'new';
-      pendingBooking.paymentDate = Date.now();
-      pendingBooking.updatedAt = Date.now();
-      
-      await db.ref('trip-bookings/' + refNumber).set(pendingBooking);
-      console.log('✅ Booking saved:', refNumber);
-      
-      // Notify owner
-      if (pendingBooking.owner && pendingBooking.owner !== pendingBooking.uid) {
-        try {
-          await db.ref('notifications/' + pendingBooking.owner + '/' + Date.now()).set({
-            title: 'New Booking: ' + (pendingBooking.tour || 'Trip'),
-            message: pendingBooking.username + ' - ' + pendingBooking.adults + 'A/' + pendingBooking.childrenUnder12 + 'C/' + pendingBooking.infants + 'I',
-            totalAmount: pendingBooking.netTotal || pendingBooking.total,
-            bookingId: refNumber, tripId: pendingBooking.tripId, tripName: pendingBooking.tour,
-            userName: pendingBooking.username, userEmail: pendingBooking.email, phone: pendingBooking.phone,
-            adults: pendingBooking.adults, children: pendingBooking.childrenUnder12, infants: pendingBooking.infants,
-            tripDate: pendingBooking.tripDate, read: false, timestamp: Date.now(), type: 'new_booking'
-          });
-        } catch(e) {}
-      }
-      
-      sessionStorage.setItem('username', pendingBooking.username || '');
-      sessionStorage.setItem('email', pendingBooking.email || '');
-      sessionStorage.setItem('phone', pendingBooking.phone || '');
-      sessionStorage.setItem('refNumber', refNumber);
-      
-    } catch(e) { console.error('❌ Save error:', e); }
-  }
-
-  // ==========================================================================
-  // PAYMENT POLLING
-  // ==========================================================================
   function startPaymentPolling() {
     if (paymentPollingInterval) clearInterval(paymentPollingInterval);
     paymentPollingInterval = setInterval(async function() {
       try {
         const snap = await db.ref('trip-bookings/' + refNumber).once('value');
         const booking = snap.val();
-        if (booking) {
-          if (booking.paymentStatus === 'paid') { stopPaymentPolling(); showPaymentSuccess(booking); }
-          else if (booking.paymentStatus === 'failed') { stopPaymentPolling(); showPaymentFailed(); }
-        }
+        if (booking && booking.paymentStatus === 'paid') { stopPaymentPolling(); showPaymentSuccess(); }
+        else if (booking && booking.paymentStatus === 'failed') { stopPaymentPolling(); showPaymentFailed(); }
       } catch(e) {}
     }, 3000);
   }
 
   function stopPaymentPolling() { if (paymentPollingInterval) { clearInterval(paymentPollingInterval); paymentPollingInterval = null; } }
 
-  // ==========================================================================
-  // SHOW PAYMENT STATUS
-  // ==========================================================================
-  function showPaymentSuccess(data) {
+  function showPaymentSuccess() {
     const bookingCard = document.querySelector('.booking-card');
     if (!bookingCard) return;
     bookingCard.classList.add('payment-mode');
@@ -507,12 +449,7 @@
         <div class="payment-status-icon success"><i class="fas fa-check-circle"></i></div>
         <h2 class="payment-status-title">Payment Successful! 🎉</h2>
         <p class="payment-status-message">Your booking has been confirmed.</p>
-        <div class="payment-status-details">
-          <div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div>
-          <div class="payment-status-line"><span>Trip:</span><strong>${data.tour || data.name || 'Trip'}</strong></div>
-          <div class="payment-status-line"><span>Date:</span><strong>${data.tripDate || '-'}</strong></div>
-        </div>
-        <p class="payment-status-note">A confirmation has been sent to your WhatsApp and email.</p>
+        <div class="payment-status-details"><div class="payment-status-line"><span>Booking Ref:</span><strong>${refNumber}</strong></div></div>
         <button class="btn-primary" onclick="location.reload()"><i class="fas fa-check"></i> Done</button>
       </div>
     `;
@@ -536,11 +473,10 @@
   }
 
   // ==========================================================================
-  // SUBMIT - Don't save until payment confirmed
+  // SUBMIT
   // ==========================================================================
   async function submitBooking() {
-    const spinner = $('spinner');
-    const submitBtn = $('submitBtn');
+    const spinner = $('spinner'); const submitBtn = $('submitBtn');
     if (spinner) spinner.classList.remove('hidden');
     if (submitBtn) submitBtn.disabled = true;
     
@@ -551,7 +487,6 @@
       const user = auth.currentUser, trip = getTrip(), tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || ''), ownerId = getOwnerId();
       const phone = getPhoneNumber(), net = calcNet(), tax = calcTax(), total = calcTotal();
       
-      // Build booking but DON'T save to Firebase
       pendingBooking = {
         refNumber, username: clean($('username')?.value), email: clean($('customerEmail')?.value),
         phone, tour: toStr(trip.name), tripId, tripDate: toStr($('tripDate')?.value),
@@ -563,23 +498,22 @@
         uid: user.uid, owner: ownerId || user.uid, createdAt: Date.now(), updatedAt: Date.now()
       };
       
-      // Backup in session
       sessionStorage.setItem('pendingBooking', JSON.stringify(pendingBooking));
       sessionStorage.setItem('refNumber', refNumber);
       
-      // Get payment hash
       const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP' }) });
       if (!resp.ok) throw new Error('Payment service unavailable.');
       const hashData = await resp.json();
       if (!hashData.hash) throw new Error('Payment verification failed.');
       
-      // Build payment URL
-      const paymentStatusUrl = window.location.origin + '/p/payment-status.html';
+      const paymentStatusUrl = window.location.origin + '/app/payment-status.html';
+      const redirectWithParams = paymentStatusUrl + '?ref=' + refNumber + '&tripId=' + tripId;
+      
       const paymentUrl = 'https://payments.kashier.io/?' + new URLSearchParams({
         merchantId: 'MID-33260-3', orderId: refNumber, amount: total, currency: 'EGP',
         hash: hashData.hash, mode: 'live',
-        merchantRedirect: paymentStatusUrl + '?ref=' + refNumber,
-        failureRedirect: paymentStatusUrl + '?ref=' + refNumber,
+        merchantRedirect: redirectWithParams,
+        failureRedirect: redirectWithParams,
         redirectMethod: 'get'
       }).toString();
       
@@ -628,7 +562,6 @@
     const tripId = getTripId() || (new URLSearchParams(location.search).get('trip-id') || '');
     if (!tripId) { toast('No trip specified', 'error'); return; }
     refNumber = generateRef();
-    
     const trip = getTrip(); const tn = $('tripName'); if (tn && trip.name) tn.value = String(trip.name);
     const ccs = $('countryCodeSelect'); if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
     const de = document.querySelector('#tripDate'); if (de && typeof flatpickr !== 'undefined') { flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true }); }
@@ -638,9 +571,6 @@
     setTimeout(updateSummary, 1500);
   }
 
-  // ==========================================================================
-  // PUBLIC API
-  // ==========================================================================
   window.BookingSystem = { init, nextStep, prevStep, stepper, openServices: openServicesPopup, closeServices: closeServicesPopup, confirmService, submit: submitBooking, updateSummary, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
   function tryInit() { if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; } init(); }
