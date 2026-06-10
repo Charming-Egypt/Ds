@@ -1,6 +1,6 @@
 {
   "name": "Discover Sharm",
-  "id": "/",
+  "id": "Discover_Sharm",
   "short_name": "Discover Sharm",
   "description": "Discover Your Next Adventure!",
   "version": "1.0",
@@ -10,9 +10,9 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "prefer_related_applications": true,
-  "background_color": "#1E1E1E",
-  "theme_color": "#1E1E1E",
+  "prefer_related_applications": false,
+  "background_color": "#000",
+  "theme_color": "#000",
   "icons": [
     {
       "src": "icons/favicon.ico",
@@ -31,38 +31,38 @@
     },
     {
       "src": "icons/android-chrome-36x36.png",
-      "sizes": "36x36",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
       "src": "icons/android-chrome-48x48.png",
-      "sizes": "48x48",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
       "src": "icons/android-chrome-72x72.png",
-      "sizes": "72x72",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
       "src": "icons/android-chrome-96x96.png",
-      "sizes": "96x96",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
       "src": "icons/android-chrome-144x144.png",
-      "sizes": "144x144",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
       "src": "icons/android-chrome-192x192.png",
-      "sizes": "192x192",
+      "sizes": "384x384",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
       "src": "icons/android-chrome-256x256.png",
-      "sizes": "256x256",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
@@ -72,7 +72,7 @@
     },
     {
       "src": "icons/android-chrome-512x512.png",
-      "sizes": "512x512",
+      "sizes": "384x384",
       "type": "image/png"
     }
   ],
