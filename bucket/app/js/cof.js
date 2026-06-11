@@ -14,7 +14,7 @@ const FIREBASE_CONFIG = {
 
 // GitHub Configuration
 const GITHUB_CONFIG = {
-    token: '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',
+    token: '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',
     owner: 'Charming-Egypt',
     repo: 'Ds',
     branch: 'main',
