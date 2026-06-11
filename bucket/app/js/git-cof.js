@@ -24,19 +24,16 @@ async function sendMessageToTelegram(userId, formData, fileDataArray, userProfil
     const db = firebase.database();
     const userRef = db.ref(`egy_user/${userId}`);
     
-    // Create application data
+    // Application data WITHOUT personal info (already in egy_user)
     const applicationData = {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
-        formData: {
-            name: formData.get('name'),
-            business: formData.get('business'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
+        business: {
+            businessName: formData.get('business'),
             category: formData.get('category'),
             website: formData.get('website') || '',
-            message: formData.get('message'),
-            idType: formData.get('id_type')
+            description: formData.get('message')
         },
+        idType: formData.get('id_type'),
         files: fileDataArray.map(f => ({
             name: f.fileName,
             type: f.type,
@@ -66,10 +63,18 @@ async function sendMessageToTelegram(userId, formData, fileDataArray, userProfil
     // Update user's last application timestamp
     await userRef.child('last_application').set(firebase.database.ServerValue.TIMESTAMP);
     
+    // Also update user's business info if new
+    const updates = {};
+    if (formData.get('business')) updates.businessName = formData.get('business');
+    if (formData.get('website')) updates.website = formData.get('website');
+    if (Object.keys(updates).length > 0) {
+        await userRef.update(updates);
+    }
+    
     return appRef.key;
 }
 
-// Keep compatibility with old function names
+// Keep compatibility
 async function uploadFileToGitHub(file, userId, fileName) {
     return await uploadFileToTelegram(file, userId, fileName);
 }
