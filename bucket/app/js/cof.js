@@ -18,17 +18,17 @@ const GITHUB_CONFIG = {
     owner: 'Charming-Egypt',
     repo: 'Ds',
     branch: 'main',
-    basePath: 'bucket/app/partnership-applications',  // Folder for partnership applications
-    publicPath: 'app/partnership-applications',        // Public path for access
+    basePath: 'bucket/app/partnership-applications',
+    publicPath: 'app/partnership-applications',
     customDomain: 'https://www.discover-sharm.com'
 };
 
 // Authentication Configuration
 const AUTH_CONFIG = {
-    loginUrl: '/login.html',                    // Change to your actual login page URL
+    loginUrl: '/login.html',
     registerUrl: '/register.html',
-    tokenKey: 'firebase_auth_token',            // Firebase auth token storage key
-    userKey: 'firebase_user_data'               // Firebase user data storage key
+    tokenKey: 'firebase_auth_token',
+    userKey: 'firebase_user_data'
 };
 
 // Prevent modifications to config objects
