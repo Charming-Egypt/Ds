@@ -1,13 +1,6 @@
 // /app/js/git-cof.js
 // Firebase Database Utilities
 
-/**
- * Compress image - Balanced quality
- * @param {string} base64Data - Base64 image data
- * @param {number} maxWidth - Maximum width (default 1200px for good quality)
- * @param {number} quality - JPEG quality (default 0.85 for high quality)
- * @returns {Promise<string>} Compressed base64 data
- */
 function compressImage(base64Data, maxWidth = 1200, quality = 0.85) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -16,7 +9,6 @@ function compressImage(base64Data, maxWidth = 1200, quality = 0.85) {
             let width = img.width;
             let height = img.height;
             
-            // Only resize if image is larger than maxWidth
             if (width > maxWidth) {
                 height = (maxWidth / width) * height;
                 width = maxWidth;
@@ -26,15 +18,11 @@ function compressImage(base64Data, maxWidth = 1200, quality = 0.85) {
             canvas.height = height;
             
             const ctx = canvas.getContext('2d');
-            // Use better quality rendering
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Keep original format if PNG, convert to JPEG for photos
-            const outputType = 'image/jpeg';
-            const compressedData = canvas.toDataURL(outputType, quality);
-            
+            const compressedData = canvas.toDataURL('image/jpeg', quality);
             resolve(compressedData);
         };
         img.onerror = () => reject(new Error('Failed to compress image'));
@@ -42,29 +30,21 @@ function compressImage(base64Data, maxWidth = 1200, quality = 0.85) {
     });
 }
 
-/**
- * Smart compression - preserves quality for small files
- */
-async function smartCompress(base64Data, fileType) {
+async function smartCompress(base64Data) {
     const originalSize = base64Data.length;
-    const maxSize = 5 * 1024 * 1024; // 5MB target
+    const maxSize = 5 * 1024 * 1024;
     
-    // If already small enough, don't compress
     if (originalSize <= maxSize) {
         return { data: base64Data, compressed: false };
     }
     
-    // For files between 5-10MB, use light compression
     if (originalSize <= 10 * 1024 * 1024) {
         try {
             const compressed = await compressImage(base64Data, 1600, 0.9);
-            if (compressed.length <= maxSize) {
-                return { data: compressed, compressed: true };
-            }
+            if (compressed.length <= maxSize) return { data: compressed, compressed: true };
         } catch (e) {}
     }
     
-    // For larger files, use progressive compression
     const settings = [
         { width: 1400, quality: 0.85 },
         { width: 1200, quality: 0.80 },
@@ -75,32 +55,22 @@ async function smartCompress(base64Data, fileType) {
     for (const setting of settings) {
         try {
             const compressed = await compressImage(base64Data, setting.width, setting.quality);
-            if (compressed.length <= maxSize) {
-                return { data: compressed, compressed: true };
-            }
+            if (compressed.length <= maxSize) return { data: compressed, compressed: true };
         } catch (e) {}
     }
     
-    // Last resort: use best compression that still looks good
     try {
         const compressed = await compressImage(base64Data, 1000, 0.75);
         return { data: compressed, compressed: true };
     } catch (e) {
-        // If all fails, return original
         return { data: base64Data, compressed: false };
     }
 }
 
-/**
- * Check if file is image
- */
 function isImageFile(file) {
     return file.type.startsWith('image/');
 }
 
-/**
- * Read file as base64 data with smart compression
- */
 async function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -109,21 +79,13 @@ async function readFileAsBase64(file) {
             let originalSize = file.size;
             let compressed = false;
             
-            // Only compress images, keep PDFs as is
             if (isImageFile(file)) {
                 try {
-                    const result = await smartCompress(data, file.type);
+                    const result = await smartCompress(data);
                     data = result.data;
                     compressed = result.compressed;
-                    
-                    const reduction = originalSize > 0 ? ((1 - data.length / originalSize) * 100).toFixed(1) : 0;
-                    if (compressed) {
-                        console.log(`📷 ${file.name}: ${(originalSize/1024).toFixed(0)}KB → ${(data.length/1024).toFixed(0)}KB (${reduction}% smaller)`);
-                    } else {
-                        console.log(`📷 ${file.name}: ${(originalSize/1024).toFixed(0)}KB (no compression needed)`);
-                    }
                 } catch (err) {
-                    console.warn('Compression failed, using original:', err.message);
+                    console.warn('Compression failed:', err.message);
                 }
             }
             
@@ -142,9 +104,6 @@ async function readFileAsBase64(file) {
     });
 }
 
-/**
- * Save partnership application to egy_user/{userId}
- */
 async function savePartnershipApplication(userId, formData, fileDataArray) {
     const db = firebase.database();
     const userRef = db.ref(`egy_user/${userId}`);
@@ -169,11 +128,9 @@ async function savePartnershipApplication(userId, formData, fileDataArray) {
         submittedAt: new Date().toISOString()
     };
     
-    // Save application
     const appRef = userRef.child('partnership_applications').push();
     await appRef.set(applicationData);
     
-    // Save files
     const filesRef = userRef.child('partnership_files').child(appRef.key);
     
     for (let i = 0; i < fileDataArray.length; i++) {
@@ -190,7 +147,6 @@ async function savePartnershipApplication(userId, formData, fileDataArray) {
         });
     }
     
-    // Update user info
     const updates = {
         last_application: firebase.database.ServerValue.TIMESTAMP,
         businessName: formData.get('business')
@@ -205,9 +161,6 @@ async function savePartnershipApplication(userId, formData, fileDataArray) {
     return appRef.key;
 }
 
-/**
- * Get user profile from egy_user
- */
 async function getUserProfile(uid) {
     try {
         const db = firebase.database();
