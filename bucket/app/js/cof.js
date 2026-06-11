@@ -14,11 +14,13 @@ const FIREBASE_CONFIG = {
 
 // GitHub Configuration
 const GITHUB_CONFIG = {
-    token: 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN', // Replace with your GitHub token
-    owner: 'YOUR_GITHUB_USERNAME',              // Replace with your GitHub username
-    repo: 'YOUR_REPO_NAME',                     // Replace with your repository name
+    token: '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',
+    owner: 'Charming-Egypt',
+    repo: 'Ds',
     branch: 'main',
-    basePath: 'partnership-applications'        // Folder in repo where data will be stored
+    basePath: 'bucket/app/partnership-applications',  // Folder for partnership applications
+    publicPath: 'app/partnership-applications',        // Public path for access
+    customDomain: 'https://www.discover-sharm.com'
 };
 
 // Authentication Configuration
