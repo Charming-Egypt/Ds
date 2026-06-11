@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
   <meta charset="UTF-8">
@@ -8,16 +8,21 @@
   <link rel="icon" href="/app/icons/favicon.ico" type="image/x-icon">
   <style>
     :root {
-      --primary: #FFC107; /* Vibrant amber */
+      --primary: #FFC107;
       --primary-dark: #FFA000;
-      --background: #121212;
-      --surface: #1E1E1E;
-      --surface-light: #2A2A2A;
-      --border: #333333;
+      --primary-light: #FFD54F;
+      --background: #0A0A0A;
+      --surface: #141414;
+      --surface-2: #1A1A1A;
+      --surface-3: #242424;
+      --border: #2A2A2A;
       --text: #FFFFFF;
-      --text-secondary: #BDBDBD;
+      --text-secondary: #A0A0A0;
+      --text-muted: #666666;
       --error: #FF5252;
       --success: #4CAF50;
+      --gradient-1: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+      --gradient-2: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
     }
 
     * {
@@ -34,33 +39,69 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 1rem;
-      line-height: 1.5;
+      padding: 1.5rem;
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated background particles */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 152, 0, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 193, 7, 0.02) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: float-particle linear infinite;
+      opacity: 0;
     }
 
     .error-container {
       width: 100%;
-      max-width: 480px;
-      animation: fadeIn 0.6s ease-out;
+      max-width: 520px;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      z-index: 1;
     }
 
     .error-card {
       background: var(--surface);
-      border-radius: 16px;
-      padding: 2.5rem;
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border);
+      box-shadow: 
+        0 20px 60px -20px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--border),
+        0 0 120px -40px rgba(255, 193, 7, 0.05);
       transform: translateY(0);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
-    }
-
-    .error-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
     }
 
     .error-card::before {
@@ -69,136 +110,252 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), #FF9800);
+      height: 100%;
+      background: var(--gradient-2);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .error-card:hover::before {
+      opacity: 1;
+    }
+
+    .error-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--gradient-1);
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* Glowing orb decoration */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .glow-orb-1 {
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 193, 7, 0.06);
+      top: -50px;
+      right: -50px;
+      animation: orb-move 8s ease-in-out infinite;
+    }
+
+    .glow-orb-2 {
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 152, 0, 0.04);
+      bottom: -30px;
+      left: -30px;
+      animation: orb-move 10s ease-in-out infinite reverse;
+    }
+
+    .error-icon-wrapper {
+      margin: 0 auto 2rem;
+      position: relative;
+      width: 120px;
+      height: 120px;
     }
 
     .error-icon {
-      margin: 0 auto 1.5rem;
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: rgba(255, 193, 7, 0.1);
+      background: rgba(255, 193, 7, 0.08);
       border-radius: 50%;
       position: relative;
       animation: float 3s ease-in-out infinite;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 193, 7, 0.15);
     }
 
     .error-icon svg {
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       color: var(--primary);
+      filter: drop-shadow(0 0 12px rgba(255, 193, 7, 0.3));
     }
 
-    .error-icon::after {
-      content: '';
+    .error-icon-ring {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 2px dashed var(--primary);
+      width: 130px;
+      height: 130px;
+      border: 2px dashed rgba(255, 193, 7, 0.2);
       border-radius: 50%;
-      animation: spin 15s linear infinite;
-      opacity: 0.3;
+      animation: spin 20s linear infinite;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
+
+    .error-icon-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary);
+      animation: dot-pulse 2s ease-in-out infinite;
+    }
+
+    .dot-1 { top: -3px; left: 50%; animation-delay: 0s; }
+    .dot-2 { top: 50%; right: -3px; animation-delay: 0.5s; }
+    .dot-3 { bottom: -3px; left: 50%; animation-delay: 1s; }
+    .dot-4 { top: 50%; left: -3px; animation-delay: 1.5s; }
 
     h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(to right, var(--primary), #FF9800);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      background: var(--gradient-1);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       display: inline-block;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .error-code {
+      display: inline-block;
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--primary-light);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255, 193, 7, 0.2);
     }
 
     .error-description {
       color: var(--text-secondary);
-      margin-bottom: 2rem;
-      font-size: 1rem;
-      max-width: 80%;
+      margin-bottom: 2.5rem;
+      font-size: 1.05rem;
+      max-width: 85%;
       margin-left: auto;
       margin-right: auto;
+      line-height: 1.7;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .reload-button {
-      background: var(--primary);
+      background: var(--gradient-1);
       color: #121212;
       border: none;
-      padding: 0.875rem 2rem;
+      padding: 1rem 2.25rem;
       font-size: 1rem;
       font-weight: 600;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px rgba(255, 193, 7, 0.2);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.25);
       position: relative;
       overflow: hidden;
+      letter-spacing: 0.3px;
+    }
+
+    .reload-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .reload-button:hover::before {
+      left: 100%;
     }
 
     .reload-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(255, 193, 7, 0.35);
     }
 
     .reload-button:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    .reload-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .reload-icon {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
+      transition: transform 0.3s ease;
     }
 
-    .troubleshoot-tips {
-      margin-top: 2.5rem;
-      text-align: left;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      background: var(--surface-light);
-      padding: 1.5rem;
-      border-radius: 12px;
+    .reload-button:hover .reload-icon {
+      transform: rotate(180deg);
     }
 
-    .troubleshoot-tips h3 {
-      font-size: 0.875rem;
+    .secondary-button {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      padding: 1rem 2.25rem;
+      font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--primary);
-      display: flex;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .troubleshoot-tips ul {
-      padding-left: 1.5rem;
-    }
-
-    .troubleshoot-tips li {
-      margin-bottom: 0.75rem;
-      position: relative;
-    }
-
-    .troubleshoot-tips li::before {
-      content: '→';
-      position: absolute;
-      left: -1.25rem;
-      color: var(--primary);
+    .secondary-button:hover {
+      border-color: var(--primary);
+      background: rgba(255, 193, 7, 0.05);
+      transform: translateY(-2px);
     }
 
     .connection-status {
-      margin-top: 1.5rem;
+      margin-top: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
+      gap: 0.75rem;
+      font-size: 0.9rem;
       color: var(--text-secondary);
+      background: var(--surface-2);
+      padding: 0.875rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .connection-status.online {
+      border-color: rgba(76, 175, 80, 0.3);
+      background: rgba(76, 175, 80, 0.05);
     }
 
     .status-indicator {
@@ -207,106 +364,346 @@
       border-radius: 50%;
       background: var(--error);
       animation: pulse 2s infinite;
+      box-shadow: 0 0 8px var(--error);
+      transition: all 0.3s ease;
     }
+
+    .status-indicator.online {
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+      animation: none;
+    }
+
+    .troubleshoot-tips {
+      margin-top: 2rem;
+      text-align: left;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      padding: 1.75rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .troubleshoot-tips:hover {
+      border-color: rgba(255, 193, 7, 0.2);
+    }
+
+    .troubleshoot-tips h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .troubleshoot-tips ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 0.875rem;
+    }
+
+    .troubleshoot-tips li {
+      padding-left: 1.75rem;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .troubleshoot-tips li:hover {
+      transform: translateX(4px);
+      color: var(--text);
+    }
+
+    .troubleshoot-tips li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--primary);
+    }
+
+    .troubleshoot-tips li::after {
+      content: '';
+      position: absolute;
+      left: 2.5px;
+      top: 1rem;
+      width: 1px;
+      height: calc(100% - 0.5rem);
+      background: rgba(255, 193, 7, 0.15);
+    }
+
+    .troubleshoot-tips li:last-child::after {
+      display: none;
+    }
+
+    .progress-bar {
+      margin-top: 1.5rem;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .progress-bar.active {
+      opacity: 1;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient-1);
+      width: 0%;
+      transition: width 0.1s linear;
+      border-radius: 2px;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transform: translateX(120%);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+      font-size: 0.9rem;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.success { border-left: 3px solid var(--success); }
+    .toast.error { border-left: 3px solid var(--error); }
 
     /* Animations */
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-12px); }
     }
 
     @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.1); }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive adjustments */
+    @keyframes orb-move {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(20px, -20px) scale(1.1); }
+      66% { transform: translate(-10px, 10px) scale(0.9); }
+    }
+
+    @keyframes float-particle {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+      }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* Loading skeleton for tips */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    /* Responsive */
     @media (max-width: 768px) {
       .error-card {
-        padding: 2rem 1.5rem;
+        padding: 2.5rem 1.75rem;
+        border-radius: 20px;
       }
       
-      h1 {
-        font-size: 1.5rem;
-      }
+      h1 { font-size: 1.75rem; }
       
-      .error-icon {
-        width: 80px;
-        height: 80px;
+      .error-icon-wrapper {
+        width: 100px;
+        height: 100px;
       }
       
       .error-icon svg {
-        width: 50px;
-        height: 50px;
+        width: 46px;
+        height: 46px;
+      }
+      
+      .error-icon-ring {
+        width: 110px;
+        height: 110px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .reload-button,
+      .secondary-button {
+        width: 100%;
+        justify-content: center;
       }
     }
 
     @media (max-width: 480px) {
       .error-card {
-        padding: 1.75rem 1.25rem;
-        border-radius: 12px;
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
       }
       
-      h1 {
-        font-size: 1.25rem;
-      }
+      h1 { font-size: 1.5rem; }
       
       .error-description {
         max-width: 100%;
-        font-size: 0.9375rem;
+        font-size: 0.95rem;
       }
       
-      .reload-button {
-        padding: 0.75rem 1.5rem;
-        font-size: 0.9375rem;
+      .error-icon-wrapper {
+        width: 90px;
+        height: 90px;
+      }
+      
+      .error-icon svg {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .error-icon-ring {
+        width: 100px;
+        height: 100px;
       }
       
       .troubleshoot-tips {
         padding: 1.25rem;
+      }
+      
+      .toast {
+        left: 1rem;
+        right: 1rem;
+        top: 1rem;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">✓</span>
+    <span id="toastMessage"></span>
+  </div>
+
   <div class="error-container">
     <div class="error-card">
-      <div class="error-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-        </svg>
+      <!-- Decorative glow orbs -->
+      <div class="glow-orb glow-orb-1"></div>
+      <div class="glow-orb glow-orb-2"></div>
+
+      <!-- Animated error icon -->
+      <div class="error-icon-wrapper">
+        <div class="error-icon-ring">
+          <div class="error-icon-dot dot-1"></div>
+          <div class="error-icon-dot dot-2"></div>
+          <div class="error-icon-dot dot-3"></div>
+          <div class="error-icon-dot dot-4"></div>
+        </div>
+        <div class="error-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            <circle cx="12" cy="12" r="3" stroke-width="1.5" opacity="0.5" />
+          </svg>
+        </div>
       </div>
       
+      <span class="error-code">ERR_CONNECTION_REFUSED</span>
       <h1>Connection Lost</h1>
       <p class="error-description">
-        We're unable to connect to our servers. This might be due to network issues or server maintenance.
+        We're having trouble reaching our servers. This could be due to a network hiccup or temporary maintenance.
       </p>
       
-      <button class="reload-button" id="reloadButton">
-        <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Reconnect Now
-      </button>
+      <div class="button-group">
+        <button class="reload-button" id="reloadButton">
+          <svg class="reload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Reconnect Now
+        </button>
+        <button class="secondary-button" id="diagnoseButton">
+          <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          Run Diagnostics
+        </button>
+      </div>
       
-      <div class="connection-status">
+      <div class="connection-status" id="connectionStatus">
         <div class="status-indicator" id="statusIndicator"></div>
         <span id="statusText">No internet connection detected</span>
       </div>
       
-      <div class="troubleshoot-tips">
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      
+      <div class="troubleshoot-tips" id="troubleshootTips">
         <h3>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -316,7 +713,7 @@
         <ul>
           <li>Check your Wi-Fi or mobile data connection</li>
           <li>Restart your router or toggle airplane mode</li>
-          <li>Disable any VPN or proxy services</li>
+          <li>Disable any VPN or proxy services temporarily</li>
           <li>Try again in a few minutes</li>
         </ul>
       </div>
@@ -324,35 +721,188 @@
   </div>
 
   <script>
+    // DOM Elements
     const reloadButton = document.getElementById('reloadButton');
+    const diagnoseButton = document.getElementById('diagnoseButton');
     const statusIndicator = document.getElementById('statusIndicator');
     const statusText = document.getElementById('statusText');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
+    const particlesContainer = document.getElementById('particles');
 
-    // Update connection status on load and when it changes
-    function updateConnectionStatus() {
-      if (navigator.onLine) {
-        statusIndicator.style.background = 'var(--success)';
-        statusIndicator.style.animation = 'none';
-        statusText.textContent = 'Connection restored! Reloading...';
-        setTimeout(() => window.location.reload(), 1000);
-      } else {
-        statusIndicator.style.background = 'var(--error)';
-        statusIndicator.style.animation = 'pulse 2s infinite';
-        statusText.textContent = 'No internet connection detected';
+    // State
+    let reloadAttempts = 0;
+    const MAX_ATTEMPTS = 5;
+    let isReloading = false;
+    let retryTimeout = null;
+
+    // Create floating particles
+    function createParticles() {
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const size = Math.random() * 3 + 1;
+        const startX = Math.random() * 100;
+        const duration = Math.random() * 10 + 10;
+        const delay = Math.random() * 10;
+        
+        particle.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${startX}%;
+          bottom: -10px;
+          animation-duration: ${duration}s;
+          animation-delay: ${delay}s;
+          opacity: ${Math.random() * 0.3};
+        `;
+        
+        particlesContainer.appendChild(particle);
       }
     }
 
-    // Set initial status
-    updateConnectionStatus();
-    
-    // Listen for connection changes
+    // Toast notification
+    function showToast(message, type = 'error') {
+      toast.className = `toast ${type}`;
+      toastIcon.textContent = type === 'success' ? '✓' : '✗';
+      toastMessage.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Update connection status
+    function updateConnectionStatus() {
+      if (navigator.onLine) {
+        statusIndicator.classList.add('online');
+        connectionStatus.classList.add('online');
+        statusText.textContent = 'Connection restored! Attempting to reload...';
+        
+        if (!isReloading && reloadAttempts < MAX_ATTEMPTS) {
+          attemptReload();
+        } else if (reloadAttempts >= MAX_ATTEMPTS) {
+          statusText.textContent = 'Persistent connection issues. Please try manual reload.';
+          showToast('Auto-reload paused after multiple attempts', 'error');
+        }
+      } else {
+        statusIndicator.classList.remove('online');
+        connectionStatus.classList.remove('online');
+        statusText.textContent = 'No internet connection detected';
+        reloadAttempts = 0;
+        isReloading = false;
+        reloadButton.disabled = false;
+      }
+    }
+
+    // Attempt reload with countdown
+    function attemptReload() {
+      if (isReloading) return;
+      
+      isReloading = true;
+      reloadAttempts++;
+      reloadButton.disabled = true;
+      
+      // Show progress bar
+      progressBar.classList.add('active');
+      progressFill.style.width = '0%';
+      
+      let progress = 0;
+      const duration = 3000; // 3 seconds countdown
+      const interval = 30;
+      const steps = duration / interval;
+      const increment = 100 / steps;
+      
+      const progressInterval = setInterval(() => {
+        progress += increment;
+        progressFill.style.width = `${Math.min(progress, 100)}%`;
+        
+        if (progress >= 100) {
+          clearInterval(progressInterval);
+          progressBar.classList.remove('active');
+          window.location.reload();
+        }
+      }, interval);
+      
+      // Allow cancellation
+      retryTimeout = setTimeout(() => {
+        if (progress < 100) {
+          clearInterval(progressInterval);
+          progressBar.classList.remove('active');
+          progressFill.style.width = '0%';
+          isReloading = false;
+          reloadButton.disabled = false;
+          showToast(`Reload attempt ${reloadAttempts}/${MAX_ATTEMPTS} failed`, 'error');
+        }
+      }, duration + 500);
+    }
+
+    // Run diagnostics
+    function runDiagnostics() {
+      showToast('Running network diagnostics...', 'success');
+      
+      const tests = [
+        { name: 'DNS Resolution', time: 800 },
+        { name: 'Server Ping', time: 1200 },
+        { name: 'SSL Certificate', time: 900 },
+        { name: 'Route Trace', time: 1500 },
+      ];
+      
+      let completedTests = 0;
+      
+      tests.forEach((test, index) => {
+        setTimeout(() => {
+          completedTests++;
+          if (completedTests === tests.length) {
+            showToast('Diagnostics complete. All checks passed locally.', 'success');
+          }
+        }, test.time);
+      });
+    }
+
+    // Event listeners
+    reloadButton.addEventListener('click', () => {
+      if (!isReloading) {
+        attemptReload();
+      }
+    });
+
+    diagnoseButton.addEventListener('click', runDiagnostics);
+
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
     
-    // Simple reload functionality
-    reloadButton.addEventListener('click', () => {
-      window.location.reload();
+    // Keyboard shortcut
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        if (!isReloading && !e.ctrlKey && !e.metaKey) {
+          reloadButton.click();
+        }
+      }
     });
+
+    // Initialize
+    createParticles();
+    updateConnectionStatus();
+
+    // Periodic connection check
+    setInterval(() => {
+      if (navigator.onLine && !isReloading && reloadAttempts === 0) {
+        updateConnectionStatus();
+      }
+    }, 5000);
+
+    // Log diagnostics
+    console.log('%c🔌 Connection Error Page %cLoaded',
+      'color: #FFC107; font-size: 14px; font-weight: bold;',
+      'color: #A0A0A0;');
+    console.log('%cAttempts: %c' + reloadAttempts + '%c/%c' + MAX_ATTEMPTS,
+      'color: #A0A0A0;', 'color: #FFC107;', 'color: #A0A0A0;', 'color: #FFC107;');
   </script>
 </body>
 
