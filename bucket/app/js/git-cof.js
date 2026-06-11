@@ -1,17 +1,27 @@
 // /app/js/git-cof.js
 // Firebase Database Utilities with Image Compression
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max input
+const MAX_STORAGE_SIZE = 2 * 1024 * 1024; // 2MB target for storage
+
+/**
+ * Check file size before processing
+ */
+function validateFileSize(file) {
+    if (file.size > MAX_FILE_SIZE) {
+        throw new Error(`File "${file.name}" is too large (${(file.size/1024/1024).toFixed(1)}MB). Maximum allowed is 10MB.`);
+    }
+    return true;
+}
+
 /**
  * Compress image to target size
- * @param {string} base64Data - Original base64 image
- * @param {number} maxSizeMB - Target max size in MB
- * @returns {Promise<string>} Compressed base64
  */
-async function compressImageToSize(base64Data, maxSizeMB = 1) {
+async function compressImageToSize(base64Data, maxSizeMB = 2) {
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
     
-    // If already small enough, return as is
     if (base64Data.length <= maxSizeBytes) {
+        console.log(`✅ Already small: ${(base64Data.length/1024).toFixed(1)}KB`);
         return base64Data;
     }
     
@@ -21,38 +31,40 @@ async function compressImageToSize(base64Data, maxSizeMB = 1) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Try different quality levels
-            const qualities = [0.8, 0.6, 0.4, 0.3, 0.2];
-            const widths = [1200, 1000, 800, 600, 400];
+            // Settings for different sizes
+            const settings = [
+                { width: 1600, quality: 0.85 },
+                { width: 1400, quality: 0.80 },
+                { width: 1200, quality: 0.75 },
+                { width: 1000, quality: 0.70 },
+                { width: 800, quality: 0.65 },
+                { width: 600, quality: 0.60 }
+            ];
             
             let bestResult = base64Data;
             
-            for (const width of widths) {
-                for (const quality of qualities) {
-                    // Calculate height maintaining aspect ratio
-                    const ratio = width / img.width;
-                    const height = Math.round(img.height * ratio);
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const compressed = canvas.toDataURL('image/jpeg', quality);
-                    
-                    if (compressed.length <= maxSizeBytes) {
-                        console.log(`✅ Compressed to ${(compressed.length/1024).toFixed(1)}KB (${width}px, ${Math.round(quality*100)}% quality)`);
-                        resolve(compressed);
-                        return;
-                    }
-                    
-                    if (compressed.length < bestResult.length) {
-                        bestResult = compressed;
-                    }
+            for (const setting of settings) {
+                const ratio = setting.width / img.width;
+                const height = Math.round(img.height * ratio);
+                
+                canvas.width = setting.width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, setting.width, height);
+                
+                const compressed = canvas.toDataURL('image/jpeg', setting.quality);
+                
+                if (compressed.length <= maxSizeBytes) {
+                    console.log(`✅ Compressed: ${(compressed.length/1024).toFixed(0)}KB (${setting.width}px, ${Math.round(setting.quality*100)}%)`);
+                    resolve(compressed);
+                    return;
+                }
+                
+                if (compressed.length < bestResult.length) {
+                    bestResult = compressed;
                 }
             }
             
-            // Return best result even if still over limit
-            console.log(`⚠️ Best compression: ${(bestResult.length/1024).toFixed(1)}KB`);
+            console.log(`⚠️ Best: ${(bestResult.length/1024).toFixed(0)}KB`);
             resolve(bestResult);
         };
         img.onerror = () => reject(new Error('Failed to load image'));
@@ -64,6 +76,9 @@ async function compressImageToSize(base64Data, maxSizeMB = 1) {
  * Read file with compression
  */
 async function readFileAsBase64(file) {
+    // Validate size first
+    validateFileSize(file);
+    
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -72,12 +87,13 @@ async function readFileAsBase64(file) {
             const originalSize = file.size;
             
             if (isImage) {
-                console.log(`📷 Original: ${(originalSize/1024).toFixed(0)}KB - ${file.name}`);
-                // Compress images to max 1MB
-                data = await compressImageToSize(data, 1);
-                const newSize = data.length;
-                const reduction = ((1 - newSize/originalSize) * 100).toFixed(0);
-                console.log(`📷 Compressed: ${(newSize/1024).toFixed(0)}KB (${reduction}% smaller)`);
+                console.log(`📷 ${file.name}: ${(originalSize/1024).toFixed(0)}KB`);
+                data = await compressImageToSize(data, 2); // Compress to 2MB
+            } else if (file.type === 'application/pdf') {
+                // PDFs: warn if large
+                if (originalSize > 5 * 1024 * 1024) {
+                    console.warn(`⚠️ Large PDF: ${(originalSize/1024/1024).toFixed(1)}MB`);
+                }
             }
             
             resolve({
@@ -86,10 +102,10 @@ async function readFileAsBase64(file) {
                 size: data.length,
                 data: data,
                 originalSize: originalSize,
-                compressed: isImage
+                compressed: isImage && data.length < originalSize
             });
         };
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error('Failed to read file'));
         reader.readAsDataURL(file);
     });
 }
@@ -122,25 +138,25 @@ async function savePartnershipApplication(userId, formData, fileDataArray) {
     const appRef = userRef.child('partnership_applications').push();
     await appRef.set(applicationData);
     
-    // Save files
     const filesRef = userRef.child('partnership_files').child(appRef.key);
     
     for (let i = 0; i < fileDataArray.length; i++) {
         const file = fileDataArray[i];
+        let fileData = file.data;
         
-        // Check if data is too large (>5MB)
-        if (file.data && file.data.length > 5 * 1024 * 1024) {
-            console.warn(`⚠️ File ${i} still too large, compressing more...`);
-            file.data = await compressImageToSize(file.data, 0.5); // Compress to 500KB
+        // Final check - if still too large, compress more
+        if (fileData && fileData.length > 3 * 1024 * 1024) {
+            console.warn(`⚠️ Still large, extra compression...`);
+            fileData = await compressImageToSize(fileData, 1);
         }
         
         await filesRef.child(`file_${i}`).set({
             name: file.fileName || file.name,
             type: file.type,
-            data: file.data,
+            data: fileData,
             originalName: file.name,
             originalSize: file.originalSize || file.size,
-            compressedSize: file.data ? file.data.length : 0
+            compressedSize: fileData ? fileData.length : 0
         });
     }
     
