@@ -663,12 +663,11 @@ window.onload = async function() {
     }
   });
   
-  // Fetch trip data
-  await fetchAllTripData();
-  
-  // Load reviews
-  
-    if (tripPName) loadReviews();
+  // Fetch trip data and reviews at the same time
+await Promise.all([
+  fetchAllTripData(),
+  tripPName ? loadReviews() : Promise.resolve()
+]);
 
   
   console.log('✅ Trip Display & Reviews System Ready');
