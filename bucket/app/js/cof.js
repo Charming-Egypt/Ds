@@ -14,12 +14,11 @@ const Config = {
 
 
     // Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+    if (!firebase.apps.length) {
+      firebase.initializeApp(Config);
+    } else {
+      firebase.app();
+    }
 
-// Export auth and database references
-var auth = firebase.auth();
-var db = firebase.database();
-
-console.log('✅ Firebase initialized');
+    const db = firebase.database();
+    const auth = firebase.auth();
