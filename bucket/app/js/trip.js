@@ -667,9 +667,9 @@ window.onload = async function() {
   await fetchAllTripData();
   
   // Load reviews
-  setTimeout(() => {
+  
     if (tripPName) loadReviews();
-  }, 20);
+
   
   console.log('✅ Trip Display & Reviews System Ready');
 };
