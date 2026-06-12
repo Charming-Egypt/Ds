@@ -669,7 +669,7 @@ window.onload = async function() {
   // Load reviews
   setTimeout(() => {
     if (tripPName) loadReviews();
-  }, 2000);
+  }, 20);
   
   console.log('✅ Trip Display & Reviews System Ready');
 };
