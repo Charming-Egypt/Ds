@@ -74,3 +74,10 @@ window.dbRefs = dbRefs;
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { auth, db, firestore, storage, messaging, functions, dbRefs };
 }
+
+
+const AUTH_CONFIG = {
+    loginUrl: '/login.html',
+    registerUrl: '/register.html',
+    dashboardUrl: '/dashboard.html'
+};
