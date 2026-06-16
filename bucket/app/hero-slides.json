@@ -1,0 +1,59 @@
+{
+  "slides": [
+    {
+      "image": "https://images.unsplash.com/photo-1542296332-2e4473faf563?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+      "ornament": "Exclusive",
+      "badgeIcon": "fa-map-pin",
+      "badgeText": "Egypt • Sharm El Sheikh",
+      "titleFirst": "Discover",
+      "titleSecond": "The Red Sea",
+      "titleThird": "Magic",
+      "subtitle": "Where golden deserts meet turquoise waters — your unforgettable journey begins here."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1559827291-e9c6e7d3c9c8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
+      "ornament": "Aquatic",
+      "badgeIcon": "fa-water",
+      "badgeText": "Crystal Clear Waters",
+      "titleFirst": "Explore",
+      "titleSecond": "Underwater",
+      "titleThird": "Paradise",
+      "subtitle": "Dive into an enchanting world of vibrant coral reefs and exotic marine life beneath the surface."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=1368&q=80",
+      "ornament": "Adventure",
+      "badgeIcon": "fa-mountain-sun",
+      "badgeText": "Sinai Mountains",
+      "titleFirst": "Experience",
+      "titleSecond": "Desert",
+      "titleThird": "Safari",
+      "subtitle": "Traverse majestic sand dunes and witness breathtaking sunsets over ancient mountain ranges."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80",
+      "ornament": "Luxury",
+      "badgeIcon": "fa-hotel",
+      "badgeText": "Premium Resorts",
+      "titleFirst": "Indulge",
+      "titleSecond": "In Pure",
+      "titleThird": "Luxury",
+      "subtitle": "Experience world-class hospitality with stunning views of the Red Sea from your private terrace."
+    },
+    {
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2073&q=80",
+      "ornament": "Serenity",
+      "badgeIcon": "fa-sun",
+      "badgeText": "Golden Sunsets",
+      "titleFirst": "Embrace",
+      "titleSecond": "The Golden",
+      "titleThird": "Moments",
+      "subtitle": "Watch the sun paint the sky in brilliant hues as it dips below the horizon of the Red Sea."
+    }
+  ],
+  "settings": {
+    "autoPlayDelay": 6000,
+    "transitionDuration": 800,
+    "height": "90vh"
+  }
+}
