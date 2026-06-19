@@ -177,6 +177,7 @@
   transition: all 0.3s ease;
 }
 
+/* Navigation Buttons - في الأسفل */
 .swiper-button-next, 
 .swiper-button-prev {
   width: 42px; 
@@ -191,12 +192,20 @@
   z-index: 5;
   top: auto !important;
   bottom: 10px !important;
-  transform: translateY(-50%);
 }
 
 .swiper:hover .swiper-button-next, 
 .swiper:hover .swiper-button-prev { 
   opacity: 1; 
+}
+
+.swiper-button-next { 
+  right: 20px;
+}
+
+.swiper-button-prev { 
+  right: 70px;
+  left: auto;
 }
 
 .swiper-button-next:hover, 
@@ -212,14 +221,12 @@
   font-weight: bold; 
 }
 
+/* Pagination - في الأسفل علي اليسار */
 .swiper-pagination { 
   bottom: 20px !important; 
-  left: 50% !important;
-  transform: translateX(-50%);
+  left: 20px !important; 
   width: auto !important; 
   z-index: 5; 
-  display: flex;
-  gap: 8px;
 }
 
 .swiper-pagination-bullet { 
@@ -227,7 +234,6 @@
   height: 8px; 
   background: rgba(255,255,255,0.4); 
   opacity: 1; 
-  margin: 0 !important;
 }
 
 .swiper-pagination-bullet-active { 
@@ -944,8 +950,14 @@
     background: rgba(0,0,0,0.5); 
   }
   
-  .swiper-button-next { right: 10px; } 
-  .swiper-button-prev { left: 10px; }
+  .swiper-button-next { 
+    right: 10px; 
+  }
+  
+  .swiper-button-prev { 
+    right: 54px;
+    left: auto;
+  }
   
   .swiper-pagination { 
     bottom: 16px !important; 
