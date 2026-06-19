@@ -267,35 +267,54 @@ const TripDisplay = (() => {
     if (mobileTripNameInput) mobileTripNameInput.value = trip.name || '';
   }
 
-  // عرض وصف الرحلة
-  function displayDescription(description) {
-    const descContainer = document.querySelector(SELECTORS.descriptionContainer);
-    const descContent = document.querySelector(SELECTORS.tourDescription);
-    
-    if (!descContainer) {
-      console.warn('Description container not found');
-      return;
-    }
-    
-    if (description && description.trim()) {
-      // تحويل النص إلى فقرات HTML
-      const paragraphs = description
-        .split('\n')
-        .filter(p => p.trim())
-        .map(p => `<p>${sanitizeHTML(p.trim())}</p>`)
-        .join('');
-      
-      if (descContent) {
-        descContent.innerHTML = paragraphs;
-      }
-      
-      descContainer.style.display = 'block';
-      console.log('✅ Description displayed');
-    } else {
-      descContainer.style.display = 'none';
-      console.log('ℹ️ No description available');
-    }
+// عرض وصف الرحلة
+function displayDescription(description) {
+  const descContainer = document.querySelector(SELECTORS.descriptionContainer);
+  const descContent = document.querySelector(SELECTORS.tourDescription);
+  
+  if (!descContainer) {
+    console.warn('Description container not found');
+    return;
   }
+  
+  if (description && description.trim()) {
+    // تنظيف النص
+    let cleanDescription = description.trim();
+    
+    // معالجة النقاط المميزة (الأسطر التي تبدأ بـ ! أو IMPORTANT:)
+    const paragraphs = cleanDescription
+      .split('\n')
+      .filter(p => p.trim())
+      .map(p => {
+        const trimmed = p.trim();
+        
+        // التحقق من الأسطر المميزة
+        if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
+          const text = trimmed
+            .replace(/^!/, '')
+            .replace(/^IMPORTANT:/, '')
+            .trim();
+          return `<div class="highlight-note">
+            <i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>
+            ${sanitizeHTML(text)}
+          </div>`;
+        }
+        
+        return `<p>${sanitizeHTML(trimmed)}</p>`;
+      })
+      .join('');
+    
+    if (descContent) {
+      descContent.innerHTML = paragraphs;
+    }
+    
+    descContainer.style.display = 'block';
+    console.log('✅ Description displayed');
+  } else {
+    descContainer.style.display = 'none';
+    console.log('ℹ️ No description available');
+  }
+}
 
   function updatePriceDisplay() {
     const el = document.querySelector(SELECTORS.tourPrice);
