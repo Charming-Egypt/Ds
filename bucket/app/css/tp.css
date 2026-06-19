@@ -951,12 +951,12 @@
   }
   
   .swiper-button-next { 
-    left: 10px; 
+    right: 10px; 
   }
   
   .swiper-button-prev { 
-    left: 54px;
-    right: auto;
+    right: 54px;
+    left: auto;
   }
   
   .swiper-pagination { 
