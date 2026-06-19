@@ -1,5 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
+// Complete Version with Enhanced Gallery & Thumbnails
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -58,7 +59,6 @@ const TripDisplay = (() => {
   let tripReviews = [];
   let currentUserReview = null;
   let currentUserUid = '';
-  let videoPlayers = new Map(); // تتبع مشغلات الفيديو
 
   // Currency
   let currentCurrency = DEFAULT_CURRENCY;
@@ -305,23 +305,16 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
-  // MEDIA GALLERY - نسخة مبسطة ومضمونة
+  // MEDIA GALLERY - ENHANCED VERSION
   // ==========================================================================
   
-  /**
-   * استخراج ID الفيديو من رابط YouTube
-   */
   function extractYouTubeId(url) {
     if (!url) return null;
     
-    console.log('🔍 Analyzing URL:', url);
-    
-    // تنظيف الرابط
     url = url.trim();
     
     // إذا كان الرابط عبارة عن ID مباشر (11 حرف)
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
-      console.log('✅ Direct ID:', url);
       return url;
     }
     
@@ -334,21 +327,18 @@ const TripDisplay = (() => {
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match && match[1]) {
-        console.log('✅ Extracted ID:', match[1]);
         return match[1];
       }
     }
     
-    console.error('❌ Could not extract ID from:', url);
     return null;
   }
 
-  /**
-   * إنشاء شريحة صورة
-   */
   function createImageSlide(imageUrl, index) {
     const slide = document.createElement('div');
     slide.className = 'swiper-slide';
+    slide.setAttribute('data-type', 'image');
+    slide.setAttribute('data-index', index);
     
     const img = document.createElement('img');
     img.src = imageUrl;
@@ -359,9 +349,6 @@ const TripDisplay = (() => {
     return slide;
   }
 
-  /**
-   * إنشاء شريحة فيديو
-   */
   function createVideoSlide(videoData, index) {
     const videoUrl = videoData.videoUrl || videoData.url || '';
     const videoId = extractYouTubeId(videoUrl);
@@ -373,35 +360,29 @@ const TripDisplay = (() => {
     
     const thumbnailUrl = videoData.thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
     
-    console.log(`🎬 Creating video slide: ID=${videoId}`);
-    
     const slide = document.createElement('div');
     slide.className = 'swiper-slide swiper-slide-video';
+    slide.setAttribute('data-type', 'video');
     slide.setAttribute('data-video-id', videoId);
     slide.setAttribute('data-thumbnail', thumbnailUrl);
+    slide.setAttribute('data-index', index);
     
-    // الصورة المصغرة
     const img = document.createElement('img');
     img.src = thumbnailUrl;
     img.alt = `Video ${index + 1}`;
     img.loading = 'lazy';
     img.className = 'video-thumbnail';
     
-    // زر التشغيل
     const playBtn = document.createElement('div');
     playBtn.className = 'play-button';
     playBtn.innerHTML = '<i class="fas fa-play"></i>';
     playBtn.setAttribute('aria-label', 'Play video');
     
-    // تجميع العناصر
     slide.appendChild(img);
     slide.appendChild(playBtn);
     
-    // إضافة حدث النقر على الشريحة بأكملها
     slide.addEventListener('click', function(e) {
-      // لا تشغل الفيديو إذا كان السلايدر في حالة انتقال
       if (swiper && swiper.animating) return;
-      
       e.preventDefault();
       e.stopPropagation();
       playVideoInSlide(slide);
@@ -410,38 +391,25 @@ const TripDisplay = (() => {
     return slide;
   }
 
-  /**
-   * تشغيل الفيديو في الشريحة
-   */
   function playVideoInSlide(slide) {
     const videoId = slide.getAttribute('data-video-id');
-    const thumbnailUrl = slide.getAttribute('data-thumbnail');
     
     if (!videoId) {
       console.error('❌ No video ID');
       return;
     }
     
-    console.log('▶️ Playing video:', videoId);
-    
     // إيقاف أي فيديو آخر
     stopAllVideos();
     
-    // حفظ المرجع
     currentVideoSlide = slide;
     
-    // إيقاف السلايدر مؤقتاً
     if (swiper && swiper.autoplay) {
       swiper.autoplay.stop();
     }
     
-    // حفظ المحتوى الأصلي
-    slide.setAttribute('data-original-html', slide.innerHTML);
-    
-    // تفريغ الشريحة
     slide.innerHTML = '';
     
-    // إنشاء iframe
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
@@ -454,36 +422,10 @@ const TripDisplay = (() => {
       border: none;
     `;
     
-    // إضافة زر الإغلاق
     const closeBtn = document.createElement('div');
     closeBtn.className = 'video-close-btn';
     closeBtn.innerHTML = '<i class="fas fa-times"></i>';
     closeBtn.setAttribute('aria-label', 'Close video');
-    closeBtn.style.cssText = `
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 100;
-      width: 40px;
-      height: 40px;
-      background: rgba(0,0,0,0.7);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #fff;
-      font-size: 18px;
-      transition: all 0.3s;
-    `;
-    
-    closeBtn.addEventListener('mouseenter', () => {
-      closeBtn.style.background = '#ff0000';
-    });
-    
-    closeBtn.addEventListener('mouseleave', () => {
-      closeBtn.style.background = 'rgba(0,0,0,0.7)';
-    });
     
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -493,33 +435,22 @@ const TripDisplay = (() => {
     
     slide.appendChild(iframe);
     slide.appendChild(closeBtn);
-    
-    console.log('✅ Video playing');
   }
 
-  /**
-   * إيقاف الفيديو في الشريحة
-   */
   function stopVideoInSlide(slide) {
     if (!slide) return;
     
-    console.log('⏹️ Stopping video');
-    
     const videoId = slide.getAttribute('data-video-id');
     const thumbnailUrl = slide.getAttribute('data-thumbnail');
+    const index = slide.getAttribute('data-index');
     
-    if (!videoId || !thumbnailUrl) {
-      console.warn('⚠️ Missing video data for restoration');
-      return;
-    }
+    if (!videoId || !thumbnailUrl) return;
     
-    // تفريغ الشريحة
     slide.innerHTML = '';
     
-    // إعادة بناء المحتوى الأصلي
     const img = document.createElement('img');
     img.src = thumbnailUrl;
-    img.alt = 'Video thumbnail';
+    img.alt = `Video ${parseInt(index) + 1}`;
     img.loading = 'lazy';
     img.className = 'video-thumbnail';
     
@@ -531,87 +462,114 @@ const TripDisplay = (() => {
     slide.appendChild(img);
     slide.appendChild(playBtn);
     
-    // إعادة تشغيل السلايدر إذا كان متوقفاً
     if (swiper && swiper.autoplay) {
       swiper.autoplay.start();
     }
     
     currentVideoSlide = null;
-    console.log('✅ Video stopped');
   }
 
-  /**
-   * إيقاف جميع الفيديوهات
-   */
   function stopAllVideos() {
     if (currentVideoSlide) {
       stopVideoInSlide(currentVideoSlide);
     }
   }
 
-  /**
-   * إنشاء الصور المصغرة
-   */
-  function createThumbnail(src, index, isVideo = false) {
+  function createThumbnails() {
     const thumbsContainer = document.querySelector(SELECTORS.thumbnailsOverlay);
     if (!thumbsContainer) return;
     
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = `Thumbnail ${index + 1}`;
-    img.loading = 'lazy';
-    img.setAttribute('data-index', index);
-    img.setAttribute('data-is-video', isVideo);
+    thumbsContainer.innerHTML = '';
     
-    img.addEventListener('click', () => {
-      if (swiper) {
-        stopAllVideos();
-        swiper.slideTo(index);
-      }
-    });
+    const slides = document.querySelectorAll(`${SELECTORS.swiperWrapper} .swiper-slide`);
     
-    thumbsContainer.appendChild(img);
-  }
-
-  /**
-   * تحديث الصورة المصغرة النشطة
-   */
-  function updateActiveThumbnail(index) {
-    const thumbs = document.querySelectorAll(`${SELECTORS.thumbnailsOverlay} img`);
-    thumbs.forEach(thumb => {
-      const thumbIndex = parseInt(thumb.getAttribute('data-index'));
-      if (thumbIndex === index) {
-        thumb.classList.add('active');
+    if (slides.length === 0) return;
+    
+    slides.forEach((slide, index) => {
+      const type = slide.getAttribute('data-type');
+      const isVideo = type === 'video';
+      
+      let thumbnailSrc;
+      
+      if (isVideo) {
+        thumbnailSrc = slide.getAttribute('data-thumbnail');
       } else {
-        thumb.classList.remove('active');
+        const img = slide.querySelector('img');
+        thumbnailSrc = img ? img.src : '';
+      }
+      
+      if (!thumbnailSrc) return;
+      
+      const thumbWrapper = document.createElement('div');
+      thumbWrapper.className = 'thumbnail-wrapper';
+      thumbWrapper.setAttribute('data-index', index);
+      thumbWrapper.setAttribute('data-type', type);
+      
+      const thumbImg = document.createElement('img');
+      thumbImg.src = thumbnailSrc;
+      thumbImg.alt = `${isVideo ? 'Video' : 'Photo'} ${index + 1}`;
+      thumbImg.loading = 'lazy';
+      thumbImg.className = 'thumbnail-image';
+      
+      thumbWrapper.appendChild(thumbImg);
+      
+      if (isVideo) {
+        const videoIndicator = document.createElement('div');
+        videoIndicator.className = 'video-indicator';
+        videoIndicator.innerHTML = '<i class="fas fa-play"></i>';
+        videoIndicator.setAttribute('aria-label', 'Video thumbnail');
+        thumbWrapper.appendChild(videoIndicator);
+        
+        const duration = document.createElement('span');
+        duration.className = 'video-duration';
+        duration.textContent = 'VIDEO';
+        thumbWrapper.appendChild(duration);
+      }
+      
+      thumbWrapper.addEventListener('click', () => {
+        if (swiper) {
+          stopAllVideos();
+          swiper.slideTo(index);
+          updateActiveThumbnail(index);
+        }
+      });
+      
+      thumbsContainer.appendChild(thumbWrapper);
+    });
+    
+    updateActiveThumbnail(0);
+  }
+
+  function updateActiveThumbnail(index) {
+    const thumbWrappers = document.querySelectorAll(`${SELECTORS.thumbnailsOverlay} .thumbnail-wrapper`);
+    
+    thumbWrappers.forEach(wrapper => {
+      const wrapperIndex = parseInt(wrapper.getAttribute('data-index'));
+      
+      if (wrapperIndex === index) {
+        wrapper.classList.add('active');
+        wrapper.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'nearest', 
+          inline: 'center' 
+        });
+      } else {
+        wrapper.classList.remove('active');
       }
     });
   }
 
-  /**
-   * تحميل محتوى المعرض
-   */
   async function loadMediaContent(media) {
-    console.log('📸 Loading media content...');
-    
-    if (!checkSwiperDependency()) {
-      console.error('❌ Swiper not available');
-      return;
-    }
+    if (!checkSwiperDependency()) return;
     
     const wrapper = document.querySelector(SELECTORS.swiperWrapper);
     const thumbsContainer = document.querySelector(SELECTORS.thumbnailsOverlay);
     
-    if (!wrapper) {
-      console.error('❌ Swiper wrapper not found');
-      return;
-    }
+    if (!wrapper) return;
     
-    // تنظيف المحتوى القديم
     wrapper.innerHTML = '';
     if (thumbsContainer) thumbsContainer.innerHTML = '';
     
-    // تدمير السلايدر القديم
     if (swiper) {
       stopAllVideos();
       swiper.destroy(true, true);
@@ -622,63 +580,50 @@ const TripDisplay = (() => {
     const allSlides = [];
     
     // إضافة الصور
-    if (media?.images && Array.isArray(media.images)) {
-      console.log(`📷 Adding ${media.images.length} images`);
-      
+    if (media?.images && Array.isArray(media.images) && media.images.length > 0) {
       media.images.forEach((imageUrl, i) => {
         if (!imageUrl) return;
-        
-        const slide = createImageSlide(imageUrl, i);
+        const slide = createImageSlide(imageUrl, slideIndex);
         wrapper.appendChild(slide);
-        
-        createThumbnail(imageUrl, slideIndex, false);
-        
         allSlides.push({ type: 'image', index: slideIndex });
         slideIndex++;
       });
     }
     
     // إضافة الفيديوهات
-    if (media?.videos && Array.isArray(media.videos)) {
-      console.log(`🎥 Adding ${media.videos.length} videos`);
-      
+    if (media?.videos && Array.isArray(media.videos) && media.videos.length > 0) {
       media.videos.forEach((videoData, i) => {
-        const slide = createVideoSlide(videoData, i);
-        
+        const slide = createVideoSlide(videoData, slideIndex);
         if (slide) {
           wrapper.appendChild(slide);
-          
-          const thumbnailUrl = slide.getAttribute('data-thumbnail');
-          if (thumbnailUrl) {
-            createThumbnail(thumbnailUrl, slideIndex, true);
-          }
-          
           allSlides.push({ type: 'video', index: slideIndex });
           slideIndex++;
         }
       });
     }
     
-    // التحقق من وجود شرائح
+    // شريحة افتراضية إذا لم تكن هناك شرائح
     if (allSlides.length === 0) {
-      console.warn('⚠️ No slides to display');
-      
-      // إضافة شريحة افتراضية
       const defaultSlide = document.createElement('div');
       defaultSlide.className = 'swiper-slide';
+      defaultSlide.setAttribute('data-type', 'placeholder');
       defaultSlide.style.cssText = `
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #1a1a2e;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         color: #fff;
         font-size: 18px;
       `;
-      defaultSlide.innerHTML = '<div style="text-align:center;"><i class="fas fa-image" style="font-size:48px;opacity:0.3;margin-bottom:16px;"></i><p>No images available</p></div>';
+      defaultSlide.innerHTML = `
+        <div style="text-align:center;">
+          <i class="fas fa-image" style="font-size:48px;opacity:0.3;margin-bottom:16px;display:block;"></i>
+          <p style="opacity:0.7;">No images available</p>
+        </div>
+      `;
       wrapper.appendChild(defaultSlide);
+      allSlides.push({ type: 'placeholder', index: 0 });
     }
-    
-    console.log(`✅ Total slides: ${allSlides.length}`);
     
     // إنشاء السلايدر
     try {
@@ -700,8 +645,7 @@ const TripDisplay = (() => {
         
         on: {
           init: function() {
-            console.log('✅ Swiper initialized');
-            updateActiveThumbnail(this.realIndex);
+            createThumbnails();
           },
           
           slideChange: function() {
@@ -715,16 +659,9 @@ const TripDisplay = (() => {
         },
       });
       
-      console.log('✅ Swiper ready');
-      
     } catch (error) {
       console.error('❌ Swiper error:', error);
-      
-      // عرض الصور بدون سلايدر في حالة الخطأ
-      const container = document.querySelector(SELECTORS.swiperContainer);
-      if (container) {
-        container.style.overflow = 'hidden';
-      }
+      createThumbnails();
     }
   }
 
@@ -1096,15 +1033,12 @@ const TripDisplay = (() => {
   // EVENT LISTENERS
   // ==========================================================================
   function setupEventListeners() {
-    // Open review button
     const openReviewBtn = document.querySelector(SELECTORS.openReviewBtn);
     if (openReviewBtn) openReviewBtn.addEventListener('click', openReviewModal);
     
-    // Submit review button
     const submitReviewBtn = document.querySelector(SELECTORS.submitReviewBtn);
     if (submitReviewBtn) submitReviewBtn.addEventListener('click', submitReview);
     
-    // Close review modal
     const reviewOverlay = document.querySelector(`${SELECTORS.reviewModal} ${SELECTORS.reviewOverlay}`);
     if (reviewOverlay) reviewOverlay.addEventListener('click', closeReviewModal);
     
@@ -1115,7 +1049,6 @@ const TripDisplay = (() => {
     const cancelBtn = document.querySelector(SELECTORS.cancelReviewBtn);
     if (cancelBtn) cancelBtn.addEventListener('click', closeReviewModal);
     
-    // Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         const modal = document.querySelector(SELECTORS.reviewModal);
@@ -1123,10 +1056,7 @@ const TripDisplay = (() => {
           closeReviewModal();
         }
       }
-    });
-    
-    // Keyboard navigation for swiper
-    document.addEventListener('keydown', (e) => {
+      
       if (!swiper) return;
       
       if (e.key === 'ArrowLeft') {
@@ -1155,6 +1085,11 @@ const TripDisplay = (() => {
       swiper.destroy(true, true);
       swiper = null;
     }
+    
+    const thumbsContainer = document.querySelector(SELECTORS.thumbnailsOverlay);
+    if (thumbsContainer) {
+      thumbsContainer.innerHTML = '';
+    }
   }
 
   // ==========================================================================
@@ -1180,7 +1115,6 @@ const TripDisplay = (() => {
       auth.onAuthStateChanged((user) => {
         if (user) {
           currentUserUid = user.uid;
-          console.log('👤 User:', user.uid);
         }
       });
     }
@@ -1192,7 +1126,6 @@ const TripDisplay = (() => {
     
     window.addEventListener('beforeunload', cleanup);
     
-    // إيقاف الفيديوهات عند تصغير النافذة
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         stopAllVideos();
