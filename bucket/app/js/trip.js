@@ -739,7 +739,7 @@ const TripDisplay = (() => {
     const container = document.querySelector(SELECTORS.reviewsListContainer);
     if (!container) return;
     
-    container.innerHTML = Array(3).fill(`
+    container.innerHTML = Array(2).fill(`
       <div class="review-card" style="opacity: 0.5;">
         <div class="review-card-header">
           <div class="review-card-user">
