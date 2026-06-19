@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// Complete Version with Enhanced Gallery & Thumbnails
+// Enhanced with Toggle Controls Feature
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -59,6 +59,8 @@ const TripDisplay = (() => {
   let tripReviews = [];
   let currentUserReview = null;
   let currentUserUid = '';
+  let controlsVisible = true;
+  let hideControlsTimeout = null;
 
   // Currency
   let currentCurrency = DEFAULT_CURRENCY;
@@ -185,6 +187,37 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
+  // CONTROLS TOGGLE
+  // ==========================================================================
+  function hideControls() {
+    const swiperEl = document.querySelector(SELECTORS.swiperContainer);
+    if (swiperEl) {
+      swiperEl.classList.add('swiper-controls-hidden');
+    }
+    controlsVisible = false;
+  }
+
+  function showControls() {
+    const swiperEl = document.querySelector(SELECTORS.swiperContainer);
+    if (swiperEl) {
+      swiperEl.classList.remove('swiper-controls-hidden');
+    }
+    controlsVisible = true;
+    
+    // إخفاء تلقائي بعد 3 ثواني
+    clearTimeout(hideControlsTimeout);
+    hideControlsTimeout = setTimeout(hideControls, 3000);
+  }
+
+  function toggleControls() {
+    if (controlsVisible) {
+      hideControls();
+    } else {
+      showControls();
+    }
+  }
+
+  // ==========================================================================
   // TRIP DATA FETCHING
   // ==========================================================================
   function showSpinner() {
@@ -221,14 +254,6 @@ const TripDisplay = (() => {
         currentTrip.basePrice = currentTrip.price || 0;
         tourTypes = currentTrip.tourtype || {};
         tripOwnerId = currentTrip.owner || '';
-        
-        console.log('📊 Trip Data:', {
-          name: currentTrip.name,
-          media: currentTrip.media ? {
-            images: currentTrip.media.images?.length || 0,
-            videos: currentTrip.media.videos?.length || 0
-          } : 'No media'
-        });
         
         displayTripInfo(currentTrip);
         displayDescription(currentTrip.description);
@@ -305,20 +330,17 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
-  // MEDIA GALLERY - ENHANCED VERSION
+  // MEDIA GALLERY
   // ==========================================================================
-  
   function extractYouTubeId(url) {
     if (!url) return null;
     
     url = url.trim();
     
-    // إذا كان الرابط عبارة عن ID مباشر (11 حرف)
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
       return url;
     }
     
-    // محاولة استخراج ID من الرابط
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
       /^([a-zA-Z0-9_-]{11})$/
@@ -399,7 +421,6 @@ const TripDisplay = (() => {
       return;
     }
     
-    // إيقاف أي فيديو آخر
     stopAllVideos();
     
     currentVideoSlide = slide;
@@ -407,6 +428,9 @@ const TripDisplay = (() => {
     if (swiper && swiper.autoplay) {
       swiper.autoplay.stop();
     }
+    
+    // إخفاء عناصر التحكم
+    hideControls();
     
     slide.innerHTML = '';
     
@@ -422,19 +446,52 @@ const TripDisplay = (() => {
       border: none;
     `;
     
+    // زر الإغلاق
     const closeBtn = document.createElement('div');
     closeBtn.className = 'video-close-btn';
     closeBtn.innerHTML = '<i class="fas fa-times"></i>';
     closeBtn.setAttribute('aria-label', 'Close video');
-    
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       e.preventDefault();
       stopVideoInSlide(slide);
     });
     
+    // زر إظهار/إخفاء عناصر التحكم
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'video-toggle-controls';
+    toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
+    toggleBtn.setAttribute('aria-label', 'Toggle controls');
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      toggleControls();
+      
+      // تحديث نص الزر
+      if (controlsVisible) {
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Controls';
+      } else {
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
+      }
+    });
+    
     slide.appendChild(iframe);
     slide.appendChild(closeBtn);
+    slide.appendChild(toggleBtn);
+    
+    // إظهار الأزرار عند تحريك الماوس
+    slide.addEventListener('mousemove', () => {
+      closeBtn.style.opacity = '1';
+      closeBtn.style.transform = 'scale(1)';
+      toggleBtn.style.opacity = '1';
+      
+      clearTimeout(slide._hideButtonsTimeout);
+      slide._hideButtonsTimeout = setTimeout(() => {
+        closeBtn.style.opacity = '0';
+        closeBtn.style.transform = 'scale(0.8)';
+        toggleBtn.style.opacity = '0';
+      }, 2000);
+    });
   }
 
   function stopVideoInSlide(slide) {
@@ -445,6 +502,9 @@ const TripDisplay = (() => {
     const index = slide.getAttribute('data-index');
     
     if (!videoId || !thumbnailUrl) return;
+    
+    // إظهار عناصر التحكم
+    showControls();
     
     slide.innerHTML = '';
     
@@ -517,7 +577,6 @@ const TripDisplay = (() => {
         const videoIndicator = document.createElement('div');
         videoIndicator.className = 'video-indicator';
         videoIndicator.innerHTML = '<i class="fas fa-play"></i>';
-        videoIndicator.setAttribute('aria-label', 'Video thumbnail');
         thumbWrapper.appendChild(videoIndicator);
         
         const duration = document.createElement('span');
@@ -579,9 +638,8 @@ const TripDisplay = (() => {
     let slideIndex = 0;
     const allSlides = [];
     
-    // إضافة الصور
     if (media?.images && Array.isArray(media.images) && media.images.length > 0) {
-      media.images.forEach((imageUrl, i) => {
+      media.images.forEach((imageUrl) => {
         if (!imageUrl) return;
         const slide = createImageSlide(imageUrl, slideIndex);
         wrapper.appendChild(slide);
@@ -590,9 +648,8 @@ const TripDisplay = (() => {
       });
     }
     
-    // إضافة الفيديوهات
     if (media?.videos && Array.isArray(media.videos) && media.videos.length > 0) {
-      media.videos.forEach((videoData, i) => {
+      media.videos.forEach((videoData) => {
         const slide = createVideoSlide(videoData, slideIndex);
         if (slide) {
           wrapper.appendChild(slide);
@@ -602,7 +659,6 @@ const TripDisplay = (() => {
       });
     }
     
-    // شريحة افتراضية إذا لم تكن هناك شرائح
     if (allSlides.length === 0) {
       const defaultSlide = document.createElement('div');
       defaultSlide.className = 'swiper-slide';
@@ -622,10 +678,8 @@ const TripDisplay = (() => {
         </div>
       `;
       wrapper.appendChild(defaultSlide);
-      allSlides.push({ type: 'placeholder', index: 0 });
     }
     
-    // إنشاء السلايدر
     try {
       swiper = new Swiper(SELECTORS.swiperContainer, {
         slidesPerView: 1,
@@ -1013,15 +1067,10 @@ const TripDisplay = (() => {
   }
 
   function resetReviewForm() {
-    const voucherInput = document.querySelector(SELECTORS.voucherInput);
-    const commentInput = document.querySelector(SELECTORS.commentInput);
-    const ratingValue = document.querySelector(SELECTORS.ratingValue);
-    const charCount = document.querySelector(SELECTORS.charCount);
-    
-    if (voucherInput) voucherInput.value = '';
-    if (commentInput) commentInput.value = '';
-    if (ratingValue) ratingValue.value = '0';
-    if (charCount) charCount.textContent = '0';
+    document.querySelector(SELECTORS.voucherInput).value = '';
+    document.querySelector(SELECTORS.commentInput).value = '';
+    document.querySelector(SELECTORS.ratingValue).value = '0';
+    document.querySelector(SELECTORS.charCount).textContent = '0';
     
     document.querySelectorAll(`${SELECTORS.starSelector} i`).forEach(s => {
       s.classList.remove('active', 'fas');
@@ -1033,21 +1082,15 @@ const TripDisplay = (() => {
   // EVENT LISTENERS
   // ==========================================================================
   function setupEventListeners() {
-    const openReviewBtn = document.querySelector(SELECTORS.openReviewBtn);
-    if (openReviewBtn) openReviewBtn.addEventListener('click', openReviewModal);
-    
-    const submitReviewBtn = document.querySelector(SELECTORS.submitReviewBtn);
-    if (submitReviewBtn) submitReviewBtn.addEventListener('click', submitReview);
-    
-    const reviewOverlay = document.querySelector(`${SELECTORS.reviewModal} ${SELECTORS.reviewOverlay}`);
-    if (reviewOverlay) reviewOverlay.addEventListener('click', closeReviewModal);
+    document.querySelector(SELECTORS.openReviewBtn)?.addEventListener('click', openReviewModal);
+    document.querySelector(SELECTORS.submitReviewBtn)?.addEventListener('click', submitReview);
+    document.querySelector(`${SELECTORS.reviewModal} ${SELECTORS.reviewOverlay}`)?.addEventListener('click', closeReviewModal);
     
     document.querySelectorAll(`${SELECTORS.reviewModal} ${SELECTORS.closePopupBtn}`).forEach(btn => {
       btn.addEventListener('click', closeReviewModal);
     });
     
-    const cancelBtn = document.querySelector(SELECTORS.cancelReviewBtn);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeReviewModal);
+    document.querySelector(SELECTORS.cancelReviewBtn)?.addEventListener('click', closeReviewModal);
     
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -1069,6 +1112,13 @@ const TripDisplay = (() => {
         swiper.slideNext();
       }
     });
+    
+    // النقر على السلايدر لإظهار/إخفاء التحكم
+    document.querySelector(SELECTORS.swiperContainer)?.addEventListener('click', (e) => {
+      if (!e.target.closest('.play-button') && !e.target.closest('iframe')) {
+        showControls();
+      }
+    });
   }
 
   // ==========================================================================
@@ -1079,6 +1129,7 @@ const TripDisplay = (() => {
       window.removeEventListener('currencyChanged', currencyChangeHandler);
     }
     
+    clearTimeout(hideControlsTimeout);
     stopAllVideos();
     
     if (swiper) {
@@ -1086,10 +1137,7 @@ const TripDisplay = (() => {
       swiper = null;
     }
     
-    const thumbsContainer = document.querySelector(SELECTORS.thumbnailsOverlay);
-    if (thumbsContainer) {
-      thumbsContainer.innerHTML = '';
-    }
+    document.querySelector(SELECTORS.thumbnailsOverlay).innerHTML = '';
   }
 
   // ==========================================================================
@@ -1097,15 +1145,9 @@ const TripDisplay = (() => {
   // ==========================================================================
   async function init() {
     if (!tripSlug) {
-      console.error('❌ No trip ID in URL');
       showToast('No trip specified in URL.', 'error');
       return;
     }
-    
-    console.log('🚀 Initializing Trip Display');
-    console.log('📋 Trip Slug:', tripSlug);
-    console.log('📱 Is Mobile:', isMobile());
-    console.log('🔧 Swiper Available:', typeof Swiper !== 'undefined');
     
     initCurrency();
     setupStars();
@@ -1113,9 +1155,7 @@ const TripDisplay = (() => {
     
     if (typeof auth !== 'undefined') {
       auth.onAuthStateChanged((user) => {
-        if (user) {
-          currentUserUid = user.uid;
-        }
+        currentUserUid = user?.uid || '';
       });
     }
     
@@ -1125,14 +1165,9 @@ const TripDisplay = (() => {
     ]);
     
     window.addEventListener('beforeunload', cleanup);
-    
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        stopAllVideos();
-      }
+      if (document.hidden) stopAllVideos();
     });
-    
-    console.log('✅ System Ready');
   }
 
   // ==========================================================================
@@ -1161,5 +1196,3 @@ if (document.readyState === 'loading') {
 }
 
 window.tripModule = TripDisplay;
-
-console.log('📦 Trip Module loaded');
