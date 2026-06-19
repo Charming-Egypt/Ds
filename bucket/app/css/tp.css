@@ -709,3 +709,75 @@
   
   /* Mobile booking section is styled by booking-system.css */
 }
+
+
+
+/* ==========================================================================
+   TRIP DESCRIPTION SECTION
+   ========================================================================== */
+.description-section {
+  padding: 24px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.description-content {
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.description-content p {
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.description-content p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end));
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.description-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Optional: Add a highlight box for important notes */
+.description-content .highlight-note {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-style: italic;
+  color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .description-section {
+    padding: 24px 16px;
+  }
+  
+  .description-content {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  
+  .description-content p {
+    padding-left: 16px;
+  }
+  
+  .description-content p::before {
+    width: 5px;
+    height: 5px;
+    top: 8px;
+  }
+}
