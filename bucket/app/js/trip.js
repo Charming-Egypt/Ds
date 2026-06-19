@@ -15,8 +15,8 @@ const TripDisplay = (() => {
     tourTitle: '#tourTitle',
     tourDuration: '#tourDuration',
     tourPrice: '#tourPrice',
-    tourDescription: '#tourDescription', // جديد
-    descriptionContainer: '#descriptionContainer', // جديد
+    tourDescription: '#tourDescription',
+    descriptionContainer: '#descriptionContainer',
     swiperWrapper: '.swiper-wrapper',
     swiperContainer: '.swiper',
     thumbnailsOverlay: '#thumbnailsOverlay',
@@ -37,7 +37,7 @@ const TripDisplay = (() => {
     reviewsListContainer: '#reviewsListContainer',
   };
 
-  const VOUCHER_PATTERN = /^[A-Z0-9]{6,20}$/;
+  const VOUCHER_PATTERN = /^DS_[A-Z0-9]{8,}$/;
   const MIN_COMMENT_LENGTH = 5;
   const MAX_COMMENT_LENGTH = 500;
   const TOAST_DURATION = 4000;
@@ -76,6 +76,7 @@ const TripDisplay = (() => {
   }
 
   function sanitizeHTML(str) {
+    if (!str) return '';
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
@@ -217,9 +218,17 @@ const TripDisplay = (() => {
         tourTypes = currentTrip.tourtype || {};
         tripOwnerId = currentTrip.owner || '';
         
+        console.log('📊 Trip Data Loaded:', {
+          name: currentTrip.name,
+          hasDescription: !!currentTrip.description,
+          hasMedia: !!currentTrip.media,
+          mediaImages: currentTrip.media?.images?.length || 0,
+          mediaVideos: currentTrip.media?.videos?.length || 0
+        });
+        
         // Display everything
         displayTripInfo(currentTrip);
-        displayDescription(currentTrip.description); // جديد - عرض الوصف
+        displayDescription(currentTrip.description);
         loadMediaContent(currentTrip.media);
         loadIncludedNotIncluded(currentTrip);
         loadTimeline(currentTrip.timeline);
@@ -248,10 +257,9 @@ const TripDisplay = (() => {
     if (durationEl) durationEl.textContent = trip.duration || 'Full Day';
     
     if (trip.name) {
-      document.title = sanitizeHTML(trip.name) + ' - Discover Sharm';
+      document.title = trip.name + ' - Discover Sharm';
     }
     
-    // Set trip name in booking forms (if they exist)
     const tripNameInput = document.querySelector(SELECTORS.tripNameInput);
     if (tripNameInput) tripNameInput.value = trip.name || '';
     
@@ -259,12 +267,17 @@ const TripDisplay = (() => {
     if (mobileTripNameInput) mobileTripNameInput.value = trip.name || '';
   }
 
-  // جديد - عرض الوصف
+  // عرض وصف الرحلة
   function displayDescription(description) {
-    const descContainer = document.querySelector(SELECTORS.descriptionContainer) || 
-                         document.querySelector(SELECTORS.tourDescription);
+    const descContainer = document.querySelector(SELECTORS.descriptionContainer);
+    const descContent = document.querySelector(SELECTORS.tourDescription);
     
-    if (descContainer && description) {
+    if (!descContainer) {
+      console.warn('Description container not found');
+      return;
+    }
+    
+    if (description && description.trim()) {
       // تحويل النص إلى فقرات HTML
       const paragraphs = description
         .split('\n')
@@ -272,11 +285,15 @@ const TripDisplay = (() => {
         .map(p => `<p>${sanitizeHTML(p.trim())}</p>`)
         .join('');
       
-      descContainer.innerHTML = paragraphs;
+      if (descContent) {
+        descContent.innerHTML = paragraphs;
+      }
+      
       descContainer.style.display = 'block';
-    } else if (descContainer) {
-      // إخفاء القسم إذا لم يكن هناك وصف
+      console.log('✅ Description displayed');
+    } else {
       descContainer.style.display = 'none';
+      console.log('ℹ️ No description available');
     }
   }
 
@@ -288,48 +305,51 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
-  // MEDIA GALLERY (SWIPER)
+  // MEDIA GALLERY (SWIPER) - تم إصلاح مشكلة الفيديو
   // ==========================================================================
   function extractVideoId(url) {
-    if (!url) return null;
+    if (!url) {
+      console.error('❌ Empty video URL');
+      return null;
+    }
     
-    // تنظيف الرابط
     url = url.trim();
+    console.log('🔍 Extracting video ID from:', url);
     
-    // قائمة الأنماط المدعومة
+    // قائمة الأنماط المدعومة (مرتبة حسب الأولوية)
     const patterns = [
       // youtu.be/VIDEO_ID
-      /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})/i,
+      /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
       // youtube.com/watch?v=VIDEO_ID
-      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})/i,
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*[?&]v=([a-zA-Z0-9_-]{11})(?:&.*)?$/i,
       // youtube.com/embed/VIDEO_ID
-      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
       // youtube.com/v/VIDEO_ID
-      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/i,
-      // youtu.be/VIDEO_ID?t=123
-      /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})\?/i,
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
+      // youtube.com/shorts/VIDEO_ID
+      /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
     ];
     
     for (const pattern of patterns) {
       const match = url.match(pattern);
-      if (match && match[1]) {
-        console.log('✅ Video ID extracted:', match[1]);
+      if (match && match[1] && match[1].length === 11) {
+        console.log('✅ Video ID found:', match[1]);
         return match[1];
       }
     }
     
-    console.warn('⚠️ Could not extract video ID from URL:', url);
+    console.error('❌ Could not extract video ID from:', url);
     return null;
   }
 
   function loadMediaContent(media) {
     if (!media) {
-      console.warn('No media data provided');
+      console.warn('⚠️ No media data provided');
       return;
     }
     
     if (!checkSwiperDependency()) {
-      console.error('Swiper not available');
+      console.error('❌ Swiper not available');
       return;
     }
     
@@ -337,133 +357,137 @@ const TripDisplay = (() => {
     const thumbs = document.querySelector(SELECTORS.thumbnailsOverlay);
     
     if (!wrapper) {
-      console.error('Swiper wrapper not found');
+      console.error('❌ Swiper wrapper not found');
       return;
     }
     
+    // تنظيف المحتوى القديم
     wrapper.innerHTML = '';
     if (thumbs) thumbs.innerHTML = '';
     
-    function addThumb(src, idx) {
+    // تدمير السلايدر القديم إذا كان موجوداً
+    if (swiper) {
+      swiper.destroy(true, true);
+      swiper = null;
+      console.log('🔄 Old swiper destroyed');
+    }
+    
+    // دالة إضافة صورة مصغرة
+    function addThumb(src, idx, isVideo = false) {
       if (!thumbs) return;
       const img = document.createElement('img');
       img.src = src;
       img.dataset.index = idx;
+      img.dataset.isVideo = isVideo ? 'true' : 'false';
       img.alt = `Thumbnail ${idx + 1}`;
       img.loading = 'lazy';
       img.style.cursor = 'pointer';
       img.addEventListener('click', () => {
-        if (swiper) swiper.slideTo(idx);
-        updateActiveThumbnail(idx);
+        if (swiper) {
+          swiper.slideTo(idx);
+          updateActiveThumbnail(idx);
+        }
       });
       thumbs.appendChild(img);
     }
     
-    // Images
-    if (media.images && Array.isArray(media.images)) {
+    // إضافة الصور
+    if (media.images && Array.isArray(media.images) && media.images.length > 0) {
+      console.log(`🖼️ Loading ${media.images.length} images`);
+      
       media.images.forEach((imgSrc, i) => {
+        if (!imgSrc) return;
+        
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
+        
         const img = document.createElement('img');
         img.src = imgSrc;
         img.alt = `Trip photo ${i + 1}`;
         img.loading = 'lazy';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        
         slide.appendChild(img);
         wrapper.appendChild(slide);
-        addThumb(imgSrc, i);
+        addThumb(imgSrc, i, false);
       });
     }
     
-    // Videos - إصلاح كامل
-    if (media.videos && Array.isArray(media.videos)) {
-      console.log(`📹 Loading ${media.videos.length} video(s)`);
+    // إضافة الفيديوهات
+    if (media.videos && Array.isArray(media.videos) && media.videos.length > 0) {
+      console.log(`🎬 Loading ${media.videos.length} videos`);
       
       media.videos.forEach((video, i) => {
-        const idx = (media.images?.length || 0) + i;
         const videoUrl = video.videoUrl || video.url || '';
-        
-        console.log(`Video ${i + 1} URL:`, videoUrl);
-        
-        // استخراج ID الفيديو
-        const videoId = extractVideoId(videoUrl);
-        
-        if (!videoId) {
-          console.error('❌ Invalid video URL:', videoUrl);
-          return; // تخطي هذا الفيديو
+        if (!videoUrl) {
+          console.error(`❌ Video ${i + 1}: No URL provided`);
+          return;
         }
         
+        const videoId = extractVideoId(videoUrl);
+        if (!videoId) {
+          console.error(`❌ Video ${i + 1}: Invalid URL -`, videoUrl);
+          return;
+        }
+        
+        const idx = (media.images?.length || 0) + i;
+        const thumbnailUrl = video.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        
+        console.log(`✅ Video ${i + 1}: ID=${videoId}, Thumbnail=${thumbnailUrl}`);
+        
+        // إنشاء الشريحة
         const slide = document.createElement('div');
         slide.className = 'swiper-slide swiper-slide-video';
         slide.dataset.videoId = videoId;
         slide.dataset.videoUrl = videoUrl;
-        slide.dataset.thumbnail = video.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        slide.dataset.thumbnail = thumbnailUrl;
         
-        // صورة مصغرة
+        // إضافة الصورة المصغرة
         const img = document.createElement('img');
-        img.src = slide.dataset.thumbnail;
-        img.alt = 'Video thumbnail';
+        img.src = thumbnailUrl;
+        img.alt = `Video ${i + 1}`;
         img.loading = 'lazy';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
         slide.appendChild(img);
         
-        // زر التشغيل
+        // إضافة زر التشغيل
         const playButton = document.createElement('div');
         playButton.className = 'play-button';
         playButton.innerHTML = '<i class="fas fa-play"></i>';
         playButton.setAttribute('aria-label', 'Play video');
-        playButton.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 70px;
-          height: 70px;
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          z-index: 10;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        `;
-        
-        playButton.addEventListener('mouseenter', () => {
-          playButton.style.transform = 'translate(-50%, -50%) scale(1.1)';
-          playButton.style.background = '#ff4444';
-        });
-        
-        playButton.addEventListener('mouseleave', () => {
-          playButton.style.transform = 'translate(-50%, -50%) scale(1)';
-          playButton.style.background = 'rgba(255, 255, 255, 0.9)';
-        });
         
         // حدث النقر على زر التشغيل
-        playButton.addEventListener('click', (e) => {
-          e.stopPropagation(); // منع انتشار الحدث
-          console.log('▶️ Play button clicked for video:', videoId);
+        playButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          console.log('▶️ Play button clicked - Video ID:', videoId);
           playVideo(slide);
         });
         
         slide.appendChild(playButton);
         wrapper.appendChild(slide);
-        
-        if (video.thumbnail) {
-          addThumb(video.thumbnail, idx);
-        }
+        addThumb(thumbnailUrl, idx, true);
       });
     }
     
-    // Swiper initialization
-    if (swiper) {
-      swiper.destroy(true, true);
-      swiper = null;
+    // التحقق من وجود شرائح
+    const totalSlides = wrapper.children.length;
+    console.log(`📊 Total slides: ${totalSlides}`);
+    
+    if (totalSlides === 0) {
+      console.warn('⚠️ No slides to display');
+      return;
     }
     
+    // إنشاء السلايدر الجديد
     try {
       swiper = new Swiper(SELECTORS.swiperContainer, {
         slidesPerView: 1,
-        loop: true,
+        loop: totalSlides > 1,
         pagination: {
           el: '.swiper-pagination',
           clickable: true,
@@ -478,15 +502,24 @@ const TripDisplay = (() => {
             stopVideo();
           },
           init: function() {
-            console.log('✅ Swiper initialized successfully');
+            console.log('✅ Swiper initialized with', totalSlides, 'slides');
           },
+          click: function(e) {
+            // منع النقر الافتراضي على الفيديوهات
+            const clickedSlide = e.target.closest('.swiper-slide-video');
+            if (clickedSlide && !e.target.closest('.play-button')) {
+              // إذا نقر المستخدم على الفيديو ولكن ليس على زر التشغيل
+              const playBtn = clickedSlide.querySelector('.play-button');
+              if (playBtn) {
+                console.log('▶️ Video slide clicked, triggering play');
+                playVideo(clickedSlide);
+              }
+            }
+          }
         },
       });
-      
-      console.log('✅ Swiper created with', wrapper.children.length, 'slides');
     } catch (error) {
       console.error('❌ Failed to initialize Swiper:', error);
-      return;
     }
     
     updateActiveThumbnail(0);
@@ -504,33 +537,35 @@ const TripDisplay = (() => {
     const videoId = slide.dataset.videoId;
     
     if (!videoId) {
-      console.error('❌ No video ID found in slide');
+      console.error('❌ No video ID found in slide dataset');
       return;
     }
     
     console.log('🎬 Playing video:', videoId);
     
+    // حفظ المرجع للفيديو الحالي
+    currentVideoSlide = slide;
+    
+    // تفريغ الشريحة
+    slide.innerHTML = '';
+    
     // إنشاء عنصر iframe
     const iframe = document.createElement('iframe');
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0&modestbranding=1`;
-    iframe.frameBorder = '0';
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.title = 'YouTube video player';
-    iframe.style.position = 'absolute';
-    iframe.style.top = '0';
-    iframe.style.left = '0';
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
+    iframe.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    `;
     
-    // تفريغ الشريحة وإضافة iframe
-    slide.innerHTML = '';
     slide.appendChild(iframe);
-    currentVideoSlide = slide;
-    
-    console.log('✅ Video player added to slide');
+    console.log('✅ Video player added');
   }
 
   function stopVideo() {
@@ -540,64 +575,55 @@ const TripDisplay = (() => {
       const thumbnail = currentVideoSlide.dataset.thumbnail;
       const videoId = currentVideoSlide.dataset.videoId;
       
-      // إعادة بناء الشريحة مع الصورة المصغرة وزر التشغيل
-      currentVideoSlide.innerHTML = '';
-      
-      if (thumbnail) {
-        const img = document.createElement('img');
-        img.src = thumbnail;
-        img.alt = 'Video thumbnail';
-        img.loading = 'lazy';
-        currentVideoSlide.appendChild(img);
+      if (!thumbnail || !videoId) {
+        currentVideoSlide = null;
+        return;
       }
       
-      // إعادة إنشاء زر التشغيل
+      // إعادة بناء الشريحة
+      currentVideoSlide.innerHTML = '';
+      
+      // إعادة الصورة المصغرة
+      const img = document.createElement('img');
+      img.src = thumbnail;
+      img.alt = 'Video thumbnail';
+      img.loading = 'lazy';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      currentVideoSlide.appendChild(img);
+      
+      // إعادة زر التشغيل
       const playButton = document.createElement('div');
       playButton.className = 'play-button';
       playButton.innerHTML = '<i class="fas fa-play"></i>';
       playButton.setAttribute('aria-label', 'Play video');
-      playButton.style.cssText = `
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 70px;
-        height: 70px;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 10;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      `;
       
-      playButton.addEventListener('mouseenter', () => {
-        playButton.style.transform = 'translate(-50%, -50%) scale(1.1)';
-        playButton.style.background = '#ff4444';
-      });
-      
-      playButton.addEventListener('mouseleave', () => {
-        playButton.style.transform = 'translate(-50%, -50%) scale(1)';
-        playButton.style.background = 'rgba(255, 255, 255, 0.9)';
-      });
-      
-      playButton.addEventListener('click', (e) => {
+      // إعادة ربط حدث النقر
+      playButton.addEventListener('click', function(e) {
         e.stopPropagation();
-        console.log('▶️ Play button clicked for video:', videoId);
+        e.preventDefault();
+        console.log('▶️ Play button clicked again');
         playVideo(currentVideoSlide);
       });
       
       currentVideoSlide.appendChild(playButton);
       currentVideoSlide = null;
+      console.log('✅ Video stopped, slide restored');
     }
   }
 
   function updateActiveThumbnail(index) {
-    document.querySelectorAll(`${SELECTORS.thumbnailsOverlay} img`).forEach(thumb => {
-      thumb.classList.toggle('active', parseInt(thumb.dataset.index) === index);
+    const allThumbs = document.querySelectorAll(`${SELECTORS.thumbnailsOverlay} img`);
+    allThumbs.forEach(thumb => {
+      const thumbIndex = parseInt(thumb.dataset.index);
+      if (thumbIndex === index) {
+        thumb.classList.add('active');
+        // تمرير الصورة المصغرة إلى مكان مرئي
+        thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        thumb.classList.remove('active');
+      }
     });
   }
 
@@ -619,11 +645,14 @@ const TripDisplay = (() => {
         items.forEach(item => {
           const el = document.createElement('div');
           el.className = 'included-item';
+          
           const iconEl = document.createElement('i');
           iconEl.className = `fas ${icon}`;
           iconEl.style.color = color;
+          
           const span = document.createElement('span');
           span.textContent = item;
+          
           el.appendChild(iconEl);
           el.appendChild(span);
           container.appendChild(el);
@@ -645,16 +674,16 @@ const TripDisplay = (() => {
         
         const timeDiv = document.createElement('div');
         timeDiv.className = 'timeline-time';
-        timeDiv.textContent = item.time;
+        timeDiv.textContent = item.time || '';
         
         const contentDiv = document.createElement('div');
         contentDiv.className = 'timeline-content';
         
         const h4 = document.createElement('h4');
-        h4.textContent = item.title;
+        h4.textContent = item.title || '';
         
         const p = document.createElement('p');
-        p.textContent = item.description;
+        p.textContent = item.description || '';
         
         contentDiv.appendChild(h4);
         contentDiv.appendChild(p);
@@ -688,7 +717,7 @@ const TripDisplay = (() => {
   // REVIEWS SYSTEM
   // ==========================================================================
   function getUserPhotoUrl(uid) {
-    return uid ? `/app/photos/${sanitizeHTML(uid)}.jpg` : null;
+    return uid ? `/app/photos/${uid}.jpg` : null;
   }
 
   function showReviewSkeletons() {
@@ -893,7 +922,7 @@ const TripDisplay = (() => {
     const voucher = document.querySelector(SELECTORS.voucherInput)?.value?.trim()?.toUpperCase();
     
     if (!voucher || !VOUCHER_PATTERN.test(voucher)) {
-      showToast('Please enter a valid voucher number', 'error');
+      showToast('Please enter a valid voucher number (DS_XXXXXXXX)', 'error');
       return;
     }
     
@@ -992,18 +1021,15 @@ const TripDisplay = (() => {
   // CLEANUP
   // ==========================================================================
   function cleanup() {
-    // Remove event listeners
     if (currencyChangeHandler) {
       window.removeEventListener('currencyChanged', currencyChangeHandler);
     }
     
-    // Destroy swiper
     if (swiper) {
       swiper.destroy(true, true);
       swiper = null;
     }
     
-    // Stop any playing video
     stopVideo();
   }
 
@@ -1015,6 +1041,9 @@ const TripDisplay = (() => {
       showToast('No trip specified in URL.', 'error');
       return;
     }
+    
+    console.log('🚀 Initializing Trip Display System');
+    console.log('📋 Trip Slug:', tripSlug);
     
     // Initialize currency
     initCurrency();
@@ -1032,11 +1061,17 @@ const TripDisplay = (() => {
     const reviewOverlay = document.querySelector(`${SELECTORS.reviewModal} .services-popup-overlay`);
     if (reviewOverlay) reviewOverlay.addEventListener('click', closeReviewModal);
     
+    // إغلاق المودال بأزرار الإغلاق
+    document.querySelectorAll(`${SELECTORS.reviewModal} .close-popup-btn`).forEach(btn => {
+      btn.addEventListener('click', closeReviewModal);
+    });
+    
     // Listen for auth changes
     if (typeof auth !== 'undefined') {
       auth.onAuthStateChanged((user) => {
         if (user) {
           currentUserUid = user.uid;
+          console.log('👤 User authenticated:', user.uid);
         }
       });
     }
