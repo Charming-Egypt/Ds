@@ -35,6 +35,9 @@ const TripDisplay = (() => {
     avgStars: '#avgStars',
     reviewsCountText: '#reviewsCountText',
     reviewsListContainer: '#reviewsListContainer',
+    cancelReviewBtn: '#cancelReviewBtn',
+    closePopupBtn: '.close-popup-btn',
+    reviewOverlay: '.services-popup-overlay'
   };
 
   const VOUCHER_PATTERN = /^DS_[A-Z0-9]{8,}$/;
@@ -162,11 +165,11 @@ const TripDisplay = (() => {
   // ==========================================================================
   function checkFirebaseDependencies() {
     if (typeof auth === 'undefined') {
-      console.error('Firebase Auth not loaded');
+      console.error('❌ Firebase Auth not loaded');
       return false;
     }
     if (typeof db === 'undefined') {
-      console.error('Firebase Database not loaded');
+      console.error('❌ Firebase Database not loaded');
       return false;
     }
     return true;
@@ -174,7 +177,7 @@ const TripDisplay = (() => {
 
   function checkSwiperDependency() {
     if (typeof Swiper === 'undefined') {
-      console.warn('Swiper library not loaded - gallery will be disabled');
+      console.warn('⚠️ Swiper library not loaded - gallery will be disabled');
       return false;
     }
     return true;
@@ -223,7 +226,11 @@ const TripDisplay = (() => {
           hasDescription: !!currentTrip.description,
           hasMedia: !!currentTrip.media,
           mediaImages: currentTrip.media?.images?.length || 0,
-          mediaVideos: currentTrip.media?.videos?.length || 0
+          mediaVideos: currentTrip.media?.videos?.length || 0,
+          hasTimeline: !!currentTrip.timeline,
+          hasIncluded: !!currentTrip.included,
+          hasNotIncluded: !!currentTrip.notIncluded,
+          hasWhatToBring: !!currentTrip.whatToBring
         });
         
         // Display everything
@@ -234,11 +241,14 @@ const TripDisplay = (() => {
         loadTimeline(currentTrip.timeline);
         loadWhatToBring(currentTrip.whatToBring);
         updatePriceDisplay();
+      } else {
+        console.warn('⚠️ Trip not found:', tripSlug);
+        showToast('Trip not found.', 'error');
       }
       
       return data;
     } catch (error) {
-      console.error('Failed to fetch trip data:', error);
+      console.error('❌ Failed to fetch trip data:', error);
       showToast('Failed to load trip data.', 'error');
       return {};
     } finally {
@@ -265,56 +275,58 @@ const TripDisplay = (() => {
     
     const mobileTripNameInput = document.querySelector(SELECTORS.mobileTripNameInput);
     if (mobileTripNameInput) mobileTripNameInput.value = trip.name || '';
+    
+    console.log('✅ Trip info displayed:', trip.name);
   }
 
-// عرض وصف الرحلة
-function displayDescription(description) {
-  const descContainer = document.querySelector(SELECTORS.descriptionContainer);
-  const descContent = document.querySelector(SELECTORS.tourDescription);
-  
-  if (!descContainer) {
-    console.warn('Description container not found');
-    return;
-  }
-  
-  if (description && description.trim()) {
-    // تنظيف النص
-    let cleanDescription = description.trim();
+  // عرض وصف الرحلة
+  function displayDescription(description) {
+    const descContainer = document.querySelector(SELECTORS.descriptionContainer);
+    const descContent = document.querySelector(SELECTORS.tourDescription);
     
-    // معالجة النقاط المميزة (الأسطر التي تبدأ بـ ! أو IMPORTANT:)
-    const paragraphs = cleanDescription
-      .split('\n')
-      .filter(p => p.trim())
-      .map(p => {
-        const trimmed = p.trim();
-        
-        // التحقق من الأسطر المميزة
-        if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
-          const text = trimmed
-            .replace(/^!/, '')
-            .replace(/^IMPORTANT:/, '')
-            .trim();
-          return `<div class="highlight-note">
-            <i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>
-            ${sanitizeHTML(text)}
-          </div>`;
-        }
-        
-        return `<p>${sanitizeHTML(trimmed)}</p>`;
-      })
-      .join('');
-    
-    if (descContent) {
-      descContent.innerHTML = paragraphs;
+    if (!descContainer) {
+      console.warn('⚠️ Description container not found');
+      return;
     }
     
-    descContainer.style.display = 'block';
-    console.log('✅ Description displayed');
-  } else {
-    descContainer.style.display = 'none';
-    console.log('ℹ️ No description available');
+    if (description && description.trim()) {
+      // تنظيف النص
+      let cleanDescription = description.trim();
+      
+      // معالجة الفقرات والنقاط المميزة
+      const paragraphs = cleanDescription
+        .split('\n')
+        .filter(p => p.trim())
+        .map(p => {
+          const trimmed = p.trim();
+          
+          // التحقق من الأسطر المميزة
+          if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
+            const text = trimmed
+              .replace(/^!/, '')
+              .replace(/^IMPORTANT:/, '')
+              .trim();
+            return `<div class="highlight-note">
+              <i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>
+              ${sanitizeHTML(text)}
+            </div>`;
+          }
+          
+          return `<p>${sanitizeHTML(trimmed)}</p>`;
+        })
+        .join('');
+      
+      if (descContent) {
+        descContent.innerHTML = paragraphs;
+      }
+      
+      descContainer.style.display = 'block';
+      console.log('✅ Description displayed');
+    } else {
+      descContainer.style.display = 'none';
+      console.log('ℹ️ No description available');
+    }
   }
-}
 
   function updatePriceDisplay() {
     const el = document.querySelector(SELECTORS.tourPrice);
@@ -324,7 +336,7 @@ function displayDescription(description) {
   }
 
   // ==========================================================================
-  // MEDIA GALLERY (SWIPER) - تم إصلاح مشكلة الفيديو
+  // MEDIA GALLERY (SWIPER)
   // ==========================================================================
   function extractVideoId(url) {
     if (!url) {
@@ -335,17 +347,12 @@ function displayDescription(description) {
     url = url.trim();
     console.log('🔍 Extracting video ID from:', url);
     
-    // قائمة الأنماط المدعومة (مرتبة حسب الأولوية)
+    // قائمة الأنماط المدعومة
     const patterns = [
-      // youtu.be/VIDEO_ID
       /(?:https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
-      // youtube.com/watch?v=VIDEO_ID
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?.*[?&]v=([a-zA-Z0-9_-]{11})(?:&.*)?$/i,
-      // youtube.com/embed/VIDEO_ID
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
-      // youtube.com/v/VIDEO_ID
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
-      // youtube.com/shorts/VIDEO_ID
       /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})(?:\?.*)?$/i,
     ];
     
@@ -384,7 +391,7 @@ function displayDescription(description) {
     wrapper.innerHTML = '';
     if (thumbs) thumbs.innerHTML = '';
     
-    // تدمير السلايدر القديم إذا كان موجوداً
+    // تدمير السلايدر القديم
     if (swiper) {
       swiper.destroy(true, true);
       swiper = null;
@@ -523,18 +530,6 @@ function displayDescription(description) {
           init: function() {
             console.log('✅ Swiper initialized with', totalSlides, 'slides');
           },
-          click: function(e) {
-            // منع النقر الافتراضي على الفيديوهات
-            const clickedSlide = e.target.closest('.swiper-slide-video');
-            if (clickedSlide && !e.target.closest('.play-button')) {
-              // إذا نقر المستخدم على الفيديو ولكن ليس على زر التشغيل
-              const playBtn = clickedSlide.querySelector('.play-button');
-              if (playBtn) {
-                console.log('▶️ Video slide clicked, triggering play');
-                playVideo(clickedSlide);
-              }
-            }
-          }
         },
       });
     } catch (error) {
@@ -638,7 +633,6 @@ function displayDescription(description) {
       const thumbIndex = parseInt(thumb.dataset.index);
       if (thumbIndex === index) {
         thumb.classList.add('active');
-        // تمرير الصورة المصغرة إلى مكان مرئي
         thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       } else {
         thumb.classList.remove('active');
@@ -659,7 +653,7 @@ function displayDescription(description) {
       const container = document.querySelector(containerId);
       const items = data[key];
       
-      if (container && items && Array.isArray(items)) {
+      if (container && items && Array.isArray(items) && items.length > 0) {
         container.innerHTML = '';
         items.forEach(item => {
           const el = document.createElement('div');
@@ -676,6 +670,9 @@ function displayDescription(description) {
           el.appendChild(span);
           container.appendChild(el);
         });
+        console.log(`✅ Loaded ${items.length} ${key} items`);
+      } else if (container) {
+        container.innerHTML = '<div class="empty-state"><p>No items listed</p></div>';
       }
     });
   }
@@ -686,14 +683,14 @@ function displayDescription(description) {
   function loadTimeline(timelineData) {
     const container = document.querySelector(SELECTORS.timelineContainer);
     
-    if (container && timelineData && Array.isArray(timelineData)) {
-      container.innerHTML = timelineData.map(item => {
+    if (container && timelineData && Array.isArray(timelineData) && timelineData.length > 0) {
+      container.innerHTML = timelineData.map((item, index) => {
         const div = document.createElement('div');
         div.className = 'timeline-item';
         
         const timeDiv = document.createElement('div');
         timeDiv.className = 'timeline-time';
-        timeDiv.textContent = item.time || '';
+        timeDiv.textContent = item.time || `Step ${index + 1}`;
         
         const contentDiv = document.createElement('div');
         contentDiv.className = 'timeline-content';
@@ -711,6 +708,9 @@ function displayDescription(description) {
         
         return div.outerHTML;
       }).join('');
+      console.log(`✅ Loaded ${timelineData.length} timeline items`);
+    } else if (container) {
+      container.innerHTML = '<div class="empty-state"><p>No itinerary available</p></div>';
     }
   }
 
@@ -720,7 +720,7 @@ function displayDescription(description) {
   function loadWhatToBring(items) {
     const list = document.querySelector(SELECTORS.whatToBringList);
     
-    if (list && items && Array.isArray(items)) {
+    if (list && items && Array.isArray(items) && items.length > 0) {
       list.innerHTML = items.map(item => {
         const li = document.createElement('li');
         const icon = document.createElement('i');
@@ -729,6 +729,9 @@ function displayDescription(description) {
         li.appendChild(document.createTextNode(' ' + item));
         return li.outerHTML;
       }).join('');
+      console.log(`✅ Loaded ${items.length} what-to-bring items`);
+    } else if (list) {
+      list.innerHTML = '<li style="opacity: 0.7;">No special items required</li>';
     }
   }
 
@@ -744,12 +747,17 @@ function displayDescription(description) {
     if (!container) return;
     
     container.innerHTML = Array(3).fill(`
-      <div class="review-skeleton">
-        <div class="skeleton-header">
-          <div class="skeleton-avatar"></div>
-          <div class="skeleton-text"></div>
+      <div class="review-card" style="opacity: 0.5;">
+        <div class="review-card-header">
+          <div class="review-card-user">
+            <div class="review-card-avatar" style="background: #3a3a3a;"></div>
+            <div>
+              <div style="width: 100px; height: 14px; background: #3a3a3a; border-radius: 4px; margin-bottom: 6px;"></div>
+              <div style="width: 80px; height: 12px; background: #3a3a3a; border-radius: 4px;"></div>
+            </div>
+          </div>
         </div>
-        <div class="skeleton-body"></div>
+        <div style="width: 100%; height: 40px; background: #3a3a3a; border-radius: 4px;"></div>
       </div>
     `).join('');
   }
@@ -771,9 +779,11 @@ function displayDescription(description) {
         
         updateStarsSummary(data.average || 0, data.count || 0);
         renderReviews();
+        console.log(`✅ Loaded ${tripReviews.length} reviews`);
       } else {
         updateStarsSummary(0, 0);
         renderReviews();
+        console.log('ℹ️ No reviews yet');
       }
       
       if (typeof auth !== 'undefined' && auth.currentUser) {
@@ -786,7 +796,7 @@ function displayDescription(description) {
         }
       }
     } catch (error) {
-      console.error('Failed to load reviews:', error);
+      console.error('❌ Failed to load reviews:', error);
       renderReviews();
     }
   }
@@ -796,19 +806,23 @@ function displayDescription(description) {
     if (container) {
       container.innerHTML = '';
       
-      for (let i = 0; i < Math.floor(average); i++) {
+      const fullStars = Math.floor(average);
+      const hasHalfStar = average % 1 >= 0.5;
+      
+      for (let i = 0; i < fullStars; i++) {
         const star = document.createElement('i');
         star.className = 'fas fa-star';
         container.appendChild(star);
       }
       
-      if (average % 1 >= 0.5) {
+      if (hasHalfStar) {
         const halfStar = document.createElement('i');
         halfStar.className = 'fas fa-star-half-alt';
         container.appendChild(halfStar);
       }
       
-      for (let i = container.children.length; i < 5; i++) {
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+      for (let i = 0; i < emptyStars; i++) {
         const emptyStar = document.createElement('i');
         emptyStar.className = 'far fa-star';
         container.appendChild(emptyStar);
@@ -838,15 +852,18 @@ function displayDescription(description) {
     
     container.innerHTML = tripReviews.map(review => {
       const date = new Date(review.date);
-      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-      const initial = (review.userName || 'U').charAt(0).toUpperCase();
+      const dateStr = isNaN(date.getTime()) ? 'N/A' : 
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      
+      const userName = review.userName || 'Traveler';
+      const initial = userName.charAt(0).toUpperCase();
       const photoUrl = getUserPhotoUrl(review.userId);
       
       const starsHtml = Array(5).fill().map((_, i) => {
         if (i < review.rating) {
-          return '<i class="fas fa-star" style="color:#f59e0b;"></i>';
+          return '<i class="fas fa-star"></i>';
         }
-        return '<i class="far fa-star" style="color:#989b9f;"></i>';
+        return '<i class="far fa-star"></i>';
       }).join('');
       
       return `
@@ -857,11 +874,11 @@ function displayDescription(description) {
                 <img src="${sanitizeHTML(photoUrl)}" 
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" 
                      loading="lazy" 
-                     alt="${sanitizeHTML(review.userName || 'User')}">
+                     alt="${sanitizeHTML(userName)}">
                 <div class="avatar-fallback" style="display:none;">${sanitizeHTML(initial)}</div>
               </div>
               <div>
-                <div class="review-card-user-name">${sanitizeHTML(review.userName || 'User')}</div>
+                <div class="review-card-user-name">${sanitizeHTML(userName)}</div>
                 <div class="review-card-stars">${starsHtml}</div>
               </div>
             </div>
@@ -886,6 +903,7 @@ function displayDescription(description) {
     if (modal) {
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
+      console.log('📝 Review modal opened');
     }
   }
 
@@ -894,6 +912,7 @@ function displayDescription(description) {
     if (modal) {
       modal.classList.add('hidden');
       document.body.style.overflow = '';
+      console.log('📝 Review modal closed');
     }
   }
 
@@ -915,6 +934,8 @@ function displayDescription(description) {
             s.classList.add('far');
           }
         });
+        
+        console.log('⭐ Rating selected:', rating);
       });
     });
     
@@ -962,7 +983,7 @@ function displayDescription(description) {
       const booking = snap.val();
       
       if (!booking || booking.uid !== auth.currentUser.uid) {
-        showToast('Invalid voucher number', 'error');
+        showToast('Invalid voucher number. Please check and try again.', 'error');
         return;
       }
       
@@ -996,10 +1017,12 @@ function displayDescription(description) {
       if (currentUserReview && currentData.reviews[currentUserReview.id]) {
         totalRating = totalRating - (currentData.reviews[currentUserReview.id].rating || 0) + rating;
         await reviewRef.child('reviews/' + currentUserReview.id).update(reviewData);
+        console.log('✏️ Review updated');
       } else {
         await reviewRef.child('reviews/' + Date.now()).set(reviewData);
         count++;
         totalRating += rating;
+        console.log('✅ New review added');
       }
       
       await reviewRef.update({
@@ -1014,7 +1037,7 @@ function displayDescription(description) {
       showToast('Thank you for your review!', 'success');
       
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error('❌ Error submitting review:', error);
       showToast('Failed to submit review. Please try again.', 'error');
     }
   }
@@ -1037,19 +1060,71 @@ function displayDescription(description) {
   }
 
   // ==========================================================================
+  // EVENT LISTENERS SETUP
+  // ==========================================================================
+  function setupEventListeners() {
+    // Open review modal
+    const openReviewBtn = document.querySelector(SELECTORS.openReviewBtn);
+    if (openReviewBtn) {
+      openReviewBtn.addEventListener('click', openReviewModal);
+      console.log('✅ Review button listener attached');
+    }
+    
+    // Submit review
+    const submitReviewBtn = document.querySelector(SELECTORS.submitReviewBtn);
+    if (submitReviewBtn) {
+      submitReviewBtn.addEventListener('click', submitReview);
+      console.log('✅ Submit review button listener attached');
+    }
+    
+    // Close review modal (overlay)
+    const reviewOverlay = document.querySelector(`${SELECTORS.reviewModal} ${SELECTORS.reviewOverlay}`);
+    if (reviewOverlay) {
+      reviewOverlay.addEventListener('click', closeReviewModal);
+    }
+    
+    // Close review modal (close button)
+    const closeBtns = document.querySelectorAll(`${SELECTORS.reviewModal} ${SELECTORS.closePopupBtn}`);
+    closeBtns.forEach(btn => {
+      btn.addEventListener('click', closeReviewModal);
+    });
+    
+    // Cancel button in review modal
+    const cancelBtn = document.querySelector(SELECTORS.cancelReviewBtn);
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeReviewModal);
+    }
+    
+    // Keyboard support - close modal on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.querySelector(SELECTORS.reviewModal);
+        if (modal && !modal.classList.contains('hidden')) {
+          closeReviewModal();
+        }
+      }
+    });
+    
+    console.log('✅ All event listeners attached');
+  }
+
+  // ==========================================================================
   // CLEANUP
   // ==========================================================================
   function cleanup() {
     if (currencyChangeHandler) {
       window.removeEventListener('currencyChanged', currencyChangeHandler);
+      console.log('🔄 Currency listener removed');
     }
     
     if (swiper) {
       swiper.destroy(true, true);
       swiper = null;
+      console.log('🔄 Swiper destroyed');
     }
     
     stopVideo();
+    console.log('✅ Cleanup complete');
   }
 
   // ==========================================================================
@@ -1057,12 +1132,14 @@ function displayDescription(description) {
   // ==========================================================================
   async function init() {
     if (!tripSlug) {
+      console.error('❌ No trip ID in URL');
       showToast('No trip specified in URL.', 'error');
       return;
     }
     
     console.log('🚀 Initializing Trip Display System');
     console.log('📋 Trip Slug:', tripSlug);
+    console.log('📱 Mobile:', isMobile());
     
     // Initialize currency
     initCurrency();
@@ -1070,20 +1147,8 @@ function displayDescription(description) {
     // Setup stars selector
     setupStars();
     
-    // Attach event listeners
-    const openReviewBtn = document.querySelector(SELECTORS.openReviewBtn);
-    if (openReviewBtn) openReviewBtn.addEventListener('click', openReviewModal);
-    
-    const submitReviewBtn = document.querySelector(SELECTORS.submitReviewBtn);
-    if (submitReviewBtn) submitReviewBtn.addEventListener('click', submitReview);
-    
-    const reviewOverlay = document.querySelector(`${SELECTORS.reviewModal} .services-popup-overlay`);
-    if (reviewOverlay) reviewOverlay.addEventListener('click', closeReviewModal);
-    
-    // إغلاق المودال بأزرار الإغلاق
-    document.querySelectorAll(`${SELECTORS.reviewModal} .close-popup-btn`).forEach(btn => {
-      btn.addEventListener('click', closeReviewModal);
-    });
+    // Setup event listeners
+    setupEventListeners();
     
     // Listen for auth changes
     if (typeof auth !== 'undefined') {
@@ -1091,18 +1156,33 @@ function displayDescription(description) {
         if (user) {
           currentUserUid = user.uid;
           console.log('👤 User authenticated:', user.uid);
+        } else {
+          currentUserUid = '';
+          console.log('👤 User signed out');
         }
       });
     }
     
     // Fetch trip data and reviews in parallel
-    await Promise.all([
-      fetchAllTripData(),
-      tripSlug ? loadReviews() : Promise.resolve()
-    ]);
+    try {
+      await Promise.all([
+        fetchAllTripData(),
+        tripSlug ? loadReviews() : Promise.resolve()
+      ]);
+      console.log('✅ All data loaded successfully');
+    } catch (error) {
+      console.error('❌ Error during initialization:', error);
+    }
     
     // Add cleanup on page unload
     window.addEventListener('beforeunload', cleanup);
+    
+    // Handle page visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopVideo();
+      }
+    });
     
     console.log('✅ Trip Display & Reviews System Ready');
   }
@@ -1118,7 +1198,10 @@ function displayDescription(description) {
     getTripSlug: () => tripSlug,
     formatPrice,
     showToast,
-    cleanup
+    cleanup,
+    refreshReviews: loadReviews,
+    openReviewModal,
+    closeReviewModal
   };
 })();
 
