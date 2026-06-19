@@ -1,6 +1,5 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// Enhanced with Toggle Controls Feature
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -103,7 +102,6 @@ const TripDisplay = (() => {
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       border-left: 4px solid ${type === 'success' ? '#22c55e' : '#ef4444'};
       white-space: nowrap;
-      animation: tripSlideUp 0.3s ease;
     `;
     toast.textContent = message;
     document.body.appendChild(toast);
@@ -167,30 +165,18 @@ const TripDisplay = (() => {
   // DEPENDENCY CHECKS
   // ==========================================================================
   function checkFirebaseDependencies() {
-    if (typeof auth === 'undefined') {
-      console.error('❌ Firebase Auth not loaded');
-      return false;
-    }
-    if (typeof db === 'undefined') {
-      console.error('❌ Firebase Database not loaded');
-      return false;
-    }
-    return true;
+    return typeof auth !== 'undefined' && typeof db !== 'undefined';
   }
 
   function checkSwiperDependency() {
-    if (typeof Swiper === 'undefined') {
-      console.error('❌ Swiper library not loaded');
-      return false;
-    }
-    return true;
+    return typeof Swiper !== 'undefined';
   }
 
   // ==========================================================================
   // CONTROLS TOGGLE
   // ==========================================================================
   function hideControls() {
-    const swiperEl = document.querySelector(SELECTORS.swiperContainer);
+    const swiperEl = document.querySelector('.swiper');
     if (swiperEl) {
       swiperEl.classList.add('swiper-controls-hidden');
     }
@@ -198,13 +184,12 @@ const TripDisplay = (() => {
   }
 
   function showControls() {
-    const swiperEl = document.querySelector(SELECTORS.swiperContainer);
+    const swiperEl = document.querySelector('.swiper');
     if (swiperEl) {
       swiperEl.classList.remove('swiper-controls-hidden');
     }
     controlsVisible = true;
     
-    // إخفاء تلقائي بعد 3 ثواني
     clearTimeout(hideControlsTimeout);
     hideControlsTimeout = setTimeout(hideControls, 3000);
   }
@@ -232,7 +217,7 @@ const TripDisplay = (() => {
 
   async function fetchAllTripData() {
     if (!checkFirebaseDependencies()) {
-      showToast('System not fully loaded. Please refresh the page.', 'error');
+      showToast('System not fully loaded.', 'error');
       return {};
     }
 
@@ -257,7 +242,7 @@ const TripDisplay = (() => {
         
         displayTripInfo(currentTrip);
         displayDescription(currentTrip.description);
-        await loadMediaContent(currentTrip.media);
+        initGallery(currentTrip.media);
         loadIncludedNotIncluded(currentTrip);
         loadTimeline(currentTrip.timeline);
         loadWhatToBring(currentTrip.whatToBring);
@@ -266,7 +251,7 @@ const TripDisplay = (() => {
       
       return data;
     } catch (error) {
-      console.error('❌ Error fetching trip data:', error);
+      console.error('Error fetching trip data:', error);
       showToast('Failed to load trip data.', 'error');
       return {};
     } finally {
@@ -306,10 +291,7 @@ const TripDisplay = (() => {
           const trimmed = p.trim();
           if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
             const text = trimmed.replace(/^!/, '').replace(/^IMPORTANT:/, '').trim();
-            return `<div class="highlight-note">
-              <i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>
-              ${sanitizeHTML(text)}
-            </div>`;
+            return `<div class="highlight-note"><i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>${sanitizeHTML(text)}</div>`;
           }
           return `<p>${sanitizeHTML(trimmed)}</p>`;
         })
@@ -330,168 +312,143 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
-  // MEDIA GALLERY
+  // GALLERY - FIXED VERSION
   // ==========================================================================
+  
   function extractYouTubeId(url) {
     if (!url) return null;
-    
     url = url.trim();
     
-    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
-      return url;
-    }
+    // Direct ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
     
+    // Extract from URL
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
-      /^([a-zA-Z0-9_-]{11})$/
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
     ];
     
     for (const pattern of patterns) {
       const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
+      if (match && match[1]) return match[1];
     }
     
     return null;
   }
 
-  function createImageSlide(imageUrl, index) {
+  function createSlideElement(type, data, index) {
     const slide = document.createElement('div');
     slide.className = 'swiper-slide';
-    slide.setAttribute('data-type', 'image');
+    if (type === 'video') slide.classList.add('swiper-slide-video');
+    
+    slide.setAttribute('data-type', type);
     slide.setAttribute('data-index', index);
     
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.alt = `Photo ${index + 1}`;
-    img.loading = 'lazy';
-    
-    slide.appendChild(img);
-    return slide;
-  }
-
-  function createVideoSlide(videoData, index) {
-    const videoUrl = videoData.videoUrl || videoData.url || '';
-    const videoId = extractYouTubeId(videoUrl);
-    
-    if (!videoId) {
-      console.error('❌ Invalid video URL:', videoUrl);
-      return null;
+    if (type === 'video') {
+      const videoUrl = data.videoUrl || data.url || '';
+      const videoId = extractYouTubeId(videoUrl);
+      
+      if (!videoId) return null;
+      
+      const thumbnailUrl = data.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      
+      slide.setAttribute('data-video-id', videoId);
+      slide.setAttribute('data-thumbnail', thumbnailUrl);
+      
+      // Thumbnail image
+      const img = document.createElement('img');
+      img.src = thumbnailUrl;
+      img.alt = `Video ${index + 1}`;
+      img.loading = 'lazy';
+      slide.appendChild(img);
+      
+      // Play button
+      const playBtn = document.createElement('div');
+      playBtn.className = 'play-button';
+      playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      playBtn.onclick = function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (swiper && !swiper.animating) {
+          playVideoInSlide(slide);
+        }
+      };
+      slide.appendChild(playBtn);
+      
+      // Click on slide
+      slide.onclick = function(e) {
+        if (e.target === playBtn || e.target.closest('.play-button')) return;
+        if (swiper && !swiper.animating) {
+          playVideoInSlide(slide);
+        }
+      };
+      
+    } else {
+      // Image slide
+      const img = document.createElement('img');
+      img.src = data;
+      img.alt = `Photo ${index + 1}`;
+      img.loading = 'lazy';
+      slide.appendChild(img);
     }
-    
-    const thumbnailUrl = videoData.thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    
-    const slide = document.createElement('div');
-    slide.className = 'swiper-slide swiper-slide-video';
-    slide.setAttribute('data-type', 'video');
-    slide.setAttribute('data-video-id', videoId);
-    slide.setAttribute('data-thumbnail', thumbnailUrl);
-    slide.setAttribute('data-index', index);
-    
-    const img = document.createElement('img');
-    img.src = thumbnailUrl;
-    img.alt = `Video ${index + 1}`;
-    img.loading = 'lazy';
-    img.className = 'video-thumbnail';
-    
-    const playBtn = document.createElement('div');
-    playBtn.className = 'play-button';
-    playBtn.innerHTML = '<i class="fas fa-play"></i>';
-    playBtn.setAttribute('aria-label', 'Play video');
-    
-    slide.appendChild(img);
-    slide.appendChild(playBtn);
-    
-    slide.addEventListener('click', function(e) {
-      if (swiper && swiper.animating) return;
-      e.preventDefault();
-      e.stopPropagation();
-      playVideoInSlide(slide);
-    });
     
     return slide;
   }
 
   function playVideoInSlide(slide) {
+    if (!slide) return;
+    
     const videoId = slide.getAttribute('data-video-id');
+    if (!videoId) return;
     
-    if (!videoId) {
-      console.error('❌ No video ID');
-      return;
-    }
-    
+    // Stop any playing video
     stopAllVideos();
     
     currentVideoSlide = slide;
     
+    // Pause swiper autoplay
     if (swiper && swiper.autoplay) {
       swiper.autoplay.stop();
     }
     
-    // إخفاء عناصر التحكم
+    // Hide controls
     hideControls();
     
+    // Clear slide
     slide.innerHTML = '';
     
+    // Create iframe
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1`;
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    iframe.title = 'YouTube video player';
-    iframe.style.cssText = `
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: none;
-    `;
+    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
     
-    // زر الإغلاق
+    // Close button
     const closeBtn = document.createElement('div');
     closeBtn.className = 'video-close-btn';
     closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-    closeBtn.setAttribute('aria-label', 'Close video');
-    closeBtn.addEventListener('click', (e) => {
+    closeBtn.onclick = function(e) {
       e.stopPropagation();
       e.preventDefault();
       stopVideoInSlide(slide);
-    });
+    };
     
-    // زر إظهار/إخفاء عناصر التحكم
+    // Toggle controls button
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'video-toggle-controls';
     toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
-    toggleBtn.setAttribute('aria-label', 'Toggle controls');
-    toggleBtn.addEventListener('click', (e) => {
+    toggleBtn.onclick = function(e) {
       e.stopPropagation();
       e.preventDefault();
       toggleControls();
-      
-      // تحديث نص الزر
-      if (controlsVisible) {
-        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Controls';
-      } else {
-        toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
-      }
-    });
+      toggleBtn.innerHTML = controlsVisible ? 
+        '<i class="fas fa-eye-slash"></i> Hide Controls' : 
+        '<i class="fas fa-eye"></i> Show Controls';
+    };
     
     slide.appendChild(iframe);
     slide.appendChild(closeBtn);
     slide.appendChild(toggleBtn);
-    
-    // إظهار الأزرار عند تحريك الماوس
-    slide.addEventListener('mousemove', () => {
-      closeBtn.style.opacity = '1';
-      closeBtn.style.transform = 'scale(1)';
-      toggleBtn.style.opacity = '1';
-      
-      clearTimeout(slide._hideButtonsTimeout);
-      slide._hideButtonsTimeout = setTimeout(() => {
-        closeBtn.style.opacity = '0';
-        closeBtn.style.transform = 'scale(0.8)';
-        toggleBtn.style.opacity = '0';
-      }, 2000);
-    });
   }
 
   function stopVideoInSlide(slide) {
@@ -503,25 +460,34 @@ const TripDisplay = (() => {
     
     if (!videoId || !thumbnailUrl) return;
     
-    // إظهار عناصر التحكم
+    // Show controls
     showControls();
     
+    // Clear slide
     slide.innerHTML = '';
     
+    // Restore thumbnail
     const img = document.createElement('img');
     img.src = thumbnailUrl;
     img.alt = `Video ${parseInt(index) + 1}`;
     img.loading = 'lazy';
-    img.className = 'video-thumbnail';
     
+    // Restore play button
     const playBtn = document.createElement('div');
     playBtn.className = 'play-button';
     playBtn.innerHTML = '<i class="fas fa-play"></i>';
-    playBtn.setAttribute('aria-label', 'Play video');
+    playBtn.onclick = function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (swiper && !swiper.animating) {
+        playVideoInSlide(slide);
+      }
+    };
     
     slide.appendChild(img);
     slide.appendChild(playBtn);
     
+    // Resume swiper autoplay
     if (swiper && swiper.autoplay) {
       swiper.autoplay.start();
     }
@@ -541,16 +507,14 @@ const TripDisplay = (() => {
     
     thumbsContainer.innerHTML = '';
     
-    const slides = document.querySelectorAll(`${SELECTORS.swiperWrapper} .swiper-slide`);
-    
-    if (slides.length === 0) return;
+    const slides = document.querySelectorAll('.swiper-slide');
+    if (!slides.length) return;
     
     slides.forEach((slide, index) => {
       const type = slide.getAttribute('data-type');
       const isVideo = type === 'video';
       
       let thumbnailSrc;
-      
       if (isVideo) {
         thumbnailSrc = slide.getAttribute('data-thumbnail');
       } else {
@@ -560,161 +524,150 @@ const TripDisplay = (() => {
       
       if (!thumbnailSrc) return;
       
-      const thumbWrapper = document.createElement('div');
-      thumbWrapper.className = 'thumbnail-wrapper';
-      thumbWrapper.setAttribute('data-index', index);
-      thumbWrapper.setAttribute('data-type', type);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'thumbnail-wrapper';
+      wrapper.setAttribute('data-index', index);
+      wrapper.setAttribute('data-type', type || 'image');
       
-      const thumbImg = document.createElement('img');
-      thumbImg.src = thumbnailSrc;
-      thumbImg.alt = `${isVideo ? 'Video' : 'Photo'} ${index + 1}`;
-      thumbImg.loading = 'lazy';
-      thumbImg.className = 'thumbnail-image';
+      const img = document.createElement('img');
+      img.src = thumbnailSrc;
+      img.alt = `Thumbnail ${index + 1}`;
+      img.loading = 'lazy';
+      img.className = 'thumbnail-image';
       
-      thumbWrapper.appendChild(thumbImg);
+      wrapper.appendChild(img);
       
       if (isVideo) {
-        const videoIndicator = document.createElement('div');
-        videoIndicator.className = 'video-indicator';
-        videoIndicator.innerHTML = '<i class="fas fa-play"></i>';
-        thumbWrapper.appendChild(videoIndicator);
+        const indicator = document.createElement('div');
+        indicator.className = 'video-indicator';
+        indicator.innerHTML = '<i class="fas fa-play"></i>';
+        wrapper.appendChild(indicator);
         
-        const duration = document.createElement('span');
-        duration.className = 'video-duration';
-        duration.textContent = 'VIDEO';
-        thumbWrapper.appendChild(duration);
+        const badge = document.createElement('span');
+        badge.className = 'video-duration';
+        badge.textContent = 'VIDEO';
+        wrapper.appendChild(badge);
       }
       
-      thumbWrapper.addEventListener('click', () => {
+      wrapper.onclick = function() {
         if (swiper) {
           stopAllVideos();
           swiper.slideTo(index);
           updateActiveThumbnail(index);
         }
-      });
+      };
       
-      thumbsContainer.appendChild(thumbWrapper);
+      thumbsContainer.appendChild(wrapper);
     });
     
     updateActiveThumbnail(0);
   }
 
   function updateActiveThumbnail(index) {
-    const thumbWrappers = document.querySelectorAll(`${SELECTORS.thumbnailsOverlay} .thumbnail-wrapper`);
-    
-    thumbWrappers.forEach(wrapper => {
-      const wrapperIndex = parseInt(wrapper.getAttribute('data-index'));
-      
-      if (wrapperIndex === index) {
-        wrapper.classList.add('active');
-        wrapper.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'nearest', 
-          inline: 'center' 
-        });
-      } else {
-        wrapper.classList.remove('active');
-      }
+    const wrappers = document.querySelectorAll('.thumbnail-wrapper');
+    wrappers.forEach(w => {
+      const wIndex = parseInt(w.getAttribute('data-index'));
+      w.classList.toggle('active', wIndex === index);
     });
   }
 
-  async function loadMediaContent(media) {
-    if (!checkSwiperDependency()) return;
+  function initGallery(media) {
+    console.log('🎬 Initializing gallery...');
     
-    const wrapper = document.querySelector(SELECTORS.swiperWrapper);
-    const thumbsContainer = document.querySelector(SELECTORS.thumbnailsOverlay);
+    // Check Swiper
+    if (!checkSwiperDependency()) {
+      console.error('❌ Swiper not loaded');
+      return;
+    }
     
-    if (!wrapper) return;
+    const swiperEl = document.querySelector('.swiper');
+    const wrapper = document.querySelector('.swiper-wrapper');
     
-    wrapper.innerHTML = '';
-    if (thumbsContainer) thumbsContainer.innerHTML = '';
+    if (!swiperEl || !wrapper) {
+      console.error('❌ Swiper elements not found');
+      return;
+    }
     
+    // Destroy existing swiper
     if (swiper) {
       stopAllVideos();
       swiper.destroy(true, true);
       swiper = null;
     }
     
-    let slideIndex = 0;
-    const allSlides = [];
+    // Clear wrapper
+    wrapper.innerHTML = '';
     
-    if (media?.images && Array.isArray(media.images) && media.images.length > 0) {
-      media.images.forEach((imageUrl) => {
-        if (!imageUrl) return;
-        const slide = createImageSlide(imageUrl, slideIndex);
-        wrapper.appendChild(slide);
-        allSlides.push({ type: 'image', index: slideIndex });
-        slideIndex++;
-      });
-    }
+    let slideCount = 0;
     
-    if (media?.videos && Array.isArray(media.videos) && media.videos.length > 0) {
-      media.videos.forEach((videoData) => {
-        const slide = createVideoSlide(videoData, slideIndex);
+    // Add images
+    if (media?.images && Array.isArray(media.images)) {
+      media.images.forEach((imgSrc, i) => {
+        if (!imgSrc) return;
+        const slide = createSlideElement('image', imgSrc, slideCount);
         if (slide) {
           wrapper.appendChild(slide);
-          allSlides.push({ type: 'video', index: slideIndex });
-          slideIndex++;
+          slideCount++;
         }
       });
     }
     
-    if (allSlides.length === 0) {
-      const defaultSlide = document.createElement('div');
-      defaultSlide.className = 'swiper-slide';
-      defaultSlide.setAttribute('data-type', 'placeholder');
-      defaultSlide.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #fff;
-        font-size: 18px;
-      `;
-      defaultSlide.innerHTML = `
-        <div style="text-align:center;">
-          <i class="fas fa-image" style="font-size:48px;opacity:0.3;margin-bottom:16px;display:block;"></i>
-          <p style="opacity:0.7;">No images available</p>
-        </div>
-      `;
-      wrapper.appendChild(defaultSlide);
+    // Add videos
+    if (media?.videos && Array.isArray(media.videos)) {
+      media.videos.forEach((videoData, i) => {
+        const slide = createSlideElement('video', videoData, slideCount);
+        if (slide) {
+          wrapper.appendChild(slide);
+          slideCount++;
+        }
+      });
     }
     
+    // Add placeholder if no slides
+    if (slideCount === 0) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'swiper-slide';
+      placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;background:#1a1a2e;color:#fff;';
+      placeholder.innerHTML = '<div style="text-align:center;"><i class="fas fa-image" style="font-size:48px;opacity:0.3;"></i><p style="margin-top:16px;">No images available</p></div>';
+      wrapper.appendChild(placeholder);
+      slideCount = 1;
+    }
+    
+    // Initialize Swiper
     try {
-      swiper = new Swiper(SELECTORS.swiperContainer, {
+      swiper = new Swiper('.swiper', {
         slidesPerView: 1,
-        loop: allSlides.length > 1,
+        loop: slideCount > 1,
         spaceBetween: 0,
         speed: 400,
         
         pagination: {
-          el: SELECTORS.swiperPagination,
+          el: '.swiper-pagination',
           clickable: true,
         },
         
         navigation: {
-          nextEl: SELECTORS.swiperNext,
-          prevEl: SELECTORS.swiperPrev,
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         },
         
         on: {
           init: function() {
+            console.log('✅ Swiper initialized with', slideCount, 'slides');
             createThumbnails();
           },
-          
           slideChange: function() {
             stopAllVideos();
             updateActiveThumbnail(this.realIndex);
           },
-          
           slideChangeTransitionStart: function() {
             stopAllVideos();
           }
         },
       });
-      
     } catch (error) {
-      console.error('❌ Swiper error:', error);
+      console.error('❌ Swiper init error:', error);
+      // Create thumbnails even if swiper fails
       createThumbnails();
     }
   }
@@ -835,7 +788,7 @@ const TripDisplay = (() => {
         }
       }
     } catch (error) {
-      console.error('❌ Failed to load reviews:', error);
+      console.error('Failed to load reviews:', error);
       renderReviews();
     }
   }
@@ -849,18 +802,9 @@ const TripDisplay = (() => {
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     
     let starsHTML = '';
-    
-    for (let i = 0; i < fullStars; i++) {
-      starsHTML += '<i class="fas fa-star"></i>';
-    }
-    
-    if (hasHalfStar) {
-      starsHTML += '<i class="fas fa-star-half-alt"></i>';
-    }
-    
-    for (let i = 0; i < emptyStars; i++) {
-      starsHTML += '<i class="far fa-star"></i>';
-    }
+    for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star"></i>';
+    if (hasHalfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
+    for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star"></i>';
     
     container.innerHTML = starsHTML;
     
@@ -1061,16 +1005,22 @@ const TripDisplay = (() => {
       showToast('Thank you for your review!', 'success');
       
     } catch (error) {
-      console.error('❌ Error submitting review:', error);
+      console.error('Error submitting review:', error);
       showToast('Failed to submit review.', 'error');
     }
   }
 
   function resetReviewForm() {
-    document.querySelector(SELECTORS.voucherInput).value = '';
-    document.querySelector(SELECTORS.commentInput).value = '';
-    document.querySelector(SELECTORS.ratingValue).value = '0';
-    document.querySelector(SELECTORS.charCount).textContent = '0';
+    ['voucherInput', 'commentInput'].forEach(id => {
+      const el = document.querySelector(SELECTORS[id]);
+      if (el) el.value = '';
+    });
+    
+    const ratingEl = document.querySelector(SELECTORS.ratingValue);
+    if (ratingEl) ratingEl.value = '0';
+    
+    const charCountEl = document.querySelector(SELECTORS.charCount);
+    if (charCountEl) charCountEl.textContent = '0';
     
     document.querySelectorAll(`${SELECTORS.starSelector} i`).forEach(s => {
       s.classList.remove('active', 'fas');
@@ -1092,6 +1042,7 @@ const TripDisplay = (() => {
     
     document.querySelector(SELECTORS.cancelReviewBtn)?.addEventListener('click', closeReviewModal);
     
+    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         const modal = document.querySelector(SELECTORS.reviewModal);
@@ -1100,23 +1051,16 @@ const TripDisplay = (() => {
         }
       }
       
-      if (!swiper) return;
-      
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        stopAllVideos();
-        swiper.slidePrev();
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        stopAllVideos();
-        swiper.slideNext();
-      }
-    });
-    
-    // النقر على السلايدر لإظهار/إخفاء التحكم
-    document.querySelector(SELECTORS.swiperContainer)?.addEventListener('click', (e) => {
-      if (!e.target.closest('.play-button') && !e.target.closest('iframe')) {
-        showControls();
+      if (swiper && document.activeElement === document.body) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stopAllVideos();
+          swiper.slidePrev();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          stopAllVideos();
+          swiper.slideNext();
+        }
       }
     });
   }
@@ -1136,8 +1080,6 @@ const TripDisplay = (() => {
       swiper.destroy(true, true);
       swiper = null;
     }
-    
-    document.querySelector(SELECTORS.thumbnailsOverlay).innerHTML = '';
   }
 
   // ==========================================================================
@@ -1148,6 +1090,8 @@ const TripDisplay = (() => {
       showToast('No trip specified in URL.', 'error');
       return;
     }
+    
+    console.log('🚀 Trip Display Initializing...');
     
     initCurrency();
     setupStars();
@@ -1168,6 +1112,8 @@ const TripDisplay = (() => {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopAllVideos();
     });
+    
+    console.log('✅ Trip Display Ready');
   }
 
   // ==========================================================================
@@ -1182,13 +1128,11 @@ const TripDisplay = (() => {
     formatPrice,
     showToast,
     cleanup,
-    refreshReviews: loadReviews,
-    openReviewModal,
-    closeReviewModal
+    refreshReviews: loadReviews
   };
 })();
 
-// Auto-initialize
+// Start when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', TripDisplay.init);
 } else {
