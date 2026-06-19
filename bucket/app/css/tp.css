@@ -189,7 +189,8 @@
   transition: var(--transition); 
   opacity: 0; 
   z-index: 5;
-  top: 50% !important;
+  top: auto !important;
+  bottom: 10px !important;
   transform: translateY(-50%);
 }
 
