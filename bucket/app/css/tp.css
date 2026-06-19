@@ -926,6 +926,12 @@
    MOBILE RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
+.thumbnails-overlay { 
+    right: auto;      /* إلغاء المحاذاة لليمين */
+    left: 10px;       /* محاذاة لليسار */
+    gap: 6px; 
+  }
+  
   .tour-booking-container { 
     grid-template-columns: 1fr; 
     gap: 0; 
