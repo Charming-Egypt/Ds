@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// Complete with Custom Video Controller
+// Complete with Custom Video Controller & Swiper Toggle
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -177,6 +177,19 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
+  // SWIPER CONTROLS TOGGLE
+  // ==========================================================================
+  function hideSwiperControls() {
+    const swiperEl = document.querySelector('.swiper');
+    if (swiperEl) swiperEl.classList.add('swiper-controls-hidden');
+  }
+
+  function showSwiperControls() {
+    const swiperEl = document.querySelector('.swiper');
+    if (swiperEl) swiperEl.classList.remove('swiper-controls-hidden');
+  }
+
+  // ==========================================================================
   // CUSTOM VIDEO PLAYER
   // ==========================================================================
   function playVideo(slide) {
@@ -190,6 +203,9 @@ const TripDisplay = (() => {
 
     if (swiper && swiper.autoplay) swiper.autoplay.stop();
     if (swiper && swiper.allowTouchMove !== undefined) swiper.allowTouchMove = false;
+
+    // Hide swiper controls when video starts
+    hideSwiperControls();
 
     slide.innerHTML = '';
 
@@ -242,27 +258,26 @@ const TripDisplay = (() => {
     fullscreenBtn.className = 'vc-btn vc-fullscreen';
     fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
 
+    // Toggle Swiper Controls
+    const toggleSwiperBtn = document.createElement('button');
+    toggleSwiperBtn.className = 'vc-toggle-swiper';
+    toggleSwiperBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
+
     // Close
     const closeBtn = document.createElement('button');
     closeBtn.className = 'vc-btn vc-close';
     closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-
-    // Assemble
-    controls.appendChild(playPauseBtn);
-    controls.appendChild(progressWrap);
-    controls.appendChild(timeDisplay);
-    controls.appendChild(volumeBtn);
-    controls.appendChild(fullscreenBtn);
-    controls.appendChild(closeBtn);
 
     // Big play button
     const bigBtn = document.createElement('div');
     bigBtn.className = 'vc-big-play';
     bigBtn.innerHTML = '<i class="fas fa-pause"></i>';
 
+    // Assemble
     wrapper.appendChild(iframe);
     wrapper.appendChild(overlay);
     wrapper.appendChild(bigBtn);
+    wrapper.appendChild(toggleSwiperBtn);
     wrapper.appendChild(controls);
     slide.appendChild(wrapper);
 
@@ -330,11 +345,13 @@ const TripDisplay = (() => {
 
     function showControlsTemp() {
       controls.classList.add('visible');
+      toggleSwiperBtn.style.opacity = '1';
       bigBtn.classList.add('shift-up');
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
         if (isPlaying) {
           controls.classList.remove('visible');
+          toggleSwiperBtn.style.opacity = '0';
           bigBtn.classList.remove('shift-up');
         }
       }, 3000);
@@ -401,6 +418,23 @@ const TripDisplay = (() => {
       } catch (e) {}
     });
 
+    // Toggle Swiper Controls
+    toggleSwiperBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const swiperEl = document.querySelector('.swiper');
+      if (!swiperEl) return;
+      
+      const isHidden = swiperEl.classList.contains('swiper-controls-hidden');
+      
+      if (isHidden) {
+        showSwiperControls();
+        toggleSwiperBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Controls';
+      } else {
+        hideSwiperControls();
+        toggleSwiperBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
+      }
+    });
+
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       stopVideo(slide);
@@ -446,18 +480,9 @@ const TripDisplay = (() => {
       clearTimeout(hideTimer);
       if (player) { try { player.destroy(); } catch (e) {} }
       if (swiper && swiper.allowTouchMove !== undefined) swiper.allowTouchMove = true;
+      // Show swiper controls again
+      showSwiperControls();
     };
-
-    // Init
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      const orig = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = function() {
-        if (orig) orig();
-        initPlayer();
-      };
-    }
   }
 
   function stopVideo(slide) {
