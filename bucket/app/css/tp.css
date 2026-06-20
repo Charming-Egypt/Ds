@@ -268,7 +268,23 @@
   background: #000; z-index: 10;
 }
 
-/* Close Button */
+/* Orange Theme */
+.plyr--full-ui input[type=range] {
+  color: #FF6B35 !important;
+}
+
+
+
+
+.plyr--video .plyr__control:focus-visible, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true] {
+    background:  #FF6B35 !important;
+    padding:10px;
+    border-radius:50%;
+    color: var(--plyr-video-control-color-hover, #fff);
+}
+
+
+/* Fix video close button - add this right after .video-close-btn */
 .video-close-btn {
   position: absolute;
   top: 16px;
@@ -276,19 +292,17 @@
   z-index: 100;
   width: 44px;
   height: 44px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   transition: all 0.3s ease;
-  opacity: 0;
-  outline: none;
 }
 
 .video-player-container:hover .video-close-btn {
@@ -299,109 +313,34 @@
   background: #ff0000;
   border-color: #ff0000;
   transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
 }
 
-.video-close-btn:active {
-  transform: scale(0.95);
-}
 
-/* Plyr Overrides */
-.plyr {
-  width: 100% !important;
-  height: 100% !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-}
 
-.plyr__video-wrapper {
-  height: 100% !important;
-}
-
-.plyr iframe {
-  height: 100% !important;
-}
-
-.plyr__poster {
-  background-color: #000 !important;
-}
-
-/* Orange Theme */
-.plyr--full-ui input[type=range] {
-  color: #FF6B35 !important;
-}
-
-.plyr__control--overlaid {
-  background: #FF6B35 !important;
-  border: 2px solid #FF6B35 !important;
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.5) !important;
-}
-
-.plyr__control--overlaid svg {
-  color: #fff !important;
-  fill: #fff !important;
-}
-
-.plyr__control--overlaid:hover {
-  background: #FFA630 !important;
-  border-color: #FFA630 !important;
-}
-
-.plyr__progress__played {
-  background: #FF6B35 !important;
-}
-
-.plyr__badge {
-  background: #FF6B35 !important;
-}
-
-.plyr--video .plyr__control:hover,
-.plyr--video .plyr__control[aria-expanded="true"] {
-  background: rgba(255, 107, 53, 0.3) !important;
-  color: #fff !important;
-}
-
-.plyr__menu__container .plyr__control[aria-checked="true"]::before {
-  background: #FF6B35 !important;
-}
-
-.plyr__menu__container button:hover {
-  background: rgba(255, 107, 53, 0.15) !important;
-  color: #FF6B35 !important;
-}
-
-/* Mobile */
+/* Mobile - Padding bottom for curved gallery */
 @media (max-width: 768px) {
-  .video-close-btn {
-    width: 40px;
-    height: 40px;
-    top: 12px;
-    right: 12px;
-    font-size: 18px;
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.7);
-  }
 
+  
+  /* Plyr controls padding */
   .plyr--video .plyr__controls {
     padding-left: 16px !important;
     padding-right: 16px !important;
     padding-bottom: 16px !important;
   }
-
-  .swiper-button-next,
-  .swiper-button-prev {
-    bottom: 40px !important;
+  
+  
+  /* Navigation buttons */
+  .swiper-button-next, .swiper-button-prev {
+    bottom: 40px !important; /* يطلعوا فوق */
   }
-
+  
   .swiper-pagination {
     bottom: 35px !important;
   }
-
+  
+  /* Thumbnails */
   .thumbnails-overlay {
-    left: 10px;
-    right: auto;
-    gap: 6px;
+    left: 10px; right: auto; gap: 6px;
   }
 }
 
