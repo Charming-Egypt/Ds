@@ -314,8 +314,13 @@
 /* Orange Theme */
 .plyr--full-ui input[type=range] {
   color: #FF6B35 !important;
-  
 }
+
+.plyr--video .plyr__control:focus-visible, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true]
+Specificity: (0,3,0)
+ {
+background:#FF6B35 !important;
+ }
 
 /* Mobile - Padding bottom for curved gallery */
 @media (max-width: 768px) {
