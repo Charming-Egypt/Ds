@@ -27,19 +27,6 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
   --transition: all 0.2s ease;
-  
-  /* Plyr Custom Colors */
-  --plyr-color-main: #FF6B35;
-  --plyr-video-controls-background: linear-gradient(transparent, rgba(0,0,0,0.95));
-  --plyr-video-control-color: #ffffff;
-  --plyr-video-control-color-hover: #ffffff;
-  --plyr-range-fill-background: #FF6B35;
-  --plyr-range-track-background: rgba(255,255,255,0.2);
-  --plyr-range-thumb-background: #ffffff;
-  --plyr-menu-background: rgba(26,31,53,0.95);
-  --plyr-menu-color: #ffffff;
-  --plyr-tooltip-background: rgba(0,0,0,0.9);
-  --plyr-tooltip-color: #ffffff;
 }
 
 /* Reset */
@@ -160,16 +147,14 @@
 .thumbnail-wrapper[data-type="video"].active { border-color: #ff0000; box-shadow: 0 0 0 2px rgba(255,0,0,0.3); }
 
 /* ==========================================================================
-   CUSTOM PLYR VIDEO PLAYER - LUXURY THEME
+   CUSTOM PLYR VIDEO PLAYER
    ========================================================================== */
 
-/* Container */
 .video-player-container {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
   background: #000; z-index: 10;
 }
 
-/* Close Button */
 .video-close-btn {
   position: absolute; top: 16px; right: 16px;
   z-index: 100;
@@ -184,32 +169,27 @@
 .video-player-container:hover .video-close-btn { opacity: 1; }
 .video-close-btn:hover { background: #ff0000; border-color: #ff0000; transform: scale(1.1); }
 
-/* Plyr Overrides */
+/* ==========================================================================
+   PLYR OVERRIDES
+   ========================================================================== */
 .plyr {
   width: 100% !important;
   height: 100% !important;
   position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
+  top: 0 !important; left: 0 !important;
   border-radius: 0 !important;
   font-family: 'Segoe UI', system-ui, sans-serif !important;
 }
 
-.plyr__video-wrapper {
-  height: 100% !important;
-}
-
-.plyr iframe {
-  height: 100% !important;
-  pointer-events: auto !important;
-}
+.plyr__video-wrapper { height: 100% !important; }
+.plyr iframe { height: 100% !important; pointer-events: auto !important; }
 
 /* Controls Bar */
 .plyr--video .plyr__controls {
   background: linear-gradient(transparent, rgba(10,14,26,0.97)) !important;
   padding: 20px 16px 12px !important;
   border: none !important;
-  gap: 6px !important;
+  gap: 8px !important;
   transition: opacity 0.3s ease !important;
 }
 
@@ -218,27 +198,22 @@
   color: #fff !important;
   background: transparent !important;
   border-radius: 50% !important;
-  width: 36px !important;
-  height: 36px !important;
+  width: 36px !important; height: 36px !important;
   padding: 7px !important;
   transition: all 0.2s ease !important;
   flex-shrink: 0 !important;
 }
 
 .plyr__control:hover {
-  background: rgba(255,107,53,0.3) !important;
+  background: rgba(255,255,255,0.1) !important;
   transform: scale(1.1) !important;
 }
 
-.plyr__control svg {
-  width: 18px !important;
-  height: 18px !important;
-}
+.plyr__control svg { width: 18px !important; height: 18px !important; }
 
 /* Play Button Overlay */
 .plyr__control--overlaid {
-  width: 80px !important;
-  height: 80px !important;
+  width: 80px !important; height: 80px !important;
   background: rgba(0,0,0,0.5) !important;
   backdrop-filter: blur(12px) !important;
   border: 2px solid rgba(255,255,255,0.3) !important;
@@ -255,13 +230,9 @@
   box-shadow: 0 8px 32px rgba(255,107,53,0.6) !important;
 }
 
-.plyr__control--overlaid svg {
-  width: 32px !important;
-  height: 32px !important;
-  color: #fff !important;
-}
+.plyr__control--overlaid svg { width: 32px !important; height: 32px !important; color: #fff !important; }
 
-/* Progress Bar Container */
+/* Progress Container */
 .plyr__progress {
   flex: 1 !important;
   margin: 0 4px !important;
@@ -273,7 +244,7 @@
   align-items: center !important;
 }
 
-/* Progress Bar Track */
+/* Progress Bar - Base Track (GRAY) */
 .plyr__progress input[type="range"] {
   height: 5px !important;
   border-radius: 3px !important;
@@ -281,32 +252,35 @@
   transition: height 0.2s ease !important;
 }
 
-.plyr__progress input[type="range"]:hover {
-  height: 8px !important;
-}
+.plyr__progress input[type="range"]:hover { height: 8px !important; }
 
-/* Progress Bar Fill */
 .plyr__progress input[type="range"]::-webkit-slider-runnable-track {
-  background: rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.2) !important;
   border-radius: 3px !important;
   height: 100% !important;
 }
 
 .plyr__progress input[type="range"]::-moz-range-track {
-  background: rgba(255,255,255,0.15) !important;
+  background: rgba(255,255,255,0.2) !important;
   border-radius: 3px !important;
   height: 100% !important;
 }
 
-/* Progress Bar Fill - Active */
-.plyr__progress input[type="range"]::-webkit-slider-runnable-track {
+/* Progress Fill - ORANGE (played part) */
+.plyr__progress__played {
   background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end)) !important;
+  border-radius: 3px !important;
 }
 
-/* Progress Bar Thumb */
+/* Buffered */
+.plyr__progress__buffer {
+  background: rgba(255,255,255,0.08) !important;
+  border-radius: 3px !important;
+}
+
+/* Progress Thumb */
 .plyr__progress input[type="range"]::-webkit-slider-thumb {
-  width: 14px !important;
-  height: 14px !important;
+  width: 14px !important; height: 14px !important;
   background: #fff !important;
   border-radius: 50% !important;
   margin-top: -5px !important;
@@ -315,13 +289,10 @@
   transition: opacity 0.2s ease !important;
 }
 
-.plyr__progress input[type="range"]:hover::-webkit-slider-thumb {
-  opacity: 1 !important;
-}
+.plyr__progress input[type="range"]:hover::-webkit-slider-thumb { opacity: 1 !important; }
 
 .plyr__progress input[type="range"]::-moz-range-thumb {
-  width: 14px !important;
-  height: 14px !important;
+  width: 14px !important; height: 14px !important;
   background: #fff !important;
   border-radius: 50% !important;
   border: none !important;
@@ -330,15 +301,7 @@
   transition: opacity 0.2s ease !important;
 }
 
-.plyr__progress input[type="range"]:hover::-moz-range-thumb {
-  opacity: 1 !important;
-}
-
-/* Buffered Progress */
-.plyr__progress__buffer {
-  background: rgba(255,255,255,0.1) !important;
-  border-radius: 3px !important;
-}
+.plyr__progress input[type="range"]:hover::-moz-range-thumb { opacity: 1 !important; }
 
 /* Time Display */
 .plyr__time {
@@ -349,11 +312,9 @@
   font-variant-numeric: tabular-nums !important;
 }
 
-.plyr__time--current {
-  color: #fff !important;
-}
+.plyr__time--current { color: #fff !important; }
 
-/* Volume Control */
+/* Volume */
 .plyr__volume {
   flex: 0 0 auto !important;
   width: auto !important;
@@ -374,17 +335,14 @@
 }
 
 .plyr__volume input[type="range"]::-webkit-slider-thumb {
-  width: 12px !important;
-  height: 12px !important;
+  width: 12px !important; height: 12px !important;
   background: #fff !important;
   border-radius: 50% !important;
   margin-top: -4px !important;
 }
 
-/* Fullscreen Button */
-.plyr__control[data-plyr="fullscreen"] {
-  margin-left: auto !important;
-}
+/* Fullscreen */
+.plyr__control[data-plyr="fullscreen"] { margin-left: auto !important; }
 
 /* Tooltip */
 .plyr__tooltip {
@@ -398,9 +356,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
 }
 
-.plyr__tooltip::before {
-  border-top-color: rgba(0,0,0,0.9) !important;
-}
+.plyr__tooltip::before { border-top-color: rgba(0,0,0,0.9) !important; }
 
 /* Menu */
 .plyr__menu__container {
@@ -420,21 +376,10 @@
   transition: all 0.2s ease !important;
 }
 
-.plyr__menu__container button:hover {
-  background: rgba(255,107,53,0.2) !important;
-}
+.plyr__menu__container button:hover { background: rgba(255,255,255,0.1) !important; }
 
 /* Badge */
-.plyr__badge {
-  background: var(--sunset-start) !important;
-  border-radius: 4px !important;
-  font-size: 10px !important;
-}
-
-/* Loading Spinner */
-.plyr__progress__played {
-  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end)) !important;
-}
+.plyr__badge { background: var(--sunset-start) !important; border-radius: 4px !important; font-size: 10px !important; }
 
 /* ==========================================================================
    TOUR INFO
@@ -571,7 +516,6 @@
   .info-card i { font-size: 18px; }
   .info-card strong { font-size: 11px; }
   
-  /* Mobile Plyr */
   .plyr--video .plyr__controls { padding: 16px 10px 8px !important; }
   .plyr__control { width: 30px !important; height: 30px !important; padding: 5px !important; }
   .plyr__control svg { width: 14px !important; height: 14px !important; }
