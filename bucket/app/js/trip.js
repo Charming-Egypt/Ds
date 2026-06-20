@@ -1,3 +1,7 @@
+// ==========================================================================
+// DISCOVER SHARM - Trip Display & Reviews System
+// ==========================================================================
+
 const TripDisplay = (() => {
   const S = {
     tripName: '#tripName', spinner: '#spinner', tourTitle: '#tourTitle',
@@ -61,9 +65,6 @@ const TripDisplay = (() => {
   function hideSwiperCtrls(){const s=document.querySelector('.swiper');if(s)s.classList.add('swiper-controls-hidden');}
   function showSwiperCtrls(){const s=document.querySelector('.swiper');if(s)s.classList.remove('swiper-controls-hidden');}
 
-  // ==========================================================================
-  // VIDEO PLAYER WITH PLYR
-  // ==========================================================================
   function stopVideo(slide) {
     if(!slide)return;
     if(slide._cleanup){slide._cleanup();slide._cleanup=null;}
@@ -90,29 +91,24 @@ const TripDisplay = (() => {
     slide.innerHTML='';
 
     const wrap=document.createElement('div');
-    wrap.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;background:#000;';
+    wrap.className='video-player-container';
 
-    // Plyr element
     const videoEl=document.createElement('div');
     videoEl.setAttribute('data-plyr-provider','youtube');
     videoEl.setAttribute('data-plyr-embed-id',vid);
-    videoEl.style.cssText='width:100%;height:100%;';
     wrap.appendChild(videoEl);
-
-    // Close button
-    const closeBtn=document.createElement('button');
-    closeBtn.className='plyr-close-btn';
-    closeBtn.innerHTML='<i class="fas fa-times"></i>';
-    closeBtn.onclick=e=>{e.stopPropagation();stopVideo(slide);};
-    wrap.appendChild(closeBtn);
-
     slide.appendChild(wrap);
 
-    // Init Plyr
+    // Close button - outside wrap
+    const closeBtn=document.createElement('button');
+    closeBtn.className='video-close-btn';
+    closeBtn.innerHTML='<i class="fas fa-times"></i>';
+    closeBtn.onclick=e=>{e.stopPropagation();stopVideo(slide);};
+    slide.appendChild(closeBtn);
+
     const player=new Plyr(videoEl,{
       controls:['play','progress','current-time','mute','volume','fullscreen'],
-      autoplay:true,
-      muted:false
+      autoplay:true
     });
 
     slide._cleanup=()=>{
@@ -123,9 +119,6 @@ const TripDisplay = (() => {
     };
   }
 
-  // ==========================================================================
-  // GALLERY
-  // ==========================================================================
   function createSlide(type,data,idx){
     const s=document.createElement('div');s.className='swiper-slide';if(type==='video')s.classList.add('swiper-slide-video');
     s.setAttribute('data-type',type);s.setAttribute('data-index',idx);
