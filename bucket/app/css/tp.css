@@ -325,16 +325,10 @@
 .plyr__poster { background-color: #000 !important; }
 
 /* Orange Theme */
-.plyr--video .plyr__control--overlaid {
-  background: #FF6B35 !important;
-  border: 2px solid #FF6B35 !important;
-  box-shadow: 0 0 30px rgba(255,107,53,0.5) !important;
+.plyr--full-ui input[type=range] {
+  color: #FF6B35 !important;
+  
 }
-.plyr--video .plyr__control--overlaid svg { color: #fff !important; }
-.plyr--video .plyr__control--overlaid:hover { background: #FFA630 !important; border-color: #FFA630 !important; }
-.plyr__progress__played { background: #FF6B35 !important; }
-.plyr__badge { background: #FF6B35 !important; }
-.plyr__menu__container .plyr__control[aria-checked="true"]::before { background: #FF6B35 !important; }
 
 /* Mobile - Padding bottom for curved gallery */
 @media (max-width: 768px) {
