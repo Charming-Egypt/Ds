@@ -319,7 +319,7 @@
 
 
 /* ==========================================================================
-   MOBILE RESPONSIVE - FIXED & MERGED
+   MOBILE RESPONSIVE - FIXED PAGINATION
    ========================================================================== */
 @media (max-width: 768px) {
   .tour-booking-container { grid-template-columns: 1fr; gap: 0; padding: 0; }
@@ -329,19 +329,39 @@
   /* Navigation */
   .swiper-button-next, .swiper-button-prev { 
     width: 38px; height: 38px; opacity: 1; background: rgba(0,0,0,0.5); 
-    bottom: 40px !important;
+    bottom: 15px !important;
   }
   .swiper-button-next { right: 10px; } 
   .swiper-button-prev { right: 54px; left: auto; }
   
-  /* Pagination */
+  /* Pagination - FIXED */
   .swiper-pagination { 
-    bottom: 35px !important; right: auto !important; left: 50% !important; 
-    transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
-    padding: 6px 18px; border-radius: 20px; display: flex; gap: 5px; width: auto !important; 
+    bottom: 20px !important;
+    top: auto !important;
+    right: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    padding: 4px 14px;
+    border-radius: 20px;
+    display: flex;
+    gap: 4px;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1;
   }
-  .swiper-pagination-bullet { width: 6px; height: 6px; margin: 0 2px !important; }
-  .swiper-pagination-bullet-active { width: 22px; }
+  
+  .swiper-pagination-bullet { 
+    width: 6px; height: 6px; 
+    margin: 0 2px !important;
+    display: inline-block;
+  }
+  
+  .swiper-pagination-bullet-active { 
+    width: 20px;
+    border-radius: 3px;
+  }
   
   /* Thumbnails */
   .thumbnails-overlay { left: 10px; right: auto; gap: 6px; }
@@ -368,6 +388,6 @@
   .plyr--video .plyr__controls {
     padding-left: 16px !important;
     padding-right: 16px !important;
-    padding-bottom: 20px !important;
+    padding-bottom: 16px !important;
   }
 }
