@@ -99,7 +99,7 @@ const TripDisplay = (() => {
     wrap.appendChild(videoEl);
     slide.appendChild(wrap);
 
-    // Close button - outside wrap
+    // Close button
     const closeBtn=document.createElement('button');
     closeBtn.className='video-close-btn';
     closeBtn.innerHTML='<i class="fas fa-times"></i>';
@@ -108,7 +108,32 @@ const TripDisplay = (() => {
 
     const player=new Plyr(videoEl,{
       controls:['play','progress','current-time','mute','volume','fullscreen'],
-      autoplay:true
+      autoplay:true,
+      keyboard:{focused:true,global:true}
+    });
+
+    // Add forward/rewind 10s buttons
+    player.on('ready',()=>{
+      setTimeout(()=>{
+        const controls=document.querySelector('.swiper-slide .plyr__controls');
+        const playBtn=controls?.querySelector('[data-plyr="play"]');
+        if(playBtn&&controls){
+          const rewindBtn=document.createElement('button');
+          rewindBtn.className='plyr__controls__item plyr__control';
+          rewindBtn.setAttribute('type','button');
+          rewindBtn.innerHTML='<svg viewBox="0 0 18 18" style="width:18px;height:18px;"><path d="M6.5 1.5L0 9l6.5 7.5V10H18V8H6.5V1.5z" fill="currentColor"/></svg>';
+          rewindBtn.addEventListener('click',e=>{e.stopPropagation();player.rewind(10);});
+
+          const forwardBtn=document.createElement('button');
+          forwardBtn.className='plyr__controls__item plyr__control';
+          forwardBtn.setAttribute('type','button');
+          forwardBtn.innerHTML='<svg viewBox="0 0 18 18" style="width:18px;height:18px;"><path d="M11.5 1.5L18 9l-6.5 7.5V10H0V8h11.5V1.5z" fill="currentColor"/></svg>';
+          forwardBtn.addEventListener('click',e=>{e.stopPropagation();player.forward(10);});
+
+          playBtn.after(forwardBtn);
+          playBtn.after(rewindBtn);
+        }
+      },100);
     });
 
     slide._cleanup=()=>{
