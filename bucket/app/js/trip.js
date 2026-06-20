@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// Complete Version with Custom Video Controller
+// Fixed Video Controller
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -63,6 +63,7 @@ const TripDisplay = (() => {
   let currentUserUid = '';
   let controlsVisible = true;
   let hideControlsTimeout = null;
+  let activeKeyHandler = null;
 
   // Currency
   let currentCurrency = DEFAULT_CURRENCY;
@@ -117,7 +118,7 @@ const TripDisplay = (() => {
   }
 
   function formatTime(seconds) {
-    if (isNaN(seconds)) return '00:00';
+    if (!seconds || isNaN(seconds)) return '00:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
@@ -187,29 +188,20 @@ const TripDisplay = (() => {
   // ==========================================================================
   function hideControls() {
     const swiperEl = document.querySelector('.swiper');
-    if (swiperEl) {
-      swiperEl.classList.add('swiper-controls-hidden');
-    }
+    if (swiperEl) swiperEl.classList.add('swiper-controls-hidden');
     controlsVisible = false;
   }
 
   function showControls() {
     const swiperEl = document.querySelector('.swiper');
-    if (swiperEl) {
-      swiperEl.classList.remove('swiper-controls-hidden');
-    }
+    if (swiperEl) swiperEl.classList.remove('swiper-controls-hidden');
     controlsVisible = true;
-    
     clearTimeout(hideControlsTimeout);
     hideControlsTimeout = setTimeout(hideControls, 3000);
   }
 
   function toggleControls() {
-    if (controlsVisible) {
-      hideControls();
-    } else {
-      showControls();
-    }
+    controlsVisible ? hideControls() : showControls();
   }
 
   // ==========================================================================
@@ -233,7 +225,6 @@ const TripDisplay = (() => {
 
     try {
       showSpinner();
-      
       const snap = await db.ref('trips').once('value');
       const data = snap.val();
       
@@ -279,9 +270,7 @@ const TripDisplay = (() => {
     const durationEl = document.querySelector(SELECTORS.tourDuration);
     if (durationEl) durationEl.textContent = trip.duration || 'Full Day';
     
-    if (trip.name) {
-      document.title = trip.name + ' - Discover Sharm';
-    }
+    if (trip.name) document.title = trip.name + ' - Discover Sharm';
     
     const tripNameInput = document.querySelector(SELECTORS.tripName);
     if (tripNameInput) tripNameInput.value = trip.name || '';
@@ -294,18 +283,14 @@ const TripDisplay = (() => {
     if (!descContainer) return;
     
     if (description && description.trim()) {
-      const paragraphs = description
-        .split('\n')
-        .filter(p => p.trim())
-        .map(p => {
-          const trimmed = p.trim();
-          if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
-            const text = trimmed.replace(/^!/, '').replace(/^IMPORTANT:/, '').trim();
-            return `<div class="highlight-note"><i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>${sanitizeHTML(text)}</div>`;
-          }
-          return `<p>${sanitizeHTML(trimmed)}</p>`;
-        })
-        .join('');
+      const paragraphs = description.split('\n').filter(p => p.trim()).map(p => {
+        const trimmed = p.trim();
+        if (trimmed.startsWith('!') || trimmed.startsWith('IMPORTANT:')) {
+          const text = trimmed.replace(/^!/, '').replace(/^IMPORTANT:/, '').trim();
+          return `<div class="highlight-note"><i class="fas fa-star" style="color: var(--gold); margin-right: 8px; font-size: 12px;"></i>${sanitizeHTML(text)}</div>`;
+        }
+        return `<p>${sanitizeHTML(trimmed)}</p>`;
+      }).join('');
       
       if (descContent) descContent.innerHTML = paragraphs;
       descContainer.style.display = 'block';
@@ -316,9 +301,7 @@ const TripDisplay = (() => {
 
   function updatePriceDisplay() {
     const el = document.querySelector(SELECTORS.tourPrice);
-    if (el && currentTrip.basePrice) {
-      el.innerHTML = formatPrice(currentTrip.basePrice);
-    }
+    if (el && currentTrip.basePrice) el.innerHTML = formatPrice(currentTrip.basePrice);
   }
 
   // ==========================================================================
@@ -327,39 +310,29 @@ const TripDisplay = (() => {
   function extractYouTubeId(url) {
     if (!url) return null;
     url = url.trim();
-    
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
     
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) return match[1];
-    }
-    
-    return null;
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : null;
   }
 
   function getVideoThumbnail(videoData, videoId) {
-    if (videoData.thumbnail && videoData.thumbnail.trim()) {
-      return videoData.thumbnail.trim();
-    }
+    if (videoData.thumbnail && videoData.thumbnail.trim()) return videoData.thumbnail.trim();
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   }
 
   // ==========================================================================
-  // CUSTOM VIDEO PLAYER
+  // CUSTOM VIDEO PLAYER - FIXED
   // ==========================================================================
-  function createCustomVideoPlayer(slide, videoId) {
+  function createVideoPlayer(slide, videoId) {
     const container = document.createElement('div');
     container.className = 'video-container';
     
-    // Create iframe
+    // IFrame - بدون controls=0 عشان API يشتغل
     const iframe = document.createElement('iframe');
-    iframe.id = 'yt-player-' + Date.now();
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=0&showinfo=0&enablejsapi=1&origin=${window.location.origin}`;
+    const playerId = 'yt-' + Date.now();
+    iframe.id = playerId;
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1&origin=${window.location.origin}`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
@@ -401,7 +374,6 @@ const TripDisplay = (() => {
     fullscreenBtn.className = 'video-fullscreen-btn';
     fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
     
-    // Assemble controls
     controlsBar.appendChild(playPauseBtn);
     controlsBar.appendChild(progressContainer);
     controlsBar.appendChild(timeDisplay);
@@ -424,38 +396,49 @@ const TripDisplay = (() => {
     container.appendChild(closeBtn);
     container.appendChild(toggleBtn);
     
-    // Initialize YouTube player
+    // YouTube Player
     let player;
-    let progressInterval;
+    let updateInterval;
     let isMuted = false;
+    let isPlaying = true;
     
     function initPlayer() {
-      player = new YT.Player(iframe.id, {
-        events: {
-          'onReady': onReady,
-          'onStateChange': onStateChange
-        }
-      });
+      try {
+        player = new YT.Player(playerId, {
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      } catch(e) {
+        console.error('Failed to init YT player:', e);
+      }
     }
     
-    function onReady(event) {
+    function onPlayerReady(event) {
       event.target.playVideo();
+      event.target.unMute();
       startProgressUpdate();
     }
     
-    function onStateChange(event) {
+    function onPlayerStateChange(event) {
       switch(event.data) {
         case YT.PlayerState.PLAYING:
+          isPlaying = true;
           bigPlay.classList.add('hidden');
           playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
           startProgressUpdate();
           break;
+          
         case YT.PlayerState.PAUSED:
+          isPlaying = false;
           bigPlay.classList.remove('hidden');
           playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
           stopProgressUpdate();
           break;
+          
         case YT.PlayerState.ENDED:
+          isPlaying = false;
           bigPlay.classList.remove('hidden');
           playPauseBtn.innerHTML = '<i class="fas fa-redo"></i>';
           stopProgressUpdate();
@@ -465,79 +448,98 @@ const TripDisplay = (() => {
     
     function startProgressUpdate() {
       stopProgressUpdate();
-      progressInterval = setInterval(() => {
-        if (player && player.getCurrentTime && player.getDuration) {
-          const current = player.getCurrentTime();
-          const duration = player.getDuration();
-          const progress = (current / duration) * 100;
-          progressFill.style.width = progress + '%';
-          timeDisplay.textContent = formatTime(current) + ' / ' + formatTime(duration);
-        }
-      }, 500);
+      updateInterval = setInterval(updateProgress, 200);
     }
     
     function stopProgressUpdate() {
-      if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
+      if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
       }
     }
     
-    // Event listeners
+    function updateProgress() {
+      if (!player || !player.getCurrentTime || !player.getDuration) return;
+      
+      try {
+        const current = player.getCurrentTime() || 0;
+        const duration = player.getDuration() || 0;
+        
+        if (duration > 0) {
+          const percent = (current / duration) * 100;
+          progressFill.style.width = Math.min(100, percent) + '%';
+          timeDisplay.textContent = formatTime(current) + ' / ' + formatTime(duration);
+        }
+      } catch(e) {
+        // Ignore errors during update
+      }
+    }
+    
+    // Button Events
     playPauseBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!player) return;
-      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
+      
+      try {
+        if (isPlaying) {
+          player.pauseVideo();
+        } else {
+          player.playVideo();
+        }
+      } catch(e) {}
     });
     
     bigPlay.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (player) player.playVideo();
+      if (!player) return;
+      try { player.playVideo(); } catch(e) {}
     });
     
     progressContainer.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!player || !player.getDuration) return;
-      const rect = progressContainer.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      player.seekTo(player.getDuration() * percent);
+      
+      try {
+        const rect = progressContainer.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        player.seekTo(player.getDuration() * percent);
+      } catch(e) {}
     });
     
     volumeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!player) return;
-      isMuted = !isMuted;
-      if (isMuted) {
-        player.mute();
-        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-      } else {
-        player.unMute();
-        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      }
+      
+      try {
+        isMuted = !isMuted;
+        if (isMuted) {
+          player.mute();
+          volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        } else {
+          player.unMute();
+          volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        }
+      } catch(e) {}
     });
     
     fullscreenBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (container.requestFullscreen) {
-        container.requestFullscreen();
-      } else if (container.webkitRequestFullscreen) {
-        container.webkitRequestFullscreen();
-      }
+      try {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        }
+      } catch(e) {}
     });
     
     closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      e.preventDefault();
       stopVideoInSlide(slide);
     });
     
     toggleBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      e.preventDefault();
       toggleControls();
       toggleBtn.innerHTML = controlsVisible ? 
         '<i class="fas fa-eye-slash"></i> Hide Controls' : 
@@ -546,74 +548,66 @@ const TripDisplay = (() => {
     
     // Keyboard handler
     function keyHandler(e) {
-      if (!player) return;
+      // Only handle if video is active and no input is focused
+      if (document.activeElement !== document.body) return;
+      if (!currentVideoSlide) return;
       
-      switch(e.key) {
-        case ' ':
-          e.preventDefault();
-          if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-          } else {
-            player.playVideo();
-          }
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          player.seekTo(player.getCurrentTime() - 10);
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          player.seekTo(player.getCurrentTime() + 10);
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          player.setVolume(Math.min(100, player.getVolume() + 10));
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          player.setVolume(Math.max(0, player.getVolume() - 10));
-          break;
-        case 'f':
-          e.preventDefault();
-          if (container.requestFullscreen) container.requestFullscreen();
-          break;
-        case 'm':
-          e.preventDefault();
-          isMuted = !isMuted;
-          if (isMuted) {
-            player.mute();
-            volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-          } else {
-            player.unMute();
-            volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-          }
-          break;
-      }
+      try {
+        switch(e.key.toLowerCase()) {
+          case ' ':
+            e.preventDefault();
+            if (!player) return;
+            isPlaying ? player.pauseVideo() : player.playVideo();
+            break;
+          case 'arrowleft':
+            e.preventDefault();
+            if (player && player.getCurrentTime) player.seekTo((player.getCurrentTime() || 0) - 10);
+            break;
+          case 'arrowright':
+            e.preventDefault();
+            if (player && player.getCurrentTime) player.seekTo((player.getCurrentTime() || 0) + 10);
+            break;
+          case 'm':
+            e.preventDefault();
+            if (!player) return;
+            isMuted = !isMuted;
+            isMuted ? player.mute() : player.unMute();
+            volumeBtn.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+            break;
+        }
+      } catch(e) {}
     }
     
+    // Remove old key handler
+    if (activeKeyHandler) {
+      document.removeEventListener('keydown', activeKeyHandler);
+    }
+    activeKeyHandler = keyHandler;
     document.addEventListener('keydown', keyHandler);
     
-    // Initialize player
-    if (window.YT && window.YT.Player) {
+    // Store cleanup
+    slide._videoCleanup = function() {
+      stopProgressUpdate();
+      if (activeKeyHandler) {
+        document.removeEventListener('keydown', activeKeyHandler);
+        activeKeyHandler = null;
+      }
+      if (player) {
+        try { player.destroy(); } catch(e) {}
+        player = null;
+      }
+    };
+    
+    // Initialize player - wait for API
+    if (window.YT && window.YT.Player && window.YT.loaded) {
       initPlayer();
     } else {
-      // Wait for API
       const origCallback = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = function() {
         if (origCallback) origCallback();
         initPlayer();
       };
     }
-    
-    // Store cleanup function
-    slide._videoCleanup = function() {
-      document.removeEventListener('keydown', keyHandler);
-      stopProgressUpdate();
-      if (player) {
-        player.destroy();
-        player = null;
-      }
-    };
     
     return container;
   }
@@ -628,15 +622,13 @@ const TripDisplay = (() => {
     
     currentVideoSlide = slide;
     
-    if (swiper && swiper.autoplay) {
-      swiper.autoplay.stop();
-    }
+    if (swiper && swiper.autoplay) swiper.autoplay.stop();
     
     hideControls();
     
     slide.innerHTML = '';
     
-    const playerContainer = createCustomVideoPlayer(slide, videoId);
+    const playerContainer = createVideoPlayer(slide, videoId);
     slide.appendChild(playerContainer);
   }
 
@@ -647,6 +639,8 @@ const TripDisplay = (() => {
       slide._videoCleanup();
       slide._videoCleanup = null;
     }
+    
+    stopProgressUpdate();
     
     const videoId = slide.getAttribute('data-video-id');
     const thumbnailUrl = slide.getAttribute('data-thumbnail');
@@ -675,18 +669,21 @@ const TripDisplay = (() => {
     slide.appendChild(img);
     slide.appendChild(playBtn);
     
-    if (swiper && swiper.autoplay) {
-      swiper.autoplay.start();
-    }
+    if (swiper && swiper.autoplay) swiper.autoplay.start();
     
     currentVideoSlide = null;
-    currentPlayer = null;
-    progressInterval = null;
   }
 
   function stopAllVideos() {
     if (currentVideoSlide) {
       stopVideoInSlide(currentVideoSlide);
+    }
+  }
+
+  function stopProgressUpdate() {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      progressInterval = null;
     }
   }
 
@@ -705,16 +702,12 @@ const TripDisplay = (() => {
       const videoUrl = data.videoUrl || data.url || '';
       const videoId = extractYouTubeId(videoUrl);
       
-      if (!videoId) {
-        console.warn('Could not extract video ID from:', videoUrl);
-        return null;
-      }
+      if (!videoId) return null;
       
       const thumbnailUrl = getVideoThumbnail(data, videoId);
       
       slide.setAttribute('data-video-id', videoId);
       slide.setAttribute('data-thumbnail', thumbnailUrl);
-      slide.setAttribute('data-video-url', videoUrl);
       
       if (data.thumbnail && data.thumbnail.trim()) {
         slide.setAttribute('data-custom-thumbnail', 'true');
@@ -730,14 +723,6 @@ const TripDisplay = (() => {
           img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
           slide.setAttribute('data-custom-thumbnail', 'false');
           slide.setAttribute('data-thumbnail', img.src);
-        } else {
-          img.src = 'data:image/svg+xml,' + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
-              <rect fill="#1a1a2e" width="480" height="360"/>
-              <circle cx="240" cy="180" r="50" fill="rgba(255,255,255,0.1)"/>
-              <polygon points="230,160 230,200 265,180" fill="rgba(255,255,255,0.5)"/>
-            </svg>
-          `);
         }
       };
       
@@ -835,18 +820,12 @@ const TripDisplay = (() => {
   }
 
   function initGallery(media) {
-    if (!checkSwiperDependency()) {
-      console.error('Swiper not loaded');
-      return;
-    }
+    if (!checkSwiperDependency()) return;
     
     const swiperEl = document.querySelector('.swiper');
     const wrapper = document.querySelector('.swiper-wrapper');
     
-    if (!swiperEl || !wrapper) {
-      console.error('Swiper elements not found');
-      return;
-    }
+    if (!swiperEl || !wrapper) return;
     
     if (swiper) {
       stopAllVideos();
@@ -862,10 +841,7 @@ const TripDisplay = (() => {
       media.images.forEach((imgSrc) => {
         if (!imgSrc) return;
         const slide = createSlideElement('image', imgSrc, slideCount);
-        if (slide) {
-          wrapper.appendChild(slide);
-          slideCount++;
-        }
+        if (slide) { wrapper.appendChild(slide); slideCount++; }
       });
     }
     
@@ -873,10 +849,7 @@ const TripDisplay = (() => {
       media.videos.forEach((videoData) => {
         if (!videoData.videoUrl && !videoData.url) return;
         const slide = createSlideElement('video', videoData, slideCount);
-        if (slide) {
-          wrapper.appendChild(slide);
-          slideCount++;
-        }
+        if (slide) { wrapper.appendChild(slide); slideCount++; }
       });
     }
     
@@ -896,28 +869,12 @@ const TripDisplay = (() => {
         loop: slideCount > 1,
         spaceBetween: 0,
         speed: 400,
-        
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-        },
-        
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         on: {
-          init: function() {
-            createThumbnails();
-          },
-          slideChange: function() {
-            stopAllVideos();
-            updateActiveThumbnail(this.realIndex);
-          },
-          slideChangeTransitionStart: function() {
-            stopAllVideos();
-          }
+          init: function() { createThumbnails(); },
+          slideChange: function() { stopAllVideos(); updateActiveThumbnail(this.realIndex); },
+          slideChangeTransitionStart: function() { stopAllVideos(); }
         },
       });
     } catch (error) {
@@ -993,7 +950,7 @@ const TripDisplay = (() => {
     const container = document.querySelector(SELECTORS.reviewsListContainer);
     if (!container) return;
     
-    container.innerHTML = Array(2).fill(`
+    container.innerHTML = Array(3).fill(`
       <div class="review-card" style="opacity: 0.5;">
         <div class="review-card-header">
           <div class="review-card-user">
@@ -1063,9 +1020,7 @@ const TripDisplay = (() => {
     container.innerHTML = starsHTML;
     
     const countEl = document.querySelector(SELECTORS.reviewsCountText);
-    if (countEl) {
-      countEl.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
-    }
+    if (countEl) countEl.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
   }
 
   function renderReviews() {
@@ -1073,13 +1028,7 @@ const TripDisplay = (() => {
     if (!container) return;
     
     if (!tripReviews.length) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-star"></i>
-          <p>No reviews yet</p>
-          <span>Be the first to review this trip</span>
-        </div>
-      `;
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No reviews yet</p><span>Be the first to review this trip</span></div>';
       return;
     }
     
@@ -1101,10 +1050,7 @@ const TripDisplay = (() => {
           <div class="review-card-header">
             <div class="review-card-user">
               <div class="review-card-avatar">
-                <img src="${sanitizeHTML(photoUrl)}" 
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" 
-                     loading="lazy" 
-                     alt="${sanitizeHTML(userName)}">
+                <img src="${sanitizeHTML(photoUrl)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" loading="lazy" alt="${sanitizeHTML(userName)}">
                 <div class="avatar-fallback" style="display:none;">${sanitizeHTML(initial)}</div>
               </div>
               <div>
@@ -1128,20 +1074,13 @@ const TripDisplay = (() => {
       showToast('Please sign in to write a review', 'error');
       return;
     }
-    
     const modal = document.querySelector(SELECTORS.reviewModal);
-    if (modal) {
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    }
+    if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
   }
 
   function closeReviewModal() {
     const modal = document.querySelector(SELECTORS.reviewModal);
-    if (modal) {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    }
+    if (modal) { modal.classList.add('hidden'); document.body.style.overflow = ''; }
   }
 
   function setupStars() {
@@ -1152,15 +1091,10 @@ const TripDisplay = (() => {
       star.addEventListener('click', () => {
         const rating = parseInt(star.dataset.rating);
         document.querySelector(SELECTORS.ratingValue).value = rating;
-        
         starsContainer.querySelectorAll('i').forEach((s, i) => {
-          if (i < rating) {
-            s.classList.add('active', 'fas');
-            s.classList.remove('far');
-          } else {
-            s.classList.remove('active', 'fas');
-            s.classList.add('far');
-          }
+          s.classList.toggle('active', i < rating);
+          s.classList.toggle('fas', i < rating);
+          s.classList.toggle('far', i >= rating);
         });
       });
     });
@@ -1180,42 +1114,24 @@ const TripDisplay = (() => {
   }
 
   async function submitReview() {
-    if (!checkFirebaseDependencies()) {
-      showToast('System not fully loaded.', 'error');
-      return;
-    }
+    if (!checkFirebaseDependencies()) { showToast('System not fully loaded.', 'error'); return; }
 
     const voucher = document.querySelector(SELECTORS.voucherInput)?.value?.trim()?.toUpperCase();
-    
-    if (!voucher || !VOUCHER_PATTERN.test(voucher)) {
-      showToast('Please enter a valid voucher number (DS_XXXXXXXX)', 'error');
-      return;
-    }
+    if (!voucher || !VOUCHER_PATTERN.test(voucher)) { showToast('Please enter a valid voucher number (DS_XXXXXXXX)', 'error'); return; }
     
     const rating = parseInt(document.querySelector(SELECTORS.ratingValue)?.value || '0');
-    if (!rating || rating < 1 || rating > 5) {
-      showToast('Please select a rating', 'error');
-      return;
-    }
+    if (!rating || rating < 1 || rating > 5) { showToast('Please select a rating', 'error'); return; }
     
     const comment = document.querySelector(SELECTORS.commentInput)?.value?.trim();
-    if (!comment || comment.length < MIN_COMMENT_LENGTH) {
-      showToast(`Review must be at least ${MIN_COMMENT_LENGTH} characters`, 'error');
-      return;
-    }
+    if (!comment || comment.length < MIN_COMMENT_LENGTH) { showToast(`Review must be at least ${MIN_COMMENT_LENGTH} characters`, 'error'); return; }
     
     try {
       const snap = await db.ref('trip-bookings/' + voucher).once('value');
       const booking = snap.val();
-      
-      if (!booking || booking.uid !== auth.currentUser.uid) {
-        showToast('Invalid voucher number.', 'error');
-        return;
-      }
+      if (!booking || booking.uid !== auth.currentUser.uid) { showToast('Invalid voucher number.', 'error'); return; }
       
       const user = auth.currentUser;
       let userName = 'Traveler';
-      
       try {
         const userSnap = await db.ref('egy_user/' + user.uid).once('value');
         const userData = userSnap.val();
@@ -1247,17 +1163,12 @@ const TripDisplay = (() => {
         totalRating += rating;
       }
       
-      await reviewRef.update({
-        count: count,
-        average: parseFloat((totalRating / count).toFixed(1))
-      });
+      await reviewRef.update({ count, average: parseFloat((totalRating / count).toFixed(1)) });
       
       closeReviewModal();
       resetReviewForm();
-      
       await loadReviews();
       showToast('Thank you for your review!', 'success');
-      
     } catch (error) {
       console.error('Error submitting review:', error);
       showToast('Failed to submit review.', 'error');
@@ -1269,13 +1180,10 @@ const TripDisplay = (() => {
       const el = document.querySelector(SELECTORS[id]);
       if (el) el.value = '';
     });
-    
     const ratingEl = document.querySelector(SELECTORS.ratingValue);
     if (ratingEl) ratingEl.value = '0';
-    
     const charCountEl = document.querySelector(SELECTORS.charCount);
     if (charCountEl) charCountEl.textContent = '0';
-    
     document.querySelectorAll(`${SELECTORS.starSelector} i`).forEach(s => {
       s.classList.remove('active', 'fas');
       s.classList.add('far');
@@ -1289,11 +1197,7 @@ const TripDisplay = (() => {
     document.querySelector(SELECTORS.openReviewBtn)?.addEventListener('click', openReviewModal);
     document.querySelector(SELECTORS.submitReviewBtn)?.addEventListener('click', submitReview);
     document.querySelector(`${SELECTORS.reviewModal} ${SELECTORS.reviewOverlay}`)?.addEventListener('click', closeReviewModal);
-    
-    document.querySelectorAll(`${SELECTORS.reviewModal} ${SELECTORS.closePopupBtn}`).forEach(btn => {
-      btn.addEventListener('click', closeReviewModal);
-    });
-    
+    document.querySelectorAll(`${SELECTORS.reviewModal} ${SELECTORS.closePopupBtn}`).forEach(btn => btn.addEventListener('click', closeReviewModal));
     document.querySelector(SELECTORS.cancelReviewBtn)?.addEventListener('click', closeReviewModal);
     
     document.addEventListener('keydown', (e) => {
@@ -1301,19 +1205,6 @@ const TripDisplay = (() => {
         const modal = document.querySelector(SELECTORS.reviewModal);
         if (modal && !modal.classList.contains('hidden')) {
           closeReviewModal();
-          return;
-        }
-      }
-      
-      if (swiper && document.activeElement === document.body && !currentVideoSlide) {
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          stopAllVideos();
-          swiper.slidePrev();
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          stopAllVideos();
-          swiper.slideNext();
         }
       }
     });
@@ -1323,36 +1214,25 @@ const TripDisplay = (() => {
   // CLEANUP
   // ==========================================================================
   function cleanup() {
-    if (currencyChangeHandler) {
-      window.removeEventListener('currencyChanged', currencyChangeHandler);
-    }
-    
+    if (currencyChangeHandler) window.removeEventListener('currencyChanged', currencyChangeHandler);
+    if (activeKeyHandler) document.removeEventListener('keydown', activeKeyHandler);
     clearTimeout(hideControlsTimeout);
     stopAllVideos();
-    
-    if (swiper) {
-      swiper.destroy(true, true);
-      swiper = null;
-    }
+    if (swiper) { swiper.destroy(true, true); swiper = null; }
   }
 
   // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   async function init() {
-    if (!tripSlug) {
-      showToast('No trip specified in URL.', 'error');
-      return;
-    }
+    if (!tripSlug) { showToast('No trip specified in URL.', 'error'); return; }
     
     initCurrency();
     setupStars();
     setupEventListeners();
     
     if (typeof auth !== 'undefined') {
-      auth.onAuthStateChanged((user) => {
-        currentUserUid = user?.uid || '';
-      });
+      auth.onAuthStateChanged((user) => { currentUserUid = user?.uid || ''; });
     }
     
     await Promise.all([
@@ -1361,9 +1241,7 @@ const TripDisplay = (() => {
     ]);
     
     window.addEventListener('beforeunload', cleanup);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopAllVideos();
-    });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopAllVideos(); });
   }
 
   // ==========================================================================
