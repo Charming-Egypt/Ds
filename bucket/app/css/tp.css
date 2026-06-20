@@ -1,6 +1,6 @@
 /* ==========================================================================
    DISCOVER SHARM - Trip Display & Gallery System
-   Complete Stylesheet - Thumbnails LEFT Side
+   Complete Stylesheet - Fixed Z-Index Layers
    ========================================================================== */
 
 :root {
@@ -28,6 +28,21 @@
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
   --transition: all 0.2s ease;
 }
+
+/* ==========================================================================
+   Z-INDEX LAYERS MAP:
+   1  - Swiper Slides
+   2  - Play Button Overlay
+   3  - Thumbnails (LEFT)
+   4  - Pagination (RIGHT)
+   5  - Navigation Arrows (RIGHT BOTTOM)
+   10 - Video Big Play Button (CENTER)
+   15 - Video Controls Bar (BOTTOM)
+   20 - Video Close Button (TOP RIGHT)
+   100 - Toggle Swiper Button (TOP CENTER)
+   1000 - Toast Notifications
+   99999 - Flatpickr Calendar
+   ========================================================================== */
 
 /* Reset */
 .tour-booking-container,
@@ -66,12 +81,26 @@
   overflow: hidden; 
   margin-bottom: 15px;
   box-shadow: var(--shadow-md);
+  background: #000;
 }
 
+/* Layer 1 - Swiper */
 .swiper { 
   width: 100%; 
   height: 380px; 
-  border-radius: var(--radius-lg); 
+  border-radius: var(--radius-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.swiper-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.swiper-slide {
+  position: relative;
+  z-index: 1;
 }
 
 .swiper-slide img, 
@@ -81,7 +110,7 @@
   object-fit: cover; 
 }
 
-/* Play button */
+/* Layer 2 - Play Button (Image/Video Preview) */
 .swiper-slide .play-button {
   position: absolute;
   top: 50%; left: 50%;
@@ -107,65 +136,7 @@
   transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Navigation */
-.swiper-button-next, 
-.swiper-button-prev {
-  width: 42px; height: 42px;
-  background: rgba(10,14,26,0.7); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
-  color: #fff; transition: var(--transition); opacity: 0; z-index: 5;
-  top: auto !important;
-  bottom: 10px !important;
-}
-
-.swiper:hover .swiper-button-next, 
-.swiper:hover .swiper-button-prev { opacity: 1; }
-
-.swiper-button-next { right: 20px; }
-.swiper-button-prev { right: 70px; left: auto; }
-
-.swiper-button-next:hover, 
-.swiper-button-prev:hover {
-  background: var(--gold); border-color: var(--gold); color: #000;
-}
-
-.swiper-button-next::after, 
-.swiper-button-prev::after { 
-  font-size: 18px; font-weight: bold; 
-}
-
-/* Pagination - RIGHT SIDE */
-.swiper-pagination { 
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  width: auto !important; 
-  z-index: 3; 
-}
-
-.swiper-pagination-bullet { 
-  width: 8px; height: 8px; 
-  background: rgba(255,255,255,0.4); opacity: 1; 
-}
-
-.swiper-pagination-bullet-active { 
-  background: var(--gold) !important; 
-  width: 28px; border-radius: 4px; 
-}
-
-/* Hide Controls */
-.swiper-controls-hidden .swiper-button-next,
-.swiper-controls-hidden .swiper-button-prev,
-.swiper-controls-hidden .swiper-pagination,
-.swiper-controls-hidden .thumbnails-overlay {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-/* ==========================================================================
-   THUMBNAILS OVERLAY - LEFT SIDE
-   ========================================================================== */
+/* Layer 3 - Thumbnails (LEFT SIDE) */
 .thumbnails-overlay {
   position: absolute;
   left: 16px;
@@ -175,6 +146,7 @@
   display: flex; flex-direction: column; gap: 8px;
   z-index: 3;
   max-height: 80%; overflow-y: auto; padding: 4px;
+  pointer-events: auto;
 }
 
 .thumbnail-wrapper {
@@ -227,24 +199,90 @@
   box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.3);
 }
 
+/* Layer 4 - Pagination (RIGHT SIDE) */
+.swiper-pagination { 
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  width: auto !important; 
+  z-index: 4;
+  pointer-events: auto;
+}
+
+.swiper-pagination-bullet { 
+  width: 8px; height: 8px; 
+  background: rgba(255,255,255,0.4); opacity: 1; 
+  margin: 0 3px !important;
+}
+
+.swiper-pagination-bullet-active { 
+  background: var(--gold) !important; 
+  width: 28px; border-radius: 4px; 
+}
+
+/* Layer 5 - Navigation Arrows (RIGHT BOTTOM) */
+.swiper-button-next, 
+.swiper-button-prev {
+  width: 42px; height: 42px;
+  background: rgba(10,14,26,0.7); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
+  color: #fff; transition: var(--transition); opacity: 0;
+  z-index: 5;
+  top: auto !important;
+  bottom: 10px !important;
+  pointer-events: auto;
+}
+
+.swiper:hover .swiper-button-next, 
+.swiper:hover .swiper-button-prev { opacity: 1; }
+
+.swiper-button-next { right: 20px; }
+.swiper-button-prev { right: 70px; left: auto; }
+
+.swiper-button-next:hover, 
+.swiper-button-prev:hover {
+  background: var(--gold); border-color: var(--gold); color: #000;
+}
+
+.swiper-button-next::after, 
+.swiper-button-prev::after { 
+  font-size: 18px; font-weight: bold; 
+}
+
+/* Hide All Swiper Controls When Video Playing */
+.swiper-controls-hidden .swiper-button-next,
+.swiper-controls-hidden .swiper-button-prev,
+.swiper-controls-hidden .swiper-pagination,
+.swiper-controls-hidden .thumbnails-overlay {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: all 0.3s ease;
+}
+
 /* ==========================================================================
-   CUSTOM VIDEO PLAYER
+   CUSTOM VIDEO PLAYER (Layers 10-100)
    ========================================================================== */
+
+/* Layer 10 - Video Wrapper */
 .custom-video-wrapper {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
   background: #000; overflow: hidden;
+  z-index: 10;
 }
 
 .custom-video-iframe {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+  z-index: 1;
 }
 
+/* Layer 11 - Video Click Overlay */
 .custom-video-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 5; cursor: pointer;
+  z-index: 11; cursor: pointer;
 }
 
-/* Big Play Button */
+/* Layer 12 - Big Play/Pause Button (CENTER) */
 .vc-big-play {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -252,19 +290,21 @@
   background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
   border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 30px; z-index: 10;
+  color: #fff; font-size: 30px;
+  z-index: 12;
   pointer-events: none; transition: all 0.3s ease;
 }
 
 .vc-big-play.hidden { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 .vc-big-play.shift-up { transform: translate(-50%, -70%); }
 
-/* Controls Bar */
+/* Layer 15 - Controls Bar (BOTTOM) */
 .custom-video-controls {
   position: absolute; bottom: 0; left: 0; right: 0; height: 56px;
   background: linear-gradient(transparent, rgba(0,0,0,0.95));
   display: flex; align-items: center; padding: 0 16px; gap: 10px;
   z-index: 15; opacity: 0; transition: opacity 0.3s;
+  pointer-events: auto;
 }
 
 .custom-video-controls.visible { opacity: 1; }
@@ -278,6 +318,7 @@
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; transition: all 0.2s;
   flex-shrink: 0; outline: none;
+  pointer-events: auto;
 }
 
 .vc-btn:hover {
@@ -288,7 +329,13 @@
 
 .vc-close:hover { background: #ff0000; border-color: #ff0000; }
 
-/* Toggle Swiper Controls Button */
+/* Layer 20 - Close Button (TOP RIGHT) */
+.vc-close {
+  position: relative;
+  z-index: 20;
+}
+
+/* Layer 100 - Toggle Swiper Controls Button (TOP CENTER) */
 .vc-toggle-swiper {
   position: absolute;
   top: 16px; left: 50%; transform: translateX(-50%);
@@ -299,6 +346,7 @@
   font-size: 12px; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 8px;
   transition: all 0.3s ease; opacity: 0; white-space: nowrap; outline: none;
+  pointer-events: auto;
 }
 
 .custom-video-wrapper:hover .vc-toggle-swiper { opacity: 1; }
@@ -315,6 +363,7 @@
   flex: 1; height: 5px;
   background: rgba(255,255,255,0.2);
   border-radius: 3px; cursor: pointer;
+  pointer-events: auto;
 }
 
 .vc-progress-wrap:hover { height: 7px; }
@@ -363,7 +412,6 @@
 .stars-container .far.fa-star { color: var(--text-dim); opacity: 0.5; }
 .review-count { color: var(--text-muted); font-size: 12px; }
 
-/* Price */
 .price-display { 
   display: flex; align-items: baseline; gap: 8px; 
   margin: 16px 0; padding: 16px; 
@@ -380,7 +428,6 @@
 
 .price-label { color: var(--text-muted); font-size: 13px; }
 
-/* Quick Info Cards */
 .quick-info-cards { 
   display: grid; 
   grid-template-columns: repeat(3, 1fr); 
@@ -449,21 +496,15 @@
 /* ==========================================================================
    CONTENT SECTIONS
    ========================================================================== */
-.section-block { 
-  padding: 24px 0; 
-  border-top: 1px solid var(--border-subtle); 
-}
+.section-block { padding: 24px 0; border-top: 1px solid var(--border-subtle); }
 
 .section-title { 
   display: flex; align-items: center; gap: 12px; 
-  font-size: clamp(18px, 2vw, 22px); 
-  font-weight: 700; 
-  margin-bottom: 16px; 
+  font-size: clamp(18px, 2vw, 22px); font-weight: 700; margin-bottom: 16px; 
 }
 
 .icon-circle { 
-  width: 40px; height: 40px; 
-  border-radius: 50%; 
+  width: 40px; height: 40px; border-radius: 50%; 
   display: flex; align-items: center; justify-content: center; 
   font-size: 16px; flex-shrink: 0; 
 }
@@ -474,20 +515,12 @@
 .bring-icon { background: rgba(245,158,11,0.15); color: var(--gold); }
 .review-icon { background: rgba(250,204,21,0.15); color: #facc15; }
 
-.included-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-  gap: 8px; 
-  margin-bottom: 24px; 
-}
+.included-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-bottom: 24px; }
 
 .included-item { 
   display: flex; align-items: center; gap: 12px; 
-  padding: 10px 14px; 
-  background: var(--glass-bg); 
-  border: 1px solid var(--border-subtle); 
-  border-radius: var(--radius-sm); 
-  font-size: 13px; 
+  padding: 10px 14px; background: var(--glass-bg); 
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 13px; 
 }
 
 .included-item i { font-size: 16px; width: 20px; text-align: center; }
@@ -495,32 +528,21 @@
 /* ==========================================================================
    TIMELINE
    ========================================================================== */
-.timeline-container { 
-  position: relative; 
-  padding-left: 28px; 
-}
+.timeline-container { position: relative; padding-left: 28px; }
 
 .timeline-container::before { 
-  content: ''; 
-  position: absolute; left: 16px; top: 0; bottom: 0; 
-  width: 2px; 
-  background: linear-gradient(to bottom, var(--gold), transparent); 
-  opacity: 0.25; 
+  content: ''; position: absolute; left: 16px; top: 0; bottom: 0; 
+  width: 2px; background: linear-gradient(to bottom, var(--gold), transparent); opacity: 0.25; 
 }
 
 .timeline-item { 
-  position: relative; margin-bottom: 24px; 
-  padding: 16px; 
-  background: var(--glass-bg); 
-  border: 1px solid var(--border-subtle); 
-  border-radius: var(--radius-md); 
+  position: relative; margin-bottom: 24px; padding: 16px; 
+  background: var(--glass-bg); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); 
 }
 
 .timeline-item::before { 
-  content: ''; 
-  position: absolute; left: -22px; top: 24px; 
-  width: 10px; height: 10px; 
-  background: var(--gold); border-radius: 50%; 
+  content: ''; position: absolute; left: -22px; top: 24px; 
+  width: 10px; height: 10px; background: var(--gold); border-radius: 50%; 
 }
 
 .timeline-item:last-child { margin-bottom: 0; }
@@ -529,8 +551,7 @@
   display: inline-block; 
   background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end)); 
   color: #fff; font-size: 11px; font-weight: 700; 
-  padding: 4px 12px; border-radius: var(--radius-full); 
-  margin-bottom: 4px; 
+  padding: 4px 12px; border-radius: var(--radius-full); margin-bottom: 4px; 
 }
 
 .timeline-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
@@ -539,18 +560,12 @@
 /* ==========================================================================
    WHAT TO BRING
    ========================================================================== */
-.what-to-bring-list { 
-  display: flex; flex-wrap: wrap; gap: 8px; 
-  list-style: none; padding: 0;
-}
+.what-to-bring-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
 
 .what-to-bring-list li { 
   display: flex; align-items: center; gap: 8px; 
-  padding: 8px 18px; 
-  background: var(--glass-bg); 
-  border: 1px solid var(--border-subtle); 
-  border-radius: var(--radius-full); 
-  font-size: 12px; 
+  padding: 8px 18px; background: var(--glass-bg); 
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-full); font-size: 12px; 
 }
 
 .what-to-bring-list li i { color: var(--gold); font-size: 15px; }
@@ -558,63 +573,33 @@
 /* ==========================================================================
    REVIEWS
    ========================================================================== */
-.reviews-section { 
-  padding: 24px 0; 
-  border-top: 1px solid var(--border-subtle); 
-}
+.reviews-section { padding: 24px 0; border-top: 1px solid var(--border-subtle); }
 
 .reviews-header { 
-  display: flex; justify-content: space-between; 
-  align-items: center; margin-bottom: 16px; 
-  flex-wrap: wrap; gap: 8px; 
+  display: flex; justify-content: space-between; align-items: center; 
+  margin-bottom: 16px; flex-wrap: wrap; gap: 8px; 
 }
 
 .write-review-btn { 
-  display: flex; align-items: center; gap: 8px; 
-  padding: 10px 20px; 
+  display: flex; align-items: center; gap: 8px; padding: 10px 20px; 
   background: linear-gradient(135deg, var(--sunset-start), var(--sunset-end)); 
-  color: #fff; border: none; 
-  border-radius: var(--radius-full); 
-  font-weight: 600; font-size: 13px; 
-  cursor: pointer; transition: var(--transition);
+  color: #fff; border: none; border-radius: var(--radius-full); 
+  font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition);
 }
 
-.write-review-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-}
+.write-review-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
 
-.reviews-list { 
-  display: flex; flex-direction: column; 
-  gap: 8px; max-height: 400px; overflow-y: auto; 
-}
+.reviews-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
 
-.review-card {
-  background: #2d2d30;
-  border: 1px solid #3a3a3a;
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
+.review-card { background: #2d2d30; border: 1px solid #3a3a3a; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
 
-.review-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
+.review-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
 
-.review-card-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+.review-card-user { display: flex; align-items: center; gap: 12px; }
 
 .review-card-avatar {
-  width: 40px; height: 40px;
-  border-radius: 50%; overflow: hidden;
-  background: linear-gradient(135deg, #FF6B35, #FFA630);
-  flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%; overflow: hidden;
+  background: linear-gradient(135deg, #FF6B35, #FFA630); flex-shrink: 0;
 }
 
 .review-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -626,13 +611,10 @@
 }
 
 .review-card-user-name { font-weight: 600; color: #fff; font-size: 14px; }
-
 .review-card-stars { display: flex; gap: 2px; font-size: 11px; margin-top: 2px; }
 .review-card-stars .fas.fa-star { color: #f59e0b; }
 .review-card-stars .far.fa-star { color: #989b9f; }
-
 .review-card-date { font-size: 11px; color: #989b9f; }
-
 .review-card-comment { font-size: 13px; color: #a0a0a0; line-height: 1.6; margin: 0; }
 
 .empty-state { text-align: center; padding: 32px; color: var(--text-muted); }
@@ -657,26 +639,20 @@
    THIRD-PARTY
    ========================================================================== */
 .iti__country-list { 
-  background: var(--navy) !important; 
-  border: 1px solid var(--border-medium) !important; 
-  border-radius: 10px !important; 
+  background: var(--navy) !important; border: 1px solid var(--border-medium) !important; 
+  border-radius: 10px !important; z-index: 9999;
 }
-
 .iti__country { color: #fff !important; }
 
 .flatpickr-calendar { 
-  background: var(--navy) !important; 
-  border: 1px solid var(--border-medium) !important; 
-  border-radius: 12px !important; 
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important; 
+  background: var(--navy) !important; border: 1px solid var(--border-medium) !important; 
+  border-radius: 12px !important; box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important; 
   z-index: 99999 !important; 
 }
 
 .flatpickr-day { 
-  color: #e2e8f0 !important; 
-  background: var(--dark-slate) !important; 
-  border-radius: 8px !important; 
-  border: none !important; 
+  color: #e2e8f0 !important; background: var(--dark-slate) !important; 
+  border-radius: 8px !important; border: none !important; 
 }
 
 .flatpickr-day.selected { background: var(--gold) !important; color: #000 !important; }
@@ -684,62 +660,30 @@
 .flatpickr-month, .flatpickr-weekday { color: var(--gold) !important; }
 
 /* ==========================================================================
-   MOBILE RESPONSIVE
+   MOBILE
    ========================================================================== */
 @media (max-width: 768px) {
-  .tour-booking-container { 
-    grid-template-columns: 1fr; 
-    gap: 0; padding: 0; 
-  }
-  
-  .tour-gallery { 
-    border-radius: 0 0 48px 48px; 
-    margin-bottom: 0; 
-  }
-  
-  .swiper { 
-    height: 280px; 
-    border-radius: 0 0 28px 28px; 
-  }
+  .tour-booking-container { grid-template-columns: 1fr; gap: 0; padding: 0; }
+  .tour-gallery { border-radius: 0 0 48px 48px; margin-bottom: 0; }
+  .swiper { height: 280px; border-radius: 0 0 28px 28px; }
   
   .swiper-button-next, .swiper-button-prev { 
-    width: 38px; height: 38px; 
-    opacity: 1; 
-    background: rgba(0,0,0,0.5); 
+    width: 38px; height: 38px; opacity: 1; background: rgba(0,0,0,0.5); 
   }
-  
   .swiper-button-next { right: 10px; } 
   .swiper-button-prev { right: 54px; left: auto; }
   
   .swiper-pagination { 
-    bottom: 16px !important; 
-    right: auto !important;
-    left: 50% !important; 
-    transform: translateX(-50%); 
-    background: rgba(0,0,0,0.6); 
-    backdrop-filter: blur(10px); 
-    padding: 6px 18px; 
-    border-radius: 20px; 
-    display: flex; gap: 5px; 
-    width: auto !important; 
+    bottom: 16px !important; right: auto !important; left: 50% !important; 
+    transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); 
+    padding: 6px 18px; border-radius: 20px; display: flex; gap: 5px; width: auto !important; 
   }
   
-  .swiper-pagination-bullet { 
-    width: 6px; height: 6px; 
-    margin: 0 2px !important; 
-  }
-  
+  .swiper-pagination-bullet { width: 6px; height: 6px; margin: 0 2px !important; }
   .swiper-pagination-bullet-active { width: 22px; }
   
-  .thumbnails-overlay { 
-    left: 10px; right: auto;
-    gap: 6px; 
-  }
-  
-  .thumbnail-wrapper { 
-    width: 44px; height: 34px; 
-    border-radius: 6px; 
-  }
+  .thumbnails-overlay { left: 10px; right: auto; gap: 6px; }
+  .thumbnail-wrapper { width: 44px; height: 34px; border-radius: 6px; }
   
   .tour-info-section { padding: 16px; }
   .description-section { padding: 24px 16px; }
@@ -751,13 +695,12 @@
   .description-content p::before { width: 5px; height: 5px; top: 8px; }
   
   .included-grid { grid-template-columns: 1fr; }
-  
   .quick-info-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .info-card { padding: 12px 8px; }
   .info-card i { font-size: 18px; }
   .info-card strong { font-size: 11px; }
   
-  .custom-video-controls { height: 55px; padding: 0 10px; gap: 8px; }
+  .custom-video-controls { height: 44px; padding: 0 10px; gap: 8px; }
   .vc-btn { width: 30px; height: 30px; font-size: 12px; }
   .vc-time { font-size: 10px; min-width: 70px; }
   .vc-big-play { width: 60px; height: 60px; font-size: 22px; }
