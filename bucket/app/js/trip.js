@@ -1,5 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
+// Complete Version with Custom Video Controller
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -51,6 +52,8 @@ const TripDisplay = (() => {
   // ==========================================================================
   let swiper = null;
   let currentVideoSlide = null;
+  let currentPlayer = null;
+  let progressInterval = null;
   let tripData = {};
   let currentTrip = {};
   let tourTypes = {};
@@ -111,6 +114,13 @@ const TripDisplay = (() => {
       toast.style.transition = '0.3s';
       setTimeout(() => toast.remove(), 300);
     }, TOAST_DURATION);
+  }
+
+  function formatTime(seconds) {
+    if (isNaN(seconds)) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
   }
 
   // ==========================================================================
@@ -314,15 +324,12 @@ const TripDisplay = (() => {
   // ==========================================================================
   // YOUTUBE HELPERS
   // ==========================================================================
-  
   function extractYouTubeId(url) {
     if (!url) return null;
     url = url.trim();
     
-    // Direct ID (11 characters)
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
     
-    // Extract from URL
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
     ];
@@ -335,100 +342,280 @@ const TripDisplay = (() => {
     return null;
   }
 
-  /**
-   * Get video thumbnail - use custom if provided, otherwise use YouTube auto-thumbnail
-   */
   function getVideoThumbnail(videoData, videoId) {
-    // لو فيه thumbnail مخصص، استخدمه
     if (videoData.thumbnail && videoData.thumbnail.trim()) {
       return videoData.thumbnail.trim();
     }
-    
-    // غير كده، استخدم الصورة التلقائية من YouTube
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   }
 
   // ==========================================================================
-  // GALLERY
+  // CUSTOM VIDEO PLAYER
   // ==========================================================================
-  
-  function createSlideElement(type, data, index) {
-    const slide = document.createElement('div');
-    slide.className = 'swiper-slide';
-    if (type === 'video') slide.classList.add('swiper-slide-video');
+  function createCustomVideoPlayer(slide, videoId) {
+    const container = document.createElement('div');
+    container.className = 'video-container';
     
-    slide.setAttribute('data-type', type);
-    slide.setAttribute('data-index', index);
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.id = 'yt-player-' + Date.now();
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=0&showinfo=0&enablejsapi=1&origin=${window.location.origin}`;
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
     
-    if (type === 'video') {
-      const videoUrl = data.videoUrl || data.url || '';
-      const videoId = extractYouTubeId(videoUrl);
-      
-      if (!videoId) {
-        console.warn('Could not extract video ID from:', videoUrl);
-        return null;
-      }
-      
-      // Get thumbnail (custom or auto)
-      const thumbnailUrl = getVideoThumbnail(data, videoId);
-      
-      slide.setAttribute('data-video-id', videoId);
-      slide.setAttribute('data-thumbnail', thumbnailUrl);
-      slide.setAttribute('data-video-url', videoUrl);
-      
-      // إذا كانت صورة مخصصة، نخزنها عشان نعرف
-      if (data.thumbnail && data.thumbnail.trim()) {
-        slide.setAttribute('data-custom-thumbnail', 'true');
-      }
-      
-      // Thumbnail image with fallback
-      const img = document.createElement('img');
-      img.src = thumbnailUrl;
-      img.alt = `Video ${index + 1}`;
-      img.loading = 'lazy';
-      
-      // Fallback for thumbnail if it fails to load
-      img.onerror = function() {
-        // If custom thumbnail failed, try YouTube auto-thumbnail
-        if (slide.getAttribute('data-custom-thumbnail') === 'true') {
-          img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-          slide.setAttribute('data-custom-thumbnail', 'false');
-          slide.setAttribute('data-thumbnail', img.src);
-        } else {
-          // Last resort - SVG placeholder
-          img.src = 'data:image/svg+xml,' + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
-              <rect fill="#1a1a2e" width="480" height="360"/>
-              <circle cx="240" cy="180" r="50" fill="rgba(255,255,255,0.1)"/>
-              <polygon points="230,160 230,200 265,180" fill="rgba(255,255,255,0.5)"/>
-            </svg>
-          `);
+    // Big play button
+    const bigPlay = document.createElement('div');
+    bigPlay.className = 'video-big-play';
+    bigPlay.innerHTML = '<i class="fas fa-play"></i>';
+    
+    // Controls bar
+    const controlsBar = document.createElement('div');
+    controlsBar.className = 'video-controls-bar';
+    
+    // Play/Pause
+    const playPauseBtn = document.createElement('button');
+    playPauseBtn.className = 'video-play-pause';
+    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    
+    // Progress
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'video-progress-container';
+    const progressFill = document.createElement('div');
+    progressFill.className = 'video-progress-fill';
+    progressFill.style.width = '0%';
+    progressContainer.appendChild(progressFill);
+    
+    // Time
+    const timeDisplay = document.createElement('span');
+    timeDisplay.className = 'video-time';
+    timeDisplay.textContent = '00:00 / 00:00';
+    
+    // Volume
+    const volumeBtn = document.createElement('button');
+    volumeBtn.className = 'video-volume-btn';
+    volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+    
+    // Fullscreen
+    const fullscreenBtn = document.createElement('button');
+    fullscreenBtn.className = 'video-fullscreen-btn';
+    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    
+    // Assemble controls
+    controlsBar.appendChild(playPauseBtn);
+    controlsBar.appendChild(progressContainer);
+    controlsBar.appendChild(timeDisplay);
+    controlsBar.appendChild(volumeBtn);
+    controlsBar.appendChild(fullscreenBtn);
+    
+    // Close button
+    const closeBtn = document.createElement('div');
+    closeBtn.className = 'video-close-btn';
+    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    
+    // Toggle button
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'video-toggle-controls';
+    toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
+    
+    container.appendChild(iframe);
+    container.appendChild(bigPlay);
+    container.appendChild(controlsBar);
+    container.appendChild(closeBtn);
+    container.appendChild(toggleBtn);
+    
+    // Initialize YouTube player
+    let player;
+    let progressInterval;
+    let isMuted = false;
+    
+    function initPlayer() {
+      player = new YT.Player(iframe.id, {
+        events: {
+          'onReady': onReady,
+          'onStateChange': onStateChange
         }
-      };
-      
-      slide.appendChild(img);
-      
-      // Play button
-      const playBtn = document.createElement('div');
-      playBtn.className = 'play-button';
-      playBtn.innerHTML = '<i class="fas fa-play"></i>';
-      playBtn.onclick = function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        playVideoInSlide(slide);
-      };
-      slide.appendChild(playBtn);
-      
-    } else {
-      // Image slide
-      const img = document.createElement('img');
-      img.src = data;
-      img.alt = `Photo ${index + 1}`;
-      img.loading = 'lazy';
-      slide.appendChild(img);
+      });
     }
     
-    return slide;
+    function onReady(event) {
+      event.target.playVideo();
+      startProgressUpdate();
+    }
+    
+    function onStateChange(event) {
+      switch(event.data) {
+        case YT.PlayerState.PLAYING:
+          bigPlay.classList.add('hidden');
+          playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          startProgressUpdate();
+          break;
+        case YT.PlayerState.PAUSED:
+          bigPlay.classList.remove('hidden');
+          playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+          stopProgressUpdate();
+          break;
+        case YT.PlayerState.ENDED:
+          bigPlay.classList.remove('hidden');
+          playPauseBtn.innerHTML = '<i class="fas fa-redo"></i>';
+          stopProgressUpdate();
+          break;
+      }
+    }
+    
+    function startProgressUpdate() {
+      stopProgressUpdate();
+      progressInterval = setInterval(() => {
+        if (player && player.getCurrentTime && player.getDuration) {
+          const current = player.getCurrentTime();
+          const duration = player.getDuration();
+          const progress = (current / duration) * 100;
+          progressFill.style.width = progress + '%';
+          timeDisplay.textContent = formatTime(current) + ' / ' + formatTime(duration);
+        }
+      }, 500);
+    }
+    
+    function stopProgressUpdate() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+    
+    // Event listeners
+    playPauseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!player) return;
+      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    });
+    
+    bigPlay.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (player) player.playVideo();
+    });
+    
+    progressContainer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!player || !player.getDuration) return;
+      const rect = progressContainer.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      player.seekTo(player.getDuration() * percent);
+    });
+    
+    volumeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!player) return;
+      isMuted = !isMuted;
+      if (isMuted) {
+        player.mute();
+        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+      } else {
+        player.unMute();
+        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+      }
+    });
+    
+    fullscreenBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
+    });
+    
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      stopVideoInSlide(slide);
+    });
+    
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      toggleControls();
+      toggleBtn.innerHTML = controlsVisible ? 
+        '<i class="fas fa-eye-slash"></i> Hide Controls' : 
+        '<i class="fas fa-eye"></i> Show Controls';
+    });
+    
+    // Keyboard handler
+    function keyHandler(e) {
+      if (!player) return;
+      
+      switch(e.key) {
+        case ' ':
+          e.preventDefault();
+          if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+          } else {
+            player.playVideo();
+          }
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          player.seekTo(player.getCurrentTime() - 10);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          player.seekTo(player.getCurrentTime() + 10);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          player.setVolume(Math.min(100, player.getVolume() + 10));
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          player.setVolume(Math.max(0, player.getVolume() - 10));
+          break;
+        case 'f':
+          e.preventDefault();
+          if (container.requestFullscreen) container.requestFullscreen();
+          break;
+        case 'm':
+          e.preventDefault();
+          isMuted = !isMuted;
+          if (isMuted) {
+            player.mute();
+            volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+          } else {
+            player.unMute();
+            volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+          }
+          break;
+      }
+    }
+    
+    document.addEventListener('keydown', keyHandler);
+    
+    // Initialize player
+    if (window.YT && window.YT.Player) {
+      initPlayer();
+    } else {
+      // Wait for API
+      const origCallback = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function() {
+        if (origCallback) origCallback();
+        initPlayer();
+      };
+    }
+    
+    // Store cleanup function
+    slide._videoCleanup = function() {
+      document.removeEventListener('keydown', keyHandler);
+      stopProgressUpdate();
+      if (player) {
+        player.destroy();
+        player = null;
+      }
+    };
+    
+    return container;
   }
 
   function playVideoInSlide(slide) {
@@ -449,42 +636,17 @@ const TripDisplay = (() => {
     
     slide.innerHTML = '';
     
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
-    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
-    
-    // Close button
-    const closeBtn = document.createElement('div');
-    closeBtn.className = 'video-close-btn';
-    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-    closeBtn.onclick = function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      stopVideoInSlide(slide);
-    };
-    
-    // Toggle controls button
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'video-toggle-controls';
-    toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show Controls';
-    toggleBtn.onclick = function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      toggleControls();
-      toggleBtn.innerHTML = controlsVisible ? 
-        '<i class="fas fa-eye-slash"></i> Hide Controls' : 
-        '<i class="fas fa-eye"></i> Show Controls';
-    };
-    
-    slide.appendChild(iframe);
-    slide.appendChild(closeBtn);
-    slide.appendChild(toggleBtn);
+    const playerContainer = createCustomVideoPlayer(slide, videoId);
+    slide.appendChild(playerContainer);
   }
 
   function stopVideoInSlide(slide) {
     if (!slide) return;
+    
+    if (slide._videoCleanup) {
+      slide._videoCleanup();
+      slide._videoCleanup = null;
+    }
     
     const videoId = slide.getAttribute('data-video-id');
     const thumbnailUrl = slide.getAttribute('data-thumbnail');
@@ -518,12 +680,88 @@ const TripDisplay = (() => {
     }
     
     currentVideoSlide = null;
+    currentPlayer = null;
+    progressInterval = null;
   }
 
   function stopAllVideos() {
     if (currentVideoSlide) {
       stopVideoInSlide(currentVideoSlide);
     }
+  }
+
+  // ==========================================================================
+  // GALLERY
+  // ==========================================================================
+  function createSlideElement(type, data, index) {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    if (type === 'video') slide.classList.add('swiper-slide-video');
+    
+    slide.setAttribute('data-type', type);
+    slide.setAttribute('data-index', index);
+    
+    if (type === 'video') {
+      const videoUrl = data.videoUrl || data.url || '';
+      const videoId = extractYouTubeId(videoUrl);
+      
+      if (!videoId) {
+        console.warn('Could not extract video ID from:', videoUrl);
+        return null;
+      }
+      
+      const thumbnailUrl = getVideoThumbnail(data, videoId);
+      
+      slide.setAttribute('data-video-id', videoId);
+      slide.setAttribute('data-thumbnail', thumbnailUrl);
+      slide.setAttribute('data-video-url', videoUrl);
+      
+      if (data.thumbnail && data.thumbnail.trim()) {
+        slide.setAttribute('data-custom-thumbnail', 'true');
+      }
+      
+      const img = document.createElement('img');
+      img.src = thumbnailUrl;
+      img.alt = `Video ${index + 1}`;
+      img.loading = 'lazy';
+      
+      img.onerror = function() {
+        if (slide.getAttribute('data-custom-thumbnail') === 'true') {
+          img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          slide.setAttribute('data-custom-thumbnail', 'false');
+          slide.setAttribute('data-thumbnail', img.src);
+        } else {
+          img.src = 'data:image/svg+xml,' + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+              <rect fill="#1a1a2e" width="480" height="360"/>
+              <circle cx="240" cy="180" r="50" fill="rgba(255,255,255,0.1)"/>
+              <polygon points="230,160 230,200 265,180" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          `);
+        }
+      };
+      
+      slide.appendChild(img);
+      
+      const playBtn = document.createElement('div');
+      playBtn.className = 'play-button';
+      playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      playBtn.onclick = function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        playVideoInSlide(slide);
+      };
+      slide.appendChild(playBtn);
+      
+    } else {
+      const img = document.createElement('img');
+      img.src = data;
+      img.alt = `Photo ${index + 1}`;
+      img.loading = 'lazy';
+      slide.appendChild(img);
+    }
+    
+    return slide;
   }
 
   function createThumbnails() {
@@ -597,10 +835,8 @@ const TripDisplay = (() => {
   }
 
   function initGallery(media) {
-    console.log('🎬 Initializing gallery...');
-    
     if (!checkSwiperDependency()) {
-      console.error('❌ Swiper not loaded');
+      console.error('Swiper not loaded');
       return;
     }
     
@@ -608,7 +844,7 @@ const TripDisplay = (() => {
     const wrapper = document.querySelector('.swiper-wrapper');
     
     if (!swiperEl || !wrapper) {
-      console.error('❌ Swiper elements not found');
+      console.error('Swiper elements not found');
       return;
     }
     
@@ -622,9 +858,8 @@ const TripDisplay = (() => {
     
     let slideCount = 0;
     
-    // Add images
     if (media?.images && Array.isArray(media.images)) {
-      media.images.forEach((imgSrc, i) => {
+      media.images.forEach((imgSrc) => {
         if (!imgSrc) return;
         const slide = createSlideElement('image', imgSrc, slideCount);
         if (slide) {
@@ -634,14 +869,9 @@ const TripDisplay = (() => {
       });
     }
     
-    // Add videos
     if (media?.videos && Array.isArray(media.videos)) {
-      media.videos.forEach((videoData, i) => {
-        if (!videoData.videoUrl && !videoData.url) {
-          console.warn('Video missing URL:', videoData);
-          return;
-        }
-        
+      media.videos.forEach((videoData) => {
+        if (!videoData.videoUrl && !videoData.url) return;
         const slide = createSlideElement('video', videoData, slideCount);
         if (slide) {
           wrapper.appendChild(slide);
@@ -691,7 +921,7 @@ const TripDisplay = (() => {
         },
       });
     } catch (error) {
-      console.error('❌ Swiper init error:', error);
+      console.error('Swiper init error:', error);
       createThumbnails();
     }
   }
@@ -1071,10 +1301,11 @@ const TripDisplay = (() => {
         const modal = document.querySelector(SELECTORS.reviewModal);
         if (modal && !modal.classList.contains('hidden')) {
           closeReviewModal();
+          return;
         }
       }
       
-      if (swiper && document.activeElement === document.body) {
+      if (swiper && document.activeElement === document.body && !currentVideoSlide) {
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
           stopAllVideos();
