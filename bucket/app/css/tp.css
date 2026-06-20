@@ -1,6 +1,6 @@
 /* ==========================================================================
    DISCOVER SHARM - Trip Display & Gallery System
-   Complete Stylesheet with Custom Plyr Theme
+   Complete Stylesheet - Natural Plyr Design
    ========================================================================== */
 
 :root {
@@ -147,9 +147,8 @@
 .thumbnail-wrapper[data-type="video"].active { border-color: #ff0000; box-shadow: 0 0 0 2px rgba(255,0,0,0.3); }
 
 /* ==========================================================================
-   CUSTOM PLYR VIDEO PLAYER
+   PLYR VIDEO PLAYER - NATURAL DESIGN
    ========================================================================== */
-
 .video-player-container {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
   background: #000; z-index: 10;
@@ -169,217 +168,16 @@
 .video-player-container:hover .video-close-btn { opacity: 1; }
 .video-close-btn:hover { background: #ff0000; border-color: #ff0000; transform: scale(1.1); }
 
-/* ==========================================================================
-   PLYR OVERRIDES
-   ========================================================================== */
+/* Plyr - Keep Default Design */
 .plyr {
   width: 100% !important;
   height: 100% !important;
   position: absolute !important;
   top: 0 !important; left: 0 !important;
-  border-radius: 0 !important;
-  font-family: 'Segoe UI', system-ui, sans-serif !important;
 }
 
 .plyr__video-wrapper { height: 100% !important; }
-.plyr iframe { height: 100% !important; pointer-events: auto !important; }
-
-/* Controls Bar */
-.plyr--video .plyr__controls {
-  background: linear-gradient(transparent, rgba(10,14,26,0.97)) !important;
-  padding: 20px 16px 12px !important;
-  border: none !important;
-  gap: 8px !important;
-  transition: opacity 0.3s ease !important;
-}
-
-/* Control Buttons */
-.plyr__control {
-  color: #fff !important;
-  background: transparent !important;
-  border-radius: 50% !important;
-  width: 36px !important; height: 36px !important;
-  padding: 7px !important;
-  transition: all 0.2s ease !important;
-  flex-shrink: 0 !important;
-}
-
-.plyr__control:hover {
-  background: rgba(255,255,255,0.1) !important;
-  transform: scale(1.1) !important;
-}
-
-.plyr__control svg { width: 18px !important; height: 18px !important; }
-
-/* Play Button Overlay */
-.plyr__control--overlaid {
-  width: 80px !important; height: 80px !important;
-  background: rgba(0,0,0,0.5) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 2px solid rgba(255,255,255,0.3) !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
-}
-
-.plyr__control--overlaid:hover {
-  background: var(--sunset-start) !important;
-  border-color: var(--sunset-start) !important;
-  transform: scale(1.1) !important;
-  box-shadow: 0 8px 32px rgba(255,107,53,0.6) !important;
-}
-
-.plyr__control--overlaid svg { width: 32px !important; height: 32px !important; color: #fff !important; }
-
-/* Progress Container */
-.plyr__progress {
-  flex: 1 !important;
-  margin: 0 4px !important;
-}
-
-.plyr__progress__container {
-  height: 16px !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-/* Progress Bar - Base Track (GRAY) */
-.plyr__progress input[type="range"] {
-  height: 5px !important;
-  border-radius: 3px !important;
-  cursor: pointer !important;
-  transition: height 0.2s ease !important;
-}
-
-.plyr__progress input[type="range"]:hover { height: 8px !important; }
-
-.plyr__progress input[type="range"]::-webkit-slider-runnable-track {
-  background: rgba(255,255,255,0.2) !important;
-  border-radius: 3px !important;
-  height: 100% !important;
-}
-
-.plyr__progress input[type="range"]::-moz-range-track {
-  background: rgba(255,255,255,0.2) !important;
-  border-radius: 3px !important;
-  height: 100% !important;
-}
-
-/* Progress Fill - ORANGE (played part) */
-.plyr__progress__played {
-  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end)) !important;
-  border-radius: 3px !important;
-}
-
-/* Buffered */
-.plyr__progress__buffer {
-  background: rgba(255,255,255,0.08) !important;
-  border-radius: 3px !important;
-}
-
-/* Progress Thumb */
-.plyr__progress input[type="range"]::-webkit-slider-thumb {
-  width: 14px !important; height: 14px !important;
-  background: #fff !important;
-  border-radius: 50% !important;
-  margin-top: -5px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
-  opacity: 0 !important;
-  transition: opacity 0.2s ease !important;
-}
-
-.plyr__progress input[type="range"]:hover::-webkit-slider-thumb { opacity: 1 !important; }
-
-.plyr__progress input[type="range"]::-moz-range-thumb {
-  width: 14px !important; height: 14px !important;
-  background: #fff !important;
-  border-radius: 50% !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
-  opacity: 0 !important;
-  transition: opacity 0.2s ease !important;
-}
-
-.plyr__progress input[type="range"]:hover::-moz-range-thumb { opacity: 1 !important; }
-
-/* Time Display */
-.plyr__time {
-  color: rgba(255,255,255,0.9) !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.5px !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-.plyr__time--current { color: #fff !important; }
-
-/* Volume */
-.plyr__volume {
-  flex: 0 0 auto !important;
-  width: auto !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-}
-
-.plyr__volume input[type="range"] {
-  width: 60px !important;
-  height: 5px !important;
-  border-radius: 3px !important;
-}
-
-.plyr__volume input[type="range"]::-webkit-slider-runnable-track {
-  background: rgba(255,255,255,0.2) !important;
-  border-radius: 3px !important;
-}
-
-.plyr__volume input[type="range"]::-webkit-slider-thumb {
-  width: 12px !important; height: 12px !important;
-  background: #fff !important;
-  border-radius: 50% !important;
-  margin-top: -4px !important;
-}
-
-/* Fullscreen */
-.plyr__control[data-plyr="fullscreen"] { margin-left: auto !important; }
-
-/* Tooltip */
-.plyr__tooltip {
-  background: rgba(0,0,0,0.9) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
-}
-
-.plyr__tooltip::before { border-top-color: rgba(0,0,0,0.9) !important; }
-
-/* Menu */
-.plyr__menu__container {
-  background: rgba(26,31,53,0.97) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  border-radius: 12px !important;
-  padding: 8px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
-}
-
-.plyr__menu__container button {
-  color: #fff !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  font-size: 13px !important;
-  transition: all 0.2s ease !important;
-}
-
-.plyr__menu__container button:hover { background: rgba(255,255,255,0.1) !important; }
-
-/* Badge */
-.plyr__badge { background: var(--sunset-start) !important; border-radius: 4px !important; font-size: 10px !important; }
+.plyr iframe { height: 100% !important; }
 
 /* ==========================================================================
    TOUR INFO
@@ -515,13 +313,5 @@
   .info-card { padding: 12px 8px; }
   .info-card i { font-size: 18px; }
   .info-card strong { font-size: 11px; }
-  
-  .plyr--video .plyr__controls { padding: 16px 10px 8px !important; }
-  .plyr__control { width: 30px !important; height: 30px !important; padding: 5px !important; }
-  .plyr__control svg { width: 14px !important; height: 14px !important; }
-  .plyr__time { font-size: 10px !important; }
-  .plyr__volume input[type="range"] { width: 40px !important; }
-  .plyr__control--overlaid { width: 60px !important; height: 60px !important; }
-  .plyr__control--overlaid svg { width: 24px !important; height: 24px !important; }
   .video-close-btn { width: 36px; height: 36px; top: 10px; right: 10px; font-size: 14px; }
 }
