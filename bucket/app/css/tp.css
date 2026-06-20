@@ -277,7 +277,7 @@
 
 
 .plyr--video .plyr__control:focus-visible, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true] {
-    background: var(--plyr-video-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, #FF6B35 !important)));
+    background:  #FF6B35 !important;
     padding:10px;
     border-radius:50%;
     color: var(--plyr-video-control-color-hover, #fff);
