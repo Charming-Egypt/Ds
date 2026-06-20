@@ -1,6 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Trip Display & Reviews System
-// With Custom Video Controller
+// Complete with Custom Video Controller
 // ==========================================================================
 
 const TripDisplay = (() => {
@@ -52,6 +52,7 @@ const TripDisplay = (() => {
   let currentCurrency = 'EGP';
   let exchangeRates = { EGP: 1 };
   let ratesLoaded = false;
+  let currencyChangeHandler = null;
 
   // ==========================================================================
   // UTILITY
@@ -118,6 +119,64 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
+  // CURRENCY
+  // ==========================================================================
+  function getCurrentCurrencyFromHeader() {
+    if (window.SharmCurrency?.get) return window.SharmCurrency.get();
+    return localStorage.getItem('preferredCurrency') || 'EGP';
+  }
+
+  function getExchangeRatesFromHeader() {
+    return window.SharmCurrency?.rates || null;
+  }
+
+  function formatPrice(price) {
+    if (!ratesLoaded || currentCurrency === 'EGP') {
+      return parseFloat(price).toFixed(2) + ' EGP';
+    }
+    const converted = price * exchangeRates[currentCurrency];
+    switch (currentCurrency) {
+      case 'USD': return '$' + converted.toFixed(2);
+      case 'EUR': return '€' + converted.toFixed(2);
+      case 'GBP': return '£' + converted.toFixed(2);
+      default: return price.toFixed(2) + ' EGP';
+    }
+  }
+
+  function handleCurrencyChange(e) {
+    if (e.detail?.currency) {
+      currentCurrency = e.detail.currency;
+      if (e.detail.rates) {
+        exchangeRates = e.detail.rates;
+        ratesLoaded = true;
+      }
+      updatePriceDisplay();
+    }
+  }
+
+  function initCurrency() {
+    currentCurrency = getCurrentCurrencyFromHeader();
+    const rates = getExchangeRatesFromHeader();
+    if (rates) {
+      exchangeRates = rates;
+      ratesLoaded = true;
+    }
+    currencyChangeHandler = handleCurrencyChange;
+    window.addEventListener('currencyChanged', currencyChangeHandler);
+  }
+
+  // ==========================================================================
+  // DEPENDENCY CHECKS
+  // ==========================================================================
+  function checkFirebaseDependencies() {
+    return typeof auth !== 'undefined' && typeof db !== 'undefined';
+  }
+
+  function checkSwiperDependency() {
+    return typeof Swiper !== 'undefined';
+  }
+
+  // ==========================================================================
   // CUSTOM VIDEO PLAYER
   // ==========================================================================
   function playVideo(slide) {
@@ -129,67 +188,66 @@ const TripDisplay = (() => {
     stopAllVideos();
     currentVideoSlide = slide;
 
-    // Pause swiper
     if (swiper && swiper.autoplay) swiper.autoplay.stop();
     if (swiper && swiper.allowTouchMove !== undefined) swiper.allowTouchMove = false;
 
     slide.innerHTML = '';
 
-    // Create elements
+    // Wrapper
     const wrapper = document.createElement('div');
     wrapper.className = 'custom-video-wrapper';
 
+    // IFrame
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=0&enablejsapi=1&playsinline=1`;
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.className = 'custom-video-iframe';
 
+    // Overlay
     const overlay = document.createElement('div');
     overlay.className = 'custom-video-overlay';
 
+    // Controls bar
     const controls = document.createElement('div');
     controls.className = 'custom-video-controls';
 
-    // Play/Pause button
+    // Play/Pause
     const playPauseBtn = document.createElement('button');
     playPauseBtn.className = 'vc-btn vc-play';
     playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
 
-    // Progress bar
+    // Progress
     const progressWrap = document.createElement('div');
     progressWrap.className = 'vc-progress-wrap';
-
     const progressBar = document.createElement('div');
     progressBar.className = 'vc-progress-bar';
-
     const progressFill = document.createElement('div');
     progressFill.className = 'vc-progress-fill';
-
     progressBar.appendChild(progressFill);
     progressWrap.appendChild(progressBar);
 
-    // Time display
+    // Time
     const timeDisplay = document.createElement('span');
     timeDisplay.className = 'vc-time';
     timeDisplay.textContent = '00:00 / 00:00';
 
-    // Volume button
+    // Volume
     const volumeBtn = document.createElement('button');
     volumeBtn.className = 'vc-btn vc-volume';
     volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
 
-    // Fullscreen button
+    // Fullscreen
     const fullscreenBtn = document.createElement('button');
     fullscreenBtn.className = 'vc-btn vc-fullscreen';
     fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
 
-    // Close button
+    // Close
     const closeBtn = document.createElement('button');
     closeBtn.className = 'vc-btn vc-close';
     closeBtn.innerHTML = '<i class="fas fa-times"></i>';
 
-    // Assemble controls
+    // Assemble
     controls.appendChild(playPauseBtn);
     controls.appendChild(progressWrap);
     controls.appendChild(timeDisplay);
@@ -197,7 +255,7 @@ const TripDisplay = (() => {
     controls.appendChild(fullscreenBtn);
     controls.appendChild(closeBtn);
 
-    // Big center button
+    // Big play button
     const bigBtn = document.createElement('div');
     bigBtn.className = 'vc-big-play';
     bigBtn.innerHTML = '<i class="fas fa-pause"></i>';
@@ -224,20 +282,17 @@ const TripDisplay = (() => {
           },
           onStateChange: function(event) {
             if (event.data === 1) {
-              // Playing
               isPlaying = true;
               bigBtn.classList.add('hidden');
               playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
               startProgress();
             } else if (event.data === 2) {
-              // Paused
               isPlaying = false;
               bigBtn.classList.remove('hidden');
               bigBtn.innerHTML = '<i class="fas fa-play"></i>';
               playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
               stopProgress();
             } else if (event.data === 0) {
-              // Ended
               isPlaying = false;
               bigBtn.classList.remove('hidden');
               bigBtn.innerHTML = '<i class="fas fa-redo"></i>';
@@ -270,9 +325,7 @@ const TripDisplay = (() => {
           progressFill.style.width = Math.min(100, (current / duration) * 100) + '%';
           timeDisplay.textContent = formatTime(current) + ' / ' + formatTime(duration);
         }
-      } catch (e) {
-        // Ignore
-      }
+      } catch (e) {}
     }
 
     function showControlsTemp() {
@@ -287,14 +340,11 @@ const TripDisplay = (() => {
       }, 3000);
     }
 
-    // Event listeners
+    // Events
     overlay.addEventListener('click', () => {
       if (!player) return;
-      if (isPlaying) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
+      if (isPlaying) player.pauseVideo();
+      else player.playVideo();
       showControlsTemp();
     });
 
@@ -302,34 +352,23 @@ const TripDisplay = (() => {
 
     overlay.addEventListener('dblclick', () => {
       try {
-        if (wrapper.requestFullscreen) {
-          wrapper.requestFullscreen();
-        } else if (wrapper.webkitRequestFullscreen) {
-          wrapper.webkitRequestFullscreen();
-        }
-      } catch (e) {
-        // Ignore
-      }
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+      } catch (e) {}
     });
 
     playPauseBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!player) return;
-      if (isPlaying) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
+      if (isPlaying) player.pauseVideo();
+      else player.playVideo();
     });
 
     bigBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!player) return;
-      if (isPlaying) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
-      }
+      if (isPlaying) player.pauseVideo();
+      else player.playVideo();
     });
 
     progressWrap.addEventListener('click', (e) => {
@@ -357,14 +396,9 @@ const TripDisplay = (() => {
     fullscreenBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       try {
-        if (wrapper.requestFullscreen) {
-          wrapper.requestFullscreen();
-        } else if (wrapper.webkitRequestFullscreen) {
-          wrapper.webkitRequestFullscreen();
-        }
-      } catch (e) {
-        // Ignore
-      }
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+      } catch (e) {}
     });
 
     closeBtn.addEventListener('click', (e) => {
@@ -372,16 +406,13 @@ const TripDisplay = (() => {
       stopVideo(slide);
     });
 
-    // Keyboard controls
+    // Keyboard
     function keyHandler(e) {
       if (!currentVideoSlide) return;
       switch (e.key) {
         case ' ':
           e.preventDefault();
-          if (player) {
-            if (isPlaying) player.pauseVideo();
-            else player.playVideo();
-          }
+          if (player) isPlaying ? player.pauseVideo() : player.playVideo();
           break;
         case 'ArrowLeft':
           e.preventDefault();
@@ -402,9 +433,7 @@ const TripDisplay = (() => {
           break;
         case 'f':
           e.preventDefault();
-          try {
-            if (wrapper.requestFullscreen) wrapper.requestFullscreen();
-          } catch (e) {}
+          try { if (wrapper.requestFullscreen) wrapper.requestFullscreen(); } catch (e) {}
           break;
       }
     }
@@ -415,19 +444,17 @@ const TripDisplay = (() => {
       document.removeEventListener('keydown', keyHandler);
       stopProgress();
       clearTimeout(hideTimer);
-      if (player) {
-        try { player.destroy(); } catch (e) {}
-      }
+      if (player) { try { player.destroy(); } catch (e) {} }
       if (swiper && swiper.allowTouchMove !== undefined) swiper.allowTouchMove = true;
     };
 
-    // Initialize YouTube Player
+    // Init
     if (window.YT && window.YT.Player) {
       initPlayer();
     } else {
-      const originalCallback = window.onYouTubeIframeAPIReady;
+      const orig = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = function() {
-        if (originalCallback) originalCallback();
+        if (orig) orig();
         initPlayer();
       };
     }
@@ -447,7 +474,6 @@ const TripDisplay = (() => {
 
     if (!videoId || !thumbnailUrl) return;
 
-    // Resume swiper
     if (swiper && swiper.autoplay) swiper.autoplay.start();
     if (swiper && swiper.allowTouchMove !== undefined) swiper.allowTouchMove = true;
 
@@ -473,9 +499,7 @@ const TripDisplay = (() => {
   }
 
   function stopAllVideos() {
-    if (currentVideoSlide) {
-      stopVideo(currentVideoSlide);
-    }
+    if (currentVideoSlide) stopVideo(currentVideoSlide);
   }
 
   // ==========================================================================
@@ -533,7 +557,6 @@ const TripDisplay = (() => {
   function createThumbnails() {
     const container = document.querySelector(SELECTORS.thumbnailsOverlay);
     if (!container) return;
-
     container.innerHTML = '';
 
     const slides = document.querySelectorAll('.swiper-slide');
@@ -594,7 +617,7 @@ const TripDisplay = (() => {
   }
 
   function initGallery(media) {
-    if (typeof Swiper === 'undefined') return;
+    if (!checkSwiperDependency()) return;
 
     const wrapper = document.querySelector(SELECTORS.swiperWrapper);
     if (!wrapper) return;
@@ -606,34 +629,24 @@ const TripDisplay = (() => {
     }
 
     wrapper.innerHTML = '';
-
     let slideCount = 0;
 
-    // Add images
     if (media?.images && Array.isArray(media.images)) {
       media.images.forEach(imgSrc => {
         if (!imgSrc) return;
         const slide = createSlide('image', imgSrc, slideCount);
-        if (slide) {
-          wrapper.appendChild(slide);
-          slideCount++;
-        }
+        if (slide) { wrapper.appendChild(slide); slideCount++; }
       });
     }
 
-    // Add videos
     if (media?.videos && Array.isArray(media.videos)) {
       media.videos.forEach(videoData => {
         if (!videoData.videoUrl && !videoData.url) return;
         const slide = createSlide('video', videoData, slideCount);
-        if (slide) {
-          wrapper.appendChild(slide);
-          slideCount++;
-        }
+        if (slide) { wrapper.appendChild(slide); slideCount++; }
       });
     }
 
-    // Placeholder
     if (slideCount === 0) {
       const placeholder = document.createElement('div');
       placeholder.className = 'swiper-slide';
@@ -643,29 +656,27 @@ const TripDisplay = (() => {
       slideCount = 1;
     }
 
-    // Initialize Swiper
-    swiper = new Swiper('.swiper', {
-      slidesPerView: 1,
-      loop: slideCount > 1,
-      spaceBetween: 0,
-      speed: 400,
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev'
-      },
-      on: {
-        init: createThumbnails,
-        slideChange: function() {
-          stopAllVideos();
-          updateActiveThumbnail(this.realIndex);
-        },
-        slideChangeTransitionStart: stopAllVideos
-      }
-    });
+    try {
+      swiper = new Swiper('.swiper', {
+        slidesPerView: 1,
+        loop: slideCount > 1,
+        spaceBetween: 0,
+        speed: 400,
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        on: {
+          init: createThumbnails,
+          slideChange: function() {
+            stopAllVideos();
+            updateActiveThumbnail(this.realIndex);
+          },
+          slideChangeTransitionStart: stopAllVideos
+        }
+      });
+    } catch (error) {
+      console.error('Swiper init error:', error);
+      createThumbnails();
+    }
   }
 
   // ==========================================================================
@@ -788,11 +799,13 @@ const TripDisplay = (() => {
   }
 
   async function loadReviews() {
-    if (!tripSlug || typeof db === 'undefined') return;
+    if (!tripSlug || !checkFirebaseDependencies()) return;
     showReviewSkeletons();
+
     try {
       const snap = await db.ref('trip-reviews/' + tripSlug).once('value');
       const data = snap.val();
+
       if (data?.reviews) {
         tripReviews = Object.entries(data.reviews)
           .map(([id, review]) => ({ id, ...review }))
@@ -803,7 +816,9 @@ const TripDisplay = (() => {
         tripReviews = [];
         updateStarsSummary(0, 0);
       }
+
       renderReviews();
+
       if (typeof auth !== 'undefined' && auth.currentUser) {
         currentUserReview = tripReviews.find(r => r.userId === auth.currentUser.uid);
         const btn = document.querySelector(SELECTORS.openReviewBtn);
@@ -814,6 +829,7 @@ const TripDisplay = (() => {
         }
       }
     } catch (error) {
+      console.error('Failed to load reviews:', error);
       renderReviews();
     }
   }
@@ -821,13 +837,16 @@ const TripDisplay = (() => {
   function updateStarsSummary(average, count) {
     const container = document.querySelector(SELECTORS.avgStars);
     if (!container) return;
+
     const full = Math.floor(average);
     const half = average % 1 >= 0.5;
     const empty = 5 - full - (half ? 1 : 0);
-    container.innerHTML = 
+
+    container.innerHTML =
       '<i class="fas fa-star"></i>'.repeat(full) +
       (half ? '<i class="fas fa-star-half-alt"></i>' : '') +
       '<i class="far fa-star"></i>'.repeat(empty);
+
     const countEl = document.querySelector(SELECTORS.reviewsCountText);
     if (countEl) {
       countEl.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
@@ -837,20 +856,25 @@ const TripDisplay = (() => {
   function renderReviews() {
     const container = document.querySelector(SELECTORS.reviewsListContainer);
     if (!container) return;
+
     if (!tripReviews.length) {
       container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><p>No reviews yet</p><span>Be the first to review this trip</span></div>';
       return;
     }
+
     container.innerHTML = tripReviews.map(review => {
       const date = new Date(review.date);
       const dateStr = isNaN(date.getTime()) ? 'N/A' :
         `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
       const userName = review.userName || 'Traveler';
       const initial = userName.charAt(0).toUpperCase();
       const photoUrl = getUserPhotoUrl(review.userId);
+
       const starsHtml = Array(5).fill().map((_, i) =>
         i < review.rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>'
       ).join('');
+
       return `
         <div class="review-card">
           <div class="review-card-header">
@@ -906,6 +930,7 @@ const TripDisplay = (() => {
       star.addEventListener('click', () => {
         const rating = parseInt(star.dataset.rating);
         document.querySelector(SELECTORS.ratingValue).value = rating;
+
         starsContainer.querySelectorAll('i').forEach((s, i) => {
           if (i < rating) {
             s.classList.add('active', 'fas');
@@ -933,7 +958,10 @@ const TripDisplay = (() => {
   }
 
   async function submitReview() {
-    if (typeof db === 'undefined') return;
+    if (!checkFirebaseDependencies()) {
+      showToast('System not fully loaded.', 'error');
+      return;
+    }
 
     const voucher = document.querySelector(SELECTORS.voucherInput)?.value?.trim()?.toUpperCase();
     if (!voucher || !/^DS_[A-Z0-9]{8,}$/.test(voucher)) {
@@ -956,6 +984,7 @@ const TripDisplay = (() => {
     try {
       const snap = await db.ref('trip-bookings/' + voucher).once('value');
       const booking = snap.val();
+
       if (!booking || booking.uid !== auth.currentUser.uid) {
         showToast('Invalid voucher number', 'error');
         return;
@@ -963,6 +992,7 @@ const TripDisplay = (() => {
 
       const user = auth.currentUser;
       let userName = 'Traveler';
+
       try {
         const userSnap = await db.ref('egy_user/' + user.uid).once('value');
         const userData = userSnap.val();
@@ -1005,15 +1035,22 @@ const TripDisplay = (() => {
       showToast('Thank you for your review!', 'success');
 
     } catch (error) {
+      console.error('Error submitting review:', error);
       showToast('Failed to submit review', 'error');
     }
   }
 
   function resetReviewForm() {
-    document.querySelector(SELECTORS.voucherInput).value = '';
-    document.querySelector(SELECTORS.commentInput).value = '';
-    document.querySelector(SELECTORS.ratingValue).value = '0';
-    document.querySelector(SELECTORS.charCount).textContent = '0';
+    const voucherInput = document.querySelector(SELECTORS.voucherInput);
+    const commentInput = document.querySelector(SELECTORS.commentInput);
+    const ratingValue = document.querySelector(SELECTORS.ratingValue);
+    const charCount = document.querySelector(SELECTORS.charCount);
+
+    if (voucherInput) voucherInput.value = '';
+    if (commentInput) commentInput.value = '';
+    if (ratingValue) ratingValue.value = '0';
+    if (charCount) charCount.textContent = '0';
+
     document.querySelectorAll(`${SELECTORS.starSelector} i`).forEach(s => {
       s.classList.remove('active', 'fas');
       s.classList.add('far');
@@ -1031,13 +1068,27 @@ const TripDisplay = (() => {
       btn.addEventListener('click', closeReviewModal);
     });
     document.querySelector(SELECTORS.cancelReviewBtn)?.addEventListener('click', closeReviewModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.querySelector(SELECTORS.reviewModal);
+        if (modal && !modal.classList.contains('hidden')) {
+          closeReviewModal();
+        }
+      }
+    });
   }
 
   // ==========================================================================
   // CLEANUP
   // ==========================================================================
   function cleanup() {
+    if (currencyChangeHandler) {
+      window.removeEventListener('currencyChanged', currencyChangeHandler);
+    }
+
     stopAllVideos();
+
     if (swiper) {
       swiper.destroy(true, true);
       swiper = null;
@@ -1048,7 +1099,7 @@ const TripDisplay = (() => {
   // DATA FETCHING
   // ==========================================================================
   async function fetchAllTripData() {
-    if (typeof db === 'undefined') return;
+    if (!checkFirebaseDependencies()) return;
 
     try {
       const snap = await db.ref('trips').once('value');
@@ -1073,19 +1124,14 @@ const TripDisplay = (() => {
     }
   }
 
-  function initCurrency() {
-    currentCurrency = localStorage.getItem('preferredCurrency') || 'EGP';
-    if (window.SharmCurrency?.rates) {
-      exchangeRates = window.SharmCurrency.rates;
-      ratesLoaded = true;
-    }
-  }
-
   // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   async function init() {
-    if (!tripSlug) return;
+    if (!tripSlug) {
+      showToast('No trip specified in URL.', 'error');
+      return;
+    }
 
     initCurrency();
     setupStars();
@@ -1103,12 +1149,15 @@ const TripDisplay = (() => {
     ]);
 
     window.addEventListener('beforeunload', cleanup);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopAllVideos();
+    });
   }
 
   // ==========================================================================
   // PUBLIC API
   // ==========================================================================
-  return {
+  const publicAPI = {
     init,
     getCurrentTrip: () => currentTrip,
     getTourTypes: () => tourTypes,
@@ -1120,6 +1169,8 @@ const TripDisplay = (() => {
     refreshReviews: loadReviews
   };
 
+  return publicAPI;
+
 })();
 
 // Auto-initialize
@@ -1129,7 +1180,7 @@ if (document.readyState === 'loading') {
   TripDisplay.init();
 }
 
+// Expose globally
 window.tripModule = TripDisplay;
-// Expose globally for booking system
 window.formatPrice = TripDisplay.formatPrice;
 window.showToast = TripDisplay.showToast;
