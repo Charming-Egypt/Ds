@@ -299,30 +299,26 @@
   background: #000; z-index: 10;
 }
 
-.video-close-btn {
-  position: absolute; top: 16px; right: 16px;
-  z-index: 100;
-  width: 44px; height: 44px;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: #fff; font-size: 18px;
-  transition: all 0.3s ease; opacity: 0;
-}
-
-
 /* Orange Theme */
 .plyr--full-ui input[type=range] {
   color: #FF6B35 !important;
 }
 
-.plyr--video .plyr__control:focus-visible, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true]
-Specificity: (0,3,0)
- {
-background:#FF6B35 !important;
-padding:10px;
-border-radius:50%;
- }
+
+
+
+.plyr--video .plyr__control:focus-visible, .plyr--video .plyr__control:hover, .plyr--video .plyr__control[aria-expanded=true] {
+    background: var(--plyr-video-control-background-hover, var(--plyr-color-main, var(--plyr-color-main, #FF6B35 !important)));
+    padding:10px;
+    border-radius:50%;
+    color: var(--plyr-video-control-color-hover, #fff);
+}
+
+
+
+
+
+
 
 /* Mobile - Padding bottom for curved gallery */
 @media (max-width: 768px) {
