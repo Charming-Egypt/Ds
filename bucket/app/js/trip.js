@@ -1130,3 +1130,6 @@ if (document.readyState === 'loading') {
 }
 
 window.tripModule = TripDisplay;
+// Expose globally for booking system
+window.formatPrice = TripDisplay.formatPrice;
+window.showToast = TripDisplay.showToast;
