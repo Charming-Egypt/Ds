@@ -312,14 +312,14 @@ const TripDisplay = (() => {
   }
 
   // ==========================================================================
-  // GALLERY - FIXED VERSION
+  // YOUTUBE HELPERS
   // ==========================================================================
   
   function extractYouTubeId(url) {
     if (!url) return null;
     url = url.trim();
     
-    // Direct ID
+    // Direct ID (11 characters)
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
     
     // Extract from URL
@@ -335,6 +335,23 @@ const TripDisplay = (() => {
     return null;
   }
 
+  /**
+   * Get video thumbnail - use custom if provided, otherwise use YouTube auto-thumbnail
+   */
+  function getVideoThumbnail(videoData, videoId) {
+    // لو فيه thumbnail مخصص، استخدمه
+    if (videoData.thumbnail && videoData.thumbnail.trim()) {
+      return videoData.thumbnail.trim();
+    }
+    
+    // غير كده، استخدم الصورة التلقائية من YouTube
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  }
+
+  // ==========================================================================
+  // GALLERY
+  // ==========================================================================
+  
   function createSlideElement(type, data, index) {
     const slide = document.createElement('div');
     slide.className = 'swiper-slide';
@@ -347,18 +364,48 @@ const TripDisplay = (() => {
       const videoUrl = data.videoUrl || data.url || '';
       const videoId = extractYouTubeId(videoUrl);
       
-      if (!videoId) return null;
+      if (!videoId) {
+        console.warn('Could not extract video ID from:', videoUrl);
+        return null;
+      }
       
-      const thumbnailUrl = data.thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      // Get thumbnail (custom or auto)
+      const thumbnailUrl = getVideoThumbnail(data, videoId);
       
       slide.setAttribute('data-video-id', videoId);
       slide.setAttribute('data-thumbnail', thumbnailUrl);
+      slide.setAttribute('data-video-url', videoUrl);
       
-      // Thumbnail image
+      // إذا كانت صورة مخصصة، نخزنها عشان نعرف
+      if (data.thumbnail && data.thumbnail.trim()) {
+        slide.setAttribute('data-custom-thumbnail', 'true');
+      }
+      
+      // Thumbnail image with fallback
       const img = document.createElement('img');
       img.src = thumbnailUrl;
       img.alt = `Video ${index + 1}`;
       img.loading = 'lazy';
+      
+      // Fallback for thumbnail if it fails to load
+      img.onerror = function() {
+        // If custom thumbnail failed, try YouTube auto-thumbnail
+        if (slide.getAttribute('data-custom-thumbnail') === 'true') {
+          img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          slide.setAttribute('data-custom-thumbnail', 'false');
+          slide.setAttribute('data-thumbnail', img.src);
+        } else {
+          // Last resort - SVG placeholder
+          img.src = 'data:image/svg+xml,' + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+              <rect fill="#1a1a2e" width="480" height="360"/>
+              <circle cx="240" cy="180" r="50" fill="rgba(255,255,255,0.1)"/>
+              <polygon points="230,160 230,200 265,180" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          `);
+        }
+      };
+      
       slide.appendChild(img);
       
       // Play button
@@ -368,19 +415,9 @@ const TripDisplay = (() => {
       playBtn.onclick = function(e) {
         e.stopPropagation();
         e.preventDefault();
-        if (swiper && !swiper.animating) {
-          playVideoInSlide(slide);
-        }
+        playVideoInSlide(slide);
       };
       slide.appendChild(playBtn);
-      
-      // Click on slide
-      slide.onclick = function(e) {
-        if (e.target === playBtn || e.target.closest('.play-button')) return;
-        if (swiper && !swiper.animating) {
-          playVideoInSlide(slide);
-        }
-      };
       
     } else {
       // Image slide
@@ -400,23 +437,18 @@ const TripDisplay = (() => {
     const videoId = slide.getAttribute('data-video-id');
     if (!videoId) return;
     
-    // Stop any playing video
     stopAllVideos();
     
     currentVideoSlide = slide;
     
-    // Pause swiper autoplay
     if (swiper && swiper.autoplay) {
       swiper.autoplay.stop();
     }
     
-    // Hide controls
     hideControls();
     
-    // Clear slide
     slide.innerHTML = '';
     
-    // Create iframe
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
@@ -460,34 +492,27 @@ const TripDisplay = (() => {
     
     if (!videoId || !thumbnailUrl) return;
     
-    // Show controls
     showControls();
     
-    // Clear slide
     slide.innerHTML = '';
     
-    // Restore thumbnail
     const img = document.createElement('img');
     img.src = thumbnailUrl;
     img.alt = `Video ${parseInt(index) + 1}`;
     img.loading = 'lazy';
     
-    // Restore play button
     const playBtn = document.createElement('div');
     playBtn.className = 'play-button';
     playBtn.innerHTML = '<i class="fas fa-play"></i>';
     playBtn.onclick = function(e) {
       e.stopPropagation();
       e.preventDefault();
-      if (swiper && !swiper.animating) {
-        playVideoInSlide(slide);
-      }
+      playVideoInSlide(slide);
     };
     
     slide.appendChild(img);
     slide.appendChild(playBtn);
     
-    // Resume swiper autoplay
     if (swiper && swiper.autoplay) {
       swiper.autoplay.start();
     }
@@ -574,7 +599,6 @@ const TripDisplay = (() => {
   function initGallery(media) {
     console.log('🎬 Initializing gallery...');
     
-    // Check Swiper
     if (!checkSwiperDependency()) {
       console.error('❌ Swiper not loaded');
       return;
@@ -588,14 +612,12 @@ const TripDisplay = (() => {
       return;
     }
     
-    // Destroy existing swiper
     if (swiper) {
       stopAllVideos();
       swiper.destroy(true, true);
       swiper = null;
     }
     
-    // Clear wrapper
     wrapper.innerHTML = '';
     
     let slideCount = 0;
@@ -615,6 +637,11 @@ const TripDisplay = (() => {
     // Add videos
     if (media?.videos && Array.isArray(media.videos)) {
       media.videos.forEach((videoData, i) => {
+        if (!videoData.videoUrl && !videoData.url) {
+          console.warn('Video missing URL:', videoData);
+          return;
+        }
+        
         const slide = createSlideElement('video', videoData, slideCount);
         if (slide) {
           wrapper.appendChild(slide);
@@ -623,17 +650,16 @@ const TripDisplay = (() => {
       });
     }
     
-    // Add placeholder if no slides
     if (slideCount === 0) {
       const placeholder = document.createElement('div');
       placeholder.className = 'swiper-slide';
+      placeholder.setAttribute('data-type', 'placeholder');
       placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;background:#1a1a2e;color:#fff;';
       placeholder.innerHTML = '<div style="text-align:center;"><i class="fas fa-image" style="font-size:48px;opacity:0.3;"></i><p style="margin-top:16px;">No images available</p></div>';
       wrapper.appendChild(placeholder);
       slideCount = 1;
     }
     
-    // Initialize Swiper
     try {
       swiper = new Swiper('.swiper', {
         slidesPerView: 1,
@@ -653,7 +679,6 @@ const TripDisplay = (() => {
         
         on: {
           init: function() {
-            console.log('✅ Swiper initialized with', slideCount, 'slides');
             createThumbnails();
           },
           slideChange: function() {
@@ -667,7 +692,6 @@ const TripDisplay = (() => {
       });
     } catch (error) {
       console.error('❌ Swiper init error:', error);
-      // Create thumbnails even if swiper fails
       createThumbnails();
     }
   }
@@ -739,7 +763,7 @@ const TripDisplay = (() => {
     const container = document.querySelector(SELECTORS.reviewsListContainer);
     if (!container) return;
     
-    container.innerHTML = Array(2).fill(`
+    container.innerHTML = Array(3).fill(`
       <div class="review-card" style="opacity: 0.5;">
         <div class="review-card-header">
           <div class="review-card-user">
@@ -1042,7 +1066,6 @@ const TripDisplay = (() => {
     
     document.querySelector(SELECTORS.cancelReviewBtn)?.addEventListener('click', closeReviewModal);
     
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         const modal = document.querySelector(SELECTORS.reviewModal);
@@ -1091,8 +1114,6 @@ const TripDisplay = (() => {
       return;
     }
     
-    console.log('🚀 Trip Display Initializing...');
-    
     initCurrency();
     setupStars();
     setupEventListeners();
@@ -1112,8 +1133,6 @@ const TripDisplay = (() => {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopAllVideos();
     });
-    
-    console.log('✅ Trip Display Ready');
   }
 
   // ==========================================================================
@@ -1132,7 +1151,6 @@ const TripDisplay = (() => {
   };
 })();
 
-// Start when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', TripDisplay.init);
 } else {
