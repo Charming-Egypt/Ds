@@ -292,7 +292,7 @@
 
 
 /* ==========================================================================
-   PLYR VIDEO PLAYER
+   PLYR ORANGE THEME - FIXED
    ========================================================================== */
 .video-player-container {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -322,39 +322,59 @@
 
 .plyr__video-wrapper { height: 100% !important; }
 .plyr iframe { height: 100% !important; }
+.plyr__poster { background-color: #000 !important; }
 
-/* Orange Theme Overrides */
+/* Orange Theme */
 .plyr--video .plyr__control--overlaid {
-  background: var(--sunset-start) !important;
-  border-color: var(--sunset-start) !important;
-  box-shadow: 0 0 20px rgba(255,107,53,0.4) !important;
+  background: #FF6B35 !important;
+  border: 2px solid #FF6B35 !important;
+  box-shadow: 0 0 30px rgba(255,107,53,0.5) !important;
 }
+.plyr--video .plyr__control--overlaid svg { color: #fff !important; }
+.plyr--video .plyr__control--overlaid:hover { background: #FFA630 !important; border-color: #FFA630 !important; }
+.plyr__progress__played { background: #FF6B35 !important; }
+.plyr__badge { background: #FF6B35 !important; }
+.plyr__menu__container .plyr__control[aria-checked="true"]::before { background: #FF6B35 !important; }
 
-.plyr--video .plyr__control--overlaid:hover {
-  background: var(--sunset-end) !important;
-  border-color: var(--sunset-end) !important;
-  transform: scale(1.1) !important;
-}
-
-.plyr--video .plyr__control--overlaid svg {
-  color: #fff !important;
-}
-
-.plyr__progress__played {
-  background: linear-gradient(90deg, var(--sunset-start), var(--sunset-end)) !important;
-}
-
-.plyr__badge {
-  background: var(--sunset-start) !important;
-}
-
-.plyr__menu__container button:hover {
-  background: rgba(255,107,53,0.15) !important;
-  color: var(--sunset-start) !important;
-}
-
-.plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
-  background: var(--sunset-start) !important;
+/* Mobile - Padding bottom for curved gallery */
+@media (max-width: 768px) {
+  .tour-gallery {
+    border-radius: 0 0 48px 48px;
+    margin-bottom: 0;
+    padding-bottom: 40px; /* مساحة للكونترولر */
+  }
+  
+  .swiper {
+    height: 280px;
+    border-radius: 0 0 28px 28px;
+  }
+  
+  /* Plyr controls padding */
+  .plyr--video .plyr__controls {
+    padding-bottom: 16px !important;
+  }
+  
+  /* Video close button */
+  .video-close-btn {
+    width: 36px; height: 36px;
+    top: 60px; /* أنزل من فوق */
+    right: 10px;
+    font-size: 14px;
+  }
+  
+  /* Navigation buttons */
+  .swiper-button-next, .swiper-button-prev {
+    bottom: 40px !important; /* يطلعوا فوق */
+  }
+  
+  .swiper-pagination {
+    bottom: 35px !important;
+  }
+  
+  /* Thumbnails */
+  .thumbnails-overlay {
+    left: 10px; right: auto; gap: 6px;
+  }
 }
 
 
