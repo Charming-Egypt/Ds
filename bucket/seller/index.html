@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Discover Sharm · Sales Desk</title>
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12'
+            },
+            surface: {
+              50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617'
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.25s ease-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+            slideUp: { '0%': { transform: 'translateY(16px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body {
+      background: #0f172a; /* surface-900 */
+      color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #334155;
+      transition: all 0.2s ease;
+    }
+    .card:hover {
+      border-color: #f97316;
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+    }
+    .input-modern {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      color: #f8fafc;
+      width: 100%;
+      transition: 0.2s;
+      font-size: 0.95rem;
+    }
+    .input-modern:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.2);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      border: none;
+      border-radius: 1rem;
+      padding: 0.9rem 1.5rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 8px 18px rgba(249,115,22,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(249,115,22,0.45);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #475569;
+      border-radius: 1rem;
+      padding: 0.8rem 1.2rem;
+      color: #cbd5e1;
+      font-weight: 500;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-outline:hover {
+      border-color: #f97316;
+      color: white;
+    }
+    .extra-chip {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 2rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .extra-chip.selected {
+      background: rgba(249,115,22,0.2);
+      border-color: #f97316;
+      color: #f97316;
+      font-weight: 600;
+    }
+    .price-badge {
+      background: #f97316;
+      color: white;
+      border-radius: 2rem;
+      padding: 0.2rem 0.8rem;
+      font-weight: 700;
+    }
+    .toast-notification {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid #f97316;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 3rem;
+      font-weight: 500;
+      z-index: 9999;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      transition: all 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast-notification.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px dashed #334155;
+    }
+  </style>
+</head>
+<body class="dark flex items-center justify-center p-4 md:p-6 min-h-screen">
+
+  <!-- Sales Desk Container -->
+  <div class="w-full max-w-5xl mx-auto glass-panel rounded-3xl p-5 md:p-8 shadow-2xl animate-fade-in">
+    
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+          <i class="fas fa-headset mr-3"></i>Sales Desk
+        </h1>
+        <p class="text-slate-400 mt-1 text-sm">Manual booking · instant confirmation</p>
+      </div>
+      <div class="flex items-center gap-3 bg-slate-800/60 px-4 py-2 rounded-full">
+        <i class="fas fa-user-circle text-orange-400 text-xl"></i>
+        <span class="text-slate-200 font-medium" id="salesAgentDisplay">Sales Agent</span>
+      </div>
+    </div>
+
+    <!-- Main form grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      
+      <!-- LEFT: Guest & Trip info -->
+      <div class="lg:col-span-3 space-y-6">
+        <div class="card">
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-5">
+            <i class="fas fa-user-circle"></i> Guest Information
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Full Name *</label>
+              <input type="text" id="guestName" class="input-modern" placeholder="Ahmed Samir" required>
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Phone *</label>
+              <input type="tel" id="guestPhone" class="input-modern" placeholder="+20 10 1234 5678" required>
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Email</label>
+              <input type="email" id="guestEmail" class="input-modern" placeholder="guest@example.com">
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Hotel / Pickup</label>
+              <input type="text" id="guestHotel" class="input-modern" placeholder="Hotel name or location">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Room Number</label>
+              <input type="text" id="guestRoom" class="input-modern" placeholder="Room 204 (optional)">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-5">
+            <i class="fas fa-map-marked-alt"></i> Trip Selection
+          </h2>
+          <div class="space-y-4">
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Select Trip *</label>
+              <select id="tripSelect" class="input-modern" required>
+                <option value="">-- Choose an approved trip --</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Adults</label>
+                <input type="number" id="adultsCount" value="1" min="0" class="input-modern">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Children</label>
+                <input type="number" id="childrenCount" value="0" min="0" class="input-modern">
+              </div>
+              <div>
+                <label class="text-xs text-slate-400 block mb-1">Infants</label>
+                <input type="number" id="infantsCount" value="0" min="0" class="input-modern">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Trip Date *</label>
+              <input type="date" id="tripDate" class="input-modern" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Extra services & payment -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="card">
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-4">
+            <i class="fas fa-star"></i> Extra Services
+          </h2>
+          <div id="extraServicesContainer" class="space-y-3 mb-4">
+            <p class="text-sm text-slate-500 italic">Select a trip to load options</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-700/60">
+            <label class="text-xs text-slate-400 block mb-2">Special Requests</label>
+            <textarea id="specialRequests" rows="2" class="input-modern" placeholder="Any notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="card bg-gradient-to-br from-slate-800 to-slate-900 border-orange-500/30">
+          <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+            <i class="fas fa-calculator"></i> Price Summary
+          </h2>
+          <div class="space-y-2 text-sm">
+            <div class="summary-row"><span>Base price</span> <span id="basePriceDisplay" class="font-mono">EGP 0</span></div>
+            <div class="summary-row"><span>Extra services</span> <span id="extraTotalDisplay" class="font-mono">EGP 0</span></div>
+            <div class="summary-row font-bold text-base pt-2 border-t border-white/20 mt-2">
+              <span>Total</span>
+              <span id="totalPriceDisplay" class="text-orange-400 text-xl">EGP 0</span>
+            </div>
+            <div id="selectedServicesList" class="text-xs text-slate-300 mt-2 space-y-1"></div>
+          </div>
+          
+          <div class="mt-5 flex items-center gap-3 bg-slate-900/70 p-3 rounded-xl">
+            <input type="checkbox" id="markAsPaid" class="w-5 h-5 accent-orange-500 rounded">
+            <label for="markAsPaid" class="text-sm font-medium">✅ Mark as Paid (confirm immediately)</label>
+          </div>
+          
+          <button id="submitBookingBtn" class="btn-primary w-full mt-5 text-base">
+            <i class="fas fa-save"></i> Create Booking
+          </button>
+          <p class="text-xs text-slate-400 mt-3 text-center">Booking will be saved under your account.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent bookings quick list (optional) -->
+    <div class="mt-10 card">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-orange-400"><i class="fas fa-history mr-2"></i>Recent manual bookings</h3>
+        <button id="refreshRecentBtn" class="btn-outline text-sm py-1.5 px-3"><i class="fas fa-sync-alt"></i> Refresh</button>
+      </div>
+      <div id="recentBookingsList" class="space-y-2 text-sm text-slate-300">
+        <p class="text-slate-500">Loading recent bookings...</p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="liveToast" class="toast-notification"></div>
+  </div>
+
+  <!-- Firebase & Main Script -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    (function() {
+      // ----- CONFIG -----
+      const firebaseConfig = {
+        apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+        authDomain: "egypt-travels.firebaseapp.com",
+        databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+        projectId: "egypt-travels",
+        storageBucket: "egypt-travels.appspot.com"
+      };
+
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.database();
+
+      // ----- STATE -----
+      let currentUser = null;
+      let approvedTrips = [];
+      let selectedTripData = null;     // { id, name, price, tourtype }
+      let selectedExtras = [];         // [{ name, price }]
+
+      // ----- DOM ELEMENTS -----
+      const tripSelect = document.getElementById('tripSelect');
+      const adultsInput = document.getElementById('adultsCount');
+      const childrenInput = document.getElementById('childrenCount');
+      const infantsInput = document.getElementById('infantsCount');
+      const tripDateInput = document.getElementById('tripDate');
+      const extraContainer = document.getElementById('extraServicesContainer');
+      const basePriceSpan = document.getElementById('basePriceDisplay');
+      const extraTotalSpan = document.getElementById('extraTotalDisplay');
+      const totalPriceSpan = document.getElementById('totalPriceDisplay');
+      const selectedServicesList = document.getElementById('selectedServicesList');
+      const markPaidCheck = document.getElementById('markAsPaid');
+      const submitBtn = document.getElementById('submitBookingBtn');
+      const recentList = document.getElementById('recentBookingsList');
+      const toastEl = document.getElementById('liveToast');
+
+      // ----- UTILS -----
+      function showToast(msg, isError = false) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        toastEl.style.borderColor = isError ? '#ef4444' : '#f97316';
+        setTimeout(() => toastEl.classList.remove('show'), 3500);
+      }
+
+      function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m] || m);
+      }
+
+      // Set today date
+      if (tripDateInput) tripDateInput.value = new Date().toISOString().split('T')[0];
+
+      // ----- LOAD APPROVED TRIPS -----
+      async function loadApprovedTrips() {
+        try {
+          const snap = await db.ref('trips').once('value');
+          const all = snap.val() || {};
+          approvedTrips = Object.entries(all)
+            .filter(([_, t]) => t.approved === true || t.approved === "true")
+            .map(([id, val]) => ({ id, ...val }));
+          
+          renderTripOptions();
+        } catch (err) {
+          console.error(err);
+          showToast('Failed to load trips', true);
+        }
+      }
+
+      function renderTripOptions() {
+        if (!tripSelect) return;
+        tripSelect.innerHTML = '<option value="">-- Select approved trip --</option>';
+        if (approvedTrips.length === 0) {
+          tripSelect.innerHTML += '<option disabled>No approved trips available</option>';
+          return;
+        }
+        approvedTrips.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = `${t.id}||${t.name}||${t.price||0}`;
+          opt.textContent = `${t.name} · EGP ${parseFloat(t.price||0).toFixed(0)}`;
+          tripSelect.appendChild(opt);
+        });
+      }
+
+      // ----- HANDLE TRIP CHANGE -----
+      function handleTripChange() {
+        const val = tripSelect.value;
+        if (!val) {
+          selectedTripData = null;
+          extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
+          resetExtrasAndUpdate();
+          return;
+        }
+        const [id, name, price] = val.split('||');
+        const trip = approvedTrips.find(t => t.id === id);
+        if (!trip) return;
+        selectedTripData = { id, name, price: parseFloat(price) || 0, tourtype: trip.tourtype || {} };
+        renderExtraServices(trip.tourtype || {});
+        updatePriceDisplay();
+      }
+
+      function renderExtraServices(tourtype) {
+        if (!extraContainer) return;
+        const entries = Object.entries(tourtype);
+        if (entries.length === 0) {
+          extraContainer.innerHTML = '<p class="text-sm text-slate-500">No extra services for this trip</p>';
+          return;
+        }
+        extraContainer.innerHTML = entries.map(([name, price]) => {
+          const priceNum = parseFloat(price) || 0;
+          return `<div class="extra-chip" data-name="${escapeHtml(name)}" data-price="${priceNum}">
+            <span>${escapeHtml(name)}</span>
+            <span class="price-badge text-xs">+EGP ${priceNum}</span>
+          </div>`;
+        }).join('');
+        
+        // Add click listeners
+        document.querySelectorAll('.extra-chip').forEach(chip => {
+          chip.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            updateSelectedExtras();
+            updatePriceDisplay();
+          });
+        });
+      }
+
+      function updateSelectedExtras() {
+        selectedExtras = [];
+        document.querySelectorAll('.extra-chip.selected').forEach(chip => {
+          selectedExtras.push({
+            name: chip.dataset.name,
+            price: parseFloat(chip.dataset.price) || 0
+          });
+        });
+      }
+
+      function resetExtrasAndUpdate() {
+        selectedExtras = [];
+        if (extraContainer) extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
+        updatePriceDisplay();
+      }
+
+      function updatePriceDisplay() {
+        const adults = parseInt(adultsInput.value) || 0;
+        const children = parseInt(childrenInput.value) || 0;
+        const basePricePer = selectedTripData?.price || 0;
+        const baseTotal = (adults + children) * basePricePer;
+        const extraTotal = selectedExtras.reduce((sum, s) => sum + s.price, 0);
+        const total = baseTotal + extraTotal;
+
+        basePriceSpan.textContent = `EGP ${baseTotal.toFixed(2)}`;
+        extraTotalSpan.textContent = `EGP ${extraTotal.toFixed(2)}`;
+        totalPriceSpan.textContent = `EGP ${total.toFixed(2)}`;
+
+        if (selectedServicesList) {
+          selectedServicesList.innerHTML = selectedExtras.map(s => 
+            `<div class="flex justify-between"><span>• ${escapeHtml(s.name)}</span><span>EGP ${s.price.toFixed(2)}</span></div>`
+          ).join('');
+        }
+      }
+
+      // ----- GENERATE UNIQUE REF -----
+      async function generateRef() {
+        for (let i = 0; i < 10; i++) {
+          const ref = 'SLS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+          const snap = await db.ref(`trip-bookings/${ref}`).once('value');
+          if (!snap.exists()) return ref;
+        }
+        return 'SLS-' + Date.now() + '-' + Math.floor(Math.random()*1000);
+      }
+
+      // ----- SUBMIT BOOKING -----
+      async function createBooking() {
+        if (!currentUser) {
+          showToast('Please login first (auth required)', true);
+          return;
+        }
+        const guestName = document.getElementById('guestName')?.value.trim();
+        const guestPhone = document.getElementById('guestPhone')?.value.trim();
+        if (!guestName || !guestPhone) {
+          showToast('Guest name and phone are required', true);
+          return;
+        }
+        if (!selectedTripData) {
+          showToast('Please select a trip', true);
+          return;
+        }
+        const adults = parseInt(adultsInput.value) || 0;
+        const children = parseInt(childrenInput.value) || 0;
+        if (adults + children < 1) {
+          showToast('At least 1 adult or child required', true);
+          return;
+        }
+        const tripDateVal = tripDateInput.value;
+        if (!tripDateVal) {
+          showToast('Trip date is required', true);
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Saving...';
+
+        try {
+          const refNumber = await generateRef();
+          const baseTotal = (adults + children) * selectedTripData.price;
+          const extraTotal = selectedExtras.reduce((s, p) => s + p.price, 0);
+          const netTotal = parseFloat((baseTotal + extraTotal).toFixed(2));
+          const isPaid = markPaidCheck.checked;
+
+          const booking = {
+            username: guestName,
+            phone: guestPhone,
+            email: document.getElementById('guestEmail')?.value.trim() || '',
+            hotelName: document.getElementById('guestHotel')?.value.trim() || '',
+            roomNumber: document.getElementById('guestRoom')?.value.trim() || '',
+            tour: selectedTripData.name,
+            tripId: selectedTripData.id,
+            adults,
+            childrenUnder12: children,
+            infants: parseInt(infantsInput.value) || 0,
+            netTotal,
+            total: netTotal,
+            tripDate: tripDateVal,
+            specialRequests: document.getElementById('specialRequests')?.value.trim() || '',
+            extraServices: selectedExtras.map(e => `${e.name}: ${e.price}`).join(', '),
+            isPaid,
+            paymentStatus: isPaid ? 'paid' : 'unpaid',
+            resStatus: isPaid ? 'confirmed' : 'new',
+            status: 'pending',            // Required for create rules
+            owner: currentUser.uid,
+            uid: currentUser.uid,
+            refNumber,
+            timestamp: Date.now(),
+            updatedAt: Date.now()
+          };
+
+          await db.ref(`trip-bookings/${refNumber}`).set(booking);
+          
+          // If paid, update status to confirmed after creation
+          if (isPaid) {
+            await db.ref(`trip-bookings/${refNumber}`).update({ status: 'confirmed', updatedAt: Date.now() });
+          }
+
+          showToast(`✅ Booking ${refNumber} created!`);
+          clearForm();
+          loadRecentBookings();
+        } catch (error) {
+          console.error(error);
+          showToast('Error: ' + (error.message || 'Permission denied'), true);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Booking';
+        }
+      }
+
+      function clearForm() {
+        document.getElementById('guestName').value = '';
+        document.getElementById('guestPhone').value = '';
+        document.getElementById('guestEmail').value = '';
+        document.getElementById('guestHotel').value = '';
+        document.getElementById('guestRoom').value = '';
+        tripSelect.selectedIndex = 0;
+        adultsInput.value = 1;
+        childrenInput.value = 0;
+        infantsInput.value = 0;
+        tripDateInput.value = new Date().toISOString().split('T')[0];
+        markPaidCheck.checked = false;
+        selectedTripData = null;
+        selectedExtras = [];
+        extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
+        updatePriceDisplay();
+      }
+
+      // ----- RECENT BOOKINGS (last 5 for this user) -----
+      async function loadRecentBookings() {
+        if (!currentUser) {
+          recentList.innerHTML = '<p class="text-slate-500">Login to see recent bookings</p>';
+          return;
+        }
+        try {
+          const snap = await db.ref('trip-bookings')
+            .orderByChild('owner')
+            .equalTo(currentUser.uid)
+            .once('value');
+          const data = snap.val() || {};
+          const bookings = Object.values(data).sort((a,b) => (b.timestamp||0) - (a.timestamp||0)).slice(0,6);
+          
+          if (bookings.length === 0) {
+            recentList.innerHTML = '<p class="text-slate-500 italic">No manual bookings yet.</p>';
+            return;
+          }
+          recentList.innerHTML = bookings.map(b => `
+            <div class="flex justify-between items-center bg-slate-800/70 p-3 rounded-xl">
+              <div>
+                <span class="font-mono text-orange-300 text-xs">${escapeHtml(b.refNumber||'')}</span>
+                <span class="ml-3 font-medium">${escapeHtml(b.username||'Guest')}</span>
+                <span class="ml-2 text-slate-400 text-xs">${escapeHtml(b.tour||'')}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs ${b.isPaid ? 'text-green-400' : 'text-amber-400'}">${b.isPaid ? 'Paid' : 'Unpaid'}</span>
+                <span class="font-semibold">EGP ${parseFloat(b.netTotal||0).toFixed(0)}</span>
+              </div>
+            </div>
+          `).join('');
+        } catch (err) {
+          recentList.innerHTML = '<p class="text-red-400">Failed to load recent bookings</p>';
+        }
+      }
+
+      // ----- AUTH -----
+      auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+        const displayEl = document.getElementById('salesAgentDisplay');
+        if (user) {
+          displayEl.textContent = user.email || 'Sales Agent';
+          await loadApprovedTrips();
+          loadRecentBookings();
+        } else {
+          displayEl.textContent = 'Not signed in';
+          // Sign in anonymously for demo (or trigger login)
+          auth.signInAnonymously().catch(e => console.warn('Anonymous auth failed', e));
+        }
+      });
+
+      // ----- EVENT LISTENERS -----
+      tripSelect?.addEventListener('change', handleTripChange);
+      adultsInput?.addEventListener('input', updatePriceDisplay);
+      childrenInput?.addEventListener('input', updatePriceDisplay);
+      infantsInput?.addEventListener('input', updatePriceDisplay);
+      submitBtn?.addEventListener('click', createBooking);
+      document.getElementById('refreshRecentBtn')?.addEventListener('click', loadRecentBookings);
+
+      // Initial load trigger
+      window.addEventListener('load', () => {
+        if (tripDateInput) tripDateInput.value = new Date().toISOString().split('T')[0];
+      });
+
+    })();
+  </script>
+</body>
+</html>
