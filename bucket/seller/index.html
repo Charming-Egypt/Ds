@@ -1,656 +1,1093 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>Discover Sharm · Sales Desk</title>
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12'
-            },
-            surface: {
-              50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617'
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Discover Sharm | Sales Desk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
+                        dark: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                    },
+                    animation: { 'fade-in': 'fadeIn 0.3s ease-in-out', 'slide-up': 'slideUp 0.3s ease-out', 'pulse-slow': 'pulse 3s infinite' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }, slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } } }
+                }
             }
-          },
-          animation: {
-            'fade-in': 'fadeIn 0.25s ease-out',
-            'slide-up': 'slideUp 0.3s ease-out',
-          },
-          keyframes: {
-            fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-            slideUp: { '0%': { transform: 'translateY(16px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
-          }
         }
-      }
+    </script>
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+:root {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252525;
+    --bg-tertiary: #2a2a2a;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #333333;
+    --card-bg: #252525;
+    --sidebar-bg: #1a1a1a;
+    --header-bg: rgba(30, 30, 30, 0.92);
+    --input-bg: #2a2a2a;
+    --input-border: #3a3a3a;
+    --hover-bg: #2d2d2d;
+    --accent-gradient: linear-gradient(135deg, #22c55e, #16a34a);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
+    --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
+    --glow-green: 0 0 20px rgba(34, 197, 94, 0.25);
+}
+html, body { 
+    background: var(--bg-primary); 
+    color: var(--text-primary); 
+    overflow-x: hidden; 
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--accent-gradient); border-radius: 4px; }
+.glass { background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+.gradient-card { background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary)); border: 1px solid var(--border-color); }
+.glow-effect { box-shadow: var(--glow-green); transition: box-shadow 0.3s ease; }
+.glow-effect:hover { box-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
+
+.login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #252525 0%, #1e1e1e 100%); position: relative; overflow: hidden; }
+.login-container::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%); animation: pulse-slow 4s infinite; }
+@keyframes pulse-slow { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.1); opacity: 0.7; } }
+.login-card { background: var(--card-bg); border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); border: 1px solid var(--border-color); position: relative; z-index: 10; animation: slideUp 0.5s ease-out; }
+.login-input { width: 100%; padding: 14px 16px; border: 2px solid var(--input-border); border-radius: 14px; font-size: 16px; background: var(--input-bg); color: var(--text-primary); transition: all 0.2s; }
+.login-input:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,0.15); background: var(--bg-secondary); }
+.login-btn { width: 100%; padding: 14px; background: var(--accent-gradient); color: white; border: none; border-radius: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+.login-btn:active { transform: scale(0.98); }
+.admin-panel { display: none; }
+.admin-panel.visible { display: block; animation: fadeIn 0.5s ease-out; }
+
+.mobile-header {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 50; padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--header-bg); backdrop-filter: blur(12px);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.4);
+}
+
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; box-shadow: 0 2px 8px rgba(34,197,94,0.3); }
+.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; overflow-y: auto; box-shadow: 4px 0 24px rgba(0,0,0,0.4); }
+.sidebar.open { transform: translateX(0); }
+@media (min-width: 1024px) { .sidebar { transform: translateX(0); } }
+.sidebar-brand { padding: 24px 20px; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(34,197,94,0.08), transparent); }
+.sidebar-link { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; margin: 6px 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; transition: all 0.2s; position: relative; overflow: hidden; }
+.sidebar-link::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent-gradient); transform: scaleY(0); transition: transform 0.2s; }
+.sidebar-link:hover { background: rgba(34,197,94,0.08); color: #22c55e; transform: translateX(4px); }
+.sidebar-link.active { background: rgba(34,197,94,0.12); color: #22c55e; }
+.sidebar-link.active::before { transform: scaleY(1); }
+
+.desktop-header {
+    position: fixed; top: 0; left: 280px; right: 0;
+    z-index: 40; padding: 16px 24px;
+    display: none; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--header-bg); backdrop-filter: blur(12px);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.3);
+}
+
+.mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--header-bg); backdrop-filter: blur(12px); box-shadow: 0 -4px 20px rgba(0,0,0,0.4); display: flex; justify-content: space-around; padding: 8px 12px 12px; z-index: 1000; border-top: 1px solid var(--border-color); }
+@media (min-width: 1024px) { 
+    .mobile-header { display: none; } 
+    .desktop-header { display: flex; } 
+    .mobile-bottom-nav { display: none; } 
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; border-radius: 12px; color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all 0.2s; }
+.nav-item:hover { background: rgba(34,197,94,0.08); color: #22c55e; }
+.nav-item.active { color: #22c55e; background: rgba(34,197,94,0.12); }
+.nav-item i { font-size: 22px; margin-bottom: 4px; }
+
+.content-section { display: none; animation: fadeIn 0.3s ease-out; }
+.content-section.active { display: block; }
+
+.card { background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow-md); padding: 20px; border: 1px solid var(--border-color); transition: all 0.3s; }
+.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.stat-card { background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary)); border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); transition: all 0.3s; position: relative; overflow: hidden; }
+.stat-card::after { content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%; background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: var(--glow-green); }
+
+.fab {
+    position: fixed; right: 20px; bottom: 100px;
+    width: 56px; height: 56px; border-radius: 28px;
+    background: var(--accent-gradient); color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 99; border: none;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s;
+}
+.fab:hover { transform: scale(1.1); }
+.fab:active { transform: scale(0.95); }
+@media (min-width: 1024px) { .fab { bottom: 40px; right: 40px; } }
+
+.modal-sheet { position: fixed; bottom: 0; left: 0; right: 0; max-height: 85vh; background: var(--card-bg); border-radius: 28px 28px 0 0; box-shadow: 0 -8px 40px rgba(0,0,0,0.6); z-index: 2000; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; border-top: 1px solid var(--border-color); }
+.modal-sheet.open { transform: translateY(0); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 1999; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal-handle { width: 40px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 12px auto; cursor: grab; }
+
+.input-field { width: 100%; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 14px; font-size: 16px; background: var(--input-bg); color: var(--text-primary); transition: all 0.2s; }
+.input-field:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,0.1); background: var(--bg-secondary); }
+.btn-primary { background: var(--accent-gradient); color: white; padding: 12px 24px; border-radius: 16px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); padding: 12px 24px; border-radius: 16px; font-weight: 600; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; }
+.btn-secondary:hover { background: var(--hover-bg); border-color: #22c55e; }
+
+.status-badge { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; align-items: center; gap: 4px; }
+.status-new { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.25); }
+.status-confirmed { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.25); }
+.status-cancelled { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
+.status-paid { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.25); }
+.status-unpaid { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
+
+.filter-chip { padding: 8px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; cursor: pointer; background: var(--input-bg); color: var(--text-secondary); border: 1px solid var(--border-color); transition: all 0.2s; }
+.filter-chip:hover { border-color: #22c55e; color: var(--text-primary); }
+.filter-chip.active { background: var(--accent-gradient); color: white; border: none; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, #252525, #1a1a1a); color: white; padding: 14px 28px; border-radius: 40px; z-index: 3000; transition: all 0.3s; max-width: 90vw; text-align: center; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.6); border: 1px solid var(--border-color); }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-left: 4px solid #22c55e; }
+.toast.error { border-left: 4px solid #ef4444; }
+
+.table-responsive { overflow-x: auto; border-radius: 16px; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 16px 12px; text-align: left; border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; background: var(--bg-tertiary); }
+td { padding: 14px 12px; text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-primary); transition: background 0.2s; }
+tr:hover td { background: rgba(34,197,94,0.03); }
+
+.main-content {
+    padding: 80px 20px 100px 20px;
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        padding: 90px 24px 100px 24px;
+        margin-left: 280px;
     }
-  </script>
-  <style>
-    * { font-family: 'Inter', sans-serif; }
-    body {
-      background: #0f172a; /* surface-900 */
-      color: #f1f5f9;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
-    }
-    .card {
-      background: #1e293b;
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      border: 1px solid #334155;
-      transition: all 0.2s ease;
-    }
-    .card:hover {
-      border-color: #f97316;
-      box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
-    }
-    .input-modern {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 1rem;
-      padding: 0.8rem 1rem;
-      color: #f8fafc;
-      width: 100%;
-      transition: 0.2s;
-      font-size: 0.95rem;
-    }
-    .input-modern:focus {
-      outline: none;
-      border-color: #f97316;
-      box-shadow: 0 0 0 3px rgba(249,115,22,0.2);
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #f97316, #ea580c);
-      border: none;
-      border-radius: 1rem;
-      padding: 0.9rem 1.5rem;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      box-shadow: 0 8px 18px rgba(249,115,22,0.3);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 22px rgba(249,115,22,0.45);
-    }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #475569;
-      border-radius: 1rem;
-      padding: 0.8rem 1.2rem;
-      color: #cbd5e1;
-      font-weight: 500;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .btn-outline:hover {
-      border-color: #f97316;
-      color: white;
-    }
-    .extra-chip {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 2rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .extra-chip.selected {
-      background: rgba(249,115,22,0.2);
-      border-color: #f97316;
-      color: #f97316;
-      font-weight: 600;
-    }
-    .price-badge {
-      background: #f97316;
-      color: white;
-      border-radius: 2rem;
-      padding: 0.2rem 0.8rem;
-      font-weight: 700;
-    }
-    .toast-notification {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1e293b;
-      border: 1px solid #f97316;
-      color: white;
-      padding: 0.8rem 2rem;
-      border-radius: 3rem;
-      font-weight: 500;
-      z-index: 9999;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-      transition: all 0.3s ease;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .toast-notification.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.6rem 0;
-      border-bottom: 1px dashed #334155;
-    }
-  </style>
+}
+
+.booking-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.booking-detail-item { background: var(--input-bg); padding: 12px; border-radius: 16px; border: 1px solid var(--border-color); transition: all 0.2s; }
+.booking-detail-item:hover { border-color: #22c55e; transform: translateY(-2px); }
+.booking-detail-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.booking-detail-value { font-weight: 600; color: var(--text-primary); }
+@media (max-width: 640px) { .booking-details-grid { grid-template-columns: 1fr; } }
+
+.booking-card { background: var(--card-bg); border-radius: 20px; padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); transition: all 0.3s; }
+.booking-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.booking-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.booking-ref { font-family: 'Courier New', monospace; font-weight: 600; color: #fbbf24; background: rgba(251,191,36,0.1); padding: 4px 8px; border-radius: 8px; }
+@media (min-width: 768px) { .booking-card { display: none; } }
+@media (max-width: 767px) { .table-responsive table { display: none; } }
+
+.extra-service-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--input-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border-color); }
+.extra-service-item:hover { background: var(--hover-bg); border-color: #22c55e; }
+.extra-service-item.selected { background: rgba(34,197,94,0.15); border: 2px solid #22c55e; }
+.price-summary { background: var(--accent-gradient); color: white; padding: 16px; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(34,197,94,0.3); }
+
+.filter-checkbox { display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 12px; background: var(--input-bg); cursor: pointer; transition: all 0.2s; border: 1px solid var(--border-color); }
+.filter-checkbox:hover { background: var(--hover-bg); border-color: #22c55e; }
+.filter-checkbox input[type="checkbox"] { accent-color: #22c55e; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+.loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid var(--border-color); border-radius: 50%; border-top-color: #22c55e; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.chart-container { position: relative; height: 300px; }
+</style>
 </head>
-<body class="dark flex items-center justify-center p-4 md:p-6 min-h-screen">
+<body class="dark">
 
-  <!-- Sales Desk Container -->
-  <div class="w-full max-w-5xl mx-auto glass-panel rounded-3xl p-5 md:p-8 shadow-2xl animate-fade-in">
-    
-    <!-- Header -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-          <i class="fas fa-headset mr-3"></i>Sales Desk
-        </h1>
-        <p class="text-slate-400 mt-1 text-sm">Manual booking · instant confirmation</p>
-      </div>
-      <div class="flex items-center gap-3 bg-slate-800/60 px-4 py-2 rounded-full">
-        <i class="fas fa-user-circle text-orange-400 text-xl"></i>
-        <span class="text-slate-200 font-medium" id="salesAgentDisplay">Sales Agent</span>
-      </div>
+<!-- LOGIN PAGE -->
+<div id="login-page" class="login-container">
+    <div class="login-card">
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-headset text-3xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold">Sales Desk</h1>
+            <p class="text-gray-500 mt-2">Sign in to manage your bookings</p>
+        </div>
+        <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+            <input type="email" id="login-email" required class="login-input" placeholder="Email Address">
+            <input type="password" id="login-password" required class="login-input" placeholder="Password">
+            <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg text-sm"></div>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="admin-panel">
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button id="menuToggle" class="p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-bars text-xl"></i></button>
+        <h1 class="text-lg font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">Sales Desk</h1>
+        <div class="flex items-center gap-3">
+            <div class="user-avatar" id="user-avatar-mobile">S</div>
+        </div>
     </div>
 
-    <!-- Main form grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      
-      <!-- LEFT: Guest & Trip info -->
-      <div class="lg:col-span-3 space-y-6">
-        <div class="card">
-          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-5">
-            <i class="fas fa-user-circle"></i> Guest Information
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Full Name *</label>
-              <input type="text" id="guestName" class="input-modern" placeholder="Ahmed Samir" required>
-            </div>
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Phone *</label>
-              <input type="tel" id="guestPhone" class="input-modern" placeholder="+20 10 1234 5678" required>
-            </div>
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Email</label>
-              <input type="email" id="guestEmail" class="input-modern" placeholder="guest@example.com">
-            </div>
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Hotel / Pickup</label>
-              <input type="text" id="guestHotel" class="input-modern" placeholder="Hotel name or location">
-            </div>
-            <div class="sm:col-span-2">
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Room Number</label>
-              <input type="text" id="guestRoom" class="input-modern" placeholder="Room 204 (optional)">
-            </div>
-          </div>
+    <!-- Desktop Header -->
+    <div class="desktop-header">
+        <h2 class="text-xl font-bold" id="desktop-title">Dashboard</h2>
+        <div class="flex items-center gap-4">
+            <div class="user-avatar" id="user-avatar-desktop">S</div>
+            <span id="user-name-desktop" class="text-sm"></span>
+            <button id="desktopLogout" class="p-2 hover:bg-red-50 rounded-lg text-red-500"><i class="fas fa-sign-out-alt"></i></button>
         </div>
-
-        <div class="card">
-          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-5">
-            <i class="fas fa-map-marked-alt"></i> Trip Selection
-          </h2>
-          <div class="space-y-4">
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Select Trip *</label>
-              <select id="tripSelect" class="input-modern" required>
-                <option value="">-- Choose an approved trip --</option>
-              </select>
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-              <div>
-                <label class="text-xs text-slate-400 block mb-1">Adults</label>
-                <input type="number" id="adultsCount" value="1" min="0" class="input-modern">
-              </div>
-              <div>
-                <label class="text-xs text-slate-400 block mb-1">Children</label>
-                <input type="number" id="childrenCount" value="0" min="0" class="input-modern">
-              </div>
-              <div>
-                <label class="text-xs text-slate-400 block mb-1">Infants</label>
-                <input type="number" id="infantsCount" value="0" min="0" class="input-modern">
-              </div>
-            </div>
-            <div>
-              <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1">Trip Date *</label>
-              <input type="date" id="tripDate" class="input-modern" required>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Extra services & payment -->
-      <div class="lg:col-span-2 space-y-6">
-        <div class="card">
-          <h2 class="text-lg font-semibold flex items-center gap-2 text-orange-400 mb-4">
-            <i class="fas fa-star"></i> Extra Services
-          </h2>
-          <div id="extraServicesContainer" class="space-y-3 mb-4">
-            <p class="text-sm text-slate-500 italic">Select a trip to load options</p>
-          </div>
-          <div class="mt-4 pt-3 border-t border-slate-700/60">
-            <label class="text-xs text-slate-400 block mb-2">Special Requests</label>
-            <textarea id="specialRequests" rows="2" class="input-modern" placeholder="Any notes..."></textarea>
-          </div>
-        </div>
-
-        <div class="card bg-gradient-to-br from-slate-800 to-slate-900 border-orange-500/30">
-          <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
-            <i class="fas fa-calculator"></i> Price Summary
-          </h2>
-          <div class="space-y-2 text-sm">
-            <div class="summary-row"><span>Base price</span> <span id="basePriceDisplay" class="font-mono">EGP 0</span></div>
-            <div class="summary-row"><span>Extra services</span> <span id="extraTotalDisplay" class="font-mono">EGP 0</span></div>
-            <div class="summary-row font-bold text-base pt-2 border-t border-white/20 mt-2">
-              <span>Total</span>
-              <span id="totalPriceDisplay" class="text-orange-400 text-xl">EGP 0</span>
-            </div>
-            <div id="selectedServicesList" class="text-xs text-slate-300 mt-2 space-y-1"></div>
-          </div>
-          
-          <div class="mt-5 flex items-center gap-3 bg-slate-900/70 p-3 rounded-xl">
-            <input type="checkbox" id="markAsPaid" class="w-5 h-5 accent-orange-500 rounded">
-            <label for="markAsPaid" class="text-sm font-medium">✅ Mark as Paid (confirm immediately)</label>
-          </div>
-          
-          <button id="submitBookingBtn" class="btn-primary w-full mt-5 text-base">
-            <i class="fas fa-save"></i> Create Booking
-          </button>
-          <p class="text-xs text-slate-400 mt-3 text-center">Booking will be saved under your account.</p>
-        </div>
-      </div>
     </div>
 
-    <!-- Recent bookings quick list (optional) -->
-    <div class="mt-10 card">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-orange-400"><i class="fas fa-history mr-2"></i>Recent manual bookings</h3>
-        <button id="refreshRecentBtn" class="btn-outline text-sm py-1.5 px-3"><i class="fas fa-sync-alt"></i> Refresh</button>
-      </div>
-      <div id="recentBookingsList" class="space-y-2 text-sm text-slate-300">
-        <p class="text-slate-500">Loading recent bookings...</p>
-      </div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="p-5 border-b">
+            <h1 class="text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">Sales Desk</h1>
+            <p class="text-sm mt-1" id="user-email-sidebar"></p>
+        </div>
+        <nav class="p-3 space-y-1">
+            <div class="sidebar-link active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Dashboard</span></div>
+            <div class="sidebar-link" data-section="bookings"><i class="fas fa-calendar-check"></i><span>My Bookings</span></div>
+            <div class="sidebar-link" data-section="new-booking"><i class="fas fa-plus-circle"></i><span>New Booking</span></div>
+            <div class="sidebar-link" data-section="payout"><i class="fas fa-wallet"></i><span>Payouts</span></div>
+            <div class="sidebar-link" data-section="analytics"><i class="fas fa-chart-pie"></i><span>Analytics</span></div>
+            <hr class="my-3">
+            <div class="sidebar-link" id="logout-sidebar"><i class="fas fa-sign-out-alt"></i><span>Logout</span></div>
+        </nav>
     </div>
 
-    <!-- Toast -->
-    <div id="liveToast" class="toast-notification"></div>
-  </div>
+    <!-- Mobile Bottom Nav -->
+    <div class="mobile-bottom-nav">
+        <div class="nav-item active" data-section="dashboard"><i class="fas fa-chart-line"></i><span>Home</span></div>
+        <div class="nav-item" data-section="bookings"><i class="fas fa-calendar"></i><span>Bookings</span></div>
+        <div class="nav-item" data-section="new-booking"><i class="fas fa-plus-circle"></i><span>New</span></div>
+        <div class="nav-item" data-section="payout"><i class="fas fa-wallet"></i><span>Wallet</span></div>
+    </div>
 
-  <!-- Firebase & Main Script -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <!-- FAB Button -->
+    <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
 
-  <script>
-    (function() {
-      // ----- CONFIG -----
-      const firebaseConfig = {
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section active">
+            <h2 class="text-2xl font-bold mb-5">📊 My Dashboard</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card"><div><p class="text-sm">My Bookings</p><h3 class="text-2xl font-bold" id="totalBookingsStat">0</h3></div><i class="fas fa-calendar-check text-3xl text-green-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Confirmed</p><h3 class="text-2xl font-bold" id="confirmedStat">0</h3></div><i class="fas fa-check-circle text-3xl text-green-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Total Guests</p><h3 class="text-2xl font-bold" id="totalGuestsStat">0</h3></div><i class="fas fa-users text-3xl text-green-500"></i></div>
+                <div class="stat-card"><div><p class="text-sm">Revenue</p><h3 class="text-2xl font-bold" id="totalRevenueStat">EGP 0</h3></div><i class="fas fa-wallet text-3xl text-green-500"></i></div>
+            </div>
+            <div class="card"><canvas id="trendChart" height="200"></canvas></div>
+        </div>
+
+        <!-- My Bookings Section -->
+        <div id="bookings-section" class="content-section">
+            <div class="card">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                    <h2 class="text-xl font-bold">📋 My Bookings</h2>
+                    <button onclick="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                </div>
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
+                    <div class="flex gap-2">
+                        <button onclick="switchBookingTab('all')" class="filter-chip active">All</button>
+                        <button onclick="switchBookingTab('unpaid')" class="filter-chip">⚠️ Unpaid <span id="unpaidBadge" class="ml-1 text-xs">0</span></button>
+                        <button onclick="switchBookingTab('paid')" class="filter-chip">✅ Paid</button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <input type="text" id="bookingsSearch" placeholder="Search by name or trip..." class="input-field flex-1">
+                    <select id="bookingsStatusFilter" class="input-field w-36">
+                        <option value="all">All Status</option>
+                        <option value="new">New</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <button onclick="refreshBookings()" class="btn-primary px-4"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="w-full">
+                        <thead><tr class="border-b"><th>Guest</th><th>Trip</th><th>Date</th><th>Pax</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="bookingsTableBody"><tr><td colspan="8" class="text-center py-8">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+                <div id="bookingsCardsContainer" class="space-y-3"></div>
+                <div class="flex justify-between items-center mt-4 gap-2">
+                    <span id="pageInfo"></span>
+                    <div class="flex gap-2">
+                        <button id="prevPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Prev</button>
+                        <button id="nextPageBtn" class="px-4 py-2 bg-slate-700 rounded-full disabled:opacity-50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Booking Section -->
+        <div id="new-booking-section" class="content-section">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-5 text-green-400 flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i> Create New Booking
+                </h2>
+                <form id="manualBookingForm">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div><label class="text-sm font-medium">Guest Name *</label><input type="text" id="manualName" class="input-field" required></div>
+                        <div><label class="text-sm font-medium">Phone *</label><input type="tel" id="manualPhone" class="input-field" required></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div><label class="text-sm font-medium">Email</label><input type="email" id="manualEmail" class="input-field"></div>
+                        <div><label class="text-sm font-medium">Select Trip *</label><select id="manualTrip" class="input-field" required><option value="">-- Select Trip --</option></select></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div><label class="text-sm font-medium">Hotel Name</label><input type="text" id="manualHotel" class="input-field"></div>
+                        <div><label class="text-sm font-medium">Room Number</label><input type="text" id="manualRoom" class="input-field"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div><label class="text-sm font-medium">Adults *</label><input type="number" id="manualAdults" value="1" min="0" class="input-field"></div>
+                        <div><label class="text-sm font-medium">Children</label><input type="number" id="manualChildren" value="0" min="0" class="input-field"></div>
+                        <div><label class="text-sm font-medium">Infants</label><input type="number" id="manualInfants" value="0" min="0" class="input-field"></div>
+                    </div>
+                    <div class="mb-3"><label class="text-sm font-medium">Trip Date *</label><input type="date" id="manualDate" class="input-field" required></div>
+                    <div class="mb-3"><label class="text-sm font-medium">Special Requests</label><textarea id="manualRequests" rows="2" class="input-field"></textarea></div>
+                    <div id="extraServicesContainer" class="mb-3" style="display:none;">
+                        <label class="text-sm font-medium mb-2 block">✨ Extra Services</label>
+                        <div id="extraServicesList" class="space-y-2"></div>
+                    </div>
+                    <div id="priceSummary" class="price-summary mb-3" style="display:none;">
+                        <div class="flex justify-between"><span>Base Price:</span><span id="basePriceDisplay">EGP 0</span></div>
+                        <div class="flex justify-between mt-1"><span>Extra Services:</span><span id="extraServicesTotalDisplay">EGP 0</span></div>
+                        <div class="flex justify-between font-bold pt-2 border-t border-white/30 mt-2"><span>Total:</span><span id="totalPriceDisplay">EGP 0</span></div>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <label><input type="checkbox" id="manualPaid"> ✅ Mark as Paid (confirmed)</label>
+                    </div>
+                    <button type="submit" class="btn-primary w-full"><i class="fas fa-save mr-2"></i> Save Booking</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Payout Section -->
+        <div id="payout-section" class="content-section">
+            <div class="card mb-5">
+                <h3 class="font-bold text-lg mb-4">💰 Payout Method</h3>
+                <form id="payoutForm">
+                    <label class="block text-sm font-medium mb-1">Full Name</label>
+                    <input type="text" id="payoutName" placeholder="e.g., Ahmed Samir" class="input-field mb-3">
+                    <label class="block text-sm font-medium mb-1">Account Number</label>
+                    <input type="text" id="accountNumber" placeholder="e.g., 1234567890" class="input-field mb-3">
+                    <div id="bankFields" style="display:none;">
+                        <label class="block text-sm font-medium mb-1">Bank Name</label>
+                        <input type="text" id="bankName" placeholder="e.g., Banque Misr" class="input-field mb-3">
+                        <label class="block text-sm font-medium mb-1">Branch Name</label>
+                        <input type="text" id="branchName" placeholder="e.g., Sharm" class="input-field mb-3">
+                    </div>
+                    <label class="block text-sm font-medium mb-1">Payout Method</label>
+                    <select id="payoutMethodSelect" class="input-field mb-3">
+                        <option value="wallet">e-Wallet</option>
+                        <option value="bankAccount">Bank Account</option>
+                    </select>
+                    <button type="submit" class="btn-primary w-full">Save Payout Method</button>
+                </form>
+            </div>
+            <div class="stat-card flex justify-between items-center flex-wrap gap-3">
+                <div>
+                    <p class="text-gray-500 text-sm">💰 Withdrawable Balance</p>
+                    <h3 class="text-3xl font-bold" id="avpayout">EGP 0</h3>
+                    <div id="debugInfo" class="debug-card"></div>
+                </div>
+                <button id="requestPayoutBtn" class="btn-primary">Request Withdrawal</button>
+            </div>
+            <div class="card mt-5">
+                <h3 class="font-bold mb-3">📜 Payout History</h3>
+                <div id="payoutHistoryList" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-section" class="content-section">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card"><canvas id="statusChart" height="250"></canvas></div>
+                <div class="card"><canvas id="guestChart" height="250"></canvas></div>
+                <div class="card lg:col-span-2"><canvas id="revenueChart" height="200"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div class="modal-overlay" id="booking-modal-overlay" onclick="closeBookingModal()"></div>
+    <div class="modal-sheet" id="booking-modal">
+        <div class="modal-handle"></div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-4 text-green-400">📋 Booking Details</h3>
+            <div id="bookingDetailsContent"></div>
+            <div class="flex gap-3 mt-5">
+                <button onclick="closeBookingModal()" class="flex-1 py-3 border rounded-xl">Close</button>
+                <a id="whatsappLink" href="#" target="_blank" class="flex-1 bg-green-600 text-white py-3 rounded-xl text-center">📱 WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pickup Time Modal -->
+    <div class="modal-overlay" id="pickup-overlay" onclick="closePickupModal()"></div>
+    <div class="modal-sheet" id="pickup-modal">
+        <div class="modal-handle"></div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-3 text-green-400">⏰ Set Pickup Time</h3>
+            <input type="time" id="pickupTimeInput" class="input-field mb-4">
+            <div class="flex gap-3">
+                <button onclick="closePickupModal()" class="flex-1 py-3 border rounded-xl">Cancel</button>
+                <button id="confirmPickupBtn" class="flex-1 btn-primary">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="export-overlay" onclick="closeExportModal()"></div>
+    <div class="modal-sheet" id="export-modal">
+        <div class="modal-handle"></div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-4 text-green-400">📊 Export Bookings</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Export Range</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="exportAllBtn" class="filter-chip active">All My Bookings</button>
+                        <button id="exportFilteredBtn" class="filter-chip">Current Filter</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Select Columns</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="filter-checkbox"><input type="checkbox" value="refNumber" checked> Reference #</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="username" checked> Customer Name</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="phone" checked> Phone</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="email"> Email</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tour" checked> Trip Name</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="tripDate" checked> Trip Date</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="adults" checked> Adults</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="childrenUnder12" checked> Children</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="infants"> Infants</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="netTotal" checked> Amount (EGP)</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="paymentStatus" checked> Payment</label>
+                        <label class="filter-checkbox"><input type="checkbox" value="status" checked> Status</label>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-5">
+                    <button onclick="closeExportModal()" class="flex-1 py-2 border rounded-xl">Cancel</button>
+                    <button id="confirmExportBtn" class="flex-1 btn-primary">Export to Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    // Firebase Config
+    const firebaseConfig = {
         apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
         authDomain: "egypt-travels.firebaseapp.com",
         databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
         projectId: "egypt-travels",
         storageBucket: "egypt-travels.appspot.com"
-      };
+    };
 
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.database();
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-      // ----- STATE -----
-      let currentUser = null;
-      let approvedTrips = [];
-      let selectedTripData = null;     // { id, name, price, tourtype }
-      let selectedExtras = [];         // [{ name, price }]
+    // State
+    let currentUser = null;
+    let myBookings = [];
+    let approvedTrips = [];
+    let currentBookingTab = 'all';
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let filteredBookings = [];
+    window.selectedExtraServices = [];
+    window.currentTripData = null;
+    let pendingConfirmRef = null;
+    let trendChart = null, revenueChart = null, statusChart = null, guestChart = null;
+    const COMMISSION_RATE = 0.10;
 
-      // ----- DOM ELEMENTS -----
-      const tripSelect = document.getElementById('tripSelect');
-      const adultsInput = document.getElementById('adultsCount');
-      const childrenInput = document.getElementById('childrenCount');
-      const infantsInput = document.getElementById('infantsCount');
-      const tripDateInput = document.getElementById('tripDate');
-      const extraContainer = document.getElementById('extraServicesContainer');
-      const basePriceSpan = document.getElementById('basePriceDisplay');
-      const extraTotalSpan = document.getElementById('extraTotalDisplay');
-      const totalPriceSpan = document.getElementById('totalPriceDisplay');
-      const selectedServicesList = document.getElementById('selectedServicesList');
-      const markPaidCheck = document.getElementById('markAsPaid');
-      const submitBtn = document.getElementById('submitBookingBtn');
-      const recentList = document.getElementById('recentBookingsList');
-      const toastEl = document.getElementById('liveToast');
+    // Helpers
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.innerText = msg;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
-      // ----- UTILS -----
-      function showToast(msg, isError = false) {
-        toastEl.textContent = msg;
-        toastEl.classList.add('show');
-        toastEl.style.borderColor = isError ? '#ef4444' : '#f97316';
-        setTimeout(() => toastEl.classList.remove('show'), 3500);
-      }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m] || m);
+    }
 
-      function escapeHtml(str) {
-        return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m] || m);
-      }
+    function getField(id) { return document.getElementById(id); }
+    function safeSetInnerText(id, val) { const el = getField(id); if (el) el.innerText = val ?? ''; }
 
-      // Set today date
-      if (tripDateInput) tripDateInput.value = new Date().toISOString().split('T')[0];
+    function isOlderThanOneDay(dateStr) {
+        if (!dateStr) return false;
+        const d = new Date(dateStr);
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        oneDayAgo.setHours(0,0,0,0);
+        d.setHours(0,0,0,0);
+        return d <= oneDayAgo;
+    }
 
-      // ----- LOAD APPROVED TRIPS -----
-      async function loadApprovedTrips() {
-        try {
-          const snap = await db.ref('trips').once('value');
-          const all = snap.val() || {};
-          approvedTrips = Object.entries(all)
-            .filter(([_, t]) => t.approved === true || t.approved === "true")
-            .map(([id, val]) => ({ id, ...val }));
-          
-          renderTripOptions();
-        } catch (err) {
-          console.error(err);
-          showToast('Failed to load trips', true);
-        }
-      }
-
-      function renderTripOptions() {
-        if (!tripSelect) return;
-        tripSelect.innerHTML = '<option value="">-- Select approved trip --</option>';
-        if (approvedTrips.length === 0) {
-          tripSelect.innerHTML += '<option disabled>No approved trips available</option>';
-          return;
-        }
-        approvedTrips.forEach(t => {
-          const opt = document.createElement('option');
-          opt.value = `${t.id}||${t.name}||${t.price||0}`;
-          opt.textContent = `${t.name} · EGP ${parseFloat(t.price||0).toFixed(0)}`;
-          tripSelect.appendChild(opt);
+    // Login
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = getField('login-email')?.value;
+        const password = getField('login-password')?.value;
+        const errorDiv = getField('login-error');
+        if (errorDiv) errorDiv.classList.add('hidden');
+        auth.signInWithEmailAndPassword(email, password).catch(err => {
+            if (errorDiv) { errorDiv.innerText = err.message; errorDiv.classList.remove('hidden'); }
+            showToast('Login failed: ' + err.message, 'error');
         });
-      }
+    }
+    const loginForm = getField('login-form');
+    if (loginForm) loginForm.onsubmit = handleLogin;
 
-      // ----- HANDLE TRIP CHANGE -----
-      function handleTripChange() {
-        const val = tripSelect.value;
-        if (!val) {
-          selectedTripData = null;
-          extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
-          resetExtrasAndUpdate();
-          return;
-        }
-        const [id, name, price] = val.split('||');
-        const trip = approvedTrips.find(t => t.id === id);
-        if (!trip) return;
-        selectedTripData = { id, name, price: parseFloat(price) || 0, tourtype: trip.tourtype || {} };
-        renderExtraServices(trip.tourtype || {});
-        updatePriceDisplay();
-      }
-
-      function renderExtraServices(tourtype) {
-        if (!extraContainer) return;
-        const entries = Object.entries(tourtype);
-        if (entries.length === 0) {
-          extraContainer.innerHTML = '<p class="text-sm text-slate-500">No extra services for this trip</p>';
-          return;
-        }
-        extraContainer.innerHTML = entries.map(([name, price]) => {
-          const priceNum = parseFloat(price) || 0;
-          return `<div class="extra-chip" data-name="${escapeHtml(name)}" data-price="${priceNum}">
-            <span>${escapeHtml(name)}</span>
-            <span class="price-badge text-xs">+EGP ${priceNum}</span>
-          </div>`;
-        }).join('');
+    // Section Switching
+    function switchSection(section) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        const activeSection = getField(`${section}-section`);
+        if (activeSection) activeSection.classList.add('active');
         
-        // Add click listeners
-        document.querySelectorAll('.extra-chip').forEach(chip => {
-          chip.addEventListener('click', function() {
-            this.classList.toggle('selected');
-            updateSelectedExtras();
-            updatePriceDisplay();
-          });
+        document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active'));
+        
+        const desktopTitle = getField('desktop-title');
+        if (desktopTitle) {
+            const titles = { 'dashboard': 'My Dashboard', 'bookings': 'My Bookings', 'new-booking': 'New Booking', 'payout': 'Payouts & Wallet', 'analytics': 'My Analytics' };
+            desktopTitle.innerText = titles[section] || 'Dashboard';
+        }
+        
+        if (section === 'analytics') renderCharts();
+        
+        if (window.innerWidth < 1024) {
+            const sidebar = getField('sidebar');
+            if (sidebar) sidebar.classList.remove('open');
+        }
+
+        const fab = getField('fabBtn');
+        if (fab) {
+            fab.style.display = 'none';
+            if (section === 'new-booking') {
+                fab.style.display = 'flex';
+                fab.style.background = 'var(--accent-gradient)';
+                fab.innerHTML = '<i class="fas fa-plus"></i>';
+                fab.onclick = () => switchSection('new-booking');
+            } else if (section === 'bookings') {
+                fab.style.display = 'flex';
+                fab.style.background = '#22c55e';
+                fab.innerHTML = '<i class="fas fa-plus"></i>';
+                fab.onclick = () => switchSection('new-booking');
+            }
+        }
+    }
+
+    document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el => {
+        el.addEventListener('click', () => {
+            const section = el.getAttribute('data-section');
+            if (section) switchSection(section);
         });
-      }
+    });
 
-      function updateSelectedExtras() {
-        selectedExtras = [];
-        document.querySelectorAll('.extra-chip.selected').forEach(chip => {
-          selectedExtras.push({
-            name: chip.dataset.name,
-            price: parseFloat(chip.dataset.price) || 0
-          });
-        });
-      }
-
-      function resetExtrasAndUpdate() {
-        selectedExtras = [];
-        if (extraContainer) extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
-        updatePriceDisplay();
-      }
-
-      function updatePriceDisplay() {
-        const adults = parseInt(adultsInput.value) || 0;
-        const children = parseInt(childrenInput.value) || 0;
-        const basePricePer = selectedTripData?.price || 0;
-        const baseTotal = (adults + children) * basePricePer;
-        const extraTotal = selectedExtras.reduce((sum, s) => sum + s.price, 0);
-        const total = baseTotal + extraTotal;
-
-        basePriceSpan.textContent = `EGP ${baseTotal.toFixed(2)}`;
-        extraTotalSpan.textContent = `EGP ${extraTotal.toFixed(2)}`;
-        totalPriceSpan.textContent = `EGP ${total.toFixed(2)}`;
-
-        if (selectedServicesList) {
-          selectedServicesList.innerHTML = selectedExtras.map(s => 
-            `<div class="flex justify-between"><span>• ${escapeHtml(s.name)}</span><span>EGP ${s.price.toFixed(2)}</span></div>`
-          ).join('');
-        }
-      }
-
-      // ----- GENERATE UNIQUE REF -----
-      async function generateRef() {
-        for (let i = 0; i < 10; i++) {
-          const ref = 'SLS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
-          const snap = await db.ref(`trip-bookings/${ref}`).once('value');
-          if (!snap.exists()) return ref;
-        }
-        return 'SLS-' + Date.now() + '-' + Math.floor(Math.random()*1000);
-      }
-
-      // ----- SUBMIT BOOKING -----
-      async function createBooking() {
-        if (!currentUser) {
-          showToast('Please login first (auth required)', true);
-          return;
-        }
-        const guestName = document.getElementById('guestName')?.value.trim();
-        const guestPhone = document.getElementById('guestPhone')?.value.trim();
-        if (!guestName || !guestPhone) {
-          showToast('Guest name and phone are required', true);
-          return;
-        }
-        if (!selectedTripData) {
-          showToast('Please select a trip', true);
-          return;
-        }
-        const adults = parseInt(adultsInput.value) || 0;
-        const children = parseInt(childrenInput.value) || 0;
-        if (adults + children < 1) {
-          showToast('At least 1 adult or child required', true);
-          return;
-        }
-        const tripDateVal = tripDateInput.value;
-        if (!tripDateVal) {
-          showToast('Trip date is required', true);
-          return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Saving...';
-
+    // Load My Bookings
+    async function loadMyBookings() {
+        if (!currentUser) return;
         try {
-          const refNumber = await generateRef();
-          const baseTotal = (adults + children) * selectedTripData.price;
-          const extraTotal = selectedExtras.reduce((s, p) => s + p.price, 0);
-          const netTotal = parseFloat((baseTotal + extraTotal).toFixed(2));
-          const isPaid = markPaidCheck.checked;
-
-          const booking = {
-            username: guestName,
-            phone: guestPhone,
-            email: document.getElementById('guestEmail')?.value.trim() || '',
-            hotelName: document.getElementById('guestHotel')?.value.trim() || '',
-            roomNumber: document.getElementById('guestRoom')?.value.trim() || '',
-            tour: selectedTripData.name,
-            tripId: selectedTripData.id,
-            adults,
-            childrenUnder12: children,
-            infants: parseInt(infantsInput.value) || 0,
-            netTotal,
-            total: netTotal,
-            tripDate: tripDateVal,
-            specialRequests: document.getElementById('specialRequests')?.value.trim() || '',
-            extraServices: selectedExtras.map(e => `${e.name}: ${e.price}`).join(', '),
-            isPaid,
-            paymentStatus: isPaid ? 'paid' : 'unpaid',
-            resStatus: isPaid ? 'confirmed' : 'new',
-            status: 'pending',            // Required for create rules
-            owner: currentUser.uid,
-            uid: currentUser.uid,
-            refNumber,
-            timestamp: Date.now(),
-            updatedAt: Date.now()
-          };
-
-          await db.ref(`trip-bookings/${refNumber}`).set(booking);
-          
-          // If paid, update status to confirmed after creation
-          if (isPaid) {
-            await db.ref(`trip-bookings/${refNumber}`).update({ status: 'confirmed', updatedAt: Date.now() });
-          }
-
-          showToast(`✅ Booking ${refNumber} created!`);
-          clearForm();
-          loadRecentBookings();
+            const snap = await db.ref('trip-bookings')
+                .orderByChild('owner')
+                .equalTo(currentUser.uid)
+                .once('value');
+            const data = snap.val() || {};
+            myBookings = Object.entries(data).map(([id, val]) => ({
+                id, ...val,
+                isPaid: val.paymentStatus === 'paid' || val.isPaid === true,
+                status: val.resStatus || val.status || 'new'
+            }));
+            
+            const unpaidBadge = getField('unpaidBadge');
+            if (unpaidBadge) unpaidBadge.innerText = myBookings.filter(r => !r.isPaid).length;
+            
+            applyBookingFilters();
+            updateDashboard();
         } catch (error) {
-          console.error(error);
-          showToast('Error: ' + (error.message || 'Permission denied'), true);
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '<i class="fas fa-save"></i> Create Booking';
+            console.error('Load bookings error:', error);
+            showToast('Failed to load bookings', 'error');
         }
-      }
+    }
 
-      function clearForm() {
-        document.getElementById('guestName').value = '';
-        document.getElementById('guestPhone').value = '';
-        document.getElementById('guestEmail').value = '';
-        document.getElementById('guestHotel').value = '';
-        document.getElementById('guestRoom').value = '';
-        tripSelect.selectedIndex = 0;
-        adultsInput.value = 1;
-        childrenInput.value = 0;
-        infantsInput.value = 0;
-        tripDateInput.value = new Date().toISOString().split('T')[0];
-        markPaidCheck.checked = false;
-        selectedTripData = null;
-        selectedExtras = [];
-        extraContainer.innerHTML = '<p class="text-sm text-slate-500 italic">Select a trip to load options</p>';
-        updatePriceDisplay();
-      }
+    function applyBookingFilters() {
+        const search = (getField('bookingsSearch')?.value || '').toLowerCase();
+        const status = getField('bookingsStatusFilter')?.value || 'all';
+        
+        let filtered = myBookings.filter(r => 
+            (r.username || '').toLowerCase().includes(search) || 
+            (r.tour || '').toLowerCase().includes(search)
+        );
+        
+        if (status !== 'all') filtered = filtered.filter(r => r.status === status);
+        if (currentBookingTab === 'paid') filtered = filtered.filter(r => r.isPaid === true);
+        if (currentBookingTab === 'unpaid') filtered = filtered.filter(r => !r.isPaid);
+        
+        filteredBookings = filtered;
+        currentPage = 1;
+        renderBookings();
+        updatePagination();
+    }
 
-      // ----- RECENT BOOKINGS (last 5 for this user) -----
-      async function loadRecentBookings() {
-        if (!currentUser) {
-          recentList.innerHTML = '<p class="text-slate-500">Login to see recent bookings</p>';
-          return;
+    function renderBookings() {
+        const tbody = getField('bookingsTableBody');
+        const cardsContainer = getField('bookingsCardsContainer');
+        if (!tbody && !cardsContainer) return;
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const page = filteredBookings.slice(start, start + itemsPerPage);
+        
+        if (tbody) {
+            tbody.innerHTML = page.length ? page.map(r => `<tr class="border-b hover:bg-slate-800/30 transition">
+                <td><div class="font-medium">${escapeHtml(r.username || 'Guest')}</div><div class="text-xs text-gray-400">${escapeHtml(r.phone || '-')}</div></td>
+                <td>${escapeHtml(r.tour || '-')}</td>
+                <td>${r.tripDate || '-'}</td>
+                <td>${r.adults || 0}A / ${r.childrenUnder12 || 0}C</td>
+                <td class="font-bold text-green-500">EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</td>
+                <td><span class="status-badge ${r.isPaid ? 'status-paid' : 'status-unpaid'}">${r.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></td>
+                <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+                <td><div class="flex gap-1 flex-wrap">
+                    ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg text-xs transition">Pay</button>` : ''}
+                    <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded-lg text-xs transition">Confirm</button>
+                    <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-xs transition">View</button>
+                </div></td>
+            </tr>`).join('') : '<tr><td colspan="8" class="text-center py-8">No bookings found</td></tr>';
         }
+        
+        if (cardsContainer) {
+            cardsContainer.innerHTML = page.length ? page.map(r => `<div class="booking-card">
+                <div class="booking-card-header">
+                    <span class="booking-ref">${escapeHtml(r.refNumber || r.id?.slice(-8) || 'N/A')}</span>
+                    <span class="status-badge status-${r.status}">${r.status}</span>
+                </div>
+                <div class="font-medium">${escapeHtml(r.username || 'Guest')}</div>
+                <div class="text-sm text-gray-400">${escapeHtml(r.tour || '-')} • ${r.tripDate || '-'}</div>
+                <div class="flex gap-3 mt-2 text-xs text-gray-300">
+                    <span>👥 ${r.adults || 0}A / ${r.childrenUnder12 || 0}C</span>
+                    <span>💰 EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</span>
+                    <span>💳 ${r.isPaid ? 'Paid' : 'Unpaid'}</span>
+                </div>
+                <div class="flex gap-2 mt-3">
+                    ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Pay</button>` : ''}
+                    <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-3 py-1 rounded-lg text-xs">Confirm</button>
+                    <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">View</button>
+                </div>
+            </div>`).join('') : '<div class="text-center py-8 text-gray-400">No bookings found</div>';
+        }
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredBookings.length / itemsPerPage) || 1;
+        safeSetInnerText('pageInfo', `Page ${currentPage} of ${totalPages}`);
+        const prevBtn = getField('prevPageBtn');
+        const nextBtn = getField('nextPageBtn');
+        if (prevBtn) prevBtn.disabled = currentPage === 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+    }
+
+    window.prevPage = () => { if (currentPage > 1) { currentPage--; renderBookings(); updatePagination(); } };
+    window.nextPage = () => {
+        const total = Math.ceil(filteredBookings.length / itemsPerPage);
+        if (currentPage < total) { currentPage++; renderBookings(); updatePagination(); }
+    };
+
+    window.switchBookingTab = (tab) => {
+        currentBookingTab = tab;
+        document.querySelectorAll('#bookings-section .filter-chip').forEach(c => c.classList.remove('active'));
+        if (event?.target) event.target.classList.add('active');
+        applyBookingFilters();
+    };
+
+    window.markAsPaid = async (id, amount) => {
+        if (confirm(`Mark booking as paid? Amount: EGP ${amount}`)) {
+            await db.ref(`trip-bookings/${id}`).update({ isPaid: true, paymentStatus: 'paid', paymentDate: Date.now(), updatedAt: Date.now() });
+            showToast('✅ Payment recorded');
+            loadMyBookings();
+        }
+    };
+
+    window.confirmBookingWithPickup = (id) => {
+        pendingConfirmRef = id;
+        getField('pickup-modal')?.classList.add('open');
+        getField('pickup-overlay')?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closePickupModal = () => {
+        getField('pickup-modal')?.classList.remove('open');
+        getField('pickup-overlay')?.classList.remove('open');
+        document.body.style.overflow = '';
+    };
+
+    getField('confirmPickupBtn')?.addEventListener('click', async () => {
+        const time = getField('pickupTimeInput')?.value;
+        if (!time) { showToast('Please select pickup time', 'error'); return; }
+        if (pendingConfirmRef) {
+            await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ resStatus: 'confirmed', pickuptime: time, confirmedAt: Date.now(), updatedAt: Date.now() });
+            showToast('✅ Booking confirmed!');
+            closePickupModal();
+            loadMyBookings();
+            pendingConfirmRef = null;
+        }
+    });
+
+    window.refreshBookings = () => { showToast('🔄 Refreshing...'); loadMyBookings(); };
+
+    // Booking Details
+    async function showBookingDetails(bookingId) {
+        const b = myBookings.find(b => b.id === bookingId);
+        if (!b) { showToast('Booking not found', 'error'); return; }
+        
+        const html = `<div class="booking-details-grid">
+            <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value font-mono">${escapeHtml(b.refNumber || b.id?.slice(-8))}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${escapeHtml(b.tour || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate || '-'}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-green-500 font-bold">EGP ${parseFloat(b.netTotal || 0).toFixed(2)}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid ? 'status-paid' : 'status-unpaid'}">${b.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Customer</div><div class="booking-detail-value">${escapeHtml(b.username || '-')}</div></div>
+            <div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${escapeHtml(b.phone || '-')}</div></div>
+        </div>`;
+        
+        getField('bookingDetailsContent').innerHTML = html;
+        
+        const wa = getField('whatsappLink');
+        if (wa && b.phone) {
+            const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
+            const msg = `*🌴 Discover Sharm - Booking*\n📋 Ref: ${b.refNumber}\n👤 ${b.username}\n🚀 ${b.tour}\n📅 ${b.tripDate}\n💰 EGP ${parseFloat(b.netTotal||0).toFixed(2)}`;
+            wa.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+        }
+        
+        getField('booking-modal')?.classList.add('open');
+        getField('booking-modal-overlay')?.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.closeBookingModal = () => {
+        getField('booking-modal')?.classList.remove('open');
+        getField('booking-modal-overlay')?.classList.remove('open');
+        document.body.style.overflow = '';
+    };
+
+    // Load Approved Trips for dropdown
+    async function loadApprovedTrips() {
         try {
-          const snap = await db.ref('trip-bookings')
-            .orderByChild('owner')
-            .equalTo(currentUser.uid)
-            .once('value');
-          const data = snap.val() || {};
-          const bookings = Object.values(data).sort((a,b) => (b.timestamp||0) - (a.timestamp||0)).slice(0,6);
-          
-          if (bookings.length === 0) {
-            recentList.innerHTML = '<p class="text-slate-500 italic">No manual bookings yet.</p>';
+            const snap = await db.ref('trips').once('value');
+            const all = snap.val() || {};
+            approvedTrips = Object.entries(all)
+                .filter(([_, t]) => t.approved === true || t.approved === "true")
+                .map(([id, val]) => ({ id, ...val }));
+            
+            const tripSelect = getField('manualTrip');
+            if (tripSelect) {
+                tripSelect.innerHTML = '<option value="">-- Select Trip --</option>';
+                approvedTrips.forEach(trip => {
+                    tripSelect.innerHTML += `<option value="${trip.id}|${trip.name}|${trip.price}">${escapeHtml(trip.name)} - EGP ${parseFloat(trip.price).toFixed(2)}</option>`;
+                });
+            }
+        } catch (error) {
+            console.error('Load trips error:', error);
+        }
+    }
+
+    // Manual Booking Form
+    getField('manualTrip')?.addEventListener('change', async function() {
+        const val = this.value;
+        if (!val) {
+            window.currentTripData = null;
+            getField('extraServicesContainer').style.display = 'none';
+            getField('priceSummary').style.display = 'none';
             return;
-          }
-          recentList.innerHTML = bookings.map(b => `
-            <div class="flex justify-between items-center bg-slate-800/70 p-3 rounded-xl">
-              <div>
-                <span class="font-mono text-orange-300 text-xs">${escapeHtml(b.refNumber||'')}</span>
-                <span class="ml-3 font-medium">${escapeHtml(b.username||'Guest')}</span>
-                <span class="ml-2 text-slate-400 text-xs">${escapeHtml(b.tour||'')}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs ${b.isPaid ? 'text-green-400' : 'text-amber-400'}">${b.isPaid ? 'Paid' : 'Unpaid'}</span>
-                <span class="font-semibold">EGP ${parseFloat(b.netTotal||0).toFixed(0)}</span>
-              </div>
-            </div>
-          `).join('');
-        } catch (err) {
-          recentList.innerHTML = '<p class="text-red-400">Failed to load recent bookings</p>';
         }
-      }
-
-      // ----- AUTH -----
-      auth.onAuthStateChanged(async (user) => {
-        currentUser = user;
-        const displayEl = document.getElementById('salesAgentDisplay');
-        if (user) {
-          displayEl.textContent = user.email || 'Sales Agent';
-          await loadApprovedTrips();
-          loadRecentBookings();
+        const parts = val.split('|');
+        window.currentTripData = { id: parts[0], name: parts[1], price: parseFloat(parts[2]) || 0 };
+        
+        const tripSnap = await db.ref(`trips/${window.currentTripData.id}`).once('value');
+        const trip = tripSnap.val();
+        const extraList = getField('extraServicesList');
+        if (trip?.tourtype && Object.keys(trip.tourtype).length > 0 && extraList) {
+            getField('extraServicesContainer').style.display = 'block';
+            extraList.innerHTML = '';
+            window.selectedExtraServices = [];
+            Object.entries(trip.tourtype).forEach(([name, price]) => {
+                const div = document.createElement('div');
+                div.className = 'extra-service-item';
+                div.innerHTML = `<span>${escapeHtml(name)}</span><span class="font-bold">EGP ${parseFloat(price).toFixed(2)}</span>`;
+                div.onclick = () => {
+                    div.classList.toggle('selected');
+                    window.selectedExtraServices = div.classList.contains('selected') 
+                        ? [...window.selectedExtraServices, { name, price: parseFloat(price) }]
+                        : window.selectedExtraServices.filter(s => s.name !== name);
+                    updateManualPrice();
+                };
+                extraList.appendChild(div);
+            });
         } else {
-          displayEl.textContent = 'Not signed in';
-          // Sign in anonymously for demo (or trigger login)
-          auth.signInAnonymously().catch(e => console.warn('Anonymous auth failed', e));
+            getField('extraServicesContainer').style.display = 'none';
         }
-      });
+        getField('priceSummary').style.display = 'block';
+        updateManualPrice();
+    });
 
-      // ----- EVENT LISTENERS -----
-      tripSelect?.addEventListener('change', handleTripChange);
-      adultsInput?.addEventListener('input', updatePriceDisplay);
-      childrenInput?.addEventListener('input', updatePriceDisplay);
-      infantsInput?.addEventListener('input', updatePriceDisplay);
-      submitBtn?.addEventListener('click', createBooking);
-      document.getElementById('refreshRecentBtn')?.addEventListener('click', loadRecentBookings);
+    function updateManualPrice() {
+        const adults = parseInt(getField('manualAdults')?.value) || 0;
+        const children = parseInt(getField('manualChildren')?.value) || 0;
+        const baseTotal = (adults + children) * (window.currentTripData?.price || 0);
+        const extraTotal = (window.selectedExtraServices || []).reduce((sum, s) => sum + s.price, 0);
+        const total = baseTotal + extraTotal;
+        safeSetInnerText('basePriceDisplay', `EGP ${baseTotal.toFixed(2)}`);
+        safeSetInnerText('extraServicesTotalDisplay', `EGP ${extraTotal.toFixed(2)}`);
+        safeSetInnerText('totalPriceDisplay', `EGP ${total.toFixed(2)}`);
+    }
 
-      // Initial load trigger
-      window.addEventListener('load', () => {
-        if (tripDateInput) tripDateInput.value = new Date().toISOString().split('T')[0];
-      });
+    ['manualAdults', 'manualChildren'].forEach(id => {
+        getField(id)?.addEventListener('input', updateManualPrice);
+    });
 
-    })();
-  </script>
+    async function generateUniqueRef() {
+        for (let i = 0; i < 10; i++) {
+            const ref = 'SLS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+            const snap = await db.ref(`trip-bookings/${ref}`).once('value');
+            if (!snap.exists()) return ref;
+        }
+        return 'SLS-' + Date.now();
+    }
+
+    getField('manualBookingForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!window.currentTripData) { showToast('Please select a trip', 'error'); return; }
+        const name = getField('manualName')?.value.trim();
+        const phone = getField('manualPhone')?.value.trim();
+        if (!name || !phone) { showToast('Name and phone required', 'error'); return; }
+        
+        const adults = parseInt(getField('manualAdults')?.value) || 0;
+        const children = parseInt(getField('manualChildren')?.value) || 0;
+        if (adults + children < 1) { showToast('At least 1 adult or child', 'error'); return; }
+        
+        const baseTotal = (adults + children) * window.currentTripData.price;
+        const extraTotal = (window.selectedExtraServices || []).reduce((s, x) => s + x.price, 0);
+        const total = parseFloat((baseTotal + extraTotal).toFixed(2));
+        const isPaid = getField('manualPaid')?.checked || false;
+        
+        const refNumber = await generateUniqueRef();
+        const booking = {
+            username: name, phone, email: getField('manualEmail')?.value.trim() || '',
+            hotelName: getField('manualHotel')?.value.trim() || '',
+            roomNumber: getField('manualRoom')?.value.trim() || '',
+            tour: window.currentTripData.name, tripId: window.currentTripData.id,
+            adults, childrenUnder12: children, infants: parseInt(getField('manualInfants')?.value) || 0,
+            netTotal: total, total, tripDate: getField('manualDate')?.value,
+            specialRequests: getField('manualRequests')?.value.trim() || '',
+            extraServices: (window.selectedExtraServices || []).map(s => `${s.name}: ${s.price}`).join(', '),
+            isPaid, paymentStatus: isPaid ? 'paid' : 'unpaid',
+            resStatus: isPaid ? 'confirmed' : 'new',
+            status: 'pending',
+            owner: currentUser.uid, uid: currentUser.uid,
+            refNumber, timestamp: Date.now(), updatedAt: Date.now()
+        };
+        
+        await db.ref(`trip-bookings/${refNumber}`).set(booking);
+        if (isPaid) await db.ref(`trip-bookings/${refNumber}`).update({ status: 'confirmed', updatedAt: Date.now() });
+        
+        showToast(`✅ Booking ${refNumber} created!`);
+        getField('manualBookingForm').reset();
+        getField('manualAdults').value = 1;
+        getField('manualChildren').value = 0;
+        getField('manualInfants').value = 0;
+        window.selectedExtraServices = [];
+        window.currentTripData = null;
+        getField('extraServicesContainer').style.display = 'none';
+        getField('priceSummary').style.display = 'none';
+        loadMyBookings();
+    });
+
+    // Export
+    window.openExportModal = () => { getField('export-modal')?.classList.add('open'); getField('export-overlay')?.classList.add('open'); };
+    window.closeExportModal = () => { getField('export-modal')?.classList.remove('open'); getField('export-overlay')?.classList.remove('open'); };
+
+    getField('confirmExportBtn')?.addEventListener('click', async () => {
+        closeExportModal();
+        const exportAll = getField('exportAllBtn')?.classList.contains('active') ?? true;
+        const selectedCols = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked')).map(cb => cb.value);
+        const data = exportAll ? myBookings : filteredBookings;
+        if (!data.length) { showToast('No data', 'error'); return; }
+        
+        const workbook = new ExcelJS.Workbook();
+        const ws = workbook.addWorksheet('My Bookings');
+        ws.columns = selectedCols.map(c => ({ header: c, key: c, width: 20 }));
+        data.forEach(b => {
+            const row = {};
+            selectedCols.forEach(col => {
+                if (col === 'netTotal') row[col] = b[col] || 0;
+                else if (col === 'paymentStatus') row[col] = b.isPaid ? 'Paid' : 'Unpaid';
+                else if (col === 'status') row[col] = b.status || 'new';
+                else row[col] = b[col] || '-';
+            });
+            ws.addRow(row);
+        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        saveAs(new Blob([buffer]), `sales_bookings_${Date.now()}.xlsx`);
+        showToast('✅ Exported!');
+    });
+
+    // Payout
+    async function calculatePayout() {
+        if (!currentUser) return;
+        const eligible = myBookings.filter(r => r.status === 'confirmed' && isOlderThanOneDay(r.tripDate));
+        const totalRev = eligible.reduce((s, r) => s + (parseFloat(r.netTotal)||0), 0);
+        const net = totalRev * (1 - COMMISSION_RATE);
+        let completed = 0, pending = 0;
+        const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
+        snap.forEach(c => {
+            const req = c.val();
+            if (req.status === 'completed') completed += parseFloat(req.amount)||0;
+            if (req.status === 'pending') pending += parseFloat(req.amount)||0;
+        });
+        const available = Math.max(net - completed - pending, 0);
+        safeSetInnerText('avpayout', `EGP ${available.toFixed(2)}`);
+        window.currentAvailableBalance = available;
+    }
+
+    getField('requestPayoutBtn')?.addEventListener('click', async () => {
+        const available = window.currentAvailableBalance || 0;
+        if (available <= 0) { showToast('No balance', 'error'); return; }
+        if (confirm(`Request ${available.toFixed(2)} EGP?`)) {
+            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() });
+            showToast('✅ Request submitted');
+            calculatePayout();
+        }
+    });
+
+    getField('payoutForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const method = getField('payoutMethodSelect')?.value || 'wallet';
+        const data = {
+            name: getField('payoutName')?.value || '',
+            accountNumber: getField('accountNumber')?.value || '',
+            method, updatedAt: Date.now()
+        };
+        if (method === 'bankAccount') {
+            data.bankName = getField('bankName')?.value || '';
+            data.branchName = getField('branchName')?.value || '';
+        }
+        await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data);
+        showToast('✅ Payout method saved');
+    });
+
+    // Dashboard & Charts
+    function updateDashboard() {
+        const rev = myBookings.reduce((s, r) => s + (parseFloat(r.netTotal)||0), 0);
+        const guests = myBookings.reduce((s, r) => s + (r.adults||0) + (r.childrenUnder12||0), 0);
+        const confirmed = myBookings.filter(r => r.status === 'confirmed').length;
+        safeSetInnerText('totalBookingsStat', myBookings.length);
+        safeSetInnerText('confirmedStat', confirmed);
+        safeSetInnerText('totalGuestsStat', guests);
+        safeSetInnerText('totalRevenueStat', `EGP ${rev.toFixed(0)}`);
+    }
+
+    function renderCharts() {
+        const trendCtx = getField('trendChart');
+        if (trendCtx) {
+            if (trendChart) trendChart.destroy();
+            const now = new Date();
+            const labels = [], counts = [];
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                labels.push(d.toLocaleString('en-US', { month: 'short' }));
+                let c = 0;
+                myBookings.forEach(r => {
+                    if (r.tripDate) {
+                        const rd = new Date(r.tripDate);
+                        if (rd.getMonth() === d.getMonth() && rd.getFullYear() === d.getFullYear()) c++;
+                    }
+                });
+                counts.push(c);
+            }
+            trendChart = new Chart(trendCtx, {
+                type: 'line', data: { labels, datasets: [{ label: 'My Bookings', data: counts, borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', tension: 0.4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+    }
+
+    // Auth
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            currentUser = user;
+            getField('login-page').style.display = 'none';
+            getField('admin-panel').classList.add('visible');
+            const init = user.email?.charAt(0).toUpperCase() || 'S';
+            ['user-avatar-mobile', 'user-avatar-desktop'].forEach(id => { const el = getField(id); if (el) el.innerText = init; });
+            safeSetInnerText('user-email-sidebar', user.email);
+            safeSetInnerText('user-name-desktop', user.displayName || user.email?.split('@')[0] || 'Sales Agent');
+            
+            await Promise.all([loadApprovedTrips(), loadMyBookings(), calculatePayout()]);
+            updateDashboard();
+            switchSection('dashboard');
+        } else {
+            currentUser = null;
+            getField('login-page').style.display = 'flex';
+            getField('admin-panel').classList.remove('visible');
+        }
+    });
+
+    // Logout
+    ['logout-sidebar', 'desktopLogout'].forEach(id => {
+        getField(id)?.addEventListener('click', () => auth.signOut());
+    });
+
+    // Mobile menu
+    getField('menuToggle')?.addEventListener('click', () => {
+        getField('sidebar')?.classList.toggle('open');
+    });
+
+    // Global functions
+    window.showBookingDetails = showBookingDetails;
+    window.closeBookingModal = closeBookingModal;
+    window.confirmBookingWithPickup = confirmBookingWithPickup;
+    window.closePickupModal = closePickupModal;
+    window.markAsPaid = markAsPaid;
+    window.switchBookingTab = switchBookingTab;
+    window.refreshBookings = refreshBookings;
+    window.openExportModal = openExportModal;
+    window.closeExportModal = closeExportModal;
+});
+</script>
 </body>
 </html>
