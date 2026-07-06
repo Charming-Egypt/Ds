@@ -1,0 +1,25 @@
+{
+  "code": 502462,
+  "name": "Steigenberger Alcazar",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharm el Sheikh",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 361.71,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 9,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/502462/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:55.197Z",
+  "source": "Hotelbeds API"
+}
