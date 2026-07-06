@@ -1,0 +1,25 @@
+{
+  "code": 110617,
+  "name": "Naama Bay Hotel and Resort",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Naama Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 141.2,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/110617/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:50.129Z",
+  "source": "Hotelbeds API"
+}
