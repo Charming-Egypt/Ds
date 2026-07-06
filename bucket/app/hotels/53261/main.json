@@ -1,0 +1,25 @@
+{
+  "code": 53261,
+  "name": "V Hotel Sharm El Shiekh",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharks Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 248.65,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 12,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/53261/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:25.846Z",
+  "source": "Hotelbeds API"
+}
