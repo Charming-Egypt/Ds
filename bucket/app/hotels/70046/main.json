@@ -1,0 +1,25 @@
+{
+  "code": 70046,
+  "name": "JAZ Dahabeya",
+  "stars": 4,
+  "category": "4 STARS",
+  "zone": "Dahab",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 239.59,
+  "currency": "EUR",
+  "boardTypes": [
+    "HALF BOARD"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/70046/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:06.728Z",
+  "source": "Hotelbeds API"
+}
