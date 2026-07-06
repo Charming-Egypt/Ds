@@ -1,0 +1,25 @@
+{
+  "code": 122806,
+  "name": "Cataract Sharm Resort",
+  "stars": 4,
+  "category": "4 STARS",
+  "zone": "Sharm el Sheikh",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 109.96,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/122806/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:45.284Z",
+  "source": "Hotelbeds API"
+}
