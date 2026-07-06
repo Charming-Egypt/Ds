@@ -1,0 +1,25 @@
+{
+  "code": 15441,
+  "name": "Sultan Gardens Resort",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharm el Sheikh",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 172.55,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 6,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/15441/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:27.462Z",
+  "source": "Hotelbeds API"
+}
