@@ -1,0 +1,25 @@
+{
+  "code": 342595,
+  "name": "JAZ Neo Naama Bay",
+  "stars": 4,
+  "category": "4 STARS",
+  "zone": "Naama Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 179.57,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/342595/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:56.991Z",
+  "source": "Hotelbeds API"
+}
