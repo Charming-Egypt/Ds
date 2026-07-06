@@ -1,0 +1,25 @@
+{
+  "code": 345748,
+  "name": "Sunrise Arabian Beach Resort -Grand Select-",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharks Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 227.13,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 3,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/345748/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:38.952Z",
+  "source": "Hotelbeds API"
+}
