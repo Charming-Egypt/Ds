@@ -7,8 +7,6 @@
   "destination": "Sharm el Sheikh -Dahab",
   "city": "Sharm El Sheikh",
   "country": "Egypt",
-  "priceFrom": 271.89,
-  "currency": "EUR",
   "boardTypes": [
     "ALL INCLUSIVE"
   ],
@@ -20,6 +18,15 @@
     "main": "https://www.discover-sharm.com/app/hotels/53253/main.jpg",
     "gallery": []
   },
-  "lastUpdated": "2026-07-06T13:14:01.916Z",
+  "facilities": [],
+  "description": "",
+  "website": "",
+  "phone": "",
+  "email": "",
+  "coordinates": {
+    "latitude": 0,
+    "longitude": 0
+  },
+  "lastUpdated": "2026-07-06T13:25:53.403Z",
   "source": "Hotelbeds API"
 }
