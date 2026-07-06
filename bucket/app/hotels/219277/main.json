@@ -1,0 +1,25 @@
+{
+  "code": 219277,
+  "name": "Sunrise Diamond Beach Resort – Grand Select-",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Om El Sid Hill",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 225.58,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 7,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/219277/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:37.363Z",
+  "source": "Hotelbeds API"
+}
