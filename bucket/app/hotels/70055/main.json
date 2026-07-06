@@ -1,0 +1,25 @@
+{
+  "code": 70055,
+  "name": "JAZ Belvedere",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 265.47,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 6,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/70055/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:03.524Z",
+  "source": "Hotelbeds API"
+}
