@@ -1,0 +1,25 @@
+{
+  "code": 139167,
+  "name": "Coral Sea Sensatori",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharm el Sheikh",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 262.1,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 3,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/139167/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:00.342Z",
+  "source": "Hotelbeds API"
+}
