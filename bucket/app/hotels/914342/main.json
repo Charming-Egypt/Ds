@@ -1,0 +1,25 @@
+{
+  "code": 914342,
+  "name": "El Khan Sharm Hotel",
+  "stars": 3,
+  "category": "3 STARS",
+  "zone": "Om El Sid Hill",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 38.73,
+  "currency": "EUR",
+  "boardTypes": [
+    "ROOM ONLY"
+  ],
+  "roomTypes": 2,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/914342/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:18.238Z",
+  "source": "Hotelbeds API"
+}
