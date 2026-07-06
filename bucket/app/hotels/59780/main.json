@@ -1,0 +1,25 @@
+{
+  "code": 59780,
+  "name": "Tivoli Hotel Aqua Park",
+  "stars": 4,
+  "category": "4 STARS",
+  "zone": "Om El Sid Hill",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 47.5,
+  "currency": "EUR",
+  "boardTypes": [
+    "HALF BOARD"
+  ],
+  "roomTypes": 1,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/59780/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:42.086Z",
+  "source": "Hotelbeds API"
+}
