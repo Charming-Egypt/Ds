@@ -1,0 +1,25 @@
+{
+  "code": 879349,
+  "name": "Sharm Bride Resort Aqua Park & Spa",
+  "stars": 4,
+  "category": "4 STARS",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 51.93,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 2,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/879349/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:08.318Z",
+  "source": "Hotelbeds API"
+}
