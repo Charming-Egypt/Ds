@@ -1,0 +1,25 @@
+{
+  "code": 53253,
+  "name": "Baron Palms Sharm El Sheikh",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Ras Nasrani",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 271.89,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/53253/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:01.916Z",
+  "source": "Hotelbeds API"
+}
