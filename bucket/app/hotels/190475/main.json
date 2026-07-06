@@ -1,0 +1,25 @@
+{
+  "code": 190475,
+  "name": "Cataract Layalina Hotel",
+  "stars": 3,
+  "category": "3 STARS",
+  "zone": "Naama Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 119.27,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 4,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/190475/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:48.575Z",
+  "source": "Hotelbeds API"
+}
