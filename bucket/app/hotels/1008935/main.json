@@ -1,0 +1,25 @@
+{
+  "code": 1008935,
+  "name": "Amarina Sun Resort and Aqua Park",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 91.44,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 5,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/1008935/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:19.933Z",
+  "source": "Hotelbeds API"
+}
