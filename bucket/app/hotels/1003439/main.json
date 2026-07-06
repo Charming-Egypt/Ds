@@ -1,0 +1,25 @@
+{
+  "code": 1003439,
+  "name": "Naama Bay Suites & Spa",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Naama Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 157.85,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 3,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/1003439/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:16.607Z",
+  "source": "Hotelbeds API"
+}
