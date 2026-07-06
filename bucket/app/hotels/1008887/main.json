@@ -1,0 +1,25 @@
+{
+  "code": 1008887,
+  "name": "Star Resort and Aqua Park",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 86.54,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 6,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/1008887/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:23.128Z",
+  "source": "Hotelbeds API"
+}
