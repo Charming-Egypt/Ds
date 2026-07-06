@@ -1,0 +1,25 @@
+{
+  "code": 668801,
+  "name": "Concorde El Salam Sharm El Shiekh Sport Hotel",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Sharks Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 120.78,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 1,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/668801/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:15.053Z",
+  "source": "Hotelbeds API"
+}
