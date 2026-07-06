@@ -7,10 +7,8 @@
   "destination": "Sharm el Sheikh -Dahab",
   "city": "Sharm El Sheikh",
   "country": "Egypt",
-  "priceFrom": 120.78,
-  "currency": "EUR",
   "boardTypes": [
-    "BED AND BREAKFAST"
+    "ALL INCLUSIVE"
   ],
   "roomTypes": 1,
   "cancellationPolicy": "Free Cancellation",
@@ -20,6 +18,15 @@
     "main": "https://www.discover-sharm.com/app/hotels/668801/main.jpg",
     "gallery": []
   },
-  "lastUpdated": "2026-07-06T13:14:15.053Z",
+  "facilities": [],
+  "description": "",
+  "website": "",
+  "phone": "",
+  "email": "",
+  "coordinates": {
+    "latitude": 0,
+    "longitude": 0
+  },
+  "lastUpdated": "2026-07-06T13:26:09.427Z",
   "source": "Hotelbeds API"
 }
