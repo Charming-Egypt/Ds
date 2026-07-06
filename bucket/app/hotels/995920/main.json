@@ -1,0 +1,25 @@
+{
+  "code": 995920,
+  "name": "Cleopatra Luxury Resort Sharm Adults Only",
+  "stars": 5,
+  "category": "5 STARS LUXURY",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 350.28,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 2,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/995920/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:21.529Z",
+  "source": "Hotelbeds API"
+}
