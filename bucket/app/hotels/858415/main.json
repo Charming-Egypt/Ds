@@ -1,0 +1,25 @@
+{
+  "code": 858415,
+  "name": "Naama Waves Hotel",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Naama Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 100.81,
+  "currency": "EUR",
+  "boardTypes": [
+    "BED AND BREAKFAST"
+  ],
+  "roomTypes": 2,
+  "cancellationPolicy": "Free Cancellation",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/858415/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:13.288Z",
+  "source": "Hotelbeds API"
+}
