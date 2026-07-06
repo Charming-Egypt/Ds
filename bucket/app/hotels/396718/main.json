@@ -1,0 +1,25 @@
+{
+  "code": 396718,
+  "name": "Jaz Mirabel Resort",
+  "stars": 5,
+  "category": "5 STARS",
+  "zone": "Nabq Bay",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 266.75,
+  "currency": "EUR",
+  "boardTypes": [
+    "ALL INCLUSIVE"
+  ],
+  "roomTypes": 5,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/396718/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:13:53.596Z",
+  "source": "Hotelbeds API"
+}
