@@ -1,0 +1,25 @@
+{
+  "code": 996767,
+  "name": "Sultan Sharm Hadaba Farsha",
+  "stars": 0,
+  "category": "VACATIONALS TURISTICS HOUSES",
+  "zone": "Om El Sid Hill",
+  "destination": "Sharm el Sheikh -Dahab",
+  "city": "Sharm El Sheikh",
+  "country": "Egypt",
+  "priceFrom": 59.2,
+  "currency": "EUR",
+  "boardTypes": [
+    "ROOM ONLY"
+  ],
+  "roomTypes": 2,
+  "cancellationPolicy": "Non-Refundable",
+  "checkIn": "14:00",
+  "checkOut": "12:00",
+  "images": {
+    "main": "https://www.discover-sharm.com/app/hotels/996767/main.jpg",
+    "gallery": []
+  },
+  "lastUpdated": "2026-07-06T13:14:11.597Z",
+  "source": "Hotelbeds API"
+}
