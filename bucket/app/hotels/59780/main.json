@@ -7,19 +7,26 @@
   "destination": "Sharm el Sheikh -Dahab",
   "city": "Sharm El Sheikh",
   "country": "Egypt",
-  "priceFrom": 47.5,
-  "currency": "EUR",
   "boardTypes": [
     "HALF BOARD"
   ],
   "roomTypes": 1,
-  "cancellationPolicy": "Free Cancellation",
+  "cancellationPolicy": "Non-Refundable",
   "checkIn": "14:00",
   "checkOut": "12:00",
   "images": {
     "main": "https://www.discover-sharm.com/app/hotels/59780/main.jpg",
     "gallery": []
   },
-  "lastUpdated": "2026-07-06T13:13:42.086Z",
+  "facilities": [],
+  "description": "",
+  "website": "",
+  "phone": "",
+  "email": "",
+  "coordinates": {
+    "latitude": 0,
+    "longitude": 0
+  },
+  "lastUpdated": "2026-07-06T13:25:30.038Z",
   "source": "Hotelbeds API"
 }
