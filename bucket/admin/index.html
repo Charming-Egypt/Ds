@@ -236,7 +236,7 @@
         .skeleton { background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--hover-bg) 50%, var(--bg-tertiary) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 8px; }
         @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* ============ RECEIPT PRINT STYLES ============ */
+        /* ============ RECEIPT PRINT STYLES - IMPROVED ============ */
         @media print {
             body * { visibility: hidden; }
             #receipt-print-area, #receipt-print-area * { visibility: visible; }
@@ -247,8 +247,9 @@
                 width: 80mm;
                 margin: 0;
                 padding: 0;
-                background: white;
-                font-family: 'Courier New', monospace;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             @page {
                 size: 80mm 297mm;
@@ -260,22 +261,28 @@
             width: 80mm;
             max-width: 80mm;
             background: white;
-            color: #000;
-            font-family: 'Courier New', monospace;
-            padding: 4mm 3mm;
+            color: #000000;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            padding: 5mm 4mm;
             box-sizing: border-box;
             display: none;
-            font-size: 10px;
-            line-height: 1.4;
+            font-size: 11px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .receipt-container * {
+            color: #000000 !important;
+            font-weight: 500;
         }
 
         .receipt-logo {
             text-align: center;
-            margin-bottom: 3mm;
+            margin-bottom: 4mm;
         }
 
         .receipt-logo img {
-            width: 55mm;
+            width: 60mm;
             height: auto;
             display: block;
             margin: 0 auto;
@@ -283,88 +290,116 @@
 
         .receipt-title {
             text-align: center;
-            font-size: 13px;
-            font-weight: bold;
-            margin: 2mm 0;
+            font-size: 15px;
+            font-weight: 900;
+            margin: 3mm 0;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            color: #000000 !important;
         }
 
         .receipt-subtitle {
             text-align: center;
-            font-size: 9px;
-            color: #555;
-            margin-bottom: 3mm;
+            font-size: 11px;
+            color: #333333 !important;
+            margin-bottom: 4mm;
+            font-weight: 600;
         }
 
         .receipt-divider {
-            border-top: 1px dashed #000;
-            margin: 2.5mm 0;
+            border-top: 2px dashed #000000;
+            margin: 3mm 0;
+        }
+
+        .receipt-divider-thin {
+            border-top: 1px solid #cccccc;
+            margin: 2mm 0;
         }
 
         .receipt-row {
             display: flex;
             justify-content: space-between;
-            font-size: 10px;
-            margin: 1.2mm 0;
+            font-size: 12px;
+            margin: 2mm 0;
+            color: #000000 !important;
         }
 
         .receipt-label {
-            font-weight: bold;
-            min-width: 38%;
-            font-size: 10px;
+            font-weight: 700;
+            min-width: 35%;
+            font-size: 12px;
+            color: #000000 !important;
         }
 
         .receipt-value {
             text-align: right;
             word-break: break-word;
-            font-size: 10px;
-            max-width: 60%;
+            font-size: 12px;
+            max-width: 63%;
+            color: #000000 !important;
+            font-weight: 600;
         }
 
-        .receipt-total {
-            font-size: 13px;
-            font-weight: bold;
+        .receipt-total-box {
+            background: #f97316;
+            color: #ffffff !important;
+            font-size: 16px;
+            font-weight: 900;
             text-align: center;
-            margin: 2.5mm 0;
-            padding: 2mm;
-            border-top: 1px solid #000;
-            border-bottom: 1px solid #000;
+            margin: 3mm 0;
+            padding: 3mm;
+            border-radius: 2mm;
+        }
+
+        .receipt-total-box * {
+            color: #ffffff !important;
         }
 
         .receipt-footer {
             text-align: center;
-            font-size: 8px;
-            color: #777;
-            margin-top: 3mm;
-            line-height: 1.3;
+            font-size: 10px;
+            color: #444444 !important;
+            margin-top: 4mm;
+            line-height: 1.5;
+            font-weight: 600;
         }
 
         .receipt-barcode {
             text-align: center;
             margin: 2mm 0;
-            font-size: 18px;
-            letter-spacing: 2px;
+            font-size: 22px;
+            letter-spacing: 3px;
+            font-weight: 900;
+            color: #000000 !important;
         }
 
         .receipt-stamp {
             text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: #f97316;
-            margin: 2mm 0;
-            border: 2px solid #f97316;
+            font-size: 16px;
+            font-weight: 900;
+            color: #f97316 !important;
+            margin: 3mm 0;
+            border: 3px solid #f97316;
             padding: 2mm;
-            border-radius: 4px;
+            border-radius: 3mm;
         }
 
         .receipt-section-title {
-            font-size: 10px;
-            font-weight: bold;
-            margin: 2mm 0 1mm 0;
+            font-size: 12px;
+            font-weight: 900;
+            margin: 3mm 0 2mm 0;
             text-align: center;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            background: #f0f0f0;
+            padding: 1.5mm;
+            color: #000000 !important;
+        }
+
+        .receipt-highlight {
+            font-weight: 900;
+            font-size: 13px;
+            color: #000000 !important;
         }
 
         .print-btn {
@@ -573,7 +608,7 @@
 
     <script>
         // ==================== COMPLETE JAVASCRIPT CODE FOR ADMIN DASHBOARD ====================
-        // Receipt printing feature with logo
+        // Receipt printing feature with logo - IMPROVED
 
         // Wait for DOM to be fully loaded before initializing
         document.addEventListener('DOMContentLoaded', async () => {
@@ -614,16 +649,13 @@
             const itemsPerPage = 10;
             let filteredReservations = [];
 
-            // Logo URL - يمكنك تغيير هذا الرابط إلى شعارك الفعلي
-            const LOGO_URL = 'https://i.ibb.co/0jKzL3N/discover-sharm-logo.png';
+            // Logo URL - شعار Discover Sharm الرسمي
+            const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjyTbUXF0Efz2FeTZReEwHRwHXgJN1IregDE4rjarPmLZrRGSqGFO3DVLOWCSJNzREQvGgIo0mVI07QAoeOjVtFXwUpq3cDUAGmCKHKiTOszejAwNB_RIAtxu77ok5z2i1KZN1rAWFSCX4KlsWlxdifTS38LF2Cvh_MVdfLXOdhmJ-9YEErAZFcUUbqd6Gu=s1600';
 
             // ==================== HELPER FUNCTIONS ====================
             function showToast(msg, type = 'success') {
                 const toast = document.getElementById('toast');
-                if (!toast) {
-                    console.log('🔔 Toast:', msg);
-                    return;
-                }
+                if (!toast) { console.log('🔔 Toast:', msg); return; }
                 toast.innerText = msg;
                 toast.className = `toast ${type} show`;
                 setTimeout(() => toast.classList.remove('show'), 3000);
@@ -661,7 +693,7 @@
                 return document.getElementById(id);
             }
 
-            // ==================== RECEIPT PRINTING FUNCTION ====================
+            // ==================== RECEIPT PRINTING FUNCTION - IMPROVED ====================
             function printReceipt(bookingId) {
                 const b = allReservations.find(b => b.id === bookingId);
                 if (!b) {
@@ -682,8 +714,8 @@
 
                 const receiptHTML = `
                     <div class="receipt-logo">
-                        <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div style="display:none; font-size:16px; font-weight:bold; color:#f97316;">🌴 DISCOVER SHARM</div>
+                        <img src="${LOGO_URL}" alt="Discover Sharm" style="width:60mm; height:auto; display:block; margin:0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-size:18px; font-weight:900; color:#f97316 !important; text-align:center;">🌴 DISCOVER SHARM</div>
                     </div>
                     
                     <div class="receipt-divider"></div>
@@ -694,7 +726,7 @@
                     <div class="receipt-divider"></div>
                     
                     <div class="receipt-barcode">${barcodeRef}</div>
-                    <div style="text-align:center; font-size:8px; color:#555; margin-bottom:2mm;">REF: ${refNumber}</div>
+                    <div style="text-align:center; font-size:10px; color:#333333 !important; margin-bottom:2mm; font-weight:700;">REF: ${refNumber}</div>
                     
                     <div class="receipt-divider"></div>
                     
@@ -723,12 +755,12 @@
                         <span class="receipt-value">${escapeHtml(b.roomNumber)}</span>
                     </div>` : ''}
                     
-                    <div class="receipt-divider"></div>
+                    <div class="receipt-divider-thin"></div>
                     
                     <div class="receipt-section-title">🚀 TRIP DETAILS</div>
                     <div class="receipt-row">
                         <span class="receipt-label">Trip:</span>
-                        <span class="receipt-value">${escapeHtml(b.tour || '-')}</span>
+                        <span class="receipt-value receipt-highlight">${escapeHtml(b.tour || '-')}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">Date:</span>
@@ -739,7 +771,7 @@
                         <span class="receipt-value">${b.pickuptime || 'TBD'}</span>
                     </div>
                     
-                    <div class="receipt-divider"></div>
+                    <div class="receipt-divider-thin"></div>
                     
                     <div class="receipt-section-title">👥 GUESTS</div>
                     <div class="receipt-row">
@@ -757,15 +789,15 @@
                     
                     <div class="receipt-divider"></div>
                     
-                    <div class="receipt-total">
-                        TOTAL: EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
+                    <div class="receipt-total-box">
+                        💰 TOTAL: EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
                     </div>
                     
                     <div class="receipt-divider"></div>
                     
                     <div class="receipt-row">
                         <span class="receipt-label">Payment:</span>
-                        <span class="receipt-value" style="font-weight:bold; color:${b.isPaid ? '#22c55e' : '#ef4444'};">${b.isPaid ? '✅ PAID' : '⚠️ UNPAID'}</span>
+                        <span class="receipt-value" style="font-weight:900; color:${b.isPaid ? '#22c55e' : '#ef4444'} !important;">${b.isPaid ? '✅ PAID' : '⚠️ UNPAID'}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">Status:</span>
@@ -773,14 +805,14 @@
                     </div>
                     
                     ${b.extraServices ? `
-                    <div class="receipt-divider"></div>
+                    <div class="receipt-divider-thin"></div>
                     <div class="receipt-section-title">✨ EXTRA SERVICES</div>
-                    <div style="font-size:9px; text-align:left; padding:0 2mm;">${escapeHtml(b.extraServices)}</div>` : ''}
+                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#000000 !important; font-weight:600;">${escapeHtml(b.extraServices)}</div>` : ''}
                     
                     ${b.specialRequests ? `
-                    <div class="receipt-divider"></div>
+                    <div class="receipt-divider-thin"></div>
                     <div class="receipt-section-title">📝 NOTES</div>
-                    <div style="font-size:9px; text-align:left; padding:0 2mm;">${escapeHtml(b.specialRequests)}</div>` : ''}
+                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#000000 !important; font-weight:600;">${escapeHtml(b.specialRequests)}</div>` : ''}
                     
                     <div class="receipt-divider"></div>
                     
@@ -791,15 +823,15 @@
                     <div class="receipt-divider"></div>
                     
                     <div class="receipt-footer">
-                        Thank you for choosing Discover Sharm!<br>
+                        <strong>Thank you for choosing Discover Sharm!</strong><br>
                         www.discover-sharm.com<br>
                         📞 +20 106 169 3679<br>
                         📧 sales@discover-sharm.com<br>
                         Printed: ${dateStr} ${timeStr}
                     </div>
                     
-                    <div style="text-align:center; margin-top:2mm;">
-                        <img src="${LOGO_URL}" alt="DS" style="width:20mm; height:auto; opacity:0.3;" onerror="this.style.display='none';">
+                    <div style="text-align:center; margin-top:3mm;">
+                        <img src="${LOGO_URL}" alt="DS" style="width:25mm; height:auto; opacity:0.4;" onerror="this.style.display='none';">
                     </div>
                 `;
 
@@ -1170,10 +1202,7 @@
 
             function editTrip(id) {
                 const t = allTrips.find(trip => trip.id === id);
-                if (!t) {
-                    showToast('Trip not found', 'error');
-                    return;
-                }
+                if (!t) { showToast('Trip not found', 'error'); return; }
                 
                 if (t.owner !== currentUser?.uid && currentUserRole !== 'admin') {
                     showToast('You do not have permission to edit this trip', 'error');
@@ -1272,9 +1301,7 @@
             }
 
             const addVideoBtn = getField('addVideoBtn');
-            if (addVideoBtn) {
-                addVideoBtn.onclick = () => createVideoItem();
-            }
+            if (addVideoBtn) addVideoBtn.onclick = () => createVideoItem();
 
             async function saveTrip(e) {
                 e.preventDefault();
@@ -1823,9 +1850,7 @@
                             }
                         });
                     }
-                } catch (e) { 
-                    console.error("Payout history error:", e); 
-                }
+                } catch (e) { console.error("Payout history error:", e); }
                 
                 const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
                 
