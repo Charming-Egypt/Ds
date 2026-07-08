@@ -348,9 +348,33 @@
             font-weight: 700;
         }
 
+        .receipt-ref-box {
+            text-align: center;
+            background: #1a1a1a;
+            padding: 3mm;
+            border-radius: 2mm;
+            border: 1px solid #444444;
+            margin: 3mm 0;
+        }
+
+        .receipt-ref-label {
+            font-size: 10px;
+            color: #888888 !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1mm;
+        }
+
+        .receipt-ref-number {
+            font-size: 16px;
+            font-weight: 900;
+            color: #f97316 !important;
+            letter-spacing: 2px;
+        }
+
         .receipt-total-box {
             background: #f97316;
-            color: #ffffff !important;
+            color: #000000 !important;
             font-size: 18px;
             font-weight: 900;
             text-align: center;
@@ -361,7 +385,7 @@
         }
 
         .receipt-total-box * {
-            color: #ffffff !important;
+            color: #000000 !important;
         }
 
         .receipt-footer {
@@ -380,15 +404,6 @@
         .receipt-footer strong {
             color: #f97316 !important;
             font-size: 11px;
-        }
-
-        .receipt-barcode {
-            text-align: center;
-            margin: 2mm 0;
-            font-size: 24px;
-            letter-spacing: 4px;
-            font-weight: 900;
-            color: #ffffff !important;
         }
 
         .receipt-stamp {
@@ -639,7 +654,7 @@
 
     <script>
         // ==================== COMPLETE JAVASCRIPT CODE FOR ADMIN DASHBOARD ====================
-        // Receipt printing with BLACK BACKGROUND
+        // Receipt printing with BLACK BACKGROUND - IMPROVED REF & TOTAL
 
         document.addEventListener('DOMContentLoaded', async () => {
             
@@ -718,7 +733,7 @@
                 return document.getElementById(id);
             }
 
-            // ==================== RECEIPT PRINTING - BLACK BACKGROUND ====================
+            // ==================== RECEIPT PRINTING - IMPROVED ====================
             function printReceipt(bookingId) {
                 const b = allReservations.find(b => b.id === bookingId);
                 if (!b) {
@@ -733,7 +748,6 @@
                 const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 const refNumber = b.refNumber || b.id?.slice(-8) || 'N/A';
-                const barcodeRef = '* ' + refNumber.replace(/./g, '$& ') + ' *';
 
                 const receiptHTML = `
                     <div class="receipt-logo">
@@ -748,8 +762,10 @@
                     
                     <div class="receipt-divider"></div>
                     
-                    <div class="receipt-barcode">${barcodeRef}</div>
-                    <div style="text-align:center; font-size:11px; color:#cccccc !important; margin-bottom:2mm; font-weight:700;">REF: ${refNumber}</div>
+                    <div class="receipt-ref-box">
+                        <div class="receipt-ref-label">Reference Number</div>
+                        <div class="receipt-ref-number">${refNumber}</div>
+                    </div>
                     
                     <div class="receipt-divider"></div>
                     
@@ -851,10 +867,6 @@
                         <div class="receipt-contact-item">📞 +20 106 169 3679</div>
                         <div class="receipt-contact-item">📧 sales@discover-sharm.com</div>
                         <div style="margin-top:2mm; font-size:9px; color:#888888 !important;">Printed: ${dateStr} ${timeStr}</div>
-                    </div>
-                    
-                    <div style="text-align:center; margin-top:3mm; padding:2mm; background:#111111; border-radius:2mm; border:1px solid #333333;">
-                        <img src="${LOGO_URL}" alt="DS" style="width:25mm; height:auto; filter:drop-shadow(0 2px 4px rgba(255,255,255,0.3));" onerror="this.style.display='none';">
                     </div>
                 `;
 
