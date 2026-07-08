@@ -248,6 +248,7 @@
                 margin: 0;
                 padding: 0;
                 background: white;
+                font-family: 'Courier New', monospace;
             }
             @page {
                 size: 80mm 297mm;
@@ -257,12 +258,15 @@
 
         .receipt-container {
             width: 80mm;
+            max-width: 80mm;
             background: white;
             color: #000;
             font-family: 'Courier New', monospace;
-            padding: 5mm;
+            padding: 4mm 3mm;
             box-sizing: border-box;
             display: none;
+            font-size: 10px;
+            line-height: 1.4;
         }
 
         .receipt-logo {
@@ -271,13 +275,15 @@
         }
 
         .receipt-logo img {
-            width: 50mm;
+            width: 55mm;
             height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
         .receipt-title {
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             margin: 2mm 0;
             text-transform: uppercase;
@@ -286,38 +292,41 @@
 
         .receipt-subtitle {
             text-align: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #555;
             margin-bottom: 3mm;
         }
 
         .receipt-divider {
             border-top: 1px dashed #000;
-            margin: 3mm 0;
+            margin: 2.5mm 0;
         }
 
         .receipt-row {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
-            margin: 1.5mm 0;
+            font-size: 10px;
+            margin: 1.2mm 0;
         }
 
         .receipt-label {
             font-weight: bold;
-            min-width: 40%;
+            min-width: 38%;
+            font-size: 10px;
         }
 
         .receipt-value {
             text-align: right;
             word-break: break-word;
+            font-size: 10px;
+            max-width: 60%;
         }
 
         .receipt-total {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             text-align: center;
-            margin: 3mm 0;
+            margin: 2.5mm 0;
             padding: 2mm;
             border-top: 1px solid #000;
             border-bottom: 1px solid #000;
@@ -325,27 +334,37 @@
 
         .receipt-footer {
             text-align: center;
-            font-size: 9px;
+            font-size: 8px;
             color: #777;
             margin-top: 3mm;
+            line-height: 1.3;
         }
 
         .receipt-barcode {
             text-align: center;
-            margin: 3mm 0;
-            font-size: 20px;
+            margin: 2mm 0;
+            font-size: 18px;
             letter-spacing: 2px;
         }
 
         .receipt-stamp {
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #f97316;
             margin: 2mm 0;
             border: 2px solid #f97316;
             padding: 2mm;
             border-radius: 4px;
+        }
+
+        .receipt-section-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin: 2mm 0 1mm 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .print-btn {
@@ -554,8 +573,7 @@
 
     <script>
         // ==================== COMPLETE JAVASCRIPT CODE FOR ADMIN DASHBOARD ====================
-        // Manual booking feature has been completely removed.
-        // Receipt printing feature added.
+        // Receipt printing feature with logo
 
         // Wait for DOM to be fully loaded before initializing
         document.addEventListener('DOMContentLoaded', async () => {
@@ -595,6 +613,9 @@
             let currentPage = 1;
             const itemsPerPage = 10;
             let filteredReservations = [];
+
+            // Logo URL - يمكنك تغيير هذا الرابط إلى شعارك الفعلي
+            const LOGO_URL = 'https://i.ibb.co/0jKzL3N/discover-sharm-logo.png';
 
             // ==================== HELPER FUNCTIONS ====================
             function showToast(msg, type = 'success') {
@@ -640,6 +661,164 @@
                 return document.getElementById(id);
             }
 
+            // ==================== RECEIPT PRINTING FUNCTION ====================
+            function printReceipt(bookingId) {
+                const b = allReservations.find(b => b.id === bookingId);
+                if (!b) {
+                    showToast('Booking not found', 'error');
+                    return;
+                }
+
+                const receiptArea = getField('receipt-print-area');
+                if (!receiptArea) return;
+
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const refNumber = b.refNumber || b.id?.slice(-8) || 'N/A';
+                
+                // Generate barcode-like reference
+                const barcodeRef = '* ' + refNumber.replace(/./g, '$& ') + ' *';
+
+                const receiptHTML = `
+                    <div class="receipt-logo">
+                        <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-size:16px; font-weight:bold; color:#f97316;">🌴 DISCOVER SHARM</div>
+                    </div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-title">BOOKING RECEIPT</div>
+                    <div class="receipt-subtitle">${dateStr} - ${timeStr}</div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-barcode">${barcodeRef}</div>
+                    <div style="text-align:center; font-size:8px; color:#555; margin-bottom:2mm;">REF: ${refNumber}</div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-section-title">👤 GUEST DETAILS</div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Name:</span>
+                        <span class="receipt-value">${escapeHtml(b.username || 'Guest')}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Phone:</span>
+                        <span class="receipt-value">${escapeHtml(b.phone || '-')}</span>
+                    </div>
+                    ${b.email ? `
+                    <div class="receipt-row">
+                        <span class="receipt-label">Email:</span>
+                        <span class="receipt-value">${escapeHtml(b.email)}</span>
+                    </div>` : ''}
+                    ${b.hotelName ? `
+                    <div class="receipt-row">
+                        <span class="receipt-label">Hotel:</span>
+                        <span class="receipt-value">${escapeHtml(b.hotelName)}</span>
+                    </div>` : ''}
+                    ${b.roomNumber ? `
+                    <div class="receipt-row">
+                        <span class="receipt-label">Room:</span>
+                        <span class="receipt-value">${escapeHtml(b.roomNumber)}</span>
+                    </div>` : ''}
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-section-title">🚀 TRIP DETAILS</div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Trip:</span>
+                        <span class="receipt-value">${escapeHtml(b.tour || '-')}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Date:</span>
+                        <span class="receipt-value">${b.tripDate || '-'}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Pickup:</span>
+                        <span class="receipt-value">${b.pickuptime || 'TBD'}</span>
+                    </div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-section-title">👥 GUESTS</div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Adults:</span>
+                        <span class="receipt-value">${b.adults || 0}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Children:</span>
+                        <span class="receipt-value">${b.childrenUnder12 || 0}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Infants:</span>
+                        <span class="receipt-value">${b.infants || 0}</span>
+                    </div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-total">
+                        TOTAL: EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
+                    </div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-row">
+                        <span class="receipt-label">Payment:</span>
+                        <span class="receipt-value" style="font-weight:bold; color:${b.isPaid ? '#22c55e' : '#ef4444'};">${b.isPaid ? '✅ PAID' : '⚠️ UNPAID'}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Status:</span>
+                        <span class="receipt-value">${b.status || 'new'}</span>
+                    </div>
+                    
+                    ${b.extraServices ? `
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-section-title">✨ EXTRA SERVICES</div>
+                    <div style="font-size:9px; text-align:left; padding:0 2mm;">${escapeHtml(b.extraServices)}</div>` : ''}
+                    
+                    ${b.specialRequests ? `
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-section-title">📝 NOTES</div>
+                    <div style="font-size:9px; text-align:left; padding:0 2mm;">${escapeHtml(b.specialRequests)}</div>` : ''}
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-stamp">
+                        ${b.isPaid ? '✅ PAID ✓' : '⚠️ UNPAID ✗'}
+                    </div>
+                    
+                    <div class="receipt-divider"></div>
+                    
+                    <div class="receipt-footer">
+                        Thank you for choosing Discover Sharm!<br>
+                        www.discover-sharm.com<br>
+                        📞 +20 106 169 3679<br>
+                        📧 sales@discover-sharm.com<br>
+                        Printed: ${dateStr} ${timeStr}
+                    </div>
+                    
+                    <div style="text-align:center; margin-top:2mm;">
+                        <img src="${LOGO_URL}" alt="DS" style="width:20mm; height:auto; opacity:0.3;" onerror="this.style.display='none';">
+                    </div>
+                `;
+
+                receiptArea.innerHTML = receiptHTML;
+                receiptArea.style.display = 'block';
+
+                // Trigger print
+                setTimeout(() => {
+                    window.print();
+                    // Hide receipt after print dialog
+                    setTimeout(() => {
+                        receiptArea.style.display = 'none';
+                    }, 500);
+                }, 300);
+            }
+
+            // Expose printReceipt globally
+            window.printReceipt = printReceipt;
+
             // ==================== DARK MODE ====================
             function initDarkMode() {
                 const isDark = localStorage.getItem('darkMode') === 'true';
@@ -649,29 +828,6 @@
                 } else if (document.body) {
                     document.body.classList.remove('dark');
                     document.body.classList.add('light');
-                }
-                updateDarkModeIcons(isDark);
-            }
-
-            function toggleDarkMode() {
-                const isDark = document.body.classList.toggle('dark');
-                document.body.classList.toggle('light');
-                localStorage.setItem('darkMode', isDark);
-                updateDarkModeIcons(isDark);
-            }
-
-            function updateDarkModeIcons(isDark) {
-                const desktopBtn = getField('darkModeToggleDesktop');
-                const mobileBtn = getField('darkModeToggleMobile');
-                if (desktopBtn) {
-                    desktopBtn.innerHTML = isDark 
-                        ? '<i class="fas fa-sun mr-2"></i> Light Mode' 
-                        : '<i class="fas fa-moon mr-2"></i> Dark Mode';
-                }
-                if (mobileBtn) {
-                    mobileBtn.innerHTML = isDark 
-                        ? '<i class="fas fa-sun"></i>' 
-                        : '<i class="fas fa-moon"></i>';
                 }
             }
 
@@ -714,142 +870,6 @@
             if (loginForm) {
                 loginForm.onsubmit = handleLogin;
             }
-
-            // ==================== RECEIPT PRINTING FUNCTION ====================
-            function printReceipt(bookingId) {
-                const b = allReservations.find(b => b.id === bookingId);
-                if (!b) {
-                    showToast('Booking not found', 'error');
-                    return;
-                }
-
-                const receiptArea = getField('receipt-print-area');
-                if (!receiptArea) return;
-
-                const now = new Date();
-                const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-                const receiptHTML = `
-                    <div style="text-align: center; margin-bottom: 3mm;">
-                        <div style="font-size: 18px; font-weight: bold; color: #f97316; letter-spacing: 2px;">🌴 DISCOVER SHARM</div>
-                        <div style="font-size: 9px; color: #777;">www.discover-sharm.com</div>
-                        <div style="font-size: 9px; color: #777;">sales@discover-sharm.com</div>
-                    </div>
-                    <div style="border-top: 1px dashed #000; margin: 2mm 0;"></div>
-                    <div style="text-align: center; font-size: 12px; font-weight: bold;">BOOKING RECEIPT</div>
-                    <div style="text-align: center; font-size: 9px; color: #555;">${dateStr} - ${timeStr}</div>
-                    <div style="border-top: 1px dashed #000; margin: 2mm 0;"></div>
-                    
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Ref:</span>
-                        <span>${escapeHtml(b.refNumber || b.id?.slice(-8) || 'N/A')}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Guest:</span>
-                        <span>${escapeHtml(b.username || 'Guest')}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Phone:</span>
-                        <span>${escapeHtml(b.phone || '-')}</span>
-                    </div>
-                    ${b.email ? `
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Email:</span>
-                        <span>${escapeHtml(b.email)}</span>
-                    </div>` : ''}
-                    <div style="border-top: 1px dotted #ccc; margin: 2mm 0;"></div>
-                    
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Trip:</span>
-                        <span>${escapeHtml(b.tour || '-')}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Date:</span>
-                        <span>${b.tripDate || '-'}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Pickup:</span>
-                        <span>${b.pickuptime || 'TBD'}</span>
-                    </div>
-                    ${b.hotelName ? `
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Hotel:</span>
-                        <span>${escapeHtml(b.hotelName)}</span>
-                    </div>` : ''}
-                    ${b.roomNumber ? `
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Room:</span>
-                        <span>${escapeHtml(b.roomNumber)}</span>
-                    </div>` : ''}
-                    
-                    <div style="border-top: 1px dotted #ccc; margin: 2mm 0;"></div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Adults:</span>
-                        <span>${b.adults || 0}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Children:</span>
-                        <span>${b.childrenUnder12 || 0}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Infants:</span>
-                        <span>${b.infants || 0}</span>
-                    </div>
-                    
-                    <div style="border-top: 1px solid #000; margin: 2mm 0;"></div>
-                    <div style="text-align: center; font-size: 14px; font-weight: bold; margin: 2mm 0;">
-                        TOTAL: EGP ${parseFloat(b.netTotal || 0).toFixed(2)}
-                    </div>
-                    <div style="border-top: 1px solid #000; margin: 2mm 0;"></div>
-                    
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Payment:</span>
-                        <span>${b.isPaid ? '✅ PAID' : '⚠️ UNPAID'}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; margin: 1.5mm 0;">
-                        <span style="font-weight: bold;">Status:</span>
-                        <span>${b.status || 'new'}</span>
-                    </div>
-                    
-                    ${b.extraServices ? `
-                    <div style="border-top: 1px dotted #ccc; margin: 2mm 0;"></div>
-                    <div style="font-size: 9px; font-weight: bold;">Extra Services:</div>
-                    <div style="font-size: 9px;">${escapeHtml(b.extraServices)}</div>` : ''}
-                    
-                    ${b.specialRequests ? `
-                    <div style="border-top: 1px dotted #ccc; margin: 2mm 0;"></div>
-                    <div style="font-size: 9px; font-weight: bold;">Special Requests:</div>
-                    <div style="font-size: 9px;">${escapeHtml(b.specialRequests)}</div>` : ''}
-                    
-                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
-                    <div style="text-align: center; font-size: 14px; font-weight: bold; color: #f97316; border: 2px solid #f97316; padding: 2mm; border-radius: 4px;">
-                        PAID ${b.isPaid ? '✓' : '✗'}
-                    </div>
-                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
-                    
-                    <div style="text-align: center; font-size: 8px; color: #999;">
-                        Thank you for choosing Discover Sharm!<br>
-                        For inquiries: +20 106 169 3679<br>
-                        Printed on ${dateStr} at ${timeStr}
-                    </div>
-                `;
-
-                receiptArea.innerHTML = receiptHTML;
-                receiptArea.style.display = 'block';
-
-                // Trigger print
-                setTimeout(() => {
-                    window.print();
-                    // Hide receipt after print dialog
-                    setTimeout(() => {
-                        receiptArea.style.display = 'none';
-                    }, 500);
-                }, 200);
-            }
-
-            // Expose printReceipt globally
-            window.printReceipt = printReceipt;
 
             // ==================== ARRAY INPUT HELPERS ====================
             function createArrayInput(container, placeholder, value = '') {
@@ -1099,7 +1119,7 @@
                     showToast('Only admin can approve trips', 'error');
                     return;
                 }
-                if (confirm('Approve this trip? It will become visible for manual bookings.')) {
+                if (confirm('Approve this trip?')) {
                     try {
                         await db.ref(`trips/${tripId}`).update({ 
                             approved: "true", 
@@ -1279,7 +1299,7 @@
                     try {
                         const slugExists = await isBookingSlugExists(bookingSlug);
                         if (slugExists) {
-                            showToast('This Booking Slug already exists! Please choose a different one.', 'error');
+                            showToast('This Booking Slug already exists!', 'error');
                             return;
                         }
                     } catch (err) {
@@ -1326,10 +1346,7 @@
                         }
                     });
                 }
-                data.media = {
-                    images: images,
-                    videos: videos
-                };
+                data.media = { images, videos };
                 data.included = collectArray('includedList');
                 data.notIncluded = collectArray('notIncludedList');
                 data.whatToBring = collectArray('whatToBringList');
@@ -1412,9 +1429,7 @@
             }
 
             const confirmDeleteBtn = getField('confirm-delete-btn');
-            if (confirmDeleteBtn) {
-                confirmDeleteBtn.onclick = confirmDelete;
-            }
+            if (confirmDeleteBtn) confirmDeleteBtn.onclick = confirmDelete;
 
             function setTripFilter(f) {
                 tripFilter = f;
@@ -1443,9 +1458,7 @@
             
             Object.entries(arrayBtns).forEach(([btnId, [listId, placeholder]]) => {
                 const btn = getField(btnId);
-                if (btn) {
-                    btn.onclick = () => createArrayInput(getField(listId), placeholder);
-                }
+                if (btn) btn.onclick = () => createArrayInput(getField(listId), placeholder);
             });
 
             const addTimelineBtn = getField('addTimelineBtn');
@@ -1541,15 +1554,9 @@
                     (r.tour || '').toLowerCase().includes(search)
                 );
                 
-                if (status !== 'all') {
-                    filtered = filtered.filter(r => r.status === status);
-                }
-                if (currentResTab === 'paid') {
-                    filtered = filtered.filter(r => r.isPaid === true);
-                }
-                if (currentResTab === 'unpaid') {
-                    filtered = filtered.filter(r => !r.isPaid);
-                }
+                if (status !== 'all') filtered = filtered.filter(r => r.status === status);
+                if (currentResTab === 'paid') filtered = filtered.filter(r => r.isPaid === true);
+                if (currentResTab === 'unpaid') filtered = filtered.filter(r => !r.isPaid);
                 
                 filteredReservations = filtered;
                 currentPage = 1;
@@ -1621,22 +1628,8 @@
                 if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
             }
 
-            window.prevPage = () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderReservations();
-                    updatePagination();
-                }
-            };
-
-            window.nextPage = () => {
-                const total = Math.ceil(filteredReservations.length / itemsPerPage);
-                if (currentPage < total) {
-                    currentPage++;
-                    renderReservations();
-                    updatePagination();
-                }
-            };
+            window.prevPage = () => { if (currentPage > 1) { currentPage--; renderReservations(); updatePagination(); } };
+            window.nextPage = () => { const total = Math.ceil(filteredReservations.length / itemsPerPage); if (currentPage < total) { currentPage++; renderReservations(); updatePagination(); } };
 
             const prevPageBtn = getField('prevPageBtn');
             const nextPageBtn = getField('nextPageBtn');
@@ -1660,10 +1653,7 @@
                 if (confirm(`Mark booking ${id.slice(-8)} as paid? Amount: EGP ${amount}`)) {
                     try {
                         await db.ref(`trip-bookings/${id}`).update({ 
-                            isPaid: true, 
-                            paymentStatus: 'paid', 
-                            paymentDate: Date.now(),
-                            updatedAt: Date.now()
+                            isPaid: true, paymentStatus: 'paid', paymentDate: Date.now(), updatedAt: Date.now()
                         });
                         showToast('✅ Payment recorded');
                         loadReservations();
@@ -1689,18 +1679,12 @@
                     const timeInput = getField('pickupTimeInput');
                     const time = timeInput?.value;
                     
-                    if (!time) {
-                        showToast('Please select pickup time', 'error');
-                        return;
-                    }
+                    if (!time) { showToast('Please select pickup time', 'error'); return; }
                     
                     if (pendingConfirmRef) {
                         try {
                             await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ 
-                                resStatus: 'confirmed', 
-                                pickuptime: time, 
-                                confirmedAt: Date.now(),
-                                updatedAt: Date.now()
+                                resStatus: 'confirmed', pickuptime: time, confirmedAt: Date.now(), updatedAt: Date.now()
                             });
                             showToast('✅ Booking confirmed!');
                             window.closePickupModal();
@@ -1733,10 +1717,7 @@
             // ==================== BOOKING DETAILS MODAL ====================
             async function showBookingDetails(bookingId) {
                 const b = allReservations.find(b => b.id === bookingId);
-                if (!b) {
-                    showToast('Booking not found', 'error');
-                    return;
-                }
+                if (!b) { showToast('Booking not found', 'error'); return; }
                 
                 const html = `<div class="booking-details-grid">
                     <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value font-mono">${escapeHtml(b.refNumber || b.id?.slice(-8) || 'N/A')}</div></div>
@@ -1762,76 +1743,17 @@
                 if (detailsContent) detailsContent.innerHTML = html;
                 
                 const wa = getField('whatsappLink');
-                if (wa) {
-                    if (b.phone) {
-                        const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
-                        const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
-                        const payUrl = `https://www.discover-sharm.com/p/pay.html?ref=${b.refNumber}`;
-                        
-                        let paymentSection = `*💳 Status:* ${b.isPaid ? '✅ *Paid*' : '⚠️ *Unpaid*'}\n` +
-                                             `*💵 Trip Price:* EGP ${parseFloat(b.baseTotal || 0).toFixed(2)}\n`;
-                        if (b.extraServices) {
-                            paymentSection += `*✨ ${b.extraServices}:* EGP ${parseFloat(b.extraServicesTotal || 0).toFixed(2)}\n`;
-                        }
-                        paymentSection += `*🪙 Taxes:* EGP ${b.taxes || '0.00'}\n`;
-                        paymentSection += `-------------------------\n` +
-                                          `*💵 Total:* EGP ${parseFloat(b.total || 0).toFixed(2)}\n`;
-                        
-                        if (!b.isPaid) {
-                            paymentSection += `\n*💸 Secure Payment:*\n👉 *Pay Now:* ${payUrl}\n`;
-                        }
-
-                        const msg = 
-                        `*🌴 Discover Sharm - Booking Confirmation*
-                        ━━━━━━━━━━━━━━━━━━
-                        *📋 Reference:* ${b.refNumber || b.id?.slice(-8)}
-                        *👤 Guest:* ${b.username}
-                        *📱 Phone:* ${b.phone}
-                        ${b.email ? `*📧 Email:* ${b.email}` : ''}
-
-                        *🗺️ Tour Details*
-                        ━━━━━━━━━━━━━━━━━━
-                        *🚀 Trip:* ${b.tour}
-                        *📅 Date:* ${b.tripDate}
-                        *⏰ Pickup:* ${b.pickuptime || 'TBD'}
-                        *🏨 Hotel:* ${b.hotelName || 'Not specified'}
-                        ${b.roomNumber ? `*🚪 Room:* ${b.roomNumber}` : ''}
-
-                        *👥 Guests*
-                        ━━━━━━━━━━━━━━━━━━
-                        *🧑 Adults:* ${b.adults || 0}
-                        *🧒 Children:* ${b.childrenUnder12 || 0}
-                        *👶 Infants:* ${b.infants || 0}
-
-                        *💰 Payment Overview*
-                        ━━━━━━━━━━━━━━━━━━
-                        ${paymentSection}
-
-                        *📝 Special Requests*
-                        ━━━━━━━━━━━━━━━━━━
-                        ${b.specialRequests ? b.specialRequests : ''}
-                                
-                        *🎫 View Your Voucher & Ticket*
-                        ━━━━━━━━━━━━━━━━━━
-                        🔗 ${voucherUrl}
-
-                        *📞 Need Help?*
-                        ━━━━━━━━━━━━━━━━━━
-                        🌐 www.discover-sharm.com
-                        📧 sales@discover-sharm.com
-                        💬 Chat: wa.me/201061693679
-
-                        *Thank you for choosing Discover Sharm!* ✨`;
-
-                        wa.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-                        wa.style.opacity = '1';
-                        wa.style.pointerEvents = 'auto';
-                    } else {
-                        wa.href = '#';
-                        wa.style.opacity = '0.5';
-                        wa.style.pointerEvents = 'none';
-                        wa.title = 'Phone number not available';
-                    }
+                if (wa && b.phone) {
+                    const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
+                    const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
+                    const msg = `*🌴 Discover Sharm - Booking*\n*Ref:* ${b.refNumber}\n*Trip:* ${b.tour}\n*Date:* ${b.tripDate}\n*Total:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n🔗 ${voucherUrl}`;
+                    wa.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+                    wa.style.opacity = '1';
+                    wa.style.pointerEvents = 'auto';
+                } else if (wa) {
+                    wa.href = '#';
+                    wa.style.opacity = '0.5';
+                    wa.style.pointerEvents = 'none';
                 }
                 
                 const bookingModal = getField('booking-modal');
@@ -1866,9 +1788,7 @@
                             if (el) el.value = val;
                         });
                         const bankFields = getField('bankFields');
-                        if (bankFields) {
-                            bankFields.style.display = (d.method === 'bankAccount') ? 'block' : 'none';
-                        }
+                        if (bankFields) bankFields.style.display = (d.method === 'bankAccount') ? 'block' : 'none';
                     }
                 } catch (error) {
                     console.error('Load payout error:', error);
@@ -1965,9 +1885,7 @@
             if (payoutMethodSelect) {
                 payoutMethodSelect.onchange = function() {
                     const bankFields = getField('bankFields');
-                    if (bankFields) {
-                        bankFields.style.display = this.value === 'bankAccount' ? 'block' : 'none';
-                    }
+                    if (bankFields) bankFields.style.display = this.value === 'bankAccount' ? 'block' : 'none';
                 };
             }
 
@@ -1975,28 +1893,18 @@
             if (requestPayoutBtn) {
                 requestPayoutBtn.onclick = async () => {
                     const available = window.currentAvailableBalance || 0;
-                    if (available <= 0) {
-                        showToast('No withdrawable balance available', 'error');
-                        return;
-                    }
+                    if (available <= 0) { showToast('No withdrawable balance available', 'error'); return; }
                     
                     try {
                         const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
                         let hasPending = false;
-                        snap.forEach(child => { 
-                            if (child.val()?.status === 'pending') hasPending = true; 
-                        });
+                        snap.forEach(child => { if (child.val()?.status === 'pending') hasPending = true; });
                         
-                        if (hasPending) {
-                            showToast('You already have a pending withdrawal request', 'error');
-                            return;
-                        }
+                        if (hasPending) { showToast('You already have a pending withdrawal request', 'error'); return; }
                         
                         if (confirm(`Request payout of ${available.toFixed(2)} EGP?`)) {
                             await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({
-                                amount: available.toFixed(2),
-                                status: 'pending',
-                                createdAt: Date.now()
+                                amount: available.toFixed(2), status: 'pending', createdAt: Date.now()
                             });
                             showToast('✅ Withdrawal request submitted!');
                             await calculateAndDisplayBalance();
@@ -2010,10 +1918,7 @@
 
             const refreshBalanceBtn = getField('refreshBalanceBtn');
             if (refreshBalanceBtn) {
-                refreshBalanceBtn.onclick = () => {
-                    calculateAndDisplayBalance();
-                    showToast('🔄 Balance refreshed');
-                };
+                refreshBalanceBtn.onclick = () => { calculateAndDisplayBalance(); showToast('🔄 Balance refreshed'); };
             }
 
             // ==================== EXPORT FUNCTIONS ====================
@@ -2035,10 +1940,7 @@
                         
                         let dataToExport = exportAll ? allReservations : filteredReservations;
                         
-                        if (dataToExport.length === 0) {
-                            showToast('No data to export', 'error');
-                            return;
-                        }
+                        if (dataToExport.length === 0) { showToast('No data to export', 'error'); return; }
                         
                         const workbook = new ExcelJS.Workbook();
                         const worksheet = workbook.addWorksheet('Reservations');
@@ -2052,9 +1954,7 @@
                         };
                         
                         worksheet.columns = selectedColumns.map(col => ({ 
-                            header: columnHeaders[col] || col, 
-                            key: col, 
-                            width: 20 
+                            header: columnHeaders[col] || col, key: col, width: 20 
                         }));
                         
                         const headerRow = worksheet.getRow(1);
@@ -2073,18 +1973,6 @@
                                 else row[col] = booking[col] || '-';
                             });
                             worksheet.addRow(row);
-                        });
-                        
-                        worksheet.eachRow((row, rowNumber) => {
-                            if (rowNumber > 1) {
-                                row.eachCell(cell => {
-                                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                                    cell.border = { 
-                                        top: { style: 'thin' }, left: { style: 'thin' }, 
-                                        bottom: { style: 'thin' }, right: { style: 'thin' } 
-                                    };
-                                });
-                            }
                         });
                         
                         const buffer = await workbook.xlsx.writeBuffer();
@@ -2129,7 +2017,6 @@
                     safeSetInnerText('totalRevenueStat', `EGP ${rev.toFixed(0)}`);
                     
                     renderCharts();
-                    
                 } catch (error) {
                     console.error('Dashboard update error:', error);
                 }
@@ -2139,17 +2026,11 @@
                 const statusCtx = document.getElementById('statusChart');
                 if (statusCtx) {
                     const counts = { new: 0, confirmed: 0, cancelled: 0 };
-                    allReservations.forEach(r => { 
-                        const s = r.status || 'new'; 
-                        counts[s] = (counts[s] || 0) + 1; 
-                    });
+                    allReservations.forEach(r => { const s = r.status || 'new'; counts[s] = (counts[s] || 0) + 1; });
                     if (statusChart) statusChart.destroy();
                     statusChart = new Chart(statusCtx, {
                         type: 'doughnut',
-                        data: {
-                            labels: ['New', 'Confirmed', 'Cancelled'],
-                            datasets: [{ data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'], borderWidth: 0 }]
-                        },
+                        data: { labels: ['New', 'Confirmed', 'Cancelled'], datasets: [{ data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'], borderWidth: 0 }] },
                         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 20 } } } }
                     });
                 }
@@ -2169,15 +2050,12 @@
                 const trendCtx = document.getElementById('trendChart');
                 if (trendCtx) {
                     if (trendChart) trendChart.destroy();
-
                     const now = new Date();
                     const labels = [], counts = [];
-
                     for (let i = 5; i >= 0; i--) {
                         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
                         labels.push(d.toLocaleString('en-US', { month: 'short' }));
                         const m = d.getMonth(), y = d.getFullYear();
-                        
                         let c = 0;
                         allReservations.forEach(r => {
                             const dateVal = r.createdAt || r.tripDate;
@@ -2188,75 +2066,38 @@
                         });
                         counts.push(c);
                     }
-
                     trendChart = new Chart(trendCtx, {
                         type: 'line',
-                        data: {
-                            labels,
-                            datasets: [{
-                                label: 'Monthly Bookings',
-                                data: counts,
-                                borderColor: '#f97316',
-                                backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                pointBackgroundColor: '#f97316',
-                                pointBorderColor: '#1e1e1e',
-                                pointHoverRadius: 7,
-                                pointRadius: 5,
-                                borderWidth: 3
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false }, tooltip: { backgroundColor: '#252525', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: '#333', borderWidth: 1, cornerRadius: 8 } },
-                            scales: {
-                                y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', stepSize: 1 } },
-                                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
-                            }
-                        }
+                        data: { labels, datasets: [{ label: 'Monthly Bookings', data: counts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#f97316', pointBorderColor: '#1e1e1e', pointHoverRadius: 7, pointRadius: 5, borderWidth: 3 }] },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
                     });
                 }
 
                 const revenueCtx = document.getElementById('revenueChart');
                 if (revenueCtx) {
                     if (revenueChart) revenueChart.destroy();
-
                     const now = new Date();
                     const labels = [], data = [];
-
                     for (let i = 5; i >= 0; i--) {
                         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
                         labels.push(d.toLocaleString('en-US', { month: 'short' }));
                         const m = d.getMonth(), y = d.getFullYear();
                         let rev = 0;
-
                         allReservations.forEach(r => {
                             if (r.isPaid && r.netTotal) {
                                 const dateVal = r.createdAt || r.tripDate;
                                 if (dateVal) {
                                     const rDate = new Date(dateVal);
-                                    if (rDate.getMonth() === m && rDate.getFullYear() === y) {
-                                        rev += parseFloat(r.netTotal);
-                                    }
+                                    if (rDate.getMonth() === m && rDate.getFullYear() === y) rev += parseFloat(r.netTotal);
                                 }
                             }
                         });
                         data.push(rev);
                     }
-
                     revenueChart = new Chart(revenueCtx, {
                         type: 'bar',
                         data: { labels, datasets: [{ label: 'Revenue (EGP)', data, backgroundColor: '#f97316', borderRadius: 8, borderWidth: 0 }] },
-                        options: {
-                            responsive: true, maintainAspectRatio: false,
-                            plugins: { legend: { display: false }, tooltip: { backgroundColor: '#252525', titleColor: '#f8fafc', bodyColor: '#cbd5e1', borderColor: '#333', borderWidth: 1, cornerRadius: 8, callbacks: { label: ctx => `EGP ${ctx.parsed.y.toLocaleString()}` } } },
-                            scales: {
-                                y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', callback: v => `EGP ${v.toLocaleString()}` } },
-                                x: { grid: { display: false }, ticks: { color: '#cbd5e1' } }
-                            }
-                        }
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', callback: v => `EGP ${v.toLocaleString()}` } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
                     });
                 }
             }
@@ -2287,7 +2128,6 @@
                 if (fab) {
                     fab.style.display = 'none';
                     fab.onclick = null;
-                    
                     if (section === 'trips') {
                         fab.style.display = 'flex';
                         fab.style.background = 'var(--accent-gradient)';
@@ -2308,10 +2148,7 @@
             // ==================== MODAL FUNCTIONS ====================
             function openModal() { openSheet('item-modal'); }
             function closeModal() { closeSheet('item-modal'); }
-            function closeDeleteModal() { 
-                closeSheet('delete-modal', 'delete-overlay'); 
-                pendingDeleteId = null; 
-            }
+            function closeDeleteModal() { closeSheet('delete-modal', 'delete-overlay'); pendingDeleteId = null; }
 
             function openSheet(sId, oId = 'modal-overlay') {
                 const sheet = getField(sId);
@@ -2359,20 +2196,15 @@
                     }
                     
                     await Promise.all([
-                        loadAllData(),
-                        loadReservations(),
-                        loadPayoutMethod(),
-                        calculateAndDisplayBalance(),
-                        updateDashboard()
+                        loadAllData(), loadReservations(), loadPayoutMethod(),
+                        calculateAndDisplayBalance(), updateDashboard()
                     ]);
                     
                     switchSection('dashboard');
                     
                     const refreshInterval = setInterval(() => {
                         if (auth.currentUser) {
-                            loadReservations();
-                            updateDashboard();
-                            calculateAndDisplayBalance();
+                            loadReservations(); updateDashboard(); calculateAndDisplayBalance();
                         }
                     }, 30000);
                     
@@ -2387,9 +2219,7 @@
                     if (loginPage) loginPage.style.display = 'flex';
                     if (adminPanel) adminPanel.classList.remove('visible');
                     
-                    if (window.authRefreshInterval) {
-                        clearInterval(window.authRefreshInterval);
-                    }
+                    if (window.authRefreshInterval) clearInterval(window.authRefreshInterval);
                 }
             });
 
@@ -2398,11 +2228,8 @@
                 const btn = getField(id);
                 if (btn) {
                     btn.addEventListener('click', () => {
-                        auth.signOut().then(() => {
-                            showToast('👋 Logged out successfully');
-                        }).catch(err => {
-                            console.error('Logout error:', err);
-                        });
+                        auth.signOut().then(() => showToast('👋 Logged out successfully'))
+                            .catch(err => console.error('Logout error:', err));
                     });
                 }
             });
@@ -2418,24 +2245,18 @@
 
             // ==================== FORM SUBMIT BINDING ====================
             const tripFormElement = getField('item-form');
-            if (tripFormElement) {
-                tripFormElement.onsubmit = saveTrip;
-            }
+            if (tripFormElement) tripFormElement.onsubmit = saveTrip;
 
             // ==================== FLATPICKR INITIALIZATION ====================
             if (typeof flatpickr !== 'undefined') {
                 flatpickr("#pickupTimeInput", {
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    time_24hr: true
+                    enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true
                 });
             }
 
             // ==================== GLOBAL ERROR HANDLING ====================
             window.onerror = function(msg, src, line, col, err) {
                 console.error('💥 Global error:', { msg, src, line, col, err });
-                showToast('⚠️ An unexpected error occurred', 'error');
                 return false;
             };
 
@@ -2450,17 +2271,14 @@
             window.approveTrip = approveTrip;
             window.openAddTripModal = openAddTripModal;
             window.saveTrip = saveTrip;
-            
             window.markAsPaid = markAsPaid;
             window.confirmBookingWithPickup = confirmBookingWithPickup;
             window.switchReservationTab = switchReservationTab;
             window.refreshReservations = refreshReservations;
             window.showBookingDetails = showBookingDetails;
             window.closeBookingModal = closeBookingModal;
-            
             window.openExportModal = openExportModal;
             window.closeExportModal = closeExportModal;
-            
             window.openModal = openModal;
             window.closeModal = closeModal;
             window.closeDeleteModal = closeDeleteModal;
