@@ -236,7 +236,7 @@
         .skeleton { background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--hover-bg) 50%, var(--bg-tertiary) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 8px; }
         @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* ============ RECEIPT PRINT STYLES - IMPROVED ============ */
+        /* ============ RECEIPT PRINT STYLES - BLACK BACKGROUND ============ */
         @media print {
             body * { visibility: hidden; }
             #receipt-print-area, #receipt-print-area * { visibility: visible; }
@@ -247,72 +247,80 @@
                 width: 80mm;
                 margin: 0;
                 padding: 0;
-                background: white !important;
+                background: #000000 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
             @page {
                 size: 80mm 297mm;
                 margin: 0;
+                background: #000000;
             }
         }
 
         .receipt-container {
             width: 80mm;
             max-width: 80mm;
-            background: white;
-            color: #000000;
+            background: #000000;
+            color: #ffffff;
             font-family: 'Arial', 'Helvetica', sans-serif;
             padding: 5mm 4mm;
             box-sizing: border-box;
             display: none;
-            font-size: 11px;
-            line-height: 1.5;
-            font-weight: 500;
+            font-size: 12px;
+            line-height: 1.6;
+            font-weight: 600;
         }
 
         .receipt-container * {
-            color: #000000 !important;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .receipt-logo {
             text-align: center;
-            margin-bottom: 4mm;
+            margin-bottom: 5mm;
+            padding: 3mm;
+            background: #111111;
+            border-radius: 2mm;
+            border: 1px solid #333333;
         }
 
         .receipt-logo img {
-            width: 60mm;
+            width: 55mm;
             height: auto;
             display: block;
             margin: 0 auto;
+            filter: drop-shadow(0 2px 4px rgba(255,255,255,0.3));
+            background: rgba(255,255,255,0.05);
+            padding: 2mm;
+            border-radius: 2mm;
         }
 
         .receipt-title {
             text-align: center;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 900;
             margin: 3mm 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #000000 !important;
+            letter-spacing: 3px;
+            color: #f97316 !important;
         }
 
         .receipt-subtitle {
             text-align: center;
-            font-size: 11px;
-            color: #333333 !important;
+            font-size: 12px;
+            color: #cccccc !important;
             margin-bottom: 4mm;
             font-weight: 600;
         }
 
         .receipt-divider {
-            border-top: 2px dashed #000000;
+            border-top: 2px dashed #444444;
             margin: 3mm 0;
         }
 
         .receipt-divider-thin {
-            border-top: 1px solid #cccccc;
+            border-top: 1px solid #333333;
             margin: 2mm 0;
         }
 
@@ -321,14 +329,14 @@
             justify-content: space-between;
             font-size: 12px;
             margin: 2mm 0;
-            color: #000000 !important;
+            color: #ffffff !important;
         }
 
         .receipt-label {
             font-weight: 700;
             min-width: 35%;
             font-size: 12px;
-            color: #000000 !important;
+            color: #cccccc !important;
         }
 
         .receipt-value {
@@ -336,19 +344,20 @@
             word-break: break-word;
             font-size: 12px;
             max-width: 63%;
-            color: #000000 !important;
-            font-weight: 600;
+            color: #ffffff !important;
+            font-weight: 700;
         }
 
         .receipt-total-box {
             background: #f97316;
             color: #ffffff !important;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 900;
             text-align: center;
             margin: 3mm 0;
             padding: 3mm;
             border-radius: 2mm;
+            border: 2px solid #ff8c42;
         }
 
         .receipt-total-box * {
@@ -358,19 +367,28 @@
         .receipt-footer {
             text-align: center;
             font-size: 10px;
-            color: #444444 !important;
+            color: #aaaaaa !important;
             margin-top: 4mm;
             line-height: 1.5;
             font-weight: 600;
+            padding: 3mm;
+            background: #111111;
+            border-radius: 2mm;
+            border: 1px solid #333333;
+        }
+
+        .receipt-footer strong {
+            color: #f97316 !important;
+            font-size: 11px;
         }
 
         .receipt-barcode {
             text-align: center;
             margin: 2mm 0;
-            font-size: 22px;
-            letter-spacing: 3px;
+            font-size: 24px;
+            letter-spacing: 4px;
             font-weight: 900;
-            color: #000000 !important;
+            color: #ffffff !important;
         }
 
         .receipt-stamp {
@@ -382,24 +400,37 @@
             border: 3px solid #f97316;
             padding: 2mm;
             border-radius: 3mm;
+            background: #1a1a1a;
         }
 
         .receipt-section-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 900;
             margin: 3mm 0 2mm 0;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
-            background: #f0f0f0;
-            padding: 1.5mm;
-            color: #000000 !important;
+            background: #1a1a1a;
+            padding: 2mm;
+            color: #f97316 !important;
+            border-radius: 1mm;
+            border: 1px solid #333333;
         }
 
         .receipt-highlight {
             font-weight: 900;
             font-size: 13px;
-            color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        .receipt-contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1mm;
+            margin: 1mm 0;
+            color: #cccccc !important;
+            font-size: 10px;
         }
 
         .print-btn {
@@ -608,12 +639,10 @@
 
     <script>
         // ==================== COMPLETE JAVASCRIPT CODE FOR ADMIN DASHBOARD ====================
-        // Receipt printing feature with logo - IMPROVED
+        // Receipt printing with BLACK BACKGROUND
 
-        // Wait for DOM to be fully loaded before initializing
         document.addEventListener('DOMContentLoaded', async () => {
             
-            // Firebase Config
             const firebaseConfig = {
                 apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
                 authDomain: "egypt-travels.firebaseapp.com",
@@ -622,7 +651,6 @@
                 storageBucket: "egypt-travels.appspot.com"
             };
 
-            // Initialize Firebase
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
@@ -630,7 +658,6 @@
             const auth = firebase.auth();
             const db = firebase.database();
 
-            // ==================== GLOBAL VARIABLES ====================
             let currentUser = null;
             let currentUserRole = 'user';
             let allTrips = [];
@@ -649,10 +676,8 @@
             const itemsPerPage = 10;
             let filteredReservations = [];
 
-            // Logo URL - شعار Discover Sharm الرسمي
             const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjyTbUXF0Efz2FeTZReEwHRwHXgJN1IregDE4rjarPmLZrRGSqGFO3DVLOWCSJNzREQvGgIo0mVI07QAoeOjVtFXwUpq3cDUAGmCKHKiTOszejAwNB_RIAtxu77ok5z2i1KZN1rAWFSCX4KlsWlxdifTS38LF2Cvh_MVdfLXOdhmJ-9YEErAZFcUUbqd6Gu=s1600';
 
-            // ==================== HELPER FUNCTIONS ====================
             function showToast(msg, type = 'success') {
                 const toast = document.getElementById('toast');
                 if (!toast) { console.log('🔔 Toast:', msg); return; }
@@ -693,7 +718,7 @@
                 return document.getElementById(id);
             }
 
-            // ==================== RECEIPT PRINTING FUNCTION - IMPROVED ====================
+            // ==================== RECEIPT PRINTING - BLACK BACKGROUND ====================
             function printReceipt(bookingId) {
                 const b = allReservations.find(b => b.id === bookingId);
                 if (!b) {
@@ -708,25 +733,23 @@
                 const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 const refNumber = b.refNumber || b.id?.slice(-8) || 'N/A';
-                
-                // Generate barcode-like reference
                 const barcodeRef = '* ' + refNumber.replace(/./g, '$& ') + ' *';
 
                 const receiptHTML = `
                     <div class="receipt-logo">
-                        <img src="${LOGO_URL}" alt="Discover Sharm" style="width:60mm; height:auto; display:block; margin:0 auto;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <div style="display:none; font-size:18px; font-weight:900; color:#f97316 !important; text-align:center;">🌴 DISCOVER SHARM</div>
+                        <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-size:20px; font-weight:900; color:#f97316 !important; text-align:center;">🌴 DISCOVER SHARM</div>
                     </div>
                     
                     <div class="receipt-divider"></div>
                     
-                    <div class="receipt-title">BOOKING RECEIPT</div>
+                    <div class="receipt-title">🌟 BOOKING RECEIPT</div>
                     <div class="receipt-subtitle">${dateStr} - ${timeStr}</div>
                     
                     <div class="receipt-divider"></div>
                     
                     <div class="receipt-barcode">${barcodeRef}</div>
-                    <div style="text-align:center; font-size:10px; color:#333333 !important; margin-bottom:2mm; font-weight:700;">REF: ${refNumber}</div>
+                    <div style="text-align:center; font-size:11px; color:#cccccc !important; margin-bottom:2mm; font-weight:700;">REF: ${refNumber}</div>
                     
                     <div class="receipt-divider"></div>
                     
@@ -807,12 +830,12 @@
                     ${b.extraServices ? `
                     <div class="receipt-divider-thin"></div>
                     <div class="receipt-section-title">✨ EXTRA SERVICES</div>
-                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#000000 !important; font-weight:600;">${escapeHtml(b.extraServices)}</div>` : ''}
+                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#ffffff !important; font-weight:700;">${escapeHtml(b.extraServices)}</div>` : ''}
                     
                     ${b.specialRequests ? `
                     <div class="receipt-divider-thin"></div>
                     <div class="receipt-section-title">📝 NOTES</div>
-                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#000000 !important; font-weight:600;">${escapeHtml(b.specialRequests)}</div>` : ''}
+                    <div style="font-size:11px; text-align:left; padding:0 2mm; color:#ffffff !important; font-weight:700;">${escapeHtml(b.specialRequests)}</div>` : ''}
                     
                     <div class="receipt-divider"></div>
                     
@@ -823,32 +846,29 @@
                     <div class="receipt-divider"></div>
                     
                     <div class="receipt-footer">
-                        <strong>Thank you for choosing Discover Sharm!</strong><br>
-                        www.discover-sharm.com<br>
-                        📞 +20 106 169 3679<br>
-                        📧 sales@discover-sharm.com<br>
-                        Printed: ${dateStr} ${timeStr}
+                        <strong>🌴 Discover Sharm</strong><br>
+                        <div class="receipt-contact-item">🌐 www.discover-sharm.com</div>
+                        <div class="receipt-contact-item">📞 +20 106 169 3679</div>
+                        <div class="receipt-contact-item">📧 sales@discover-sharm.com</div>
+                        <div style="margin-top:2mm; font-size:9px; color:#888888 !important;">Printed: ${dateStr} ${timeStr}</div>
                     </div>
                     
-                    <div style="text-align:center; margin-top:3mm;">
-                        <img src="${LOGO_URL}" alt="DS" style="width:25mm; height:auto; opacity:0.4;" onerror="this.style.display='none';">
+                    <div style="text-align:center; margin-top:3mm; padding:2mm; background:#111111; border-radius:2mm; border:1px solid #333333;">
+                        <img src="${LOGO_URL}" alt="DS" style="width:25mm; height:auto; filter:drop-shadow(0 2px 4px rgba(255,255,255,0.3));" onerror="this.style.display='none';">
                     </div>
                 `;
 
                 receiptArea.innerHTML = receiptHTML;
                 receiptArea.style.display = 'block';
 
-                // Trigger print
                 setTimeout(() => {
                     window.print();
-                    // Hide receipt after print dialog
                     setTimeout(() => {
                         receiptArea.style.display = 'none';
                     }, 500);
                 }, 300);
             }
 
-            // Expose printReceipt globally
             window.printReceipt = printReceipt;
 
             // ==================== DARK MODE ====================
@@ -863,7 +883,6 @@
                 }
             }
 
-            // ==================== LOGIN FUNCTIONS ====================
             async function handleLogin(e) {
                 e.preventDefault();
                 const email = getField('login-email')?.value;
@@ -897,13 +916,9 @@
                 }
             }
 
-            // Attach login form handler
             const loginForm = getField('login-form');
-            if (loginForm) {
-                loginForm.onsubmit = handleLogin;
-            }
+            if (loginForm) loginForm.onsubmit = handleLogin;
 
-            // ==================== ARRAY INPUT HELPERS ====================
             function createArrayInput(container, placeholder, value = '') {
                 if (!container) return null;
                 const div = document.createElement('div');
@@ -992,15 +1007,12 @@
                 });
             }
 
-            // ==================== TRIP FUNCTIONS ====================
             async function loadAllData() {
                 if (!currentUser) return;
                 renderTripsSkeleton();
                 try {
                     let query = db.ref('trips');
-                    if (currentUserRole !== 'admin') {
-                        query = query.orderByChild('owner').equalTo(currentUser.uid);
-                    }
+                    if (currentUserRole !== 'admin') query = query.orderByChild('owner').equalTo(currentUser.uid);
                     const ts = await query.once('value');
                     const tripsData = ts.val() || {};
                     allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
@@ -1147,23 +1159,13 @@
             }
 
             async function approveTrip(tripId) {
-                if (currentUserRole !== 'admin') {
-                    showToast('Only admin can approve trips', 'error');
-                    return;
-                }
+                if (currentUserRole !== 'admin') { showToast('Only admin can approve trips', 'error'); return; }
                 if (confirm('Approve this trip?')) {
                     try {
-                        await db.ref(`trips/${tripId}`).update({ 
-                            approved: "true", 
-                            approvedAt: Date.now(),
-                            updatedAt: Date.now()
-                        });
+                        await db.ref(`trips/${tripId}`).update({ approved: "true", approvedAt: Date.now(), updatedAt: Date.now() });
                         showToast('✅ Trip approved successfully!');
                         loadAllData();
-                    } catch (error) {
-                        console.error('Approve error:', error);
-                        showToast('Failed to approve: ' + error.message, 'error');
-                    }
+                    } catch (error) { console.error('Approve error:', error); showToast('Failed to approve: ' + error.message, 'error'); }
                 }
             }
 
@@ -1173,109 +1175,56 @@
                     if (!snapshot.exists()) return false;
                     if (excludeId && snapshot.val()?.id === excludeId) return false;
                     return true;
-                } catch (error) {
-                    console.error('Slug check error:', error);
-                    return false;
-                }
+                } catch (error) { console.error('Slug check error:', error); return false; }
             }
 
             function openAddTripModal() {
                 const titleEl = getField('modal-title');
                 if (titleEl) titleEl.innerText = 'Add New Trip';
-                
                 const formEl = getField('item-form');
                 if (formEl) formEl.reset();
-                
-                ['imageList', 'includedList', 'notIncludedList', 'timelineList', 'whatToBringList', 'tourTypeList']
-                    .forEach(id => safeSetInnerHTML(id, ''));
-                
+                ['imageList', 'includedList', 'notIncludedList', 'timelineList', 'whatToBringList', 'tourTypeList'].forEach(id => safeSetInnerHTML(id, ''));
                 const idInput = getField('item-id');
                 const bookingLinkInput = getField('item-bookingLink');
                 if (idInput) idInput.value = '';
-                if (bookingLinkInput) {
-                    bookingLinkInput.disabled = false;
-                    bookingLinkInput.value = '';
-                }
-                
+                if (bookingLinkInput) { bookingLinkInput.disabled = false; bookingLinkInput.value = ''; }
                 openModal();
             }
 
             function editTrip(id) {
                 const t = allTrips.find(trip => trip.id === id);
                 if (!t) { showToast('Trip not found', 'error'); return; }
-                
-                if (t.owner !== currentUser?.uid && currentUserRole !== 'admin') {
-                    showToast('You do not have permission to edit this trip', 'error');
-                    return;
-                }
+                if (t.owner !== currentUser?.uid && currentUserRole !== 'admin') { showToast('You do not have permission to edit this trip', 'error'); return; }
                 
                 const titleEl = getField('modal-title');
                 if (titleEl) titleEl.innerText = 'Edit Trip';
                 
-                const fields = {
-                    'item-id': id,
-                    'item-name': t.name || '',
-                    'item-desc': t.description || '',
-                    'item-price': t.price || 0,
-                    'item-cprice': t.cprice || 0,
-                    'item-duration': t.duration || '',
-                    'item-image': t.image || ''
-                };
-                
-                Object.entries(fields).forEach(([fieldId, value]) => {
-                    const el = getField(fieldId);
-                    if (el) el.value = value;
-                });
+                const fields = { 'item-id': id, 'item-name': t.name || '', 'item-desc': t.description || '', 'item-price': t.price || 0, 'item-cprice': t.cprice || 0, 'item-duration': t.duration || '', 'item-image': t.image || '' };
+                Object.entries(fields).forEach(([fieldId, value]) => { const el = getField(fieldId); if (el) el.value = value; });
                 
                 const bookingLinkInput = getField('item-bookingLink');
-                if (bookingLinkInput) {
-                    bookingLinkInput.value = t.id || t.bookingLink || '';
-                    bookingLinkInput.disabled = true;
-                }
+                if (bookingLinkInput) { bookingLinkInput.value = t.id || t.bookingLink || ''; bookingLinkInput.disabled = true; }
 
                 const imageList = getField('imageList');
-                if (imageList && t.media?.images) {
-                    imageList.innerHTML = '';
-                    t.media.images.forEach(img => createArrayInput(imageList, 'Image URL', img));
-                }
+                if (imageList && t.media?.images) { imageList.innerHTML = ''; t.media.images.forEach(img => createArrayInput(imageList, 'Image URL', img)); }
                 
                 const includedList = getField('includedList');
-                if (includedList && t.included) {
-                    includedList.innerHTML = '';
-                    t.included.forEach(item => createArrayInput(includedList, 'Included item', item));
-                }
+                if (includedList && t.included) { includedList.innerHTML = ''; t.included.forEach(item => createArrayInput(includedList, 'Included item', item)); }
                 
                 const notIncludedList = getField('notIncludedList');
-                if (notIncludedList && t.notIncluded) {
-                    notIncludedList.innerHTML = '';
-                    t.notIncluded.forEach(item => createArrayInput(notIncludedList, 'Not included item', item));
-                }
+                if (notIncludedList && t.notIncluded) { notIncludedList.innerHTML = ''; t.notIncluded.forEach(item => createArrayInput(notIncludedList, 'Not included item', item)); }
                 
                 const whatToBringList = getField('whatToBringList');
-                if (whatToBringList && t.whatToBring) {
-                    whatToBringList.innerHTML = '';
-                    t.whatToBring.forEach(item => createArrayInput(whatToBringList, 'What to bring', item));
-                }
+                if (whatToBringList && t.whatToBring) { whatToBringList.innerHTML = ''; t.whatToBring.forEach(item => createArrayInput(whatToBringList, 'What to bring', item)); }
                 
                 const timelineList = getField('timelineList');
-                if (timelineList && t.timeline) {
-                    timelineList.innerHTML = '';
-                    loadTimelineItems(timelineList, t.timeline);
-                }
+                if (timelineList && t.timeline) { timelineList.innerHTML = ''; loadTimelineItems(timelineList, t.timeline); }
                 
                 const tourTypeList = getField('tourTypeList');
-                if (tourTypeList && t.tourtype) {
-                    tourTypeList.innerHTML = '';
-                    loadTourTypes(tourTypeList, t.tourtype);
-                }
+                if (tourTypeList && t.tourtype) { tourTypeList.innerHTML = ''; loadTourTypes(tourTypeList, t.tourtype); }
                 
                 const videoList = getField('videoList');
-                if (videoList && t.media?.videos) {
-                    videoList.innerHTML = ''; 
-                    t.media.videos.forEach(videoObj => {
-                        createVideoItem(videoObj.thumbnail || '', videoObj.videoUrl || '');
-                    });
-                }
+                if (videoList && t.media?.videos) { videoList.innerHTML = ''; t.media.videos.forEach(videoObj => { createVideoItem(videoObj.thumbnail || '', videoObj.videoUrl || ''); }); }
                 
                 openModal();
             }
@@ -1283,19 +1232,9 @@
             function createVideoItem(thumbnailUrl = '', videoUrl = '') {
                 const container = getField('videoList');
                 if (!container) return;
-                
                 const div = document.createElement('div');
                 div.className = 'bg-slate-900/50 p-3 rounded-xl border border-slate-700/50';
-                div.innerHTML = `
-                    <div class="space-y-2">
-                        <input type="text" placeholder="Video URL (e.g., https://youtu.be/...)" class="input-field text-xs" value="${escapeHtml(videoUrl)}">
-                        <input type="text" placeholder="Thumbnail URL (Optional)" class="input-field text-xs" value="${escapeHtml(thumbnailUrl)}">
-                    </div>
-                    <button type="button" class="mt-2 w-full py-1 text-xs text-red-400 hover:text-red-300 flex items-center justify-center gap-1">
-                        <i class="fas fa-trash"></i> Remove Video
-                    </button>
-                `;
-                
+                div.innerHTML = `<div class="space-y-2"><input type="text" placeholder="Video URL" class="input-field text-xs" value="${escapeHtml(videoUrl)}"><input type="text" placeholder="Thumbnail URL" class="input-field text-xs" value="${escapeHtml(thumbnailUrl)}"></div><button type="button" class="mt-2 w-full py-1 text-xs text-red-400 hover:text-red-300 flex items-center justify-center gap-1"><i class="fas fa-trash"></i> Remove Video</button>`;
                 div.querySelector('button').onclick = () => div.remove();
                 container.appendChild(div);
             }
@@ -1305,1011 +1244,122 @@
 
             async function saveTrip(e) {
                 e.preventDefault();
-
                 const bookingSlugInput = getField('item-bookingLink');
                 const isEditingInput = getField('item-id');
-                
-                if (!bookingSlugInput) {
-                    showToast('Form error: booking link field not found', 'error');
-                    return;
-                }
+                if (!bookingSlugInput) { showToast('Form error: booking link field not found', 'error'); return; }
                 
                 let bookingSlug = bookingSlugInput.value.trim().toLowerCase().replace(/\s+/g, '-');
                 const isEditing = isEditingInput?.value || '';
-
-                if (!bookingSlug) {
-                    showToast('Booking Slug is required!', 'error');
-                    return;
-                }
+                if (!bookingSlug) { showToast('Booking Slug is required!', 'error'); return; }
 
                 if (!isEditing) {
-                    try {
-                        const slugExists = await isBookingSlugExists(bookingSlug);
-                        if (slugExists) {
-                            showToast('This Booking Slug already exists!', 'error');
-                            return;
-                        }
-                    } catch (err) {
-                        console.warn('Slug check failed, proceeding anyway:', err);
-                    }
+                    try { const slugExists = await isBookingSlugExists(bookingSlug); if (slugExists) { showToast('This Booking Slug already exists!', 'error'); return; } }
+                    catch (err) { console.warn('Slug check failed:', err); }
                 }
 
                 const data = {
-                    name: getField('item-name')?.value || '',
-                    description: getField('item-desc')?.value || '',
-                    price: parseFloat(getField('item-price')?.value) || 0,
-                    cprice: parseFloat(getField('item-cprice')?.value) || 0,
-                    duration: getField('item-duration')?.value || '',
-                    bookingLink: bookingSlug,
-                    image: getField('item-image')?.value || '',
-                    owner: currentUser?.uid,
-                    updatedAt: Date.now()
+                    name: getField('item-name')?.value || '', description: getField('item-desc')?.value || '',
+                    price: parseFloat(getField('item-price')?.value) || 0, cprice: parseFloat(getField('item-cprice')?.value) || 0,
+                    duration: getField('item-duration')?.value || '', bookingLink: bookingSlug,
+                    image: getField('item-image')?.value || '', owner: currentUser?.uid, updatedAt: Date.now()
                 };
+                if (!isEditing) { data.createdAt = Date.now(); data.approved = "false"; }
 
-                if (!isEditing) {
-                    data.createdAt = Date.now();
-                    data.approved = "false";
-                }
-
-                const collectArray = (containerId) => {
-                    const container = getField(containerId);
-                    if (!container) return [];
-                    return Array.from(container.querySelectorAll('input'))
-                        .map(inp => inp.value.trim())
-                        .filter(val => val);
-                };
-
+                const collectArray = (containerId) => { const container = getField(containerId); if (!container) return []; return Array.from(container.querySelectorAll('input')).map(inp => inp.value.trim()).filter(val => val); };
                 const images = collectArray('imageList');
-                const videos = [];
-                const videoListEl = getField('videoList');
-                if (videoListEl) {
-                    videoListEl.querySelectorAll('.bg-slate-900\\/50').forEach(row => {
-                        const inputs = row.querySelectorAll('input');
-                        if (inputs[1]?.value) {
-                            videos.push({
-                                thumbnail: inputs[0]?.value || '',
-                                videoUrl: inputs[1]?.value || ''
-                            });
-                        }
-                    });
-                }
+                const videos = []; const videoListEl = getField('videoList');
+                if (videoListEl) { videoListEl.querySelectorAll('.bg-slate-900\\/50').forEach(row => { const inputs = row.querySelectorAll('input'); if (inputs[1]?.value) { videos.push({ thumbnail: inputs[0]?.value || '', videoUrl: inputs[1]?.value || '' }); } }); }
                 data.media = { images, videos };
-                data.included = collectArray('includedList');
-                data.notIncluded = collectArray('notIncludedList');
-                data.whatToBring = collectArray('whatToBringList');
-
-                data.timeline = [];
-                const timelineList = getField('timelineList');
-                if (timelineList) {
-                    timelineList.querySelectorAll('.array-item').forEach(div => {
-                        const inputs = div.querySelectorAll('input');
-                        if (inputs[0]?.value && inputs[1]?.value) {
-                            data.timeline.push({
-                                time: inputs[0].value,
-                                title: inputs[1].value,
-                                description: inputs[2]?.value || ''
-                            });
-                        }
-                    });
-                }
-
-                data.tourtype = {};
-                const tourTypeList = getField('tourTypeList');
-                if (tourTypeList) {
-                    tourTypeList.querySelectorAll('.array-item').forEach(div => {
-                        const inputs = div.querySelectorAll('input');
-                        if (inputs[0]?.value && inputs[1]?.value) {
-                            data.tourtype[inputs[0].value.trim()] = parseFloat(inputs[1].value) || 0;
-                        }
-                    });
-                }
+                data.included = collectArray('includedList'); data.notIncluded = collectArray('notIncludedList'); data.whatToBring = collectArray('whatToBringList');
+                data.timeline = []; const timelineList = getField('timelineList');
+                if (timelineList) { timelineList.querySelectorAll('.array-item').forEach(div => { const inputs = div.querySelectorAll('input'); if (inputs[0]?.value && inputs[1]?.value) { data.timeline.push({ time: inputs[0].value, title: inputs[1].value, description: inputs[2]?.value || '' }); } }); }
+                data.tourtype = {}; const tourTypeList = getField('tourTypeList');
+                if (tourTypeList) { tourTypeList.querySelectorAll('.array-item').forEach(div => { const inputs = div.querySelectorAll('input'); if (inputs[0]?.value && inputs[1]?.value) { data.tourtype[inputs[0].value.trim()] = parseFloat(inputs[1].value) || 0; } }); }
 
                 try {
                     const ref = db.ref(`trips/${isEditing || bookingSlug}`);
-                    if (isEditing) {
-                        await ref.update(data);
-                        showToast('✅ Trip updated successfully!');
-                    } else {
-                        await ref.set(data);
-                        showToast('✅ New trip saved as Pending!');
-                    }
-                    closeModal();
-                    loadAllData();
-                } catch (error) {
-                    console.error("Save error:", error);
-                    showToast('Error saving trip: ' + error.message, 'error');
-                }
+                    if (isEditing) { await ref.update(data); showToast('✅ Trip updated successfully!'); }
+                    else { await ref.set(data); showToast('✅ New trip saved as Pending!'); }
+                    closeModal(); loadAllData();
+                } catch (error) { console.error("Save error:", error); showToast('Error saving trip: ' + error.message, 'error'); }
             }
 
-            function deleteTripPrompt(id) {
-                const trip = allTrips.find(t => t.id === id);
-                if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') {
-                    showToast('You do not have permission to delete this trip', 'error');
-                    return;
-                }
-                pendingDeleteId = id;
-                openSheet('delete-modal', 'delete-overlay');
-            }
+            function deleteTripPrompt(id) { const trip = allTrips.find(t => t.id === id); if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') { showToast('You do not have permission', 'error'); return; } pendingDeleteId = id; openSheet('delete-modal', 'delete-overlay'); }
+            async function confirmDelete() { if (!pendingDeleteId) return; const trip = allTrips.find(t => t.id === pendingDeleteId); if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') { showToast('Permission denied', 'error'); closeDeleteModal(); pendingDeleteId = null; return; } try { await db.ref(`trips/${pendingDeleteId}`).remove(); showToast('✅ Trip deleted'); loadAllData(); } catch (error) { console.error('Delete error:', error); showToast('Failed to delete', 'error'); } finally { closeDeleteModal(); pendingDeleteId = null; } }
+            const confirmDeleteBtn = getField('confirm-delete-btn'); if (confirmDeleteBtn) confirmDeleteBtn.onclick = confirmDelete;
 
-            async function confirmDelete() {
-                if (!pendingDeleteId) return;
-                
-                const trip = allTrips.find(t => t.id === pendingDeleteId);
-                if (trip && trip.owner !== currentUser?.uid && currentUserRole !== 'admin') {
-                    showToast('You do not have permission to delete this trip', 'error');
-                    closeDeleteModal();
-                    pendingDeleteId = null;
-                    return;
-                }
-                
-                try {
-                    await db.ref(`trips/${pendingDeleteId}`).remove();
-                    showToast('✅ Trip deleted');
-                    loadAllData();
-                } catch (error) {
-                    console.error('Delete error:', error);
-                    showToast('Failed to delete: ' + error.message, 'error');
-                } finally {
-                    closeDeleteModal();
-                    pendingDeleteId = null;
-                }
-            }
+            function setTripFilter(f) { tripFilter = f; document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active')); if (event?.target) { const chip = event.target.closest('.filter-chip'); if (chip) chip.classList.add('active'); } renderTrips(); }
+            const tripSearchInput = getField('tripSearch'); if (tripSearchInput) { tripSearchInput.addEventListener('input', e => { tripSearch = e.target.value; renderTrips(); }); }
 
-            const confirmDeleteBtn = getField('confirm-delete-btn');
-            if (confirmDeleteBtn) confirmDeleteBtn.onclick = confirmDelete;
+            const arrayBtns = { 'addImageBtn': ['imageList', 'Image URL'], 'addIncludedBtn': ['includedList', 'Included item'], 'addNotIncludedBtn': ['notIncludedList', 'Not included item'], 'addWhatToBringBtn': ['whatToBringList', 'What to bring'] };
+            Object.entries(arrayBtns).forEach(([btnId, [listId, placeholder]]) => { const btn = getField(btnId); if (btn) btn.onclick = () => createArrayInput(getField(listId), placeholder); });
 
-            function setTripFilter(f) {
-                tripFilter = f;
-                document.querySelectorAll('#trips-section .filter-chip').forEach(c => c.classList.remove('active'));
-                if (event?.target) {
-                    const chip = event.target.closest('.filter-chip');
-                    if (chip) chip.classList.add('active');
-                }
-                renderTrips();
-            }
+            const addTimelineBtn = getField('addTimelineBtn'); if (addTimelineBtn) { addTimelineBtn.onclick = () => { const div = document.createElement('div'); div.className = 'array-item flex-col items-stretch gap-2'; ['Time', 'Title', 'Description'].forEach((ph, i) => { const inp = document.createElement('input'); inp.placeholder = ph + (i === 0 ? ' (e.g., 09:00 AM)' : ''); inp.className = 'input-field'; div.appendChild(inp); }); const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'remove-item self-end'; rm.innerHTML = '<i class="fas fa-times"></i>'; rm.onclick = () => div.remove(); div.appendChild(rm); getField('timelineList')?.appendChild(div); }; }
+            const addTourTypeBtn = getField('addTourTypeBtn'); if (addTourTypeBtn) { addTourTypeBtn.onclick = () => { const div = document.createElement('div'); div.className = 'array-item'; const nameInp = document.createElement('input'); nameInp.placeholder = 'Service name'; nameInp.className = 'input-field flex-1'; const priceInp = document.createElement('input'); priceInp.placeholder = 'Price'; priceInp.type = 'number'; priceInp.className = 'input-field w-28'; const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'remove-item'; rm.innerHTML = '<i class="fas fa-times"></i>'; rm.onclick = () => div.remove(); div.appendChild(nameInp); div.appendChild(priceInp); div.appendChild(rm); getField('tourTypeList')?.appendChild(div); }; }
 
-            const tripSearchInput = getField('tripSearch');
-            if (tripSearchInput) {
-                tripSearchInput.addEventListener('input', e => {
-                    tripSearch = e.target.value;
-                    renderTrips();
-                });
-            }
+            async function loadReservations() { if (!currentUser) return; try { const snap = await db.ref('trip-bookings').orderByChild('owner').equalTo(currentUser.uid).once('value'); const data = snap.val() || {}; allReservations = Object.entries(data).map(([id, val]) => ({ id, ...val, isPaid: val.paymentStatus === 'paid' || val.isPaid === true, status: val.resStatus || val.status || 'new' })); const unpaidBadge = getField('unpaidBadge'); if (unpaidBadge) unpaidBadge.innerText = allReservations.filter(r => !r.isPaid).length; applyFilters(); updateDashboard(); } catch (error) { console.error('Load reservations error:', error); showToast('Failed to load reservations', 'error'); } }
 
-            const arrayBtns = {
-                'addImageBtn': ['imageList', 'Image URL'],
-                'addIncludedBtn': ['includedList', 'Included item'],
-                'addNotIncludedBtn': ['notIncludedList', 'Not included item'],
-                'addWhatToBringBtn': ['whatToBringList', 'What to bring']
-            };
-            
-            Object.entries(arrayBtns).forEach(([btnId, [listId, placeholder]]) => {
-                const btn = getField(btnId);
-                if (btn) btn.onclick = () => createArrayInput(getField(listId), placeholder);
-            });
+            function applyFilters() { const searchInput = getField('resSearch'); const statusFilter = getField('statusFilter'); const search = (searchInput?.value || '').toLowerCase(); const status = statusFilter?.value || 'all'; let filtered = allReservations.filter(r => (r.username || '').toLowerCase().includes(search) || (r.tour || '').toLowerCase().includes(search)); if (status !== 'all') filtered = filtered.filter(r => r.status === status); if (currentResTab === 'paid') filtered = filtered.filter(r => r.isPaid === true); if (currentResTab === 'unpaid') filtered = filtered.filter(r => !r.isPaid); filteredReservations = filtered; currentPage = 1; renderReservations(); updatePagination(); }
 
-            const addTimelineBtn = getField('addTimelineBtn');
-            if (addTimelineBtn) {
-                addTimelineBtn.onclick = () => {
-                    const div = document.createElement('div');
-                    div.className = 'array-item flex-col items-stretch gap-2';
-                    
-                    ['Time', 'Title', 'Description'].forEach((ph, i) => {
-                        const inp = document.createElement('input');
-                        inp.placeholder = ph + (i === 0 ? ' (e.g., 09:00 AM)' : '');
-                        inp.className = 'input-field';
-                        div.appendChild(inp);
-                    });
-                    
-                    const rm = document.createElement('button');
-                    rm.type = 'button';
-                    rm.className = 'remove-item self-end';
-                    rm.innerHTML = '<i class="fas fa-times"></i>';
-                    rm.onclick = () => div.remove();
-                    div.appendChild(rm);
-                    
-                    getField('timelineList')?.appendChild(div);
-                };
-            }
+            function renderReservations() { const tbody = getField('resTableBody'); const cardsContainer = getField('resCardsContainer'); if (!tbody && !cardsContainer) return; const start = (currentPage - 1) * itemsPerPage; const page = filteredReservations.slice(start, start + itemsPerPage); const emptyRow = '<tr><td colspan="8" class="text-center py-8 text-gray-400">No reservations found</td></tr>'; const emptyCard = '<div class="text-center py-8 text-gray-400">No reservations found</div>'; if (tbody) { tbody.innerHTML = page.length ? page.map(r => `<tr class="border-b hover:bg-slate-800/30 transition"><td><div class="font-medium">${escapeHtml(r.username || 'Guest')}</div><div class="text-xs text-gray-400">${escapeHtml(r.phone || '-')}</div></td><td>${escapeHtml(r.tour || '-')}</td><td>${r.tripDate || '-'}</td><td>${r.adults || 0}A / ${r.childrenUnder12 || 0}C</td><td class="font-bold text-orange-500">EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</td><td><span class="status-badge ${r.isPaid ? 'status-paid' : 'status-unpaid'}">${r.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></td><td><span class="status-badge status-${r.status}">${r.status}</span></td><td><div class="flex gap-1 flex-wrap">${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg text-xs transition">Pay</button>` : ''}<button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded-lg text-xs transition">Confirm</button><button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-xs transition">View</button><button onclick="printReceipt('${r.id}')" class="print-btn" title="Print Receipt"><i class="fas fa-print"></i></button></div></td></tr>`).join('') : emptyRow; } if (cardsContainer) { cardsContainer.innerHTML = page.length ? page.map(r => `<div class="booking-card"><div class="booking-card-header"><span class="booking-ref">${escapeHtml(r.refNumber || r.id?.slice(-8) || 'N/A')}</span><span class="status-badge status-${r.status}">${r.status}</span></div><div class="font-medium">${escapeHtml(r.username || 'Guest')}</div><div class="text-sm text-gray-400">${escapeHtml(r.tour || '-')} • ${r.tripDate || '-'}</div><div class="flex gap-3 mt-2 text-xs text-gray-300"><span>👥 ${r.adults || 0}A / ${r.childrenUnder12 || 0}C</span><span>💰 EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</span><span>💳 ${r.isPaid ? 'Paid' : 'Unpaid'}</span></div><div class="flex gap-2 mt-3">${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Pay</button>` : ''}<button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-3 py-1 rounded-lg text-xs">Confirm</button><button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">View</button><button onclick="printReceipt('${r.id}')" class="print-btn" title="Print Receipt"><i class="fas fa-print"></i></button></div></div>`).join('') : emptyCard; } }
 
-            const addTourTypeBtn = getField('addTourTypeBtn');
-            if (addTourTypeBtn) {
-                addTourTypeBtn.onclick = () => {
-                    const div = document.createElement('div');
-                    div.className = 'array-item';
-                    
-                    const nameInp = document.createElement('input');
-                    nameInp.placeholder = 'Service name';
-                    nameInp.className = 'input-field flex-1';
-                    
-                    const priceInp = document.createElement('input');
-                    priceInp.placeholder = 'Price';
-                    priceInp.type = 'number';
-                    priceInp.className = 'input-field w-28';
-                    
-                    const rm = document.createElement('button');
-                    rm.type = 'button';
-                    rm.className = 'remove-item';
-                    rm.innerHTML = '<i class="fas fa-times"></i>';
-                    rm.onclick = () => div.remove();
-                    
-                    div.appendChild(nameInp);
-                    div.appendChild(priceInp);
-                    div.appendChild(rm);
-                    getField('tourTypeList')?.appendChild(div);
-                };
-            }
-
-            // ==================== RESERVATION FUNCTIONS ====================
-            async function loadReservations() {
-                if (!currentUser) return;
-                try {
-                    const snap = await db.ref('trip-bookings')
-                        .orderByChild('owner')
-                        .equalTo(currentUser.uid)
-                        .once('value');
-                    
-                    const data = snap.val() || {};
-                    allReservations = Object.entries(data).map(([id, val]) => ({
-                        id, 
-                        ...val,
-                        isPaid: val.paymentStatus === 'paid' || val.isPaid === true,
-                        status: val.resStatus || val.status || 'new'
-                    }));
-                    
-                    const unpaidBadge = getField('unpaidBadge');
-                    if (unpaidBadge) {
-                        unpaidBadge.innerText = allReservations.filter(r => !r.isPaid).length;
-                    }
-                    
-                    applyFilters();
-                    updateDashboard();
-                } catch (error) {
-                    console.error('Load reservations error:', error);
-                    showToast('Failed to load reservations', 'error');
-                }
-            }
-
-            function applyFilters() {
-                const searchInput = getField('resSearch');
-                const statusFilter = getField('statusFilter');
-                const search = (searchInput?.value || '').toLowerCase();
-                const status = statusFilter?.value || 'all';
-                
-                let filtered = allReservations.filter(r => 
-                    (r.username || '').toLowerCase().includes(search) || 
-                    (r.tour || '').toLowerCase().includes(search)
-                );
-                
-                if (status !== 'all') filtered = filtered.filter(r => r.status === status);
-                if (currentResTab === 'paid') filtered = filtered.filter(r => r.isPaid === true);
-                if (currentResTab === 'unpaid') filtered = filtered.filter(r => !r.isPaid);
-                
-                filteredReservations = filtered;
-                currentPage = 1;
-                renderReservations();
-                updatePagination();
-            }
-
-            function renderReservations() {
-                const tbody = getField('resTableBody');
-                const cardsContainer = getField('resCardsContainer');
-                
-                if (!tbody && !cardsContainer) return;
-                
-                const start = (currentPage - 1) * itemsPerPage;
-                const page = filteredReservations.slice(start, start + itemsPerPage);
-                
-                const emptyRow = '<tr><td colspan="8" class="text-center py-8 text-gray-400">No reservations found</td></tr>';
-                const emptyCard = '<div class="text-center py-8 text-gray-400">No reservations found</div>';
-                
-                if (tbody) {
-                    tbody.innerHTML = page.length ? page.map(r => `<tr class="border-b hover:bg-slate-800/30 transition">
-                        <td><div class="font-medium">${escapeHtml(r.username || 'Guest')}</div><div class="text-xs text-gray-400">${escapeHtml(r.phone || '-')}</div></td>
-                        <td>${escapeHtml(r.tour || '-')}</td>
-                        <td>${r.tripDate || '-'}</td>
-                        <td>${r.adults || 0}A / ${r.childrenUnder12 || 0}C</td>
-                        <td class="font-bold text-orange-500">EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</td>
-                        <td><span class="status-badge ${r.isPaid ? 'status-paid' : 'status-unpaid'}">${r.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></td>
-                        <td><span class="status-badge status-${r.status}">${r.status}</span></td>
-                        <td><div class="flex gap-1 flex-wrap">
-                            ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg text-xs transition">Pay</button>` : ''}
-                            <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded-lg text-xs transition">Confirm</button>
-                            <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-xs transition">View</button>
-                            <button onclick="printReceipt('${r.id}')" class="print-btn" title="Print Receipt"><i class="fas fa-print"></i></button>
-                        </div></td>
-                    </tr>`).join('') : emptyRow;
-                }
-                
-                if (cardsContainer) {
-                    cardsContainer.innerHTML = page.length ? page.map(r => `<div class="booking-card">
-                        <div class="booking-card-header">
-                            <span class="booking-ref">${escapeHtml(r.refNumber || r.id?.slice(-8) || 'N/A')}</span>
-                            <span class="status-badge status-${r.status}">${r.status}</span>
-                        </div>
-                        <div class="font-medium">${escapeHtml(r.username || 'Guest')}</div>
-                        <div class="text-sm text-gray-400">${escapeHtml(r.tour || '-')} • ${r.tripDate || '-'}</div>
-                        <div class="flex gap-3 mt-2 text-xs text-gray-300">
-                            <span>👥 ${r.adults || 0}A / ${r.childrenUnder12 || 0}C</span>
-                            <span>💰 EGP ${parseFloat(r.netTotal || 0).toFixed(2)}</span>
-                            <span>💳 ${r.isPaid ? 'Paid' : 'Unpaid'}</span>
-                        </div>
-                        <div class="flex gap-2 mt-3">
-                            ${!r.isPaid ? `<button onclick="markAsPaid('${r.id}','${r.netTotal}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Pay</button>` : ''}
-                            <button onclick="confirmBookingWithPickup('${r.id}')" class="bg-amber-600 text-white px-3 py-1 rounded-lg text-xs">Confirm</button>
-                            <button onclick="showBookingDetails('${r.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs">View</button>
-                            <button onclick="printReceipt('${r.id}')" class="print-btn" title="Print Receipt"><i class="fas fa-print"></i></button>
-                        </div>
-                    </div>`).join('') : emptyCard;
-                }
-            }
-
-            function updatePagination() {
-                const pageInfo = getField('pageInfo');
-                const prevBtn = getField('prevPageBtn');
-                const nextBtn = getField('nextPageBtn');
-                const totalPages = Math.ceil(filteredReservations.length / itemsPerPage) || 1;
-                
-                if (pageInfo) pageInfo.innerHTML = `Page ${currentPage} of ${totalPages}`;
-                if (prevBtn) prevBtn.disabled = currentPage === 1;
-                if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-            }
-
+            function updatePagination() { const pageInfo = getField('pageInfo'); const prevBtn = getField('prevPageBtn'); const nextBtn = getField('nextPageBtn'); const totalPages = Math.ceil(filteredReservations.length / itemsPerPage) || 1; if (pageInfo) pageInfo.innerHTML = `Page ${currentPage} of ${totalPages}`; if (prevBtn) prevBtn.disabled = currentPage === 1; if (nextBtn) nextBtn.disabled = currentPage >= totalPages; }
             window.prevPage = () => { if (currentPage > 1) { currentPage--; renderReservations(); updatePagination(); } };
             window.nextPage = () => { const total = Math.ceil(filteredReservations.length / itemsPerPage); if (currentPage < total) { currentPage++; renderReservations(); updatePagination(); } };
+            const prevPageBtn = getField('prevPageBtn'); if (prevPageBtn) prevPageBtn.onclick = window.prevPage;
+            const nextPageBtn = getField('nextPageBtn'); if (nextPageBtn) nextPageBtn.onclick = window.nextPage;
+            const resSearch = getField('resSearch'); if (resSearch) resSearch.addEventListener('input', applyFilters);
+            const statusFilter = getField('statusFilter'); if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+            window.switchReservationTab = (tab) => { currentResTab = tab; document.querySelectorAll('#reservations-section .filter-chip').forEach(c => c.classList.remove('active')); if (event?.target) event.target.classList.add('active'); applyFilters(); };
+            window.markAsPaid = async (id, amount) => { if (confirm(`Mark booking as paid? EGP ${amount}`)) { try { await db.ref(`trip-bookings/${id}`).update({ isPaid: true, paymentStatus: 'paid', paymentDate: Date.now(), updatedAt: Date.now() }); showToast('✅ Payment recorded'); loadReservations(); } catch (error) { showToast('Failed: ' + error.message, 'error'); } } };
+            window.confirmBookingWithPickup = (id) => { pendingConfirmRef = id; const pickupModal = getField('pickup-modal'); const pickupOverlay = getField('pickup-overlay'); if (pickupModal) pickupModal.classList.add('open'); if (pickupOverlay) pickupOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
+            const confirmPickupBtn = getField('confirmPickupBtn'); if (confirmPickupBtn) { confirmPickupBtn.onclick = async () => { const time = getField('pickupTimeInput')?.value; if (!time) { showToast('Select pickup time', 'error'); return; } if (pendingConfirmRef) { try { await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ resStatus: 'confirmed', pickuptime: time, confirmedAt: Date.now(), updatedAt: Date.now() }); showToast('✅ Booking confirmed!'); window.closePickupModal(); loadReservations(); } catch (error) { showToast('Failed: ' + error.message, 'error'); } finally { pendingConfirmRef = null; } } }; }
+            window.closePickupModal = () => { const pickupModal = getField('pickup-modal'); const pickupOverlay = getField('pickup-overlay'); if (pickupModal) pickupModal.classList.remove('open'); if (pickupOverlay) pickupOverlay.classList.remove('open'); document.body.style.overflow = ''; const timeInput = getField('pickupTimeInput'); if (timeInput) timeInput.value = ''; };
+            window.refreshReservations = () => { showToast('🔄 Refreshing...'); loadReservations(); };
 
-            const prevPageBtn = getField('prevPageBtn');
-            const nextPageBtn = getField('nextPageBtn');
-            if (prevPageBtn) prevPageBtn.onclick = window.prevPage;
-            if (nextPageBtn) nextPageBtn.onclick = window.nextPage;
+            async function showBookingDetails(bookingId) { const b = allReservations.find(b => b.id === bookingId); if (!b) { showToast('Not found', 'error'); return; } const html = `<div class="booking-details-grid"><div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value font-mono">${escapeHtml(b.refNumber || b.id?.slice(-8) || 'N/A')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${escapeHtml(b.tour || '-')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate || '-'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults || 0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12 || 0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants || 0}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-500 font-bold">EGP ${parseFloat(b.netTotal || 0).toFixed(2)}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid ? 'status-paid' : 'status-unpaid'}">${b.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></div></div><div class="booking-detail-item"><div class="booking-detail-label">Pickup</div><div class="booking-detail-value">${b.pickuptime || 'Not set'}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Customer</div><div class="booking-detail-value">${escapeHtml(b.username || '-')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${escapeHtml(b.phone || '-')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${escapeHtml(b.email || '-')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${escapeHtml(b.hotelName || '-')}</div></div><div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${escapeHtml(b.roomNumber || '-')}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">✨ Extra Services</div><div class="booking-detail-value text-orange-400 font-medium">${escapeHtml(b.extraServices) || '<span class="text-white">None</span>'}</div></div><div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${escapeHtml(b.specialRequests || 'None')}</div></div></div>`; const detailsContent = getField('bookingDetailsContent'); if (detailsContent) detailsContent.innerHTML = html; const wa = getField('whatsappLink'); if (wa && b.phone) { wa.href = `https://wa.me/${b.phone.replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(`*🌴 Discover Sharm*\nRef: ${b.refNumber}\nTrip: ${b.tour}\nDate: ${b.tripDate}`)}`; wa.style.opacity = '1'; wa.style.pointerEvents = 'auto'; } else if (wa) { wa.href = '#'; wa.style.opacity = '0.5'; wa.style.pointerEvents = 'none'; } const bookingModal = getField('booking-modal'); const bookingOverlay = getField('booking-modal-overlay'); if (bookingModal) bookingModal.classList.add('open'); if (bookingOverlay) bookingOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+            window.closeBookingModal = () => { const bookingModal = getField('booking-modal'); const bookingOverlay = getField('booking-modal-overlay'); if (bookingModal) bookingModal.classList.remove('open'); if (bookingOverlay) bookingOverlay.classList.remove('open'); document.body.style.overflow = ''; };
 
-            const resSearch = getField('resSearch');
-            if (resSearch) resSearch.addEventListener('input', applyFilters);
-            
-            const statusFilter = getField('statusFilter');
-            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+            async function loadPayoutMethod() { if (!currentUser) return; try { const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method`).once('value'); const d = snap.val(); if (d) { const fields = { 'payoutName': d.name || '', 'accountNumber': d.accountNumber || '', 'payoutMethodSelect': d.method || 'wallet' }; Object.entries(fields).forEach(([id, val]) => { const el = getField(id); if (el) el.value = val; }); const bankFields = getField('bankFields'); if (bankFields) bankFields.style.display = (d.method === 'bankAccount') ? 'block' : 'none'; } } catch (error) { console.error('Load payout error:', error); } }
+            async function calculateAndDisplayBalance() { if (!currentUser) return; const eligibleBookings = allReservations.filter(r => r.status === 'confirmed' && isOlderThanOneDay(r.tripDate)); const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0); const commission = totalRevenue * COMMISSION_RATE; const netEarnings = totalRevenue - commission; let completedPayouts = 0, pendingPayouts = 0, historyHtml = ''; try { const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value'); if (payoutSnap.exists()) { payoutSnap.forEach(child => { const req = child.val(); const amount = parseFloat(req.amount) || 0; if (req.status === 'completed') { completedPayouts += amount; historyHtml += `<div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-green-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">✓</span></div>`; } else if (req.status === 'pending') { pendingPayouts += amount; historyHtml += `<div class="flex justify-between p-3 bg-amber-900/30 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-amber-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">⏳</span></div>`; } }); } } catch (e) { console.error("Payout history error:", e); } const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0); const avpayout = getField('avpayout'); if (avpayout) avpayout.innerHTML = `EGP ${availableBalance.toFixed(2)}`; const pendingBadge = getField('pendingBadge'); if (pendingBadge) pendingBadge.classList.toggle('hidden', pendingPayouts === 0); const payoutHistoryList = getField('payoutHistoryList'); if (payoutHistoryList) payoutHistoryList.innerHTML = historyHtml || '<div class="text-center py-4 text-gray-400">No payout requests yet</div>'; window.currentAvailableBalance = availableBalance; }
+            const payoutForm = getField('payoutForm'); if (payoutForm) { payoutForm.onsubmit = async (e) => { e.preventDefault(); try { const method = getField('payoutMethodSelect')?.value || 'wallet'; const data = { name: getField('payoutName')?.value || '', accountNumber: getField('accountNumber')?.value || '', method: method, updatedAt: Date.now() }; if (method === 'bankAccount') { data.bankName = getField('bankName')?.value || ''; data.branchName = getField('branchName')?.value || ''; } await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data); showToast('✅ Payout method saved'); } catch (error) { showToast('Failed: ' + error.message, 'error'); } }; }
+            const payoutMethodSelect = getField('payoutMethodSelect'); if (payoutMethodSelect) { payoutMethodSelect.onchange = function() { const bankFields = getField('bankFields'); if (bankFields) bankFields.style.display = this.value === 'bankAccount' ? 'block' : 'none'; }; }
+            const requestPayoutBtn = getField('requestPayoutBtn'); if (requestPayoutBtn) { requestPayoutBtn.onclick = async () => { const available = window.currentAvailableBalance || 0; if (available <= 0) { showToast('No balance', 'error'); return; } try { const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value'); let hasPending = false; snap.forEach(child => { if (child.val()?.status === 'pending') hasPending = true; }); if (hasPending) { showToast('Pending request exists', 'error'); return; } if (confirm(`Request ${available.toFixed(2)} EGP?`)) { await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({ amount: available.toFixed(2), status: 'pending', createdAt: Date.now() }); showToast('✅ Submitted!'); await calculateAndDisplayBalance(); } } catch (error) { showToast('Failed: ' + error.message, 'error'); } }; }
+            const refreshBalanceBtn = getField('refreshBalanceBtn'); if (refreshBalanceBtn) refreshBalanceBtn.onclick = () => { calculateAndDisplayBalance(); showToast('🔄 Refreshed'); };
 
-            window.switchReservationTab = (tab) => {
-                currentResTab = tab;
-                document.querySelectorAll('#reservations-section .filter-chip').forEach(c => c.classList.remove('active'));
-                if (event?.target) event.target.classList.add('active');
-                applyFilters();
-            };
-
-            window.markAsPaid = async (id, amount) => {
-                if (confirm(`Mark booking ${id.slice(-8)} as paid? Amount: EGP ${amount}`)) {
-                    try {
-                        await db.ref(`trip-bookings/${id}`).update({ 
-                            isPaid: true, paymentStatus: 'paid', paymentDate: Date.now(), updatedAt: Date.now()
-                        });
-                        showToast('✅ Payment recorded');
-                        loadReservations();
-                    } catch (error) {
-                        console.error('Mark paid error:', error);
-                        showToast('Failed to update payment: ' + error.message, 'error');
-                    }
-                }
-            };
-
-            window.confirmBookingWithPickup = (id) => {
-                pendingConfirmRef = id;
-                const pickupModal = getField('pickup-modal');
-                const pickupOverlay = getField('pickup-overlay');
-                if (pickupModal) pickupModal.classList.add('open');
-                if (pickupOverlay) pickupOverlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            };
-
-            const confirmPickupBtn = getField('confirmPickupBtn');
-            if (confirmPickupBtn) {
-                confirmPickupBtn.onclick = async () => {
-                    const timeInput = getField('pickupTimeInput');
-                    const time = timeInput?.value;
-                    
-                    if (!time) { showToast('Please select pickup time', 'error'); return; }
-                    
-                    if (pendingConfirmRef) {
-                        try {
-                            await db.ref(`trip-bookings/${pendingConfirmRef}`).update({ 
-                                resStatus: 'confirmed', pickuptime: time, confirmedAt: Date.now(), updatedAt: Date.now()
-                            });
-                            showToast('✅ Booking confirmed!');
-                            window.closePickupModal();
-                            loadReservations();
-                        } catch (error) {
-                            console.error('Confirm error:', error);
-                            showToast('Failed to confirm: ' + error.message, 'error');
-                        } finally {
-                            pendingConfirmRef = null;
-                        }
-                    }
-                };
-            }
-
-            window.closePickupModal = () => {
-                const pickupModal = getField('pickup-modal');
-                const pickupOverlay = getField('pickup-overlay');
-                if (pickupModal) pickupModal.classList.remove('open');
-                if (pickupOverlay) pickupOverlay.classList.remove('open');
-                document.body.style.overflow = '';
-                const timeInput = getField('pickupTimeInput');
-                if (timeInput) timeInput.value = '';
-            };
-
-            window.refreshReservations = () => {
-                showToast('🔄 Refreshing...');
-                loadReservations();
-            };
-
-            // ==================== BOOKING DETAILS MODAL ====================
-            async function showBookingDetails(bookingId) {
-                const b = allReservations.find(b => b.id === bookingId);
-                if (!b) { showToast('Booking not found', 'error'); return; }
-                
-                const html = `<div class="booking-details-grid">
-                    <div class="booking-detail-item"><div class="booking-detail-label">Reference</div><div class="booking-detail-value font-mono">${escapeHtml(b.refNumber || b.id?.slice(-8) || 'N/A')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Status</div><div class="booking-detail-value"><span class="status-badge status-${b.status}">${b.status}</span></div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Tour</div><div class="booking-detail-value">${escapeHtml(b.tour || '-')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Date</div><div class="booking-detail-value">${b.tripDate || '-'}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Adults</div><div class="booking-detail-value">${b.adults || 0}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Children</div><div class="booking-detail-value">${b.childrenUnder12 || 0}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Infants</div><div class="booking-detail-value">${b.infants || 0}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Total</div><div class="booking-detail-value text-orange-500 font-bold">EGP ${parseFloat(b.netTotal || 0).toFixed(2)}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Payment</div><div class="booking-detail-value"><span class="status-badge ${b.isPaid ? 'status-paid' : 'status-unpaid'}">${b.isPaid ? '✅ Paid' : '⚠️ Unpaid'}</span></div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Pickup Time</div><div class="booking-detail-value">${b.pickuptime || 'Not set'}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Customer</div><div class="booking-detail-value">${escapeHtml(b.username || '-')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Phone</div><div class="booking-detail-value">${escapeHtml(b.phone || '-')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Email</div><div class="booking-detail-value">${escapeHtml(b.email || '-')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Hotel</div><div class="booking-detail-value">${escapeHtml(b.hotelName || '-')}</div></div>
-                    <div class="booking-detail-item"><div class="booking-detail-label">Room</div><div class="booking-detail-value">${escapeHtml(b.roomNumber || '-')}</div></div>
-                    <div class="booking-detail-item col-span-2"><div class="booking-detail-label">✨ Extra Services</div><div class="booking-detail-value text-orange-400 font-medium">${escapeHtml(b.extraServices) || '<span class="text-white">None</span>'}</div></div>
-                    <div class="booking-detail-item col-span-2"><div class="booking-detail-label">Special Requests</div><div class="booking-detail-value">${escapeHtml(b.specialRequests || b.tripType || 'None')}</div></div>
-                </div>`;
-                
-                const detailsContent = getField('bookingDetailsContent');
-                if (detailsContent) detailsContent.innerHTML = html;
-                
-                const wa = getField('whatsappLink');
-                if (wa && b.phone) {
-                    const cleanPhone = b.phone.replace(/[^0-9+]/g, '');
-                    const voucherUrl = `https://www.discover-sharm.com/p/voucher.html?id=${b.refNumber}`;
-                    const msg = `*🌴 Discover Sharm - Booking*\n*Ref:* ${b.refNumber}\n*Trip:* ${b.tour}\n*Date:* ${b.tripDate}\n*Total:* EGP ${parseFloat(b.netTotal || 0).toFixed(2)}\n🔗 ${voucherUrl}`;
-                    wa.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
-                    wa.style.opacity = '1';
-                    wa.style.pointerEvents = 'auto';
-                } else if (wa) {
-                    wa.href = '#';
-                    wa.style.opacity = '0.5';
-                    wa.style.pointerEvents = 'none';
-                }
-                
-                const bookingModal = getField('booking-modal');
-                const bookingOverlay = getField('booking-modal-overlay');
-                if (bookingModal) bookingModal.classList.add('open');
-                if (bookingOverlay) bookingOverlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
-
-            window.closeBookingModal = () => {
-                const bookingModal = getField('booking-modal');
-                const bookingOverlay = getField('booking-modal-overlay');
-                if (bookingModal) bookingModal.classList.remove('open');
-                if (bookingOverlay) bookingOverlay.classList.remove('open');
-                document.body.style.overflow = '';
-            };
-
-            // ==================== PAYOUT FUNCTIONS ====================
-            async function loadPayoutMethod() {
-                if (!currentUser) return;
-                try {
-                    const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method`).once('value');
-                    const d = snap.val();
-                    if (d) {
-                        const fields = {
-                            'payoutName': d.name || '',
-                            'accountNumber': d.accountNumber || '',
-                            'payoutMethodSelect': d.method || 'wallet'
-                        };
-                        Object.entries(fields).forEach(([id, val]) => {
-                            const el = getField(id);
-                            if (el) el.value = val;
-                        });
-                        const bankFields = getField('bankFields');
-                        if (bankFields) bankFields.style.display = (d.method === 'bankAccount') ? 'block' : 'none';
-                    }
-                } catch (error) {
-                    console.error('Load payout error:', error);
-                }
-            }
-
-            async function calculateAndDisplayBalance() {
-                if (!currentUser) return;
-                
-                const eligibleBookings = allReservations.filter(r => 
-                    r.status === 'confirmed' && isOlderThanOneDay(r.tripDate)
-                );
-                
-                const totalRevenue = eligibleBookings.reduce((sum, r) => sum + (parseFloat(r.netTotal) || 0), 0);
-                const commission = totalRevenue * COMMISSION_RATE;
-                const netEarnings = totalRevenue - commission;
-                
-                let completedPayouts = 0, pendingPayouts = 0, historyHtml = '';
-                
-                try {
-                    const payoutSnap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-                    if (payoutSnap.exists()) {
-                        payoutSnap.forEach(child => {
-                            const req = child.val();
-                            const amount = parseFloat(req.amount) || 0;
-                            if (req.status === 'completed') {
-                                completedPayouts += amount;
-                                historyHtml += `<div class="flex justify-between p-3 bg-slate-800/50 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-green-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-paid">✓</span></div>`;
-                            } else if (req.status === 'pending') {
-                                pendingPayouts += amount;
-                                historyHtml += `<div class="flex justify-between p-3 bg-amber-900/30 rounded-lg"><span>${new Date(req.createdAt).toLocaleDateString()}</span><span class="font-bold text-amber-500">EGP ${amount.toFixed(2)}</span><span class="status-badge status-new">⏳</span></div>`;
-                            }
-                        });
-                    }
-                } catch (e) { console.error("Payout history error:", e); }
-                
-                const availableBalance = Math.max(netEarnings - completedPayouts - pendingPayouts, 0);
-                
-                const avpayout = getField('avpayout');
-                if (avpayout) avpayout.innerHTML = `EGP ${availableBalance.toFixed(2)}`;
-                
-                const pendingBadge = getField('pendingBadge');
-                if (pendingBadge) pendingBadge.classList.toggle('hidden', pendingPayouts === 0);
-                
-                const payoutHistoryList = getField('payoutHistoryList');
-                if (payoutHistoryList) {
-                    payoutHistoryList.innerHTML = historyHtml || '<div class="empty-state text-center py-4 text-gray-400">No payout requests yet</div>';
-                }
-                
-                window.currentAvailableBalance = availableBalance;
-                
-                const debugInfo = getField('debugInfo');
-                if (debugInfo) {
-                    debugInfo.innerHTML = `<details class="text-xs cursor-pointer"><summary class="hover:text-orange-500 transition">🔍 Calculation Details</summary><div class="mt-2 space-y-1 text-gray-300">
-                        Total bookings: <span class="text-orange-500">${eligibleBookings.length}</span><br>
-                        Total revenue: <span class="text-green-500">EGP ${totalRevenue.toFixed(2)}</span><br>
-                        Commission (10%): <span class="text-red-500">-EGP ${commission.toFixed(2)}</span><br>
-                        Net earnings: <span class="text-blue-500">EGP ${netEarnings.toFixed(2)}</span><br>
-                        Completed payouts: <span class="text-gray-400">-EGP ${completedPayouts.toFixed(2)}</span><br>
-                        Pending requests: <span class="text-amber-500">-EGP ${pendingPayouts.toFixed(2)}</span><br>
-                        <strong class="text-orange-500">Available: EGP ${availableBalance.toFixed(2)}</strong>
-                    </div></details>`;
-                }
-            }
-
-            const payoutForm = getField('payoutForm');
-            if (payoutForm) {
-                payoutForm.onsubmit = async (e) => {
-                    e.preventDefault();
-                    try {
-                        const method = getField('payoutMethodSelect')?.value || 'wallet';
-                        const data = {
-                            name: getField('payoutName')?.value || '',
-                            accountNumber: getField('accountNumber')?.value || '',
-                            method: method,
-                            updatedAt: Date.now()
-                        };
-                        if (method === 'bankAccount') {
-                            data.bankName = getField('bankName')?.value || '';
-                            data.branchName = getField('branchName')?.value || '';
-                        }
-                        await db.ref(`egy_user/${currentUser.uid}/payout_method`).set(data);
-                        showToast('✅ Payout method saved');
-                    } catch (error) {
-                        console.error('Save payout error:', error);
-                        showToast('Failed to save: ' + error.message, 'error');
-                    }
-                };
-            }
-
-            const payoutMethodSelect = getField('payoutMethodSelect');
-            if (payoutMethodSelect) {
-                payoutMethodSelect.onchange = function() {
-                    const bankFields = getField('bankFields');
-                    if (bankFields) bankFields.style.display = this.value === 'bankAccount' ? 'block' : 'none';
-                };
-            }
-
-            const requestPayoutBtn = getField('requestPayoutBtn');
-            if (requestPayoutBtn) {
-                requestPayoutBtn.onclick = async () => {
-                    const available = window.currentAvailableBalance || 0;
-                    if (available <= 0) { showToast('No withdrawable balance available', 'error'); return; }
-                    
-                    try {
-                        const snap = await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).once('value');
-                        let hasPending = false;
-                        snap.forEach(child => { if (child.val()?.status === 'pending') hasPending = true; });
-                        
-                        if (hasPending) { showToast('You already have a pending withdrawal request', 'error'); return; }
-                        
-                        if (confirm(`Request payout of ${available.toFixed(2)} EGP?`)) {
-                            await db.ref(`egy_user/${currentUser.uid}/payout_method/payoutRequests`).push({
-                                amount: available.toFixed(2), status: 'pending', createdAt: Date.now()
-                            });
-                            showToast('✅ Withdrawal request submitted!');
-                            await calculateAndDisplayBalance();
-                        }
-                    } catch (error) {
-                        console.error('Payout request error:', error);
-                        showToast('Failed: ' + error.message, 'error');
-                    }
-                };
-            }
-
-            const refreshBalanceBtn = getField('refreshBalanceBtn');
-            if (refreshBalanceBtn) {
-                refreshBalanceBtn.onclick = () => { calculateAndDisplayBalance(); showToast('🔄 Balance refreshed'); };
-            }
-
-            // ==================== EXPORT FUNCTIONS ====================
             window.openExportModal = () => { openSheet('export-modal', 'export-overlay'); };
             window.closeExportModal = () => { closeSheet('export-modal', 'export-overlay'); };
+            const confirmExportBtn = getField('confirmExportBtn'); if (confirmExportBtn) { confirmExportBtn.onclick = async () => { closeExportModal(); showToast('🔄 Generating...'); try { const exportAll = getField('exportAllBtn')?.classList.contains('active') ?? true; const selectedColumns = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked')).map(cb => cb.value); let dataToExport = exportAll ? allReservations : filteredReservations; if (dataToExport.length === 0) { showToast('No data', 'error'); return; } const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Reservations'); const columnHeaders = { refNumber: 'Reference #', username: 'Customer Name', phone: 'Phone', email: 'Email', tour: 'Trip Name', tripDate: 'Trip Date', adults: 'Adults', childrenUnder12: 'Children', infants: 'Infants', netTotal: 'Amount (EGP)', paymentStatus: 'Payment Status', status: 'Booking Status', pickuptime: 'Pickup Time', hotelName: 'Hotel Name', roomNumber: 'Room Number', specialRequests: 'Special Requests' }; worksheet.columns = selectedColumns.map(col => ({ header: columnHeaders[col] || col, key: col, width: 20 })); const headerRow = worksheet.getRow(1); headerRow.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } }; cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; cell.alignment = { horizontal: 'center', vertical: 'middle' }; }); dataToExport.forEach(booking => { const row = {}; selectedColumns.forEach(col => { if (col === 'netTotal') row[col] = booking[col] || 0; else if (col === 'paymentStatus') row[col] = booking.isPaid ? 'Paid' : 'Unpaid'; else if (col === 'status') row[col] = booking.status || 'new'; else row[col] = booking[col] || '-'; }); worksheet.addRow(row); }); const buffer = await workbook.xlsx.writeBuffer(); const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); saveAs(blob, `reservations_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`); showToast('✅ Exported!'); } catch (error) { showToast('Export failed', 'error'); } }; }
+            ['exportAllBtn', 'exportFilteredBtn'].forEach(btnId => { const btn = getField(btnId); if (btn) { btn.onclick = function() { this.classList.add('active'); const other = btnId === 'exportAllBtn' ? 'exportFilteredBtn' : 'exportAllBtn'; getField(other)?.classList.remove('active'); }; } });
 
-            const confirmExportBtn = getField('confirmExportBtn');
-            if (confirmExportBtn) {
-                confirmExportBtn.onclick = async () => {
-                    closeExportModal();
-                    showToast('🔄 Generating Excel file...');
-                    
-                    try {
-                        const exportAllBtn = getField('exportAllBtn');
-                        const exportAll = exportAllBtn?.classList.contains('active') ?? true;
-                        
-                        const selectedColumns = Array.from(document.querySelectorAll('#export-modal input[type="checkbox"]:checked'))
-                            .map(cb => cb.value);
-                        
-                        let dataToExport = exportAll ? allReservations : filteredReservations;
-                        
-                        if (dataToExport.length === 0) { showToast('No data to export', 'error'); return; }
-                        
-                        const workbook = new ExcelJS.Workbook();
-                        const worksheet = workbook.addWorksheet('Reservations');
-                        
-                        const columnHeaders = {
-                            refNumber: 'Reference #', username: 'Customer Name', phone: 'Phone', email: 'Email',
-                            tour: 'Trip Name', tripDate: 'Trip Date', adults: 'Adults', childrenUnder12: 'Children',
-                            infants: 'Infants', netTotal: 'Amount (EGP)', paymentStatus: 'Payment Status',
-                            status: 'Booking Status', pickuptime: 'Pickup Time', hotelName: 'Hotel Name',
-                            roomNumber: 'Room Number', specialRequests: 'Special Requests'
-                        };
-                        
-                        worksheet.columns = selectedColumns.map(col => ({ 
-                            header: columnHeaders[col] || col, key: col, width: 20 
-                        }));
-                        
-                        const headerRow = worksheet.getRow(1);
-                        headerRow.eachCell(cell => {
-                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } };
-                            cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-                            cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                        });
-                        
-                        dataToExport.forEach(booking => {
-                            const row = {};
-                            selectedColumns.forEach(col => {
-                                if (col === 'netTotal') row[col] = booking[col] || 0;
-                                else if (col === 'paymentStatus') row[col] = booking.isPaid ? 'Paid' : 'Unpaid';
-                                else if (col === 'status') row[col] = booking.status || 'new';
-                                else row[col] = booking[col] || '-';
-                            });
-                            worksheet.addRow(row);
-                        });
-                        
-                        const buffer = await workbook.xlsx.writeBuffer();
-                        const blob = new Blob([buffer], { 
-                            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-                        });
-                        saveAs(blob, `reservations_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`);
-                        
-                        showToast('✅ Export completed!');
-                    } catch (error) {
-                        console.error('Export error:', error);
-                        showToast('Export failed: ' + error.message, 'error');
-                    }
-                };
-            }
+            async function updateDashboard() { try { const ts = await db.ref('trips').once('value'); let rev = 0, guests = 0; allReservations.forEach(r => { rev += (parseFloat(r.netTotal) || 0); guests += (r.adults || 0) + (r.childrenUnder12 || 0); }); safeSetInnerText('totalTripsStat', ts.numChildren() || 0); safeSetInnerText('totalBookingsStat', allReservations.length); safeSetInnerText('totalGuestsStat', guests); safeSetInnerText('totalRevenueStat', `EGP ${rev.toFixed(0)}`); renderCharts(); } catch (error) { console.error('Dashboard error:', error); } }
+            function renderCharts() { const statusCtx = document.getElementById('statusChart'); if (statusCtx) { const counts = { new: 0, confirmed: 0, cancelled: 0 }; allReservations.forEach(r => { const s = r.status || 'new'; counts[s] = (counts[s] || 0) + 1; }); if (statusChart) statusChart.destroy(); statusChart = new Chart(statusCtx, { type: 'doughnut', data: { labels: ['New', 'Confirmed', 'Cancelled'], datasets: [{ data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 20 } } } } }); } const guestCtx = document.getElementById('guestChart'); if (guestCtx) { const adults = allReservations.reduce((a, b) => a + (b.adults || 0), 0); const children = allReservations.reduce((a, b) => a + (b.childrenUnder12 || 0), 0); if (guestChart) guestChart.destroy(); guestChart = new Chart(guestCtx, { type: 'bar', data: { labels: ['Adults', 'Children'], datasets: [{ label: 'Total Guests', data: [adults, children], backgroundColor: ['#3b82f6', '#8b5cf6'], borderRadius: 8, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } } }); } const trendCtx = document.getElementById('trendChart'); if (trendCtx) { if (trendChart) trendChart.destroy(); const now = new Date(); const labels = [], counts = []; for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); labels.push(d.toLocaleString('en-US', { month: 'short' })); const m = d.getMonth(), y = d.getFullYear(); let c = 0; allReservations.forEach(r => { const dateVal = r.createdAt || r.tripDate; if (dateVal) { const rDate = new Date(dateVal); if (rDate.getMonth() === m && rDate.getFullYear() === y) c++; } }); counts.push(c); } trendChart = new Chart(trendCtx, { type: 'line', data: { labels, datasets: [{ label: 'Monthly Bookings', data: counts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#f97316', pointBorderColor: '#1e1e1e', pointHoverRadius: 7, pointRadius: 5, borderWidth: 3 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } } }); } const revenueCtx = document.getElementById('revenueChart'); if (revenueCtx) { if (revenueChart) revenueChart.destroy(); const now = new Date(); const labels = [], data = []; for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); labels.push(d.toLocaleString('en-US', { month: 'short' })); const m = d.getMonth(), y = d.getFullYear(); let rev = 0; allReservations.forEach(r => { if (r.isPaid && r.netTotal) { const dateVal = r.createdAt || r.tripDate; if (dateVal) { const rDate = new Date(dateVal); if (rDate.getMonth() === m && rDate.getFullYear() === y) rev += parseFloat(r.netTotal); } } }); data.push(rev); } revenueChart = new Chart(revenueCtx, { type: 'bar', data: { labels, datasets: [{ label: 'Revenue (EGP)', data, backgroundColor: '#f97316', borderRadius: 8, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', callback: v => `EGP ${v.toLocaleString()}` } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } } }); } }
 
-            ['exportAllBtn', 'exportFilteredBtn'].forEach(btnId => {
-                const btn = getField(btnId);
-                if (btn) {
-                    btn.onclick = function() {
-                        this.classList.add('active');
-                        const other = btnId === 'exportAllBtn' ? 'exportFilteredBtn' : 'exportAllBtn';
-                        getField(other)?.classList.remove('active');
-                    };
-                }
-            });
+            function switchSection(section) { document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); const activeSection = getField(`${section}-section`); if (activeSection) activeSection.classList.add('active'); document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active')); document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active')); const desktopTitle = getField('desktop-title'); if (desktopTitle) { const titles = { 'dashboard': 'Dashboard', 'trips': 'Trips', 'reservations': 'Reservations', 'payout': 'Payouts', 'analytics': 'Analytics' }; desktopTitle.innerText = titles[section] || 'Dashboard'; } if (section === 'analytics') renderCharts(); if (window.innerWidth < 1024) { const sidebar = getField('sidebar'); if (sidebar) sidebar.classList.remove('open'); } const fab = getField('fabBtn'); if (fab) { fab.style.display = 'none'; fab.onclick = null; if (section === 'trips') { fab.style.display = 'flex'; fab.style.background = 'var(--accent-gradient)'; fab.innerHTML = '<i class="fas fa-plus"></i>'; fab.onclick = window.openAddTripModal; } } }
+            document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el => { el.addEventListener('click', () => { const section = el.getAttribute('data-section'); if (section) switchSection(section); }); });
 
-            // ==================== DASHBOARD & CHARTS ====================
-            async function updateDashboard() {
-                try {
-                    const ts = await db.ref('trips').once('value');
-                    let rev = 0, guests = 0;
-                    
-                    allReservations.forEach(r => {
-                        rev += (parseFloat(r.netTotal) || 0);
-                        guests += (r.adults || 0) + (r.childrenUnder12 || 0);
-                    });
-                    
-                    safeSetInnerText('totalTripsStat', ts.numChildren() || 0);
-                    safeSetInnerText('totalBookingsStat', allReservations.length);
-                    safeSetInnerText('totalGuestsStat', guests);
-                    safeSetInnerText('totalRevenueStat', `EGP ${rev.toFixed(0)}`);
-                    
-                    renderCharts();
-                } catch (error) {
-                    console.error('Dashboard update error:', error);
-                }
-            }
-
-            function renderCharts() {
-                const statusCtx = document.getElementById('statusChart');
-                if (statusCtx) {
-                    const counts = { new: 0, confirmed: 0, cancelled: 0 };
-                    allReservations.forEach(r => { const s = r.status || 'new'; counts[s] = (counts[s] || 0) + 1; });
-                    if (statusChart) statusChart.destroy();
-                    statusChart = new Chart(statusCtx, {
-                        type: 'doughnut',
-                        data: { labels: ['New', 'Confirmed', 'Cancelled'], datasets: [{ data: [counts.new || 0, counts.confirmed || 0, counts.cancelled || 0], backgroundColor: ['#fbbf24', '#22c55e', '#ef4444'], borderWidth: 0 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 20 } } } }
-                    });
-                }
-
-                const guestCtx = document.getElementById('guestChart');
-                if (guestCtx) {
-                    const adults = allReservations.reduce((a, b) => a + (b.adults || 0), 0);
-                    const children = allReservations.reduce((a, b) => a + (b.childrenUnder12 || 0), 0);
-                    if (guestChart) guestChart.destroy();
-                    guestChart = new Chart(guestCtx, {
-                        type: 'bar',
-                        data: { labels: ['Adults', 'Children'], datasets: [{ label: 'Total Guests', data: [adults, children], backgroundColor: ['#3b82f6', '#8b5cf6'], borderRadius: 8, borderWidth: 0 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1' } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
-                    });
-                }
-
-                const trendCtx = document.getElementById('trendChart');
-                if (trendCtx) {
-                    if (trendChart) trendChart.destroy();
-                    const now = new Date();
-                    const labels = [], counts = [];
-                    for (let i = 5; i >= 0; i--) {
-                        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                        labels.push(d.toLocaleString('en-US', { month: 'short' }));
-                        const m = d.getMonth(), y = d.getFullYear();
-                        let c = 0;
-                        allReservations.forEach(r => {
-                            const dateVal = r.createdAt || r.tripDate;
-                            if (dateVal) {
-                                const rDate = new Date(dateVal);
-                                if (rDate.getMonth() === m && rDate.getFullYear() === y) c++;
-                            }
-                        });
-                        counts.push(c);
-                    }
-                    trendChart = new Chart(trendCtx, {
-                        type: 'line',
-                        data: { labels, datasets: [{ label: 'Monthly Bookings', data: counts, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#f97316', pointBorderColor: '#1e1e1e', pointHoverRadius: 7, pointRadius: 5, borderWidth: 3 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
-                    });
-                }
-
-                const revenueCtx = document.getElementById('revenueChart');
-                if (revenueCtx) {
-                    if (revenueChart) revenueChart.destroy();
-                    const now = new Date();
-                    const labels = [], data = [];
-                    for (let i = 5; i >= 0; i--) {
-                        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                        labels.push(d.toLocaleString('en-US', { month: 'short' }));
-                        const m = d.getMonth(), y = d.getFullYear();
-                        let rev = 0;
-                        allReservations.forEach(r => {
-                            if (r.isPaid && r.netTotal) {
-                                const dateVal = r.createdAt || r.tripDate;
-                                if (dateVal) {
-                                    const rDate = new Date(dateVal);
-                                    if (rDate.getMonth() === m && rDate.getFullYear() === y) rev += parseFloat(r.netTotal);
-                                }
-                            }
-                        });
-                        data.push(rev);
-                    }
-                    revenueChart = new Chart(revenueCtx, {
-                        type: 'bar',
-                        data: { labels, datasets: [{ label: 'Revenue (EGP)', data, backgroundColor: '#f97316', borderRadius: 8, borderWidth: 0 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#cbd5e1', callback: v => `EGP ${v.toLocaleString()}` } }, x: { grid: { display: false }, ticks: { color: '#cbd5e1' } } } }
-                    });
-                }
-            }
-
-            // ==================== SECTION SWITCHING ====================
-            function switchSection(section) {
-                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                const activeSection = getField(`${section}-section`);
-                if (activeSection) activeSection.classList.add('active');
-                
-                document.querySelectorAll('.sidebar-link, .nav-item').forEach(l => l.classList.remove('active'));
-                document.querySelectorAll(`[data-section="${section}"]`).forEach(l => l.classList.add('active'));
-                
-                const desktopTitle = getField('desktop-title');
-                if (desktopTitle) {
-                    const titles = { 'dashboard': 'Dashboard Overview', 'trips': 'Manage Trips', 'reservations': 'Reservations', 'payout': 'Payouts & Wallet', 'analytics': 'Analytics' };
-                    desktopTitle.innerText = titles[section] || 'Dashboard';
-                }
-                
-                if (section === 'analytics') renderCharts();
-                
-                if (window.innerWidth < 1024) {
-                    const sidebar = getField('sidebar');
-                    if (sidebar) sidebar.classList.remove('open');
-                }
-
-                const fab = getField('fabBtn');
-                if (fab) {
-                    fab.style.display = 'none';
-                    fab.onclick = null;
-                    if (section === 'trips') {
-                        fab.style.display = 'flex';
-                        fab.style.background = 'var(--accent-gradient)';
-                        fab.style.boxShadow = '0 8px 24px rgba(249,115,22,0.4)';
-                        fab.innerHTML = '<i class="fas fa-plus"></i>';
-                        fab.onclick = window.openAddTripModal;
-                    }
-                }
-            }
-
-            document.querySelectorAll('.sidebar-link[data-section], .nav-item[data-section]').forEach(el => {
-                el.addEventListener('click', () => {
-                    const section = el.getAttribute('data-section');
-                    if (section) switchSection(section);
-                });
-            });
-
-            // ==================== MODAL FUNCTIONS ====================
             function openModal() { openSheet('item-modal'); }
             function closeModal() { closeSheet('item-modal'); }
             function closeDeleteModal() { closeSheet('delete-modal', 'delete-overlay'); pendingDeleteId = null; }
+            function openSheet(sId, oId = 'modal-overlay') { const sheet = getField(sId); const overlay = getField(oId); if (sheet) sheet.classList.add('open'); if (overlay) overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+            function closeSheet(sId, oId = 'modal-overlay') { const sheet = getField(sId); const overlay = getField(oId); if (sheet) sheet.classList.remove('open'); if (overlay) overlay.classList.remove('open'); document.body.style.overflow = ''; }
 
-            function openSheet(sId, oId = 'modal-overlay') {
-                const sheet = getField(sId);
-                const overlay = getField(oId);
-                if (sheet) sheet.classList.add('open');
-                if (overlay) overlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            }
-
-            function closeSheet(sId, oId = 'modal-overlay') {
-                const sheet = getField(sId);
-                const overlay = getField(oId);
-                if (sheet) sheet.classList.remove('open');
-                if (overlay) overlay.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-
-            // ==================== AUTH STATE LISTENER ====================
             auth.onAuthStateChanged(async user => {
-                if (user) {
-                    currentUser = user;
-                    
-                    const loginPage = getField('login-page');
-                    const adminPanel = getField('admin-panel');
-                    if (loginPage) loginPage.style.display = 'none';
-                    if (adminPanel) adminPanel.classList.add('visible');
-                    
-                    const init = user.email?.charAt(0).toUpperCase() || 'U';
-                    ['user-avatar-mobile', 'user-avatar-desktop'].forEach(id => {
-                        const el = getField(id);
-                        if (el) el.innerText = init;
-                    });
-                    
-                    const emailSidebar = getField('user-email-sidebar');
-                    const nameDesktop = getField('user-name-desktop');
-                    if (emailSidebar) emailSidebar.innerText = user.email;
-                    if (nameDesktop) nameDesktop.innerText = user.displayName || user.email?.split('@')[0] || 'User';
-                    
-                    try {
-                        const userSnap = await db.ref(`egy_user/${user.uid}`).once('value');
-                        currentUserRole = userSnap.val()?.role || 'user';
-                    } catch (error) {
-                        console.warn('Role load error:', error);
-                        currentUserRole = 'user';
-                    }
-                    
-                    await Promise.all([
-                        loadAllData(), loadReservations(), loadPayoutMethod(),
-                        calculateAndDisplayBalance(), updateDashboard()
-                    ]);
-                    
-                    switchSection('dashboard');
-                    
-                    const refreshInterval = setInterval(() => {
-                        if (auth.currentUser) {
-                            loadReservations(); updateDashboard(); calculateAndDisplayBalance();
-                        }
-                    }, 30000);
-                    
-                    window.authRefreshInterval = refreshInterval;
-                    
-                } else {
-                    currentUser = null;
-                    currentUserRole = 'user';
-                    
-                    const loginPage = getField('login-page');
-                    const adminPanel = getField('admin-panel');
-                    if (loginPage) loginPage.style.display = 'flex';
-                    if (adminPanel) adminPanel.classList.remove('visible');
-                    
-                    if (window.authRefreshInterval) clearInterval(window.authRefreshInterval);
-                }
-            });
+                if (user) { currentUser = user; const loginPage = getField('login-page'); const adminPanel = getField('admin-panel'); if (loginPage) loginPage.style.display = 'none'; if (adminPanel) adminPanel.classList.add('visible'); const init = user.email?.charAt(0).toUpperCase() || 'U'; ['user-avatar-mobile', 'user-avatar-desktop'].forEach(id => { const el = getField(id); if (el) el.innerText = init; }); const emailSidebar = getField('user-email-sidebar'); const nameDesktop = getField('user-name-desktop'); if (emailSidebar) emailSidebar.innerText = user.email; if (nameDesktop) nameDesktop.innerText = user.displayName || user.email?.split('@')[0] || 'User'; try { const userSnap = await db.ref(`egy_user/${user.uid}`).once('value'); currentUserRole = userSnap.val()?.role || 'user'; } catch (error) { currentUserRole = 'user'; } await Promise.all([loadAllData(), loadReservations(), loadPayoutMethod(), calculateAndDisplayBalance(), updateDashboard()]); switchSection('dashboard'); window.authRefreshInterval = setInterval(() => { if (auth.currentUser) { loadReservations(); updateDashboard(); calculateAndDisplayBalance(); } }, 30000); } else { currentUser = null; currentUserRole = 'user'; const loginPage = getField('login-page'); const adminPanel = getField('admin-panel'); if (loginPage) loginPage.style.display = 'flex'; if (adminPanel) adminPanel.classList.remove('visible'); if (window.authRefreshInterval) clearInterval(window.authRefreshInterval); } });
 
-            // ==================== LOGOUT ====================
-            ['logout-sidebar', 'desktopLogout'].forEach(id => {
-                const btn = getField(id);
-                if (btn) {
-                    btn.addEventListener('click', () => {
-                        auth.signOut().then(() => showToast('👋 Logged out successfully'))
-                            .catch(err => console.error('Logout error:', err));
-                    });
-                }
-            });
-
-            // ==================== UI TOGGLES ====================
-            const menuToggle = getField('menuToggle');
-            if (menuToggle) {
-                menuToggle.addEventListener('click', () => {
-                    const sidebar = getField('sidebar');
-                    if (sidebar) sidebar.classList.toggle('open');
-                });
-            }
-
-            // ==================== FORM SUBMIT BINDING ====================
-            const tripFormElement = getField('item-form');
-            if (tripFormElement) tripFormElement.onsubmit = saveTrip;
-
-            // ==================== FLATPICKR INITIALIZATION ====================
-            if (typeof flatpickr !== 'undefined') {
-                flatpickr("#pickupTimeInput", {
-                    enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true
-                });
-            }
-
-            // ==================== GLOBAL ERROR HANDLING ====================
-            window.onerror = function(msg, src, line, col, err) {
-                console.error('💥 Global error:', { msg, src, line, col, err });
-                return false;
-            };
-
-            // ==================== INITIALIZATION ====================
+            ['logout-sidebar', 'desktopLogout'].forEach(id => { const btn = getField(id); if (btn) { btn.addEventListener('click', () => { auth.signOut().then(() => showToast('👋 Logged out')).catch(err => console.error(err)); }); } });
+            const menuToggle = getField('menuToggle'); if (menuToggle) { menuToggle.addEventListener('click', () => { const sidebar = getField('sidebar'); if (sidebar) sidebar.classList.toggle('open'); }); }
+            const tripFormElement = getField('item-form'); if (tripFormElement) tripFormElement.onsubmit = saveTrip;
+            if (typeof flatpickr !== 'undefined') { flatpickr("#pickupTimeInput", { enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true }); }
+            window.onerror = function(msg, src, line, col, err) { console.error('💥 Global error:', { msg, src, line, col, err }); return false; };
             initDarkMode();
-            console.log('✅ Discover Sharm Admin Dashboard initialized!');
+            console.log('✅ Dashboard initialized!');
 
-            // ==================== EXPOSE GLOBAL FUNCTIONS ====================
-            window.setTripFilter = setTripFilter;
-            window.editTrip = editTrip;
-            window.deleteTripPrompt = deleteTripPrompt;
-            window.approveTrip = approveTrip;
-            window.openAddTripModal = openAddTripModal;
-            window.saveTrip = saveTrip;
-            window.markAsPaid = markAsPaid;
-            window.confirmBookingWithPickup = confirmBookingWithPickup;
-            window.switchReservationTab = switchReservationTab;
-            window.refreshReservations = refreshReservations;
-            window.showBookingDetails = showBookingDetails;
-            window.closeBookingModal = closeBookingModal;
-            window.openExportModal = openExportModal;
-            window.closeExportModal = closeExportModal;
-            window.openModal = openModal;
-            window.closeModal = closeModal;
-            window.closeDeleteModal = closeDeleteModal;
-            window.closePickupModal = closePickupModal;
-            
-        }); // End DOMContentLoaded
+            window.setTripFilter = setTripFilter; window.editTrip = editTrip; window.deleteTripPrompt = deleteTripPrompt; window.approveTrip = approveTrip; window.openAddTripModal = openAddTripModal; window.saveTrip = saveTrip;
+            window.markAsPaid = markAsPaid; window.confirmBookingWithPickup = confirmBookingWithPickup; window.switchReservationTab = switchReservationTab; window.refreshReservations = refreshReservations; window.showBookingDetails = showBookingDetails; window.closeBookingModal = closeBookingModal;
+            window.openExportModal = openExportModal; window.closeExportModal = closeExportModal;
+            window.openModal = openModal; window.closeModal = closeModal; window.closeDeleteModal = closeDeleteModal; window.closePickupModal = closePickupModal;
+        });
     </script>
 </body>
 </html>
