@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Discover Sharm | Receipt Generator</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
+                        dark: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        :root {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252525;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #333333;
+            --input-bg: #2a2a2a;
+            --input-border: #3a3a3a;
+            --accent-gradient: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 14px;
+            font-size: 15px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23f97316' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249,115,22,0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #f97316;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f97316;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #252525 0%, #1e1e1e 100%);
+        }
+
+        .login-card {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid var(--border-color);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 14px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249,115,22,0.4);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .trip-price-display {
+            background: #f97316;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            border-top-color: #f97316;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #252525, #1a1a1a);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 40px;
+            z-index: 3000;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        /* ============ RECEIPT PRINT STYLES ============ */
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-print-area, #receipt-print-area * { visibility: visible; }
+            #receipt-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80mm;
+                margin: 0;
+                padding: 0;
+                background: #000000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            @page {
+                size: 80mm 297mm;
+                margin: 0;
+                background: #000000;
+            }
+        }
+
+        .receipt-container {
+            width: 80mm;
+            max-width: 80mm;
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            padding: 5mm 4mm;
+            box-sizing: border-box;
+            display: none;
+            font-size: 12px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .receipt-container * {
+            font-weight: 600;
+        }
+
+        .receipt-logo {
+            text-align: center;
+            margin-bottom: 5mm;
+            padding: 3mm;
+            background: #111111;
+            border-radius: 2mm;
+            border: 1px solid #333333;
+        }
+
+        .receipt-logo img {
+            width: 55mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 2px 4px rgba(255,255,255,0.3));
+            background: rgba(255,255,255,0.05);
+            padding: 2mm;
+            border-radius: 2mm;
+        }
+
+        .receipt-title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            margin: 3mm 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #f97316 !important;
+        }
+
+        .receipt-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #cccccc !important;
+            margin-bottom: 4mm;
+            font-weight: 600;
+        }
+
+        .receipt-divider {
+            border-top: 2px dashed #444444;
+            margin: 3mm 0;
+        }
+
+        .receipt-divider-thin {
+            border-top: 1px solid #333333;
+            margin: 2mm 0;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin: 2mm 0;
+            color: #ffffff !important;
+        }
+
+        .receipt-label {
+            font-weight: 700;
+            min-width: 35%;
+            font-size: 12px;
+            color: #cccccc !important;
+        }
+
+        .receipt-value {
+            text-align: right;
+            word-break: break-word;
+            font-size: 12px;
+            max-width: 63%;
+            color: #ffffff !important;
+            font-weight: 700;
+        }
+
+        .receipt-ref-box {
+            text-align: center;
+            background: #1a1a1a;
+            padding: 3mm;
+            border-radius: 2mm;
+            border: 1px solid #444444;
+            margin: 3mm 0;
+        }
+
+        .receipt-ref-label {
+            font-size: 10px;
+            color: #888888 !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1mm;
+        }
+
+        .receipt-ref-number {
+            font-size: 16px;
+            font-weight: 900;
+            color: #f97316 !important;
+            letter-spacing: 2px;
+        }
+
+        .receipt-total-box {
+            background: #f97316;
+            color: #000000 !important;
+            font-size: 18px;
+            font-weight: 900;
+            text-align: center;
+            margin: 3mm 0;
+            padding: 3mm;
+            border-radius: 2mm;
+            border: 2px solid #ff8c42;
+        }
+
+        .receipt-total-box * {
+            color: #000000 !important;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #aaaaaa !important;
+            margin-top: 4mm;
+            line-height: 1.5;
+            font-weight: 600;
+            padding: 3mm;
+            background: #111111;
+            border-radius: 2mm;
+            border: 1px solid #333333;
+        }
+
+        .receipt-footer strong {
+            color: #f97316 !important;
+            font-size: 11px;
+        }
+
+        .receipt-stamp {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            color: #f97316 !important;
+            margin: 3mm 0;
+            border: 3px solid #f97316;
+            padding: 2mm;
+            border-radius: 3mm;
+            background: #1a1a1a;
+        }
+
+        .receipt-section-title {
+            font-size: 13px;
+            font-weight: 900;
+            margin: 3mm 0 2mm 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: #1a1a1a;
+            padding: 2mm;
+            color: #f97316 !important;
+            border-radius: 1mm;
+            border: 1px solid #333333;
+        }
+
+        .receipt-contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1mm;
+            margin: 1mm 0;
+            color: #cccccc !important;
+            font-size: 10px;
+        }
+
+        .receipt-highlight {
+            font-weight: 900;
+            font-size: 13px;
+            color: #ffffff !important;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="dark">
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-receipt text-3xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold">Receipt Generator</h1>
+                <p class="text-gray-400 mt-2">Sign in to create receipts</p>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" id="loginEmail" required class="login-input mb-3" placeholder="Email Address">
+                <input type="password" id="loginPassword" required class="login-input mb-4" placeholder="Password">
+                <div id="loginError" class="hidden bg-red-500/20 text-red-400 p-3 rounded-lg text-sm mb-3"></div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Receipt Print Area -->
+        <div id="receipt-print-area" class="receipt-container"></div>
+        
+        <!-- Toast -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Preview Modal -->
+        <div id="previewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; overflow-y:auto; padding:20px;">
+            <div style="max-width:500px; margin:0 auto; background:#111; border-radius:16px; padding:20px; border:1px solid #333;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-orange-500">📋 Receipt Preview</h3>
+                    <button onclick="closePreview()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+                <div id="previewContent" style="background:#000; padding:15px; border-radius:8px; max-height:70vh; overflow-y:auto;"></div>
+                <div class="flex gap-3 mt-4">
+                    <button onclick="closePreview()" class="flex-1 py-3 border border-gray-600 rounded-xl text-gray-300">Close</button>
+                    <button onclick="printFromPreview()" class="flex-1 btn-primary">🖨️ Print Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Header -->
+            <div class="header-bar">
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+                        🧾 Receipt Generator
+                    </h1>
+                    <p class="text-gray-500 text-sm">Create and print booking receipts</p>
+                </div>
+                <div class="user-info">
+                    <span id="userNameDisplay" class="text-sm text-gray-400"></span>
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300 transition" title="Logout">
+                        <i class="fas fa-sign-out-alt text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card">
+                <form id="receiptForm">
+                    <!-- Reference & Date -->
+                    <div class="section-title">📋 Booking Information</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Reference Number</label>
+                            <input type="text" id="refNumber" class="input-field" placeholder="Auto-generated" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Booking Date</label>
+                            <input type="date" id="bookingDate" class="input-field">
+                        </div>
+                    </div>
+
+                    <!-- Trip Selection -->
+                    <div class="section-title">🚀 Select Trip</div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2 text-gray-300">Choose Trip *</label>
+                        <select id="tripSelect" class="input-field" required onchange="onTripSelect()">
+                            <option value="">-- Select a trip --</option>
+                        </select>
+                        <div id="tripPriceDisplay" class="trip-price-display hidden mt-3">
+                            💰 Price: EGP <span id="tripPriceValue">0</span>
+                        </div>
+                        <div id="tripDetailsDisplay" class="hidden mt-3 p-3 bg-slate-800/50 rounded-xl text-sm text-gray-400">
+                            <span id="tripDuration"></span>
+                        </div>
+                    </div>
+
+                    <!-- Guest Details -->
+                    <div class="section-title">👤 Guest Details</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Guest Name *</label>
+                            <input type="text" id="guestName" class="input-field" placeholder="Full name" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Phone Number *</label>
+                            <input type="tel" id="guestPhone" class="input-field" placeholder="e.g., +20 123 456 7890" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
+                            <input type="email" id="guestEmail" class="input-field" placeholder="email@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Hotel Name</label>
+                            <input type="text" id="hotelName" class="input-field" placeholder="Hotel name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Room Number</label>
+                            <input type="text" id="roomNumber" class="input-field" placeholder="Room #">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Trip Date *</label>
+                            <input type="date" id="tripDate" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Pickup Time</label>
+                            <input type="time" id="pickupTime" class="input-field">
+                        </div>
+                    </div>
+
+                    <!-- Guests Count -->
+                    <div class="section-title">👥 Number of Guests</div>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Adults</label>
+                            <input type="number" id="adults" class="input-field" value="1" min="0" onchange="calculateTotal()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Children (6-12)</label>
+                            <input type="number" id="children" class="input-field" value="0" min="0" onchange="calculateTotal()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Infants (0-5)</label>
+                            <input type="number" id="infants" class="input-field" value="0" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="section-title">💰 Payment Details</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Total Amount (EGP) *</label>
+                            <input type="number" id="totalAmount" class="input-field" placeholder="0.00" step="0.01" required readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Payment Status</label>
+                            <select id="paymentStatus" class="input-field">
+                                <option value="paid">✅ Paid</option>
+                                <option value="unpaid">⚠️ Unpaid</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Booking Status</label>
+                            <select id="bookingStatus" class="input-field">
+                                <option value="confirmed">Confirmed</option>
+                                <option value="new">New</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Extra Services -->
+                    <div class="section-title">✨ Extra Services</div>
+                    <div class="mb-6">
+                        <textarea id="extraServices" class="input-field" rows="2" placeholder="e.g., Diving: 500 EGP, Photo Session: 200 EGP"></textarea>
+                    </div>
+
+                    <!-- Special Requests -->
+                    <div class="section-title">📝 Special Requests / Notes</div>
+                    <div class="mb-6">
+                        <textarea id="specialRequests" class="input-field" rows="2" placeholder="Any special requests or notes..."></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-4 justify-center mt-8">
+                        <button type="button" onclick="generateAndPrint()" class="btn-primary">
+                            <i class="fas fa-print mr-2"></i> Generate & Print Receipt
+                        </button>
+                        <button type="button" onclick="previewReceipt()" class="btn-secondary">
+                            <i class="fas fa-eye mr-2"></i> Preview Receipt
+                        </button>
+                        <button type="button" onclick="saveAndPrint()" class="btn-primary">
+                            <i class="fas fa-save mr-2"></i> Save & Print
+                        </button>
+                        <button type="button" onclick="resetForm()" class="btn-secondary">
+                            <i class="fas fa-redo mr-2"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
+            authDomain: "egypt-travels.firebaseapp.com",
+            databaseURL: "https://egypt-travels-default-rtdb.firebaseio.com",
+            projectId: "egypt-travels",
+            storageBucket: "egypt-travels.appspot.com"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjyTbUXF0Efz2FeTZReEwHRwHXgJN1IregDE4rjarPmLZrRGSqGFO3DVLOWCSJNzREQvGgIo0mVI07QAoeOjVtFXwUpq3cDUAGmCKHKiTOszejAwNB_RIAtxu77ok5z2i1KZN1rAWFSCX4KlsWlxdifTS38LF2Cvh_MVdfLXOdhmJ-9YEErAZFcUUbqd6Gu=s1600';
+
+        let currentUser = null;
+        let allTrips = [];
+        let selectedTripData = null;
+
+        // ==================== TOAST ====================
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.innerText = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ==================== AUTH ====================
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            errorDiv.classList.add('hidden');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showToast('Welcome! 🎉');
+            } catch (err) {
+                errorDiv.innerText = err.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        // ==================== LOAD TRIPS ====================
+        async function loadTrips() {
+            const tripSelect = document.getElementById('tripSelect');
+            tripSelect.innerHTML = '<option value="">-- Loading trips...</option>';
+
+            try {
+                const snap = await db.ref('trips').once('value');
+                const tripsData = snap.val() || {};
+                allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
+
+                // Filter only approved trips
+                const approvedTrips = allTrips.filter(t => t.approved === true || t.approved === "true");
+
+                tripSelect.innerHTML = '<option value="">-- Select a trip --</option>';
+
+                if (approvedTrips.length === 0) {
+                    tripSelect.innerHTML += '<option value="" disabled>No approved trips available</option>';
+                } else {
+                    approvedTrips.forEach(trip => {
+                        tripSelect.innerHTML += `<option value="${trip.id}" data-name="${escapeHtml(trip.name || '')}" data-price="${trip.price || 0}" data-duration="${escapeHtml(trip.duration || '')}">${escapeHtml(trip.name || 'Unnamed')} - EGP ${parseFloat(trip.price || 0).toFixed(2)}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading trips:', error);
+                tripSelect.innerHTML = '<option value="">-- Error loading trips --</option>';
+                showToast('Failed to load trips', 'error');
+            }
+        }
+
+        function onTripSelect() {
+            const tripSelect = document.getElementById('tripSelect');
+            const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+            const tripPriceDisplay = document.getElementById('tripPriceDisplay');
+            const tripPriceValue = document.getElementById('tripPriceValue');
+            const tripDetailsDisplay = document.getElementById('tripDetailsDisplay');
+            const tripDuration = document.getElementById('tripDuration');
+
+            if (tripSelect.value && selectedOption) {
+                const price = selectedOption.getAttribute('data-price');
+                const duration = selectedOption.getAttribute('data-duration');
+                const name = selectedOption.getAttribute('data-name');
+
+                selectedTripData = {
+                    id: tripSelect.value,
+                    name: name,
+                    price: parseFloat(price) || 0,
+                    duration: duration
+                };
+
+                tripPriceValue.innerText = parseFloat(price).toFixed(2);
+                tripPriceDisplay.classList.remove('hidden');
+
+                if (duration) {
+                    tripDuration.innerText = '⏱️ ' + duration;
+                    tripDetailsDisplay.classList.remove('hidden');
+                } else {
+                    tripDetailsDisplay.classList.add('hidden');
+                }
+
+                calculateTotal();
+            } else {
+                selectedTripData = null;
+                tripPriceDisplay.classList.add('hidden');
+                tripDetailsDisplay.classList.add('hidden');
+                document.getElementById('totalAmount').value = '';
+            }
+        }
+
+        function calculateTotal() {
+            if (!selectedTripData) return;
+
+            const adults = parseInt(document.getElementById('adults').value) || 0;
+            const children = parseInt(document.getElementById('children').value) || 0;
+            const totalPeople = adults + children;
+            const total = totalPeople * selectedTripData.price;
+
+            document.getElementById('totalAmount').value = total.toFixed(2);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return map[m] || m;
+            });
+        }
+
+        function getFormData() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            return {
+                now, dateStr, timeStr,
+                refNumber: document.getElementById('refNumber').value,
+                guestName: document.getElementById('guestName').value || 'Guest',
+                guestPhone: document.getElementById('guestPhone').value || '-',
+                guestEmail: document.getElementById('guestEmail').value,
+                hotelName: document.getElementById('hotelName').value,
+                roomNumber: document.getElementById('roomNumber').value,
+                tripName: selectedTripData ? selectedTripData.name : (document.getElementById('tripSelect').options[document.getElementById('tripSelect').selectedIndex]?.getAttribute('data-name') || 'Not specified'),
+                tripDate: document.getElementById('tripDate').value || 'Not specified',
+                pickupTime: document.getElementById('pickupTime').value || 'TBD',
+                adults: document.getElementById('adults').value || 0,
+                children: document.getElementById('children').value || 0,
+                infants: document.getElementById('infants').value || 0,
+                totalAmount: parseFloat(document.getElementById('totalAmount').value) || 0,
+                paymentStatus: document.getElementById('paymentStatus').value,
+                bookingStatus: document.getElementById('bookingStatus').value,
+                extraServices: document.getElementById('extraServices').value,
+                specialRequests: document.getElementById('specialRequests').value,
+                isPaid: document.getElementById('paymentStatus').value === 'paid'
+            };
+        }
+
+        function generateReceiptHTML(data) {
+            return `
+                <div class="receipt-logo">
+                    <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; font-size:20px; font-weight:900; color:#f97316 !important; text-align:center;">🌴 DISCOVER SHARM</div>
+                </div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-title">🌟 BOOKING RECEIPT</div>
+                <div class="receipt-subtitle">${data.dateStr} - ${data.timeStr}</div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-ref-box">
+                    <div class="receipt-ref-label">Reference Number</div>
+                    <div class="receipt-ref-number">${data.refNumber}</div>
+                </div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-section-title">👤 GUEST DETAILS</div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Name:</span>
+                    <span class="receipt-value">${escapeHtml(data.guestName)}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Phone:</span>
+                    <span class="receipt-value">${escapeHtml(data.guestPhone)}</span>
+                </div>
+                ${data.guestEmail ? `
+                <div class="receipt-row">
+                    <span class="receipt-label">Email:</span>
+                    <span class="receipt-value">${escapeHtml(data.guestEmail)}</span>
+                </div>` : ''}
+                ${data.hotelName ? `
+                <div class="receipt-row">
+                    <span class="receipt-label">Hotel:</span>
+                    <span class="receipt-value">${escapeHtml(data.hotelName)}</span>
+                </div>` : ''}
+                ${data.roomNumber ? `
+                <div class="receipt-row">
+                    <span class="receipt-label">Room:</span>
+                    <span class="receipt-value">${escapeHtml(data.roomNumber)}</span>
+                </div>` : ''}
+                
+                <div class="receipt-divider-thin"></div>
+                
+                <div class="receipt-section-title">🚀 TRIP DETAILS</div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Trip:</span>
+                    <span class="receipt-value receipt-highlight">${escapeHtml(data.tripName)}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Date:</span>
+                    <span class="receipt-value">${data.tripDate}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Pickup:</span>
+                    <span class="receipt-value">${data.pickupTime}</span>
+                </div>
+                
+                <div class="receipt-divider-thin"></div>
+                
+                <div class="receipt-section-title">👥 GUESTS</div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Adults:</span>
+                    <span class="receipt-value">${data.adults}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Children:</span>
+                    <span class="receipt-value">${data.children}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Infants:</span>
+                    <span class="receipt-value">${data.infants}</span>
+                </div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-total-box">
+                    💰 TOTAL: EGP ${data.totalAmount.toFixed(2)}
+                </div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-row">
+                    <span class="receipt-label">Payment:</span>
+                    <span class="receipt-value" style="font-weight:900; color:${data.isPaid ? '#22c55e' : '#ef4444'} !important;">${data.isPaid ? '✅ PAID' : '⚠️ UNPAID'}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-label">Status:</span>
+                    <span class="receipt-value">${data.bookingStatus}</span>
+                </div>
+                
+                ${data.extraServices ? `
+                <div class="receipt-divider-thin"></div>
+                <div class="receipt-section-title">✨ EXTRA SERVICES</div>
+                <div style="font-size:11px; text-align:left; padding:0 2mm; color:#ffffff !important; font-weight:700;">${escapeHtml(data.extraServices)}</div>` : ''}
+                
+                ${data.specialRequests ? `
+                <div class="receipt-divider-thin"></div>
+                <div class="receipt-section-title">📝 NOTES</div>
+                <div style="font-size:11px; text-align:left; padding:0 2mm; color:#ffffff !important; font-weight:700;">${escapeHtml(data.specialRequests)}</div>` : ''}
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-stamp">
+                    ${data.isPaid ? '✅ PAID ✓' : '⚠️ UNPAID ✗'}
+                </div>
+                
+                <div class="receipt-divider"></div>
+                
+                <div class="receipt-footer">
+                    <strong>🌴 Discover Sharm</strong><br>
+                    <div class="receipt-contact-item">🌐 www.discover-sharm.com</div>
+                    <div class="receipt-contact-item">📞 +20 106 169 3679</div>
+                    <div class="receipt-contact-item">📧 sales@discover-sharm.com</div>
+                    <div style="margin-top:2mm; font-size:9px; color:#888888 !important;">Printed: ${data.dateStr} ${data.timeStr}</div>
+                </div>
+            `;
+        }
+
+        function doPrint(data) {
+            const receiptHTML = generateReceiptHTML(data);
+            const receiptArea = document.getElementById('receipt-print-area');
+            receiptArea.innerHTML = receiptHTML;
+            receiptArea.style.display = 'block';
+
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    receiptArea.style.display = 'none';
+                }, 500);
+            }, 300);
+        }
+
+        function generateAndPrint() {
+            const guestName = document.getElementById('guestName').value;
+            const guestPhone = document.getElementById('guestPhone').value;
+            const tripDate = document.getElementById('tripDate').value;
+            const totalAmount = document.getElementById('totalAmount').value;
+            const tripSelect = document.getElementById('tripSelect');
+
+            if (!tripSelect.value) {
+                showToast('Please select a trip', 'error');
+                return;
+            }
+            if (!guestName || !guestPhone || !tripDate || !totalAmount) {
+                showToast('Please fill in all required fields (*)', 'error');
+                return;
+            }
+
+            const data = getFormData();
+            doPrint(data);
+            showToast('🖨️ Receipt sent to printer!');
+        }
+
+        async function saveAndPrint() {
+            const guestName = document.getElementById('guestName').value;
+            const guestPhone = document.getElementById('guestPhone').value;
+            const tripDate = document.getElementById('tripDate').value;
+            const totalAmount = document.getElementById('totalAmount').value;
+            const tripSelect = document.getElementById('tripSelect');
+
+            if (!tripSelect.value) {
+                showToast('Please select a trip', 'error');
+                return;
+            }
+            if (!guestName || !guestPhone || !tripDate || !totalAmount) {
+                showToast('Please fill in all required fields (*)', 'error');
+                return;
+            }
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+
+            const data = getFormData();
+            const refNumber = data.refNumber;
+
+            try {
+                // Save to Firebase
+                const bookingData = {
+                    refNumber: refNumber,
+                    username: data.guestName,
+                    phone: data.guestPhone,
+                    email: data.guestEmail || '',
+                    hotelName: data.hotelName || '',
+                    roomNumber: data.roomNumber || '',
+                    tour: data.tripName,
+                    tripId: selectedTripData ? selectedTripData.id : '',
+                    tripDate: data.tripDate,
+                    pickuptime: data.pickupTime,
+                    adults: parseInt(data.adults) || 0,
+                    childrenUnder12: parseInt(data.children) || 0,
+                    infants: parseInt(data.infants) || 0,
+                    netTotal: data.totalAmount,
+                    total: data.totalAmount,
+                    isPaid: data.isPaid,
+                    paymentStatus: data.paymentStatus,
+                    resStatus: data.bookingStatus,
+                    status: data.bookingStatus,
+                    extraServices: data.extraServices || '',
+                    specialRequests: data.specialRequests || '',
+                    owner: currentUser.uid,
+                    uid: currentUser.uid,
+                    timestamp: Date.now(),
+                    updatedAt: Date.now(),
+                    createdAt: Date.now()
+                };
+
+                await db.ref(`trip-bookings/${refNumber}`).set(bookingData);
+                showToast('✅ Booking saved successfully!');
+                
+                // Print receipt
+                doPrint(data);
+            } catch (error) {
+                console.error('Save error:', error);
+                showToast('Failed to save booking: ' + error.message, 'error');
+            }
+        }
+
+        function previewReceipt() {
+            const guestName = document.getElementById('guestName').value;
+            if (!guestName) {
+                showToast('Please fill at least the guest name to preview', 'error');
+                return;
+            }
+
+            const data = getFormData();
+            const receiptHTML = generateReceiptHTML(data);
+            
+            document.getElementById('previewContent').innerHTML = receiptHTML;
+            document.getElementById('previewModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function printFromPreview() {
+            const data = getFormData();
+            closePreview();
+            doPrint(data);
+        }
+
+        function resetForm() {
+            if (confirm('Reset all fields?')) {
+                document.getElementById('receiptForm').reset();
+                document.getElementById('adults').value = '1';
+                document.getElementById('children').value = '0';
+                document.getElementById('infants').value = '0';
+                document.getElementById('bookingDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('tripDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('refNumber').value = 'DS-' + Date.now().toString().slice(-8);
+                document.getElementById('tripSelect').value = '';
+                
+                selectedTripData = null;
+                document.getElementById('tripPriceDisplay').classList.add('hidden');
+                document.getElementById('tripDetailsDisplay').classList.add('hidden');
+                document.getElementById('totalAmount').value = '';
+                
+                showToast('🔄 Form reset successfully');
+            }
+        }
+
+        function generateRefNumber() {
+            return 'DS-' + Date.now().toString().slice(-8) + Math.random().toString(36).substring(2, 5).toUpperCase();
+        }
+
+        // ==================== AUTH STATE LISTENER ====================
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                const init = user.email?.charAt(0).toUpperCase() || 'U';
+                document.getElementById('userAvatar').innerText = init;
+                document.getElementById('userNameDisplay').innerText = user.email;
+                
+                // Set default dates
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('bookingDate').value = today;
+                document.getElementById('tripDate').value = today;
+                document.getElementById('refNumber').value = generateRefNumber();
+                
+                // Load trips
+                await loadTrips();
+            } else {
+                currentUser = null;
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+        });
+
+        // Close preview on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePreview();
+        });
+
+        // Close preview on overlay click
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) closePreview();
+        });
+    </script>
+</body>
+</html>
