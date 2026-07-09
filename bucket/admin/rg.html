@@ -280,27 +280,32 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 80mm;
+                width: 100%;
                 margin: 0;
                 padding: 0;
                 background: #000000 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                /* Match image settings: Custom margins, A4 portrait (297mm height) */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
+            
             @page {
-                size: 80mm 297mm;
-                margin: 0;
+                size: A4 portrait;
+                margin: 12mm 10mm 12mm 10mm; /* Custom margins */
                 background: #000000;
             }
         }
 
         .receipt-container {
-            width: 80mm;
-            max-width: 80mm;
+            width: 100%;
+            max-width: 100%;
             background: #000000;
             color: #ffffff;
             font-family: 'Arial', 'Helvetica', sans-serif;
-            padding: 5mm 4mm;
+            padding: 0;
             box-sizing: border-box;
             display: none;
             font-size: 12px;
@@ -310,6 +315,12 @@
 
         .receipt-container * {
             font-weight: 600;
+        }
+
+        .receipt-inner {
+            max-width: 160mm;
+            margin: 0 auto;
+            padding: 4mm 3mm;
         }
 
         .receipt-logo {
@@ -487,6 +498,36 @@
         .hidden {
             display: none !important;
         }
+
+        /* Print Settings Summary - matches image */
+        .print-settings-summary {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            margin-bottom: 12px;
+        }
+
+        .print-settings-summary span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .print-settings-summary .setting-label {
+            color: #888;
+            font-weight: 400;
+        }
+
+        .print-settings-summary .setting-value {
+            color: #f97316;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="dark">
@@ -513,7 +554,9 @@
     <!-- Main App -->
     <div id="mainApp" class="hidden">
         <!-- Receipt Print Area -->
-        <div id="receipt-print-area" class="receipt-container"></div>
+        <div id="receipt-print-area" class="receipt-container">
+            <div class="receipt-inner" id="receiptInner"></div>
+        </div>
         
         <!-- Toast -->
         <div id="toast" class="toast"></div>
@@ -548,6 +591,19 @@
                     <button onclick="logout()" class="text-red-400 hover:text-red-300 transition" title="Logout">
                         <i class="fas fa-sign-out-alt text-lg"></i>
                     </button>
+                </div>
+            </div>
+
+            <!-- Print Settings - Matches Image -->
+            <div class="card">
+                <div class="section-title">🖨️ Print Settings (as shown in image)</div>
+                <div class="print-settings-summary">
+                    <span><span class="setting-label">📄 Paper Size:</span> <span class="setting-value">A4 (210 × 297 mm)</span></span>
+                    <span><span class="setting-label">📑 Pages per Sheet:</span> <span class="setting-value">1</span></span>
+                    <span><span class="setting-label">📐 Margins:</span> <span class="setting-value">Custom (12mm top/bottom, 10mm left/right)</span></span>
+                    <span><span class="setting-label">🔍 Scale:</span> <span class="setting-value">Custom (100%)</span></span>
+                    <span><span class="setting-label">📌 Headers & Footers:</span> <span class="setting-value">✅ Enabled</span></span>
+                    <span><span class="setting-label">🎨 Background Graphics:</span> <span class="setting-value">✅ Enabled</span></span>
                 </div>
             </div>
 
@@ -983,8 +1039,10 @@
 
         function doPrint(data) {
             const receiptHTML = generateReceiptHTML(data);
+            const receiptInner = document.getElementById('receiptInner');
+            receiptInner.innerHTML = receiptHTML;
+            
             const receiptArea = document.getElementById('receipt-print-area');
-            receiptArea.innerHTML = receiptHTML;
             receiptArea.style.display = 'block';
 
             setTimeout(() => {
