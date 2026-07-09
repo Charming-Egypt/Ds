@@ -274,8 +274,10 @@
 
         /* ============ RECEIPT PRINT STYLES ============ */
         @media print {
+            /* Hide everything except the receipt */
             body * { visibility: hidden; }
             #receipt-print-area, #receipt-print-area * { visibility: visible; }
+            
             #receipt-print-area {
                 position: absolute;
                 left: 0;
@@ -284,9 +286,6 @@
                 margin: 0;
                 padding: 0;
                 background: #000000 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                /* Match image settings: Custom margins, A4 portrait (297mm height) */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 color-adjust: exact !important;
@@ -294,8 +293,50 @@
             
             @page {
                 size: A4 portrait;
-                margin: 12mm 10mm 12mm 10mm; /* Custom margins */
+                margin: 12mm 10mm 0mm 10mm; /* Bottom margin = 0 */
                 background: #000000;
+            }
+            
+            /* Disable headers & footers */
+            @page {
+                @top-center {
+                    content: none !important;
+                    display: none !important;
+                }
+                @bottom-center {
+                    content: none !important;
+                    display: none !important;
+                }
+                @top-left {
+                    content: none !important;
+                    display: none !important;
+                }
+                @top-right {
+                    content: none !important;
+                    display: none !important;
+                }
+                @bottom-left {
+                    content: none !important;
+                    display: none !important;
+                }
+                @bottom-right {
+                    content: none !important;
+                    display: none !important;
+                }
+            }
+            
+            /* Force single page */
+            #receipt-print-area {
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+                max-height: 100vh !important;
+            }
+            
+            .receipt-inner {
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
             }
         }
 
@@ -309,7 +350,7 @@
             box-sizing: border-box;
             display: none;
             font-size: 12px;
-            line-height: 1.6;
+            line-height: 1.5;
             font-weight: 600;
         }
 
@@ -320,20 +361,22 @@
         .receipt-inner {
             max-width: 160mm;
             margin: 0 auto;
-            padding: 4mm 3mm;
+            padding: 3mm 3mm 0mm 3mm; /* Bottom padding = 0 */
+            page-break-after: avoid;
+            page-break-inside: avoid;
         }
 
         .receipt-logo {
             text-align: center;
-            margin-bottom: 5mm;
-            padding: 3mm;
+            margin-bottom: 4mm;
+            padding: 2mm;
             background: #111111;
             border-radius: 2mm;
             border: 1px solid #333333;
         }
 
         .receipt-logo img {
-            width: 55mm;
+            width: 50mm;
             height: auto;
             display: block;
             margin: 0 auto;
@@ -345,9 +388,9 @@
 
         .receipt-title {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
-            margin: 3mm 0;
+            margin: 2mm 0;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: #f97316 !important;
@@ -355,41 +398,41 @@
 
         .receipt-subtitle {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #cccccc !important;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
             font-weight: 600;
         }
 
         .receipt-divider {
             border-top: 2px dashed #444444;
-            margin: 3mm 0;
+            margin: 2.5mm 0;
         }
 
         .receipt-divider-thin {
             border-top: 1px solid #333333;
-            margin: 2mm 0;
+            margin: 1.5mm 0;
         }
 
         .receipt-row {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            margin: 2mm 0;
+            font-size: 11px;
+            margin: 1.5mm 0;
             color: #ffffff !important;
         }
 
         .receipt-label {
             font-weight: 700;
             min-width: 35%;
-            font-size: 12px;
+            font-size: 11px;
             color: #cccccc !important;
         }
 
         .receipt-value {
             text-align: right;
             word-break: break-word;
-            font-size: 12px;
+            font-size: 11px;
             max-width: 63%;
             color: #ffffff !important;
             font-weight: 700;
@@ -398,22 +441,22 @@
         .receipt-ref-box {
             text-align: center;
             background: #1a1a1a;
-            padding: 3mm;
+            padding: 2.5mm;
             border-radius: 2mm;
             border: 1px solid #444444;
-            margin: 3mm 0;
+            margin: 2.5mm 0;
         }
 
         .receipt-ref-label {
-            font-size: 10px;
+            font-size: 9px;
             color: #888888 !important;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 1mm;
+            margin-bottom: 0.5mm;
         }
 
         .receipt-ref-number {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
             color: #f97316 !important;
             letter-spacing: 2px;
@@ -422,11 +465,11 @@
         .receipt-total-box {
             background: #f97316;
             color: #000000 !important;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 900;
             text-align: center;
-            margin: 3mm 0;
-            padding: 3mm;
+            margin: 2.5mm 0;
+            padding: 2.5mm;
             border-radius: 2mm;
             border: 2px solid #ff8c42;
         }
@@ -439,13 +482,14 @@
             text-align: center;
             font-size: 10px;
             color: #aaaaaa !important;
-            margin-top: 4mm;
+            margin-top: 3mm;
             line-height: 1.5;
             font-weight: 600;
-            padding: 3mm;
+            padding: 2.5mm;
             background: #111111;
             border-radius: 2mm;
             border: 1px solid #333333;
+            margin-bottom: 0;
         }
 
         .receipt-footer strong {
@@ -455,10 +499,10 @@
 
         .receipt-stamp {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
             color: #f97316 !important;
-            margin: 3mm 0;
+            margin: 2.5mm 0;
             border: 3px solid #f97316;
             padding: 2mm;
             border-radius: 3mm;
@@ -466,14 +510,14 @@
         }
 
         .receipt-section-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 900;
-            margin: 3mm 0 2mm 0;
+            margin: 2.5mm 0 1.5mm 0;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
             background: #1a1a1a;
-            padding: 2mm;
+            padding: 1.5mm;
             color: #f97316 !important;
             border-radius: 1mm;
             border: 1px solid #333333;
@@ -484,14 +528,14 @@
             align-items: center;
             justify-content: center;
             gap: 1mm;
-            margin: 1mm 0;
+            margin: 0.5mm 0;
             color: #cccccc !important;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .receipt-highlight {
             font-weight: 900;
-            font-size: 13px;
+            font-size: 12px;
             color: #ffffff !important;
         }
 
@@ -499,7 +543,48 @@
             display: none !important;
         }
 
-        /* Print Settings Summary - matches image */
+        .currency-select {
+            width: 80px;
+            padding: 12px 8px 12px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 14px;
+            font-size: 15px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23f97316' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 28px;
+        }
+
+        .currency-select:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
+        }
+
+        .price-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .price-input-group .input-field {
+            flex: 1;
+        }
+
+        .currency-symbol-display {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f97316;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        /* Print settings summary */
         .print-settings-summary {
             background: var(--bg-tertiary);
             border-radius: 12px;
@@ -596,14 +681,15 @@
 
             <!-- Print Settings - Matches Image -->
             <div class="card">
-                <div class="section-title">🖨️ Print Settings (as shown in image)</div>
+                <div class="section-title">🖨️ Print Settings</div>
                 <div class="print-settings-summary">
                     <span><span class="setting-label">📄 Paper Size:</span> <span class="setting-value">A4 (210 × 297 mm)</span></span>
                     <span><span class="setting-label">📑 Pages per Sheet:</span> <span class="setting-value">1</span></span>
-                    <span><span class="setting-label">📐 Margins:</span> <span class="setting-value">Custom (12mm top/bottom, 10mm left/right)</span></span>
+                    <span><span class="setting-label">📐 Margins:</span> <span class="setting-value">Custom (top 12mm, sides 10mm, bottom 0mm)</span></span>
                     <span><span class="setting-label">🔍 Scale:</span> <span class="setting-value">Custom (100%)</span></span>
-                    <span><span class="setting-label">📌 Headers & Footers:</span> <span class="setting-value">✅ Enabled</span></span>
+                    <span><span class="setting-label">📌 Headers & Footers:</span> <span class="setting-value" style="color:#ef4444;">❌ Disabled</span></span>
                     <span><span class="setting-label">🎨 Background Graphics:</span> <span class="setting-value">✅ Enabled</span></span>
+                    <span><span class="setting-label">📄 Pages:</span> <span class="setting-value">1 Page Only</span></span>
                 </div>
             </div>
 
@@ -631,7 +717,7 @@
                             <option value="">-- Select a trip --</option>
                         </select>
                         <div id="tripPriceDisplay" class="trip-price-display hidden mt-3">
-                            💰 Price: EGP <span id="tripPriceValue">0</span>
+                            💰 Price: <span id="tripPriceValue">0</span>
                         </div>
                         <div id="tripDetailsDisplay" class="hidden mt-3 p-3 bg-slate-800/50 rounded-xl text-sm text-gray-400">
                             <span id="tripDuration"></span>
@@ -688,12 +774,22 @@
                         </div>
                     </div>
 
-                    <!-- Payment Details -->
+                    <!-- Payment Details with Manual Price & Currency -->
                     <div class="section-title">💰 Payment Details</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label class="block text-sm font-medium mb-2 text-gray-300">Total Amount (EGP) *</label>
-                            <input type="number" id="totalAmount" class="input-field" placeholder="0.00" step="0.01" required readonly>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Total Amount *</label>
+                            <div class="price-input-group">
+                                <input type="number" id="totalAmount" class="input-field" placeholder="0.00" step="0.01" required onchange="updateCurrencySymbol()">
+                                <select id="currencySelect" class="currency-select" onchange="updateCurrencySymbol()">
+                                    <option value="EGP">EGP</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="SAR">SAR</option>
+                                </select>
+                            </div>
+                            <div id="currencySymbolDisplay" class="currency-symbol-display mt-2">EGP</div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2 text-gray-300">Payment Status</label>
@@ -764,6 +860,14 @@
 
         const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjyTbUXF0Efz2FeTZReEwHRwHXgJN1IregDE4rjarPmLZrRGSqGFO3DVLOWCSJNzREQvGgIo0mVI07QAoeOjVtFXwUpq3cDUAGmCKHKiTOszejAwNB_RIAtxu77ok5z2i1KZN1rAWFSCX4KlsWlxdifTS38LF2Cvh_MVdfLXOdhmJ-9YEErAZFcUUbqd6Gu=s1600';
 
+        const CURRENCY_SYMBOLS = {
+            EGP: 'EGP',
+            USD: '$',
+            EUR: '€',
+            GBP: '£',
+            SAR: 'SAR'
+        };
+
         let currentUser = null;
         let allTrips = [];
         let selectedTripData = null;
@@ -775,6 +879,22 @@
             toast.innerText = msg;
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ==================== CURRENCY ====================
+        function updateCurrencySymbol() {
+            const currency = document.getElementById('currencySelect').value;
+            const symbol = CURRENCY_SYMBOLS[currency] || currency;
+            document.getElementById('currencySymbolDisplay').innerText = symbol;
+        }
+
+        function getCurrencySymbol() {
+            const currency = document.getElementById('currencySelect').value;
+            return CURRENCY_SYMBOLS[currency] || currency;
+        }
+
+        function getCurrencyCode() {
+            return document.getElementById('currencySelect').value;
         }
 
         // ==================== AUTH ====================
@@ -809,7 +929,6 @@
                 const tripsData = snap.val() || {};
                 allTrips = Object.entries(tripsData).map(([id, val]) => ({ id, ...val }));
 
-                // Filter only approved trips
                 const approvedTrips = allTrips.filter(t => t.approved === true || t.approved === "true");
 
                 tripSelect.innerHTML = '<option value="">-- Select a trip --</option>';
@@ -818,7 +937,7 @@
                     tripSelect.innerHTML += '<option value="" disabled>No approved trips available</option>';
                 } else {
                     approvedTrips.forEach(trip => {
-                        tripSelect.innerHTML += `<option value="${trip.id}" data-name="${escapeHtml(trip.name || '')}" data-price="${trip.price || 0}" data-duration="${escapeHtml(trip.duration || '')}">${escapeHtml(trip.name || 'Unnamed')} - EGP ${parseFloat(trip.price || 0).toFixed(2)}</option>`;
+                        tripSelect.innerHTML += `<option value="${trip.id}" data-name="${escapeHtml(trip.name || '')}" data-price="${trip.price || 0}" data-duration="${escapeHtml(trip.duration || '')}">${escapeHtml(trip.name || 'Unnamed')} - ${getCurrencySymbol()} ${parseFloat(trip.price || 0).toFixed(2)}</option>`;
                     });
                 }
             } catch (error) {
@@ -848,7 +967,7 @@
                     duration: duration
                 };
 
-                tripPriceValue.innerText = parseFloat(price).toFixed(2);
+                tripPriceValue.innerText = `${getCurrencySymbol()} ${parseFloat(price).toFixed(2)}`;
                 tripPriceDisplay.classList.remove('hidden');
 
                 if (duration) {
@@ -863,7 +982,7 @@
                 selectedTripData = null;
                 tripPriceDisplay.classList.add('hidden');
                 tripDetailsDisplay.classList.add('hidden');
-                document.getElementById('totalAmount').value = '';
+                // Don't auto-clear total amount to allow manual entry
             }
         }
 
@@ -906,6 +1025,8 @@
                 children: document.getElementById('children').value || 0,
                 infants: document.getElementById('infants').value || 0,
                 totalAmount: parseFloat(document.getElementById('totalAmount').value) || 0,
+                currencySymbol: getCurrencySymbol(),
+                currencyCode: getCurrencyCode(),
                 paymentStatus: document.getElementById('paymentStatus').value,
                 bookingStatus: document.getElementById('bookingStatus').value,
                 extraServices: document.getElementById('extraServices').value,
@@ -995,7 +1116,7 @@
                 <div class="receipt-divider"></div>
                 
                 <div class="receipt-total-box">
-                    💰 TOTAL: EGP ${data.totalAmount.toFixed(2)}
+                    💰 TOTAL: ${data.currencySymbol} ${data.totalAmount.toFixed(2)}
                 </div>
                 
                 <div class="receipt-divider"></div>
@@ -1032,7 +1153,6 @@
                     <div class="receipt-contact-item">🌐 www.discover-sharm.com</div>
                     <div class="receipt-contact-item">📞 +20 106 169 3679</div>
                     <div class="receipt-contact-item">📧 sales@discover-sharm.com</div>
-                    <div style="margin-top:2mm; font-size:9px; color:#888888 !important;">Printed: ${data.dateStr} ${data.timeStr}</div>
                 </div>
             `;
         }
@@ -1064,8 +1184,12 @@
                 showToast('Please select a trip', 'error');
                 return;
             }
-            if (!guestName || !guestPhone || !tripDate || !totalAmount) {
+            if (!guestName || !guestPhone || !tripDate) {
                 showToast('Please fill in all required fields (*)', 'error');
+                return;
+            }
+            if (!totalAmount || parseFloat(totalAmount) <= 0) {
+                showToast('Please enter a valid total amount', 'error');
                 return;
             }
 
@@ -1085,8 +1209,12 @@
                 showToast('Please select a trip', 'error');
                 return;
             }
-            if (!guestName || !guestPhone || !tripDate || !totalAmount) {
+            if (!guestName || !guestPhone || !tripDate) {
                 showToast('Please fill in all required fields (*)', 'error');
+                return;
+            }
+            if (!totalAmount || parseFloat(totalAmount) <= 0) {
+                showToast('Please enter a valid total amount', 'error');
                 return;
             }
             if (!currentUser) {
@@ -1098,7 +1226,6 @@
             const refNumber = data.refNumber;
 
             try {
-                // Save to Firebase
                 const bookingData = {
                     refNumber: refNumber,
                     username: data.guestName,
@@ -1115,6 +1242,7 @@
                     infants: parseInt(data.infants) || 0,
                     netTotal: data.totalAmount,
                     total: data.totalAmount,
+                    currency: data.currencyCode,
                     isPaid: data.isPaid,
                     paymentStatus: data.paymentStatus,
                     resStatus: data.bookingStatus,
@@ -1131,7 +1259,6 @@
                 await db.ref(`trip-bookings/${refNumber}`).set(bookingData);
                 showToast('✅ Booking saved successfully!');
                 
-                // Print receipt
                 doPrint(data);
             } catch (error) {
                 console.error('Save error:', error);
@@ -1175,11 +1302,13 @@
                 document.getElementById('tripDate').value = new Date().toISOString().split('T')[0];
                 document.getElementById('refNumber').value = 'DS-' + Date.now().toString().slice(-8);
                 document.getElementById('tripSelect').value = '';
+                document.getElementById('currencySelect').value = 'EGP';
+                document.getElementById('totalAmount').value = '';
                 
                 selectedTripData = null;
                 document.getElementById('tripPriceDisplay').classList.add('hidden');
                 document.getElementById('tripDetailsDisplay').classList.add('hidden');
-                document.getElementById('totalAmount').value = '';
+                updateCurrencySymbol();
                 
                 showToast('🔄 Form reset successfully');
             }
@@ -1200,13 +1329,12 @@
                 document.getElementById('userAvatar').innerText = init;
                 document.getElementById('userNameDisplay').innerText = user.email;
                 
-                // Set default dates
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('bookingDate').value = today;
                 document.getElementById('tripDate').value = today;
                 document.getElementById('refNumber').value = generateRefNumber();
+                updateCurrencySymbol();
                 
-                // Load trips
                 await loadTrips();
             } else {
                 currentUser = null;
@@ -1215,12 +1343,10 @@
             }
         });
 
-        // Close preview on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closePreview();
         });
 
-        // Close preview on overlay click
         document.getElementById('previewModal').addEventListener('click', function(e) {
             if (e.target === this) closePreview();
         });
