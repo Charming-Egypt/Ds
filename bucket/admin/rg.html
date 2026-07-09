@@ -274,7 +274,6 @@
 
         /* ============ RECEIPT PRINT STYLES ============ */
         @media print {
-            /* Hide everything except the receipt */
             body * { visibility: hidden; }
             #receipt-print-area, #receipt-print-area * { visibility: visible; }
             
@@ -293,39 +292,19 @@
             
             @page {
                 size: A4 portrait;
-                margin: 12mm 10mm 0mm 10mm; /* Bottom margin = 0 */
+                margin: 12mm 10mm 0mm 10mm;
                 background: #000000;
             }
             
-            /* Disable headers & footers */
             @page {
-                @top-center {
-                    content: none !important;
-                    display: none !important;
-                }
-                @bottom-center {
-                    content: none !important;
-                    display: none !important;
-                }
-                @top-left {
-                    content: none !important;
-                    display: none !important;
-                }
-                @top-right {
-                    content: none !important;
-                    display: none !important;
-                }
-                @bottom-left {
-                    content: none !important;
-                    display: none !important;
-                }
-                @bottom-right {
-                    content: none !important;
-                    display: none !important;
-                }
+                @top-center { content: none !important; display: none !important; }
+                @bottom-center { content: none !important; display: none !important; }
+                @top-left { content: none !important; display: none !important; }
+                @top-right { content: none !important; display: none !important; }
+                @bottom-left { content: none !important; display: none !important; }
+                @bottom-right { content: none !important; display: none !important; }
             }
             
-            /* Force single page */
             #receipt-print-area {
                 page-break-after: avoid !important;
                 page-break-inside: avoid !important;
@@ -361,7 +340,7 @@
         .receipt-inner {
             max-width: 160mm;
             margin: 0 auto;
-            padding: 3mm 3mm 0mm 3mm; /* Bottom padding = 0 */
+            padding: 3mm 3mm 0mm 3mm;
             page-break-after: avoid;
             page-break-inside: avoid;
         }
@@ -380,10 +359,17 @@
             height: auto;
             display: block;
             margin: 0 auto;
-            filter: drop-shadow(0 2px 4px rgba(255,255,255,0.3));
-            background: rgba(255,255,255,0.05);
-            padding: 2mm;
-            border-radius: 2mm;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .receipt-logo .logo-text {
+            display: none;
+            font-size: 20px;
+            font-weight: 900;
+            color: #f97316 !important;
+            text-align: center;
         }
 
         .receipt-title {
@@ -584,7 +570,6 @@
             text-align: center;
         }
 
-        /* Print settings summary */
         .print-settings-summary {
             background: var(--bg-tertiary);
             border-radius: 12px;
@@ -638,15 +623,12 @@
 
     <!-- Main App -->
     <div id="mainApp" class="hidden">
-        <!-- Receipt Print Area -->
         <div id="receipt-print-area" class="receipt-container">
             <div class="receipt-inner" id="receiptInner"></div>
         </div>
         
-        <!-- Toast -->
         <div id="toast" class="toast"></div>
 
-        <!-- Preview Modal -->
         <div id="previewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; overflow-y:auto; padding:20px;">
             <div style="max-width:500px; margin:0 auto; background:#111; border-radius:16px; padding:20px; border:1px solid #333;">
                 <div class="flex justify-between items-center mb-4">
@@ -662,7 +644,6 @@
         </div>
 
         <div class="container">
-            <!-- Header -->
             <div class="header-bar">
                 <div>
                     <h1 class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
@@ -679,7 +660,6 @@
                 </div>
             </div>
 
-            <!-- Print Settings - Matches Image -->
             <div class="card">
                 <div class="section-title">🖨️ Print Settings</div>
                 <div class="print-settings-summary">
@@ -693,10 +673,8 @@
                 </div>
             </div>
 
-            <!-- Form Card -->
             <div class="card">
                 <form id="receiptForm">
-                    <!-- Reference & Date -->
                     <div class="section-title">📋 Booking Information</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
@@ -709,7 +687,6 @@
                         </div>
                     </div>
 
-                    <!-- Trip Selection -->
                     <div class="section-title">🚀 Select Trip</div>
                     <div class="mb-6">
                         <label class="block text-sm font-medium mb-2 text-gray-300">Choose Trip *</label>
@@ -724,7 +701,6 @@
                         </div>
                     </div>
 
-                    <!-- Guest Details -->
                     <div class="section-title">👤 Guest Details</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
@@ -757,7 +733,6 @@
                         </div>
                     </div>
 
-                    <!-- Guests Count -->
                     <div class="section-title">👥 Number of Guests</div>
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div>
@@ -774,7 +749,6 @@
                         </div>
                     </div>
 
-                    <!-- Payment Details with Manual Price & Currency -->
                     <div class="section-title">💰 Payment Details</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
@@ -808,19 +782,16 @@
                         </div>
                     </div>
 
-                    <!-- Extra Services -->
                     <div class="section-title">✨ Extra Services</div>
                     <div class="mb-6">
                         <textarea id="extraServices" class="input-field" rows="2" placeholder="e.g., Diving: 500 EGP, Photo Session: 200 EGP"></textarea>
                     </div>
 
-                    <!-- Special Requests -->
                     <div class="section-title">📝 Special Requests / Notes</div>
                     <div class="mb-6">
                         <textarea id="specialRequests" class="input-field" rows="2" placeholder="Any special requests or notes..."></textarea>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex flex-wrap gap-4 justify-center mt-8">
                         <button type="button" onclick="generateAndPrint()" class="btn-primary">
                             <i class="fas fa-print mr-2"></i> Generate & Print Receipt
@@ -841,7 +812,6 @@
     </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyDrkYUXLTCo4SK4TYWbNJfFLUwwOiQFQJI",
             authDomain: "egypt-travels.firebaseapp.com",
@@ -850,7 +820,6 @@
             storageBucket: "egypt-travels.appspot.com"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -872,7 +841,6 @@
         let allTrips = [];
         let selectedTripData = null;
 
-        // ==================== TOAST ====================
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             if (!toast) return;
@@ -881,7 +849,6 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ==================== CURRENCY ====================
         function updateCurrencySymbol() {
             const currency = document.getElementById('currencySelect').value;
             const symbol = CURRENCY_SYMBOLS[currency] || currency;
@@ -897,7 +864,6 @@
             return document.getElementById('currencySelect').value;
         }
 
-        // ==================== AUTH ====================
         async function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -919,7 +885,6 @@
             auth.signOut();
         }
 
-        // ==================== LOAD TRIPS ====================
         async function loadTrips() {
             const tripSelect = document.getElementById('tripSelect');
             tripSelect.innerHTML = '<option value="">-- Loading trips...</option>';
@@ -982,7 +947,6 @@
                 selectedTripData = null;
                 tripPriceDisplay.classList.add('hidden');
                 tripDetailsDisplay.classList.add('hidden');
-                // Don't auto-clear total amount to allow manual entry
             }
         }
 
@@ -1038,8 +1002,8 @@
         function generateReceiptHTML(data) {
             return `
                 <div class="receipt-logo">
-                    <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div style="display:none; font-size:20px; font-weight:900; color:#f97316 !important; text-align:center;">🌴 DISCOVER SHARM</div>
+                    <img src="${LOGO_URL}" alt="Discover Sharm" onerror="this.style.display='none'; this.parentElement.querySelector('.logo-text').style.display='block';">
+                    <div class="logo-text">🌴 DISCOVER SHARM</div>
                 </div>
                 
                 <div class="receipt-divider"></div>
@@ -1318,7 +1282,6 @@
             return 'DS-' + Date.now().toString().slice(-8) + Math.random().toString(36).substring(2, 5).toUpperCase();
         }
 
-        // ==================== AUTH STATE LISTENER ====================
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
