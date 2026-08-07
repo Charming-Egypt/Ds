@@ -731,30 +731,44 @@ function renderTransfer() {
   // ==========================================================================
   // INIT
   // ==========================================================================
-  function init() {
-    const urlParams = new URLSearchParams(window.location.search);
-    transferId = urlParams.get('id') || '';
+  function initEvents() {
+    // Use event delegation for next/prev buttons
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        
+        const action = btn.getAttribute('data-action');
+        if (action === 'next') {
+            e.preventDefault();
+            nextStep();
+        } else if (action === 'prev') {
+            e.preventDefault();
+            prevStep();
+        }
+    });
     
-    refNumber = generateRef();
-    
-    const ccs = $('countryCodeSelect');
-    if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
-    
-    const de = document.querySelector('#tripDate');
-    if (de && typeof flatpickr !== 'undefined') {
-      flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
+    // Submit button
+    function bindSubmit() {
+        const sb = $('submitBtn');
+        if (sb) {
+            sb.onclick = submitBooking;
+        } else {
+            setTimeout(bindSubmit, 500);
+        }
     }
+    bindSubmit();
     
-    initEvents();
-    
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeCountryModal(); } });
-    
-    loadTransfer();
-    
-    if (typeof auth !== 'undefined') {
-      auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserDataFromFirebase, 500); });
+    // Country selector
+    function bindCountry() {
+        const ccs = $('countryCodeSelect');
+        if (ccs) {
+            ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); });
+        } else {
+            setTimeout(bindCountry, 500);
+        }
     }
-  }
+    bindCountry();
+}
 
   // ==========================================================================
   // PUBLIC API
