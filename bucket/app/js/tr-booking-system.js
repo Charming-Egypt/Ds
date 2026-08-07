@@ -502,44 +502,101 @@
   }
 
   // ==========================================================================
-  // PAYMENT IFRAME
-  // ==========================================================================
-  function showPaymentIframe(paymentUrl) {
+// PAYMENT IFRAME - Show
+// ==========================================================================
+function showPaymentIframe(paymentUrl) {
     const container = document.querySelector('.tour-booking-container');
     if (!container) return;
     
+    // ✅ Save the ORIGINAL HTML before replacing
     container.setAttribute('data-original-html', container.innerHTML);
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;min-height:100vh;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #2e2e2e;">
-          <button id="paymentBackBtn" style="background:#2a2a2a;border:none;color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;"><i class="fas fa-arrow-left"></i> Back</button>
-          <span style="color:#fff;font-size:14px;font-weight:600;"><i class="fas fa-lock" style="color:#f59e0b;margin-right:6px;"></i>Secure Payment</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1e1e1e;border-bottom:1px solid #2e2e2e;flex-shrink:0;">
+          <button id="paymentBackBtn" style="background:#2a2a2a;border:none;color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <span style="color:#fff;font-size:14px;font-weight:600;">
+            <i class="fas fa-lock" style="color:#f59e0b;margin-right:6px;"></i>Secure Payment
+          </span>
           <span style="width:60px;"></span>
         </div>
         <div style="flex:1;background:#fff;min-height:500px;">
           <iframe src="${paymentUrl}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
         </div>
+        <div style="text-align:center;padding:10px;background:#1e1e1e;border-top:1px solid #2e2e2e;flex-shrink:0;">
+          <small style="color:#666;font-size:11px;">
+            <i class="fas fa-shield-alt" style="color:#22c55e;margin-right:4px;"></i>Secured by Kashier
+          </small>
+        </div>
       </div>
     `;
     
-    document.getElementById('paymentBackBtn').addEventListener('click', hidePaymentIframe);
-  }
+    container.classList.add('payment-active');
+    
+    // Bind back button
+    document.getElementById('paymentBackBtn').addEventListener('click', function() {
+        hidePaymentIframe();
+    });
+}
 
-  function hidePaymentIframe() {
+  // ==========================================================================
+// PAYMENT IFRAME - Hide & Restore
+// ==========================================================================
+function hidePaymentIframe() {
     const container = document.querySelector('.tour-booking-container');
     if (!container) return;
+    
     const originalHTML = container.getAttribute('data-original-html');
     if (originalHTML) {
-      container.innerHTML = originalHTML;
-      container.removeAttribute('data-original-html');
-      currentStep = 0;
-      goToStep(0);
-      bindAllEvents();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        container.innerHTML = originalHTML;
+        container.removeAttribute('data-original-html');
+        
+        // Reset step to 0
+        currentStep = 0;
+        goToStep(0);
+        
+        // Re-bind all events
+        setTimeout(function() {
+            bindAllEvents();
+        }, 300);
+        
+        // Re-initialize flatpickr
+        setTimeout(function() {
+            const de = document.querySelector('#tripDate');
+            if (de && typeof flatpickr !== 'undefined') {
+                // Destroy existing instance first
+                const existingFp = de._flatpickr;
+                if (existingFp) {
+                    existingFp.destroy();
+                }
+                
+                // Create new instance
+                flatpickr(de, {
+                    minDate: new Date().fp_incr(1),
+                    dateFormat: 'Y-m-d',
+                    disableMobile: true
+                });
+            }
+        }, 500);
+        
+        // Re-load user data
+        loadSavedUserData();
+        
+        // Reset passenger & vehicle options
+        buildPassengerOptions();
+        buildVehicleOptions();
+        
+        // Update price
+        updatePrice();
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
+}
 
   // ==========================================================================
   // SUBMIT
