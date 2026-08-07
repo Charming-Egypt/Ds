@@ -723,15 +723,6 @@ function renderTransfer() {
   // EVENT BINDING
   // ==========================================================================
   function initEvents() {
-    document.querySelectorAll('[data-action="next"]').forEach(function(b) { b.onclick = nextStep; });
-    document.querySelectorAll('[data-action="prev"]').forEach(function(b) { b.onclick = prevStep; });
-    const sb = $('submitBtn'); if (sb) sb.onclick = submitBooking;
-  }
-
-  // ==========================================================================
-  // INIT
-  // ==========================================================================
-  function initEvents() {
     // Use event delegation for next/prev buttons
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('[data-action]');
@@ -770,6 +761,26 @@ function renderTransfer() {
     bindCountry();
 }
 
+  
+  // ==========================================================================
+  // INIT
+  // ==========================================================================
+
+function init() {
+    refNumber = generateRef();
+    
+    const de = document.querySelector('#tripDate');
+    if (de && typeof flatpickr !== 'undefined') {
+        flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
+    }
+    
+    // ✅ حمّل البيانات الأول
+    loadTransfer().then(() => {
+        // ✅ بعد ما الصفحة تتحمل، اربط الأزرار
+        initEvents();
+    });
+}
+  
   // ==========================================================================
   // PUBLIC API
   // ==========================================================================
