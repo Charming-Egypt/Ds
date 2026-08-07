@@ -615,35 +615,36 @@
   // LOAD TRANSFER
   // ==========================================================================
   async function loadTransfer() {
+    transferId = new URLSearchParams(window.location.search).get('id') || '';
+    
     if (transferId) {
-      try {
-        const snap = await db.ref('Transfers/' + transferId).once('value');
-        if (snap.exists()) {
-          transfer = snap.val();
-          transfer.id = transferId;
-        }
-      } catch(e) {}
+        try {
+            const snap = await db.ref('Transfers/' + transferId).once('value');
+            if (snap.exists()) {
+                transfer = snap.val();
+                transfer.id = transferId;
+            }
+        } catch(e) { console.error('Error:', e); }
     }
     
     maxPassengers = toInt(transfer?.passengers) || 4;
     
     if (transfer?.vehicle) {
-      availableVehicles = [transfer.vehicle.toLowerCase().trim()];
+        availableVehicles = [transfer.vehicle.toLowerCase().trim()];
     } else {
-      availableVehicles = ['car', 'minivan', 'bus'];
+        availableVehicles = ['car', 'minivan', 'bus'];
     }
     
-    $('selectedVehicle').value = availableVehicles[0] || 'car';
-    $('selectedPassengers').value = 1;
+    if ($('selectedVehicle')) $('selectedVehicle').value = availableVehicles[0] || 'car';
+    if ($('selectedPassengers')) $('selectedPassengers').value = 1;
     
-    // Check airport transfer
+    // Check airport
     const from = (transfer?.from || '').toLowerCase();
     const to = (transfer?.to || '').toLowerCase();
     isAirportTransfer = from.includes('airport') || to.includes('airport') || 
-                       from.includes('مطار') || to.includes('مطار') ||
-                       from.includes('ssh') || to.includes('ssh');
+                       from.includes('مطار') || to.includes('مطار') || from.includes('ssh') || to.includes('ssh');
     
-    $('isAirportTransfer').value = isAirportTransfer;
+    if ($('isAirportTransfer')) $('isAirportTransfer').value = isAirportTransfer;
     if ($('flightDetailsGroup')) $('flightDetailsGroup').style.display = isAirportTransfer ? 'block' : 'none';
     if ($('pickupTimeGroup')) $('pickupTimeGroup').style.display = isAirportTransfer ? 'none' : 'block';
     if ($('summaryFlightLine')) $('summaryFlightLine').style.display = isAirportTransfer ? 'flex' : 'none';
@@ -652,8 +653,10 @@
     buildPassengerOptions();
     buildVehicleOptions();
     loadSavedUserData();
-    renderTransfer();
-  }
+    renderTransfer(); // ✅ ده المهم - بيعرض البيانات
+    
+    return transfer; // ✅ رجع transfer عشان الـ promise تكمل
+}
   
   // ==========================================================================
 // RENDER TRANSFER - أضف هذه الدالة في tr-booking-system.js
