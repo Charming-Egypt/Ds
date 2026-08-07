@@ -655,60 +655,69 @@
     renderTransfer();
   }
   
-  function renderTransfer() {
+  // ==========================================================================
+// RENDER TRANSFER - أضف هذه الدالة في tr-booking-system.js
+// ==========================================================================
+
+function renderTransfer() {
+    // Route display
     if ($('fromLocation')) $('fromLocation').textContent = transfer?.from || 'Sharm El Sheikh';
     if ($('toLocation')) $('toLocation').textContent = transfer?.to || 'Destination';
     
-    if (transfer?.description && $('tourDescription')) {
-      $('tourDescription').innerHTML = transfer.description;
-      if ($('descriptionContainer')) $('descriptionContainer').style.display = 'block';
+    // Description
+    if (transfer?.description) {
+        if ($('tourDescription')) $('tourDescription').innerHTML = transfer.description;
+        if ($('descriptionContainer')) $('descriptionContainer').style.display = 'block';
     }
     
+    // Quick info cards
     if ($('quickInfoCards')) {
-      $('quickInfoCards').innerHTML = `
-        <div class="info-card"><i class="fas fa-clock"></i><span>Duration</span><strong>${transfer?.duration || 'Flexible'}</strong></div>
-        <div class="info-card"><i class="fas fa-users"></i><span>Max Passengers</span><strong>${maxPassengers}</strong></div>
-        <div class="info-card"><i class="fas fa-car"></i><span>Vehicle</span><strong>${getVehicleName(availableVehicles[0])}</strong></div>
-      `;
+        $('quickInfoCards').innerHTML = `
+            <div class="info-card"><i class="fas fa-clock"></i><span>Duration</span><strong>${transfer?.duration || 'Flexible'}</strong></div>
+            <div class="info-card"><i class="fas fa-users"></i><span>Max Passengers</span><strong>${maxPassengers}</strong></div>
+            <div class="info-card"><i class="fas fa-car"></i><span>Vehicle</span><strong>${getVehicleName(availableVehicles[0])}</strong></div>
+        `;
     }
     
+    // Included items
     if ($('includedItems')) {
-      $('includedItems').innerHTML = `
-        <div class="included-item"><i class="fas fa-check-circle"></i> Private air-conditioned vehicle</div>
-        <div class="included-item"><i class="fas fa-check-circle"></i> Professional driver</div>
-        <div class="included-item"><i class="fas fa-check-circle"></i> Pickup & drop-off</div>
-        <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Flight monitoring' : 'Point-to-point service'}</div>
-        <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Meet & greet at airport' : 'Meet & greet at location'}</div>
-      `;
+        $('includedItems').innerHTML = `
+            <div class="included-item"><i class="fas fa-check-circle"></i> Private air-conditioned vehicle</div>
+            <div class="included-item"><i class="fas fa-check-circle"></i> Professional driver</div>
+            <div class="included-item"><i class="fas fa-check-circle"></i> Pickup & drop-off</div>
+            <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Flight monitoring' : 'Point-to-point service'}</div>
+            <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Meet & greet at airport' : 'Meet & greet at location'}</div>
+        `;
     }
     
+    // Not included
     if ($('notIncludedItems')) {
-      $('notIncludedItems').innerHTML = `
-        <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Tips for driver (optional)</div>
-        <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Extra stops not in route</div>
-      `;
+        $('notIncludedItems').innerHTML = `
+            <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Tips for driver (optional)</div>
+            <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Extra stops not in route</div>
+        `;
     }
     
-    // Gallery
+    // Gallery/Swiper
     const images = transfer?.images || [transfer?.image || 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'];
     const imgArray = Array.isArray(images) ? images : [images];
     const swiperWrapper = document.querySelector('.swiper-wrapper');
     if (swiperWrapper) {
-      swiperWrapper.innerHTML = imgArray.map(img => 
-        `<div class="swiper-slide"><img src="${img}" alt="Transfer" onerror="this.src='https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'" style="height:350px;object-fit:cover;"></div>`
-      ).join('');
-    }
-    
-    if (typeof Swiper !== 'undefined') {
-      new Swiper('.swiper', {
-        slidesPerView: 1, spaceBetween: 10, loop: true,
-        pagination: { el: '.swiper-pagination', clickable: true },
-        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
-      });
+        swiperWrapper.innerHTML = imgArray.map(img => 
+            `<div class="swiper-slide"><img src="${img}" alt="Transfer" onerror="this.src='https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'" style="height:350px;object-fit:cover;"></div>`
+        ).join('');
+        
+        if (typeof Swiper !== 'undefined') {
+            new Swiper('.swiper', {
+                slidesPerView: 1, spaceBetween: 10, loop: true,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+            });
+        }
     }
     
     updatePrice();
-  }
+}
 
   // ==========================================================================
   // EVENT BINDING
