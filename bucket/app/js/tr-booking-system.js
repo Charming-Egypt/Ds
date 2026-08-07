@@ -1,5 +1,6 @@
 // ==========================================================================
 // DISCOVER SHARM - Transfer Booking & Payment System
+// tr-booking-system.js
 // ==========================================================================
 
 (function() {
@@ -12,19 +13,24 @@
   let currentStep = 0;
   let toastTimer = null;
   let pendingBooking = null;
-  let selectedPassengers = 1;
-  let selectedVehicle = '';
-  let isAirportTransfer = false;
   
   // Phone state
   let selectedCountryCode = '+20';
   let selectedCountryName = 'Egypt';
   let selectedCountryFlag = 'https://flagcdn.com/w40/eg.png';
 
+  // Transfer specific state
+  let transfer = null;
+  let maxPassengers = 4;
+  let availableVehicles = [];
+  let isAirportTransfer = false;
+  let transferId = '';
+
   // ==========================================================================
   // COUNTRIES DATA
   // ==========================================================================
   const countries = [
+    { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
     { code: '+93', name: 'Afghanistan', flag: 'https://flagcdn.com/w40/af.png' },
     { code: '+355', name: 'Albania', flag: 'https://flagcdn.com/w40/al.png' },
     { code: '+213', name: 'Algeria', flag: 'https://flagcdn.com/w40/dz.png' },
@@ -71,7 +77,6 @@
     { code: '+45', name: 'Denmark', flag: 'https://flagcdn.com/w40/dk.png' },
     { code: '+253', name: 'Djibouti', flag: 'https://flagcdn.com/w40/dj.png' },
     { code: '+593', name: 'Ecuador', flag: 'https://flagcdn.com/w40/ec.png' },
-    { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
     { code: '+503', name: 'El Salvador', flag: 'https://flagcdn.com/w40/sv.png' },
     { code: '+240', name: 'Equatorial Guinea', flag: 'https://flagcdn.com/w40/gq.png' },
     { code: '+291', name: 'Eritrea', flag: 'https://flagcdn.com/w40/er.png' },
@@ -166,7 +171,6 @@
     { code: '+250', name: 'Rwanda', flag: 'https://flagcdn.com/w40/rw.png' },
     { code: '+685', name: 'Samoa', flag: 'https://flagcdn.com/w40/ws.png' },
     { code: '+378', name: 'San Marino', flag: 'https://flagcdn.com/w40/sm.png' },
-    { code: '+239', name: 'São Tomé and Príncipe', flag: 'https://flagcdn.com/w40/st.png' },
     { code: '+966', name: 'Saudi Arabia', flag: 'https://flagcdn.com/w40/sa.png' },
     { code: '+221', name: 'Senegal', flag: 'https://flagcdn.com/w40/sn.png' },
     { code: '+381', name: 'Serbia', flag: 'https://flagcdn.com/w40/rs.png' },
@@ -281,11 +285,123 @@
   }
 
   // ==========================================================================
-  // TRANSFER DATA
+  // TRANSFER HELPERS
   // ==========================================================================
-  function getTransferPrice() {
-    const tp = document.getElementById('transferPrice');
-    return tp ? parseInt(tp.value) || 0 : 0;
+  function esc(s) { return s ? String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
+  function toInt(n) { const num = Number(n); return isNaN(num) ? 0 : Math.floor(num); }
+  function fmt(n) { return 'EGP ' + Math.floor(n).toLocaleString(); }
+  
+  function getVehicleName(v) {
+    const names = {'car':'Private Car','minivan':'Mini Van','bus':'Bus','suv':'SUV','limousine':'Limousine'};
+    return names[v] || v;
+  }
+  
+  function getVehicleLabel(v) {
+    const labels = {'car':'Car (1-4)','minivan':'Mini Van (1-8)','bus':'Bus (1-12)','suv':'SUV (1-6)','limousine':'Limousine (1-3)'};
+    return labels[v] || v;
+  }
+  
+  const VEHICLE_ICONS = {'car':'fa-car','minivan':'fa-van-shuttle','bus':'fa-bus','suv':'fa-truck','limousine':'fa-car-side'};
+
+  // ==========================================================================
+  // PRICE
+  // ==========================================================================
+  function updatePrice() {
+    const basePrice = toInt(transfer?.price) || 800;
+    const selectedVehicle = $('selectedVehicle').value || availableVehicles[0] || 'car';
+    const vehicleMultipliers = {'car':1,'minivan':1.5,'bus':2.5,'suv':1.3,'limousine':1.8};
+    let total = basePrice * (vehicleMultipliers[selectedVehicle] || 1);
+    total = Math.round(total);
+    
+    $('tourPrice').textContent = fmt(total);
+    $('tourPrice').setAttribute('data-price-egp', total);
+    $('totalPriceDisplay').textContent = fmt(total);
+    $('totalPriceDisplay').setAttribute('data-price-egp', total);
+    $('transferPrice').value = total;
+    
+    if (window.SharmCurrency && window.SharmCurrency.update) {
+      setTimeout(() => window.SharmCurrency.update(), 100);
+    }
+  }
+
+  // ==========================================================================
+  // BUILD OPTIONS
+  // ==========================================================================
+  function buildPassengerOptions() {
+    const container = $('passengerSelector');
+    if (!container) return;
+    container.innerHTML = '';
+    const currentPax = parseInt($('selectedPassengers').value) || 1;
+    
+    for (let i = 1; i <= maxPassengers; i++) {
+      const chip = document.createElement('span');
+      chip.className = 'option-chip' + (i === currentPax ? ' active' : '');
+      chip.dataset.pax = i;
+      chip.innerHTML = '<i class="fas fa-user"></i> ' + i;
+      chip.addEventListener('click', function() {
+        container.querySelectorAll('.option-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        $('selectedPassengers').value = parseInt(this.dataset.pax);
+      });
+      container.appendChild(chip);
+    }
+  }
+  
+  function buildVehicleOptions() {
+    const container = $('vehicleSelector');
+    if (!container) return;
+    container.innerHTML = '';
+    const currentVehicle = $('selectedVehicle').value || availableVehicles[0] || 'car';
+    
+    availableVehicles.forEach(v => {
+      const chip = document.createElement('span');
+      chip.className = 'option-chip' + (v === currentVehicle ? ' active' : '');
+      chip.dataset.vehicle = v;
+      chip.innerHTML = '<i class="fas ' + (VEHICLE_ICONS[v] || 'fa-car') + '"></i> ' + getVehicleLabel(v);
+      chip.addEventListener('click', function() {
+        container.querySelectorAll('.option-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        $('selectedVehicle').value = this.dataset.vehicle;
+        updatePrice();
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  // ==========================================================================
+  // SUMMARY
+  // ==========================================================================
+  function updateSummary() {
+    $('summaryRef').textContent = refNumber;
+    $('summaryVehicle').textContent = getVehicleName($('selectedVehicle').value);
+    $('summaryPassengers').textContent = ($('selectedPassengers').value || '1') + ' pax';
+    
+    const hotelName = $('hotelName').value || 'Your Hotel';
+    const fromLoc = transfer?.from || 'Sharm Airport';
+    const toLoc = transfer?.to || 'Destination';
+    
+    let routeText = '';
+    if (fromLoc.toLowerCase().includes('airport') || fromLoc.toLowerCase().includes('مطار') || fromLoc.toLowerCase().includes('ssh')) {
+      routeText = esc(fromLoc) + ' → ' + esc(hotelName);
+    } else if (toLoc.toLowerCase().includes('airport') || toLoc.toLowerCase().includes('مطار') || toLoc.toLowerCase().includes('ssh')) {
+      routeText = esc(hotelName) + ' → ' + esc(toLoc);
+    } else {
+      routeText = esc(fromLoc) + ' → ' + esc(toLoc);
+    }
+    
+    $('summaryRoute').innerHTML = routeText;
+    
+    if (isAirportTransfer) {
+      $('summaryFlight').textContent = ($('flightNumber').value || 'N/A');
+      $('summaryTime').textContent = ($('flightTime').value || 'N/A');
+      $('summaryTimeLine').querySelector('span').textContent = 'Arrival:';
+    } else {
+      $('summaryTime').textContent = ($('pickupTime').value || 'Flexible');
+      $('summaryTimeLine').querySelector('span').textContent = 'Pickup:';
+    }
+    
+    $('summaryDate').textContent = $('tripDate').value || '-';
+    $('summaryHotel').textContent = hotelName;
   }
 
   // ==========================================================================
@@ -298,8 +414,15 @@
     currentStep = n;
     const pb = $('progressBar'); if (pb) pb.style.width = ((n + 1) / 4 * 100) + '%';
     document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) { l.classList.toggle('active', i === n); });
+    if (n === 3) updateSummary();
   }
 
+  function validateStep1() {
+    clearAllFieldErrors(); let valid = true;
+    if (!toStr($('tripDate')?.value)) { showFieldError('tripDate', 'Please select a transfer date'); valid = false; }
+    return valid;
+  }
+  
   function validateStep2() {
     clearAllFieldErrors(); let valid = true;
     if (!toStr($('username')?.value)) { showFieldError('username', 'Please enter your full name'); valid = false; }
@@ -308,18 +431,51 @@
     return valid;
   }
   
-  function validateStep1() {
-    clearAllFieldErrors(); let valid = true;
-    if (!toStr($('tripDate')?.value)) { showFieldError('tripDate', 'Please select a transfer date'); valid = false; }
-    return valid;
-  }
-  
   function nextStep() { 
     if (currentStep === 0) { if (!validateStep1()) return; }
     if (currentStep === 1) { if (!validateStep2()) return; }
+    if (currentStep === 2) { saveUserData(); updateSummary(); }
     if (currentStep < 3) goToStep(currentStep + 1); 
   }
+  
   function prevStep() { if (currentStep > 0) goToStep(currentStep - 1); }
+
+  // ==========================================================================
+  // USER DATA
+  // ==========================================================================
+  function loadSavedUserData() {
+    try {
+      const saved = localStorage.getItem('userBookingInfo');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.name) $('username').value = data.name;
+        if (data.email) $('customerEmail').value = data.email;
+        if (data.phone) $('phone').value = data.phone;
+        if (data.hotelName) $('hotelName').value = data.hotelName;
+      }
+    } catch(e) {}
+  }
+  
+  function saveUserData() {
+    const data = {
+      name: $('username').value,
+      email: $('customerEmail').value,
+      phone: $('phone').value,
+      hotelName: $('hotelName').value
+    };
+    try { localStorage.setItem('userBookingInfo', JSON.stringify(data)); } catch(e) {}
+  }
+
+  async function loadUserDataFromFirebase() {
+    if (!auth?.currentUser) return;
+    try {
+      const snap = await db.ref('egy_user/' + auth.currentUser.uid).once('value');
+      const d = snap.val(); if (!d) return;
+      if (d.username) { const e = $('username'); if (e && !e.value) e.value = String(d.username); }
+      if (d.email) { const e = $('customerEmail'); if (e && !e.value) e.value = String(d.email); }
+      if (d.phone) { const parsed = parsePhoneNumber(String(d.phone).trim()); selectedCountryCode = parsed.code; const c = countries.find(function(x) { return x.code === parsed.code; }); if (c) { const sc = document.getElementById('selectedCountry'); if (sc) { sc.querySelector('img').src = c.flag; sc.querySelector('span').textContent = c.code; } } const pi = $('phone'); if (pi && !pi.value) pi.value = parsed.number; }
+    } catch(e) {}
+  }
 
   // ==========================================================================
   // PAYMENT IFRAME
@@ -368,10 +524,7 @@
       container.removeAttribute('data-original-html');
       currentStep = 0;
       goToStep(0);
-      const pb = $('progressBar'); if (pb) pb.style.width = '25%';
-      document.querySelectorAll('.steps-labels .step-label').forEach(function(l, i) { l.classList.toggle('active', i === 0); });
       initEvents();
-      loadUserData();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
@@ -385,16 +538,17 @@
     if (submitBtn) submitBtn.disabled = true;
     
     try {
-      const total = getTransferPrice();
+      const total = parseInt($('transferPrice').value) || 0;
       if (!total || total <= 0) throw new Error('Invalid transfer price.');
       
       pendingBooking = {
         refNumber,
-        transferId: new URLSearchParams(location.search).get('id') || '',
-        from: document.getElementById('fromLocation')?.textContent || '',
-        to: document.getElementById('toLocation')?.textContent || '',
-        vehicle: selectedVehicle,
-        passengers: selectedPassengers,
+        transferId: transferId,
+        from: transfer?.from || '',
+        to: transfer?.to || '',
+        hotelName: clean($('hotelName')?.value) || '',
+        vehicle: $('selectedVehicle').value,
+        passengers: parseInt($('selectedPassengers').value) || 1,
         price: total,
         isAirportTransfer: isAirportTransfer,
         flightNumber: isAirportTransfer ? clean($('flightNumber')?.value) : null,
@@ -403,7 +557,6 @@
         customerName: clean($('username')?.value),
         email: clean($('customerEmail')?.value),
         phone: getPhoneNumber(),
-        hotelName: clean($('hotelName')?.value),
         transferDate: clean($('tripDate')?.value),
         specialRequests: clean($('specialRequests')?.value),
         status: 'pending',
@@ -414,6 +567,10 @@
       sessionStorage.setItem('pendingTransferBooking', JSON.stringify(pendingBooking));
       sessionStorage.setItem('refNumber', refNumber);
       
+      // Save to Firebase
+      await db.ref('transfer-bookings/' + refNumber).set(pendingBooking);
+      
+      // Try Kashier payment
       const resp = await fetch('https://kashier-hash.gm-093.workers.dev/', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
@@ -455,16 +612,102 @@
   }
 
   // ==========================================================================
-  // LOAD USER DATA
+  // LOAD TRANSFER
   // ==========================================================================
-  async function loadUserData() {
-    if (!auth?.currentUser) return;
-    try {
-      const snap = await db.ref('egy_user/' + auth.currentUser.uid).once('value'), d = snap.val(); if (!d) return;
-      if (d.username) { const e = $('username'); if (e) e.value = String(d.username); }
-      if (d.email) { const e = $('customerEmail'); if (e) e.value = String(d.email); }
-      if (d.phone) { const parsed = parsePhoneNumber(String(d.phone).trim()); selectedCountryCode = parsed.code; const c = countries.find(function(x) { return x.code === parsed.code; }); if (c) { const sc = document.getElementById('selectedCountry'); if (sc) { sc.querySelector('img').src = c.flag; sc.querySelector('span').textContent = c.code; } } const pi = $('phone'); if (pi) pi.value = parsed.number; }
-    } catch(e) {}
+  async function loadTransfer() {
+    if (transferId) {
+      try {
+        const snap = await db.ref('Transfers/' + transferId).once('value');
+        if (snap.exists()) {
+          transfer = snap.val();
+          transfer.id = transferId;
+        }
+      } catch(e) {}
+    }
+    
+    maxPassengers = toInt(transfer?.passengers) || 4;
+    
+    if (transfer?.vehicle) {
+      availableVehicles = [transfer.vehicle.toLowerCase().trim()];
+    } else {
+      availableVehicles = ['car', 'minivan', 'bus'];
+    }
+    
+    $('selectedVehicle').value = availableVehicles[0] || 'car';
+    $('selectedPassengers').value = 1;
+    
+    // Check airport transfer
+    const from = (transfer?.from || '').toLowerCase();
+    const to = (transfer?.to || '').toLowerCase();
+    isAirportTransfer = from.includes('airport') || to.includes('airport') || 
+                       from.includes('مطار') || to.includes('مطار') ||
+                       from.includes('ssh') || to.includes('ssh');
+    
+    $('isAirportTransfer').value = isAirportTransfer;
+    if ($('flightDetailsGroup')) $('flightDetailsGroup').style.display = isAirportTransfer ? 'block' : 'none';
+    if ($('pickupTimeGroup')) $('pickupTimeGroup').style.display = isAirportTransfer ? 'none' : 'block';
+    if ($('summaryFlightLine')) $('summaryFlightLine').style.display = isAirportTransfer ? 'flex' : 'none';
+    if ($('summaryTimeLine')) $('summaryTimeLine').style.display = 'flex';
+    
+    buildPassengerOptions();
+    buildVehicleOptions();
+    loadSavedUserData();
+    renderTransfer();
+  }
+  
+  function renderTransfer() {
+    if ($('fromLocation')) $('fromLocation').textContent = transfer?.from || 'Sharm El Sheikh';
+    if ($('toLocation')) $('toLocation').textContent = transfer?.to || 'Destination';
+    
+    if (transfer?.description && $('tourDescription')) {
+      $('tourDescription').innerHTML = transfer.description;
+      if ($('descriptionContainer')) $('descriptionContainer').style.display = 'block';
+    }
+    
+    if ($('quickInfoCards')) {
+      $('quickInfoCards').innerHTML = `
+        <div class="info-card"><i class="fas fa-clock"></i><span>Duration</span><strong>${transfer?.duration || 'Flexible'}</strong></div>
+        <div class="info-card"><i class="fas fa-users"></i><span>Max Passengers</span><strong>${maxPassengers}</strong></div>
+        <div class="info-card"><i class="fas fa-car"></i><span>Vehicle</span><strong>${getVehicleName(availableVehicles[0])}</strong></div>
+      `;
+    }
+    
+    if ($('includedItems')) {
+      $('includedItems').innerHTML = `
+        <div class="included-item"><i class="fas fa-check-circle"></i> Private air-conditioned vehicle</div>
+        <div class="included-item"><i class="fas fa-check-circle"></i> Professional driver</div>
+        <div class="included-item"><i class="fas fa-check-circle"></i> Pickup & drop-off</div>
+        <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Flight monitoring' : 'Point-to-point service'}</div>
+        <div class="included-item"><i class="fas fa-check-circle"></i> ${isAirportTransfer ? 'Meet & greet at airport' : 'Meet & greet at location'}</div>
+      `;
+    }
+    
+    if ($('notIncludedItems')) {
+      $('notIncludedItems').innerHTML = `
+        <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Tips for driver (optional)</div>
+        <div class="included-item" style="color:#ef4444;"><i class="fas fa-times-circle"></i> Extra stops not in route</div>
+      `;
+    }
+    
+    // Gallery
+    const images = transfer?.images || [transfer?.image || 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'];
+    const imgArray = Array.isArray(images) ? images : [images];
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    if (swiperWrapper) {
+      swiperWrapper.innerHTML = imgArray.map(img => 
+        `<div class="swiper-slide"><img src="${img}" alt="Transfer" onerror="this.src='https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'" style="height:350px;object-fit:cover;"></div>`
+      ).join('');
+    }
+    
+    if (typeof Swiper !== 'undefined') {
+      new Swiper('.swiper', {
+        slidesPerView: 1, spaceBetween: 10, loop: true,
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+      });
+    }
+    
+    updatePrice();
   }
 
   // ==========================================================================
@@ -480,20 +723,39 @@
   // INIT
   // ==========================================================================
   function init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    transferId = urlParams.get('id') || '';
+    
     refNumber = generateRef();
-    const ccs = $('countryCodeSelect'); if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
-    const de = document.querySelector('#tripDate'); if (de && typeof flatpickr !== 'undefined') { flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true }); }
+    
+    const ccs = $('countryCodeSelect');
+    if (ccs) { ccs.addEventListener('click', function(e) { e.stopPropagation(); openCountryModal(); }); }
+    
+    const de = document.querySelector('#tripDate');
+    if (de && typeof flatpickr !== 'undefined') {
+      flatpickr(de, { minDate: new Date().fp_incr(1), dateFormat: 'Y-m-d', disableMobile: true });
+    }
+    
     initEvents();
+    
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeCountryModal(); } });
-    auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserData, 500); });
+    
+    loadTransfer();
+    
+    if (typeof auth !== 'undefined') {
+      auth.onAuthStateChanged(function(user) { if (user) setTimeout(loadUserDataFromFirebase, 500); });
+    }
   }
 
   // ==========================================================================
   // PUBLIC API
   // ==========================================================================
-  window.BookingSystem = { init, nextStep, prevStep, submit: submitBooking, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
+  window.TransferBookingSystem = { init, nextStep, prevStep, submit: submitBooking, getRef: function() { return refNumber; }, getPhone: getPhoneNumber };
 
-  function tryInit() { if (typeof auth === 'undefined' || typeof db === 'undefined') { setTimeout(tryInit, 500); return; } init(); }
+  function tryInit() {
+    if (typeof db === 'undefined') { setTimeout(tryInit, 500); return; }
+    init();
+  }
   setTimeout(tryInit, 800);
 
 })();
