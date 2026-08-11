@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>La Maison | Restaurant</title>
+    <title>Restaurant QR Menu</title>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -58,35 +58,17 @@
         body.light-mode .nav-back { background: rgba(0,0,0,0.08); color: #fff; }
         body.light-mode .cart-nav-btn { background: rgba(0,0,0,0.08); color: #fff; }
         body.light-mode .lang-btn { background: rgba(0,0,0,0.08); color: #fff; border-color: rgba(0,0,0,0.12); }
-        body.light-mode .cart-nav-dot { border: 2px solid #fff; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-
-        body {
-            font-family: 'Cairo', 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            transition: background 0.6s, color 0.6s;
-        }
-        body.en, body.de, body.it, body.ru { font-family: 'Inter', sans-serif; direction: ltr; }
+        body { font-family: 'Cairo', 'Inter', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased; transition: background 0.6s, color 0.6s; }
+        body.en { font-family: 'Inter', sans-serif; direction: ltr; }
         body.ar { font-family: 'Cairo', sans-serif; direction: rtl; }
+        body.ru { font-family: 'Inter', sans-serif; direction: ltr; }
+        body.it { font-family: 'Inter', sans-serif; direction: ltr; }
+        body.de { font-family: 'Inter', sans-serif; direction: ltr; }
 
-        .app-shell {
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            max-width: 480px;
-            margin: 0 auto;
-            overflow: hidden;
-            position: relative;
-        }
+        .app-shell { height: 100vh; height: 100dvh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; overflow: hidden; position: relative; }
 
-        /* سبلاش */
         .splash { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.7s ease, visibility 0.7s ease; }
         .splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
         .splash-icon { font-size: 5rem; animation: floatIcon 2.2s ease-in-out infinite; }
@@ -94,71 +76,41 @@
         .splash-brand { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, var(--gold) 0%, #f0e4c8 50%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; margin-top: 0.5rem; }
         .splash-sub { color: #737373; font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 0.4rem; }
 
-        /* لودر */
         .loading-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .loading-overlay.show { opacity: 1; pointer-events: auto; }
         .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { color: var(--text-secondary); font-size: 0.85rem; }
 
-        /* ========== هيدر ثابت لجميع الصفحات ========== */
         .status-bar-spacer { height: var(--safe-top); background: #000; position: relative; z-index: 100; flex-shrink: 0; }
-        .nav-header {
-            background: var(--bg);
-            padding: 0.5rem 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 50;
-            min-height: var(--header-height);
-            transition: all 0.4s;
-            flex-shrink: 0;
-            border-bottom: 0.5px solid var(--border);
-        }
+        .nav-header { background: var(--bg); padding: 0.5rem 0.75rem; display: flex; align-items: center; gap: 0.5rem; z-index: 50; min-height: var(--header-height); transition: all 0.4s; flex-shrink: 0; border-bottom: 0.5px solid var(--border); }
         body.light-mode .nav-header { background: var(--bg); }
-
-        /* لو الصفحة فيها هيرو، الهيدر يبقى شفاف */
-        .nav-header.transparent {
-            background: rgba(6,6,6,0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: none;
-            position: absolute;
-            top: var(--safe-top);
-            left: 0;
-            right: 0;
-        }
+        .nav-header.transparent { background: rgba(6,6,6,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: none; position: absolute; top: var(--safe-top); left: 0; right: 0; }
         body.light-mode .nav-header.transparent { background: rgba(255,255,255,0.3); }
-
         .nav-back { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: none; color: var(--text); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s; flex-shrink: 0; }
         .nav-back.show { opacity: 1; pointer-events: auto; }
         .nav-header.transparent .nav-back { background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-
         .nav-brand { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text); flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .nav-header.transparent .nav-brand { color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-
         .nav-right { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
         .lang-btn { padding: 0.35rem 0.55rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; gap: 0.2rem; font-family: inherit; position: relative; width: auto; background: var(--surface2); border: 1px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; transition: all 0.3s; }
         .nav-header.transparent .lang-btn { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-
-        .lang-drop { position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; min-width: 130px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.25s; z-index: 60; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        .lang-drop { position: absolute; top: calc(100% + 6px); left: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; min-width: 130px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.25s; z-index: 60; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        body.ar .lang-drop { left: auto; right: 0; }
         .lang-drop.open { opacity: 1; visibility: visible; transform: translateY(0); }
         .lang-opt { padding: 0.65rem 1rem; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; color: var(--text-secondary); white-space: nowrap; }
         .lang-opt:hover { background: rgba(200,164,92,0.08); color: var(--text); }
         .lang-opt.active { color: var(--gold); font-weight: 700; background: rgba(200,164,92,0.1); }
-
         .cart-nav-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--surface2); border: none; color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.3s; }
         .nav-header.transparent .cart-nav-btn { background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .cart-nav-dot { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; display: none; border: 2px solid rgba(0,0,0,0.3); }
         .cart-nav-dot.on { display: block; }
 
-        /* ========== محتوى ========== */
         .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .screen { display: none; animation: screenIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); min-height: 100%; }
         .screen.active { display: block; }
         @keyframes screenIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== هيرو (للمطاعم والقائمة) ========== */
         .hero-wrapper { position: relative; width: 100%; height: 340px; overflow: hidden; margin-top: calc(-1 * var(--header-height) - var(--safe-top)); }
         .hero-bg { width: 100%; height: 100%; background-image: var(--hero-image); background-size: cover; background-position: center; position: absolute; inset: 0; transition: background-image 0.8s ease; }
         .hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.3) 60%, var(--bg) 100%); }
@@ -169,27 +121,20 @@
         .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.8rem; margin: 0.3rem 0 0.5rem; text-shadow: 0 1px 4px rgba(0,0,0,0.3); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hero-meta { display: flex; justify-content: center; gap: 1rem; margin-bottom: 0.5rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); flex-wrap: wrap; }
         .hero-meta span { display: flex; align-items: center; gap: 0.3rem; }
-        .hero-rating { color: #f4b400; font-weight: 700; }
-
         .table-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); padding: 0.4rem 1.1rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem; color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .table-tag .tag-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.6)} }
 
-        /* ========== باقي الصفحات - padding top للهيدر ========== */
         .screen-padded { padding-top: calc(var(--header-height) + var(--safe-top) + 0.5rem); }
         .content-padded { padding: 0 1rem 1.5rem; }
-
-        /* ========== محتوى القائمة ========== */
         .content-below-hero { padding: 0 1rem 1.5rem; position: relative; z-index: 1; background: var(--bg); transition: background 0.6s; }
 
         .view-toggle-row { display: flex; justify-content: flex-end; gap: 0.4rem; margin-bottom: 0.5rem; }
         .vt-btn { width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
         .vt-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
-
         .currency-row { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
         .cur-chip { padding: 0.4rem 0.8rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .cur-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
-
         .cats-row { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.2rem 0 0.8rem; scrollbar-width: none; }
         .cats-row::-webkit-scrollbar{display:none}
         .cat-pill { flex-shrink: 0; width: 68px; height: 76px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; cursor: pointer; transition: all 0.3s; }
@@ -197,11 +142,9 @@
         .cat-pill.active { border-color: var(--gold); background: var(--surface3); box-shadow: 0 0 22px rgba(200,164,92,0.12); }
         .cat-ico{font-size:1.8rem}
         .cat-lbl{font-size:0.63rem;font-weight:600;color:var(--text-secondary)}
-
         .sec-head { margin: 1.2rem 0 0.8rem; display: flex; justify-content: space-between; align-items: center; }
         .sec-title { font-size: 1.05rem; font-weight: 700; }
 
-        /* منتجات LIST */
         .prod-list { display: flex; flex-direction: column; gap: 0.6rem; padding-bottom: 0.5rem; }
         .prod-row { display: flex; align-items: center; gap: 0.7rem; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem; cursor: pointer; transition: all 0.2s; animation: fadeSlide 0.3s ease backwards; }
         .prod-row:active{background:var(--surface2)}
@@ -214,7 +157,6 @@
         .prod-add { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); border: none; color: #000; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; transition: all 0.2s; }
         .prod-add:active{transform:scale(0.88)}
 
-        /* منتجات GRID */
         .prod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; padding-bottom: 0.5rem; }
         .prod-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.25s; animation: fadeSlide 0.3s ease backwards; }
         .prod-card:active{background:var(--surface2)}
@@ -227,7 +169,7 @@
         .prod-card-add { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); border: none; color: #000; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all 0.2s; }
         .prod-card-add:active{transform:scale(0.88)}
 
-        /* بوب أب */
+        /* باقي الـ CSS زي ما هو من الرد السابق... */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.35s ease; }
         .modal-overlay.show { opacity: 1; visibility: visible; }
         .modal-sheet { background: var(--surface); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; padding: 1.5rem; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); box-shadow: 0 -10px 40px rgba(0,0,0,0.4); }
@@ -238,41 +180,32 @@
         .modal-desc { font-size: 0.9rem; color: var(--text-secondary); text-align: center; margin-bottom: 1rem; line-height: 1.5; }
         .modal-price-row { display: flex; justify-content: center; align-items: baseline; gap: 0.5rem; margin-bottom: 1.5rem; }
         .modal-price { font-size: 2rem; font-weight: 900; color: var(--gold); }
-        .modal-old-price { font-size: 1rem; color: var(--text-muted); text-decoration: line-through; }
         .modal-add-btn { width: 100%; padding: 1rem; background: var(--gold); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; transition: all 0.2s; }
-        .modal-add-btn:active { transform: scale(0.96); }
 
-        /* طاولات */
         .tables-3d-box { background: var(--surface); border-radius: var(--radius-lg); padding: 1.2rem; margin-bottom: 1.4rem; perspective: 900px; }
         .tables-3d-title { font-size: 0.9rem; font-weight: 700; text-align: center; color: var(--text-secondary); margin-bottom: 1rem; }
         .tables-floor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding: 0.5rem; transform: rotateX(25deg); transform-style: preserve-3d; }
-        .table-3d-wrap { perspective: 400px; }
-        .table-3d-cell { aspect-ratio: 1; background: var(--surface2); border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; transform-style: preserve-3d; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow: hidden; }
-        .table-3d-cell::before { content: ''; position: absolute; inset: 8px; border-radius: 8px; background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, transparent 60%); pointer-events: none; }
-        .table-3d-cell:hover { transform: rotateY(-8deg) rotateX(5deg) translateZ(15px) scale(1.04); border-color: var(--border-active); box-shadow: 0 12px 30px rgba(200,164,92,0.2); }
-        .table-3d-cell.selected { border-color: var(--gold); background: linear-gradient(145deg, rgba(200,164,92,0.2) 0%, rgba(200,164,92,0.05) 100%); box-shadow: 0 0 35px rgba(200,164,92,0.35), 0 10px 25px rgba(0,0,0,0.4); transform: rotateY(-10deg) rotateX(8deg) translateZ(25px) scale(1.06); }
-        .table-3d-cell.occupied { opacity: 0.3; pointer-events: none; border-color: rgba(255,68,68,0.3); cursor: not-allowed; }
-        .table-3d-num { font-size: 1.6rem; font-weight: 900; color: var(--text); position: relative; z-index: 1; transition: all 0.3s; }
-        .table-3d-cell.selected .table-3d-num { color: var(--gold); text-shadow: 0 0 20px rgba(200,164,92,0.6); font-size: 1.8rem; }
-        .table-3d-seats { font-size: 0.6rem; color: var(--text-muted); position: relative; z-index: 1; }
-        .table-3d-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,0.5); z-index: 2; }
-        .table-3d-cell.occupied .table-3d-dot { background: var(--red); box-shadow: 0 0 8px rgba(255,68,68,0.5); }
-        .table-3d-cell.occupied::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,68,68,0.08) 2px, rgba(255,68,68,0.08) 4px); border-radius: var(--radius); }
-        .table-selected-info { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.8rem; transition: all 0.3s; }
+        .table-3d-cell { aspect-ratio: 1; background: var(--surface2); border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.4s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .table-3d-cell:hover { transform: rotateY(-5deg) translateZ(10px); border-color: var(--border-active); }
+        .table-3d-cell.selected { border-color: var(--gold); background: rgba(200,164,92,0.15); box-shadow: 0 0 30px rgba(200,164,92,0.3); transform: rotateY(-8deg) translateZ(20px); }
+        .table-3d-cell.occupied { opacity: 0.3; pointer-events: none; }
+        .table-3d-num { font-size: 1.6rem; font-weight: 900; color: var(--text); }
+        .table-3d-cell.selected .table-3d-num { color: var(--gold); }
+        .table-3d-seats { font-size: 0.6rem; color: var(--text-muted); }
+        .table-3d-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+        .table-3d-cell.occupied .table-3d-dot { background: var(--red); }
+        .table-selected-info { text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.8rem; }
         .table-selected-info.confirmed { color: var(--gold); font-weight: 700; }
 
-        /* توصيل */
         .order-type-row { display: flex; gap: 0.5rem; margin-bottom: 1.4rem; }
         .order-type-btn { flex: 1; padding: 0.85rem; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); font-weight: 700; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.3s; }
-        .order-type-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,164,92,0.08); }
+        .order-type-btn.active { border-color: var(--gold); color: var(--gold); }
         .delivery-form-box { background: var(--surface); border-radius: var(--radius-lg); padding: 1.2rem; }
         .field { margin-bottom: 0.9rem; }
         .field-label { font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 0.35rem; }
-        .field-input { width: 100%; padding: 0.8rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 0.88rem; outline: none; transition: all 0.3s; }
+        .field-input { width: 100%; padding: 0.8rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 0.88rem; outline: none; }
         .field-input:focus { border-color: var(--gold); }
-        .field-input::placeholder{color:var(--text-muted)}
 
-        /* سلة */
         .cart-cust-card { background: var(--surface); border-radius: var(--radius); padding: 0.9rem; margin-bottom: 0.9rem; display: flex; align-items: center; gap: 0.7rem; }
         .cart-cust-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
         .cart-cust-info{flex:1}
@@ -285,23 +218,19 @@
         .cart-item-name{font-weight:600;font-size:0.82rem;color:var(--text)}
         .cart-item-price{font-size:0.7rem;color:var(--gold-light);font-weight:600}
         .cart-qty-ctrl { display: flex; align-items: center; gap: 0.35rem; background: var(--surface2); border-radius: 50px; padding: 0.15rem; }
-        .qty-b { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; color: var(--text); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qty-b { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; color: var(--text); font-size: 0.85rem; cursor: pointer; }
         .qty-n{width:22px;text-align:center;font-weight:700;font-size:0.75rem;color:var(--text)}
         .cart-summary { background: var(--surface); border-radius: var(--radius); padding: 0.9rem; }
         .sum-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
         .sum-row.total-line { font-size: 1.05rem; font-weight: 800; color: var(--text); border-top: 0.5px solid var(--border); padding-top: 0.7rem; margin-top: 0.5rem; }
 
-        /* زر سفلي */
-        .bottom-bar { padding: 0.6rem 1rem; padding-bottom: calc(0.6rem + var(--safe-bottom)); background: var(--bg); border-top: 0.5px solid var(--border); transition: background 0.6s; flex-shrink: 0; }
-        .big-btn { width: 100%; padding: 0.95rem; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.95rem; font-weight: 800; cursor: pointer; letter-spacing: 0.4px; transition: all 0.3s; }
-        .big-btn:active{transform:scale(0.96);opacity:0.85}
+        .bottom-bar { padding: 0.6rem 1rem; padding-bottom: calc(0.6rem + var(--safe-bottom)); background: var(--bg); border-top: 0.5px solid var(--border); flex-shrink: 0; }
+        .big-btn { width: 100%; padding: 0.95rem; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.95rem; font-weight: 800; cursor: pointer; }
         .big-btn:disabled{background:var(--surface3);color:var(--text-muted);cursor:not-allowed}
 
-        /* توست */
-        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(30px); background: var(--surface3); color: var(--text); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; z-index: 999; opacity: 0; transition: all 0.35s; pointer-events: none; white-space: nowrap; border: 0.5px solid var(--border); }
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(30px); background: var(--surface3); color: var(--text); padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; z-index: 999; opacity: 0; transition: all 0.35s; pointer-events: none; white-space: nowrap; }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* نجاح */
         .confetti-box { position: fixed; inset: 0; pointer-events: none; z-index: 998; }
         .confetti-bit { position: absolute; border-radius: 2px; animation: confettiDrop 2.4s ease-in forwards; }
         @keyframes confettiDrop { 0%{transform:translateY(-120px) rotate(0);opacity:1} 100%{transform:translateY(105vh) rotate(700deg);opacity:0} }
@@ -320,7 +249,6 @@
         .table-select-hero .tsh-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem; color: var(--text); }
         .table-select-hero .tsh-sub { color: var(--text-secondary); font-size: 0.8rem; }
 
-        /* صفحة المطاعم */
         .restaurants-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
         .restaurant-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all 0.3s; }
         .restaurant-card:active { transform: scale(0.98); }
@@ -333,33 +261,30 @@
         .restaurant-card-cuisine { font-size: 0.7rem; padding: 0.25rem 0.7rem; border-radius: 50px; background: var(--surface2); color: var(--text-secondary); font-weight: 600; }
     </style>
 </head>
-<body class="ar">
-    <!-- سبلاش -->
+<body class="en">
     <div class="splash" id="splashScreen">
         <div class="splash-icon">🍽️</div>
         <div class="splash-brand">LA MAISON</div>
         <div class="splash-sub">Fine Dining Experience</div>
     </div>
 
-    <!-- لودر -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">جاري تحميل البيانات...</div>
+        <div class="loading-text">Loading restaurant data...</div>
     </div>
 
     <div class="app-shell" id="appShell">
         <div class="status-bar-spacer"></div>
 
-        <!-- هيدر -->
         <header class="nav-header" id="navHeader">
             <button class="nav-back" id="navBack">‹</button>
             <span class="nav-brand" id="headerBrand">LA MAISON</span>
             <div class="nav-right">
                 <div style="position:relative;">
-                    <button class="lang-btn" id="langBtn">🌐 <span id="langLabel">AR</span></button>
+                    <button class="lang-btn" id="langBtn">🌐 <span id="langLabel">EN</span></button>
                     <div class="lang-drop" id="langDrop">
-                        <div class="lang-opt active" data-lang="ar">🇸🇦 العربية</div>
-                        <div class="lang-opt" data-lang="en">🇬🇧 English</div>
+                        <div class="lang-opt active" data-lang="en">🇬🇧 English</div>
+                        <div class="lang-opt" data-lang="ar">🇸🇦 العربية</div>
                         <div class="lang-opt" data-lang="ru">🇷🇺 Русский</div>
                         <div class="lang-opt" data-lang="it">🇮🇹 Italiano</div>
                         <div class="lang-opt" data-lang="de">🇩🇪 Deutsch</div>
@@ -373,14 +298,13 @@
         </header>
 
         <div class="main-scroll" id="mainScroll">
-            <!-- ===== المطاعم ===== -->
             <div class="screen active" id="screen-restaurants">
                 <div class="hero-wrapper">
                     <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80');"></div>
                     <div class="hero-content">
                         <div class="hero-logo">🍽️</div>
                         <h1 class="hero-title">Our <span style="color:var(--gold);">Restaurants</span></h1>
-                        <p class="hero-sub">اختر مطعمك المفضل واطلب بسهولة</p>
+                        <p class="hero-sub" data-i18n="hero_sub">Choose your favorite restaurant and order easily</p>
                     </div>
                 </div>
                 <div class="content-below-hero">
@@ -388,24 +312,23 @@
                 </div>
             </div>
 
-            <!-- ===== القائمة ===== -->
             <div class="screen" id="screen-menu">
                 <div class="hero-wrapper" id="menuHeroWrapper">
                     <div class="hero-bg" id="menuHeroBg"></div>
                     <div class="hero-content">
                         <div class="hero-logo">🍽️</div>
-                        <h1 class="hero-title" id="menuHeroTitle">Loading...</h1>
-                        <p class="hero-sub" id="menuHeroSub"></p>
+                        <h1 class="hero-title" id="menuHeroTitle" data-translate="true">Loading...</h1>
+                        <p class="hero-sub" id="menuHeroSub" data-translate="true"></p>
                         <div class="hero-meta" id="menuHeroMeta"></div>
                         <div class="table-tag" id="tableTag" style="display:none;">
                             <span class="tag-dot"></span>
-                            <span data-i18n="your_table">طاولتك</span>: #<span id="tableTagNum"></span>
+                            <span data-i18n="your_table">Your Table</span>: #<span id="tableTagNum"></span>
                         </div>
                     </div>
                 </div>
                 <div class="content-below-hero">
                     <div class="currency-row" id="currencyRow">
-                        <div class="cur-chip active" data-currency="EGP">ج.م</div>
+                        <div class="cur-chip active" data-currency="EGP">EGP</div>
                         <div class="cur-chip" data-currency="USD">$ USD</div>
                         <div class="cur-chip" data-currency="EUR">€ EUR</div>
                     </div>
@@ -421,10 +344,9 @@
                 </div>
             </div>
 
-            <!-- ===== السلة ===== -->
             <div class="screen screen-padded" id="screen-cart">
                 <div class="content-padded">
-                    <div class="sec-head"><span class="sec-title">🛒 <span data-i18n="your_cart">سلة التسوق</span></span></div>
+                    <div class="sec-head"><span class="sec-title">🛒 <span data-i18n="your_cart">Your Cart</span></span></div>
                     <div class="cart-cust-card" id="cartCustCard" style="display:none;">
                         <div class="cart-cust-avatar">👤</div>
                         <div class="cart-cust-info">
@@ -434,54 +356,52 @@
                     </div>
                     <div class="cart-items-wrap" id="cartItemsWrap"></div>
                     <div class="cart-summary" id="cartSummaryBox">
-                        <div class="sum-row"><span data-i18n="subtotal">المجموع الفرعي</span><span id="sumSub">0.00</span></div>
-                        <div class="sum-row"><span data-i18n="tax">الضريبة (14%)</span><span id="sumTax">0.00</span></div>
-                        <div class="sum-row"><span data-i18n="service">خدمة (10%)</span><span id="sumSvc">0.00</span></div>
-                        <div class="sum-row total-line"><span data-i18n="total">الإجمالي</span><span id="sumTotal">0.00</span></div>
+                        <div class="sum-row"><span data-i18n="subtotal">Subtotal</span><span id="sumSub">0.00</span></div>
+                        <div class="sum-row"><span data-i18n="tax">Tax (14%)</span><span id="sumTax">0.00</span></div>
+                        <div class="sum-row"><span data-i18n="service">Service (10%)</span><span id="sumSvc">0.00</span></div>
+                        <div class="sum-row total-line"><span data-i18n="total">Total</span><span id="sumTotal">0.00</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== اختيار الطاولة ===== -->
             <div class="screen screen-padded" id="screen-table-select">
                 <div class="content-padded">
                     <div class="table-select-hero">
                         <div class="tsh-icon">🪑</div>
-                        <div class="tsh-title" data-i18n="how_to_order">اختر طريقة الطلب</div>
-                        <div class="tsh-sub" data-i18n="choose_option">اختر الطاولة أو اطلب توصيل</div>
+                        <div class="tsh-title" data-i18n="how_to_order">How to order?</div>
+                        <div class="tsh-sub" data-i18n="choose_option">Choose table or delivery</div>
                     </div>
                     <div class="order-type-row" id="orderTypeRow">
-                        <button class="order-type-btn active" data-type="dine-in">🏠 <span data-i18n="dine_in">داخل المكان</span></button>
-                        <button class="order-type-btn" data-type="delivery">🛵 <span data-i18n="delivery">توصيل</span></button>
+                        <button class="order-type-btn active" data-type="dine-in">🏠 <span data-i18n="dine_in">Dine In</span></button>
+                        <button class="order-type-btn" data-type="delivery">🛵 <span data-i18n="delivery">Delivery</span></button>
                     </div>
                     <div class="tables-3d-box" id="tablesBox">
-                        <div class="tables-3d-title">🪑 <span data-i18n="pick_table">اختر رقم الطاولة</span></div>
+                        <div class="tables-3d-title">🪑 <span data-i18n="pick_table">Pick Table Number</span></div>
                         <div class="tables-floor-grid" id="tablesFloor"></div>
-                        <div class="table-selected-info" id="tableSelInfo" data-i18n="no_table">لم تختر طاولة بعد</div>
+                        <div class="table-selected-info" id="tableSelInfo" data-i18n="no_table">No table selected</div>
                     </div>
                     <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
-                        <div class="field"><label class="field-label">👤 <span data-i18n="cust_name">اسم العميل</span></label><input class="field-input" id="inpName"></div>
-                        <div class="field"><label class="field-label">📞 <span data-i18n="cust_phone">رقم الهاتف</span></label><input class="field-input" id="inpPhone" type="tel"></div>
-                        <div class="field"><label class="field-label">📍 <span data-i18n="cust_addr">عنوان التوصيل</span></label><input class="field-input" id="inpAddr"></div>
+                        <div class="field"><label class="field-label">👤 <span data-i18n="cust_name">Customer Name</span></label><input class="field-input" id="inpName"></div>
+                        <div class="field"><label class="field-label">📞 <span data-i18n="cust_phone">Phone Number</span></label><input class="field-input" id="inpPhone" type="tel"></div>
+                        <div class="field"><label class="field-label">📍 <span data-i18n="cust_addr">Delivery Address</span></label><input class="field-input" id="inpAddr"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="bottom-bar">
-            <button class="big-btn" id="bigBtn">🛒 عرض السلة (0)</button>
+            <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
         </div>
     </div>
 
-    <!-- بوب أب -->
     <div class="modal-overlay" id="detailModal">
         <div class="modal-sheet">
             <div class="modal-handle"></div>
             <div class="modal-emoji" id="modalEmoji"></div>
-            <div class="modal-name" id="modalName"></div>
-            <div class="modal-desc" id="modalDesc"></div>
-            <div class="modal-price-row"><span class="modal-price" id="modalPrice"></span><span class="modal-old-price" id="modalOldPrice"></span></div>
-            <button class="modal-add-btn" id="modalAddBtn">➕ إضافة إلى السلة</button>
+            <div class="modal-name" id="modalName" data-translate="true"></div>
+            <div class="modal-desc" id="modalDesc" data-translate="true"></div>
+            <div class="modal-price-row"><span class="modal-price" id="modalPrice"></span></div>
+            <button class="modal-add-btn" id="modalAddBtn" data-i18n="add_to_cart">➕ Add to Cart</button>
         </div>
     </div>
 
@@ -490,8 +410,8 @@
     <div class="success-overlay" id="successOverlay">
         <div class="success-card">
             <div class="success-icon">🎉</div>
-            <div class="success-title">تم الطلب بنجاح!</div>
-            <p class="success-msg">رقم طلبك</p>
+            <div class="success-title" data-i18n="order_success_title">Order Placed!</div>
+            <p class="success-msg" data-i18n="order_success_msg">Your order number</p>
             <p class="success-table" id="successTableInfo"></p>
             <div class="order-id-badge" id="orderIdBadge">#0000</div>
         </div>
@@ -505,49 +425,101 @@
         const QR_RESTAURANT_ID = urlParams.get('restaurant');
         const QR_RESTAURANT = QR_RESTAURANT_ID ? parseInt(QR_RESTAURANT_ID) : null;
 
-        let currentRestaurant = null;
-        let restaurants = [];
-        let currentTables = [];
-        let products = [];
+        let currentRestaurant = null, restaurants = [], currentTables = [], products = [];
+
         const defaultTables = [
             {id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},
             {id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},
             {id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false},
         ];
+
         const defaultProducts = [
-            {id:1,name:'إسبريسو دوبيو',name_en:'Double Espresso',name_ru:'Двойной Эспрессо',name_it:'Espresso Doppio',name_de:'Doppelter Espresso',emoji:'☕',cat:'coffee',pEGP:45,pUSD:1.5,pEUR:1.35,desc:'قهوة إسبريسو مزدوجة مركزة',desc_en:'Concentrated double espresso shot',desc_ru:'Концентрированный двойной эспрессо',desc_it:'Espresso doppio concentrato',desc_de:'Konzentrierter doppelter Espresso'},
-            {id:2,name:'كابتشينو فاخر',name_en:'Premium Cappuccino',name_ru:'Премиум Капучино',name_it:'Cappuccino Premium',name_de:'Premium Cappuccino',emoji:'☕',cat:'coffee',pEGP:65,pUSD:2.1,pEUR:1.9,desc:'إسبريسو مع حليب مبخر ورغوة كثيفة',desc_en:'Espresso with steamed milk & foam',desc_ru:'Эспрессо с паровым молоком',desc_it:'Espresso con latte vaporizzato',desc_de:'Espresso mit Milchschaum'},
-            {id:3,name:'لاتيه مثلج',name_en:'Iced Latte',name_ru:'Ледяной Латте',name_it:'Latte Ghiacciato',name_de:'Eis-Latte',emoji:'🥤',cat:'coffee',pEGP:75,pUSD:2.4,pEUR:2.2,desc:'قهوة مثلجة منعشة مع حليب طازج',desc_en:'Refreshing iced coffee with fresh milk',desc_ru:'Освежающий кофе со льдом',desc_it:'Caffè ghiacciato rinfrescante',desc_de:'Erfrischender Eiskaffee'},
-            {id:4,name:'كرواسون زبدة',name_en:'Butter Croissant',name_ru:'Круассан',name_it:'Croissant al Burro',name_de:'Butter-Croissant',emoji:'🥐',cat:'breakfast',pEGP:55,pUSD:1.8,pEUR:1.6,desc:'كرواسون فرنسي طازج بالزبدة',desc_en:'Fresh French butter croissant',desc_ru:'Свежий французский круассан',desc_it:'Croissant francese fresco',desc_de:'Frisches französisches Croissant'},
-            {id:5,name:'ستيك ريب آي',name_en:'Ribeye Steak',name_ru:'Стейк Рибай',name_it:'Bistecca Ribeye',name_de:'Ribeye-Steak',emoji:'🥩',cat:'main',pEGP:450,pUSD:14.5,pEUR:13.5,desc:'ستيك لحم بقري 300 جرام مشوي',desc_en:'300g grilled beef ribeye',desc_ru:'Стейк из говядины 300 г',desc_it:'Bistecca di manzo 300g',desc_de:'300g gegrilltes Rindersteak'},
-            {id:6,name:'سلمون مشوي',name_en:'Grilled Salmon',name_ru:'Лосось',name_it:'Salmone alla Griglia',name_de:'Gegrillter Lachs',emoji:'🐟',cat:'main',pEGP:380,pUSD:12.3,pEUR:11.4,desc:'فيليه سلمون مع خضروات سوتيه',desc_en:'Salmon fillet with sautéed vegetables',desc_ru:'Филе лосося с овощами',desc_it:'Filetto di salmone con verdure',desc_de:'Lachsfilet mit Gemüse'},
-            {id:7,name:'تشيز كيك',name_en:'Cheesecake',name_ru:'Чизкейк',name_it:'Cheesecake',name_de:'Käsekuchen',emoji:'🍰',cat:'dessert',pEGP:110,pUSD:3.5,pEUR:3.3,desc:'تشيز كيك نيويورك كريمي',desc_en:'Creamy New York cheesecake',desc_ru:'Сливочный чизкейк',desc_it:'Cheesecake cremoso',desc_de:'Cremiger Käsekuchen'},
-            {id:8,name:'مولتن كيك',name_en:'Molten Lava Cake',name_ru:'Шоколадный фондан',name_it:'Tortino al Cioccolato',name_de:'Lava-Kuchen',emoji:'🍫',cat:'dessert',pEGP:130,pUSD:4.2,pEUR:3.9,desc:'كيك شوكولاتة سائلة مع آيس كريم',desc_en:'Warm chocolate cake with ice cream',desc_ru:'Теплый шоколадный пирог',desc_it:'Tortino caldo al cioccolato',desc_de:'Warmer Schokoladenkuchen'},
+            {id:1,name:"Double Espresso",emoji:"☕",cat:"coffee",prices:{EGP:45,USD:1.5,EUR:1.35},desc:"Concentrated double espresso shot"},
+            {id:2,name:"Premium Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:65,USD:2.1,EUR:1.9},desc:"Espresso with steamed milk and dense foam"},
+            {id:3,name:"Iced Latte",emoji:"🥤",cat:"coffee",prices:{EGP:75,USD:2.4,EUR:2.2},desc:"Refreshing iced coffee with fresh milk"},
+            {id:4,name:"Butter Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Fresh French butter croissant"},
+            {id:5,name:"Ribeye Steak",emoji:"🥩",cat:"main",prices:{EGP:450,USD:14.5,EUR:13.5},desc:"300g grilled beef ribeye steak"},
+            {id:6,name:"Grilled Salmon",emoji:"🐟",cat:"main",prices:{EGP:380,USD:12.3,EUR:11.4},desc:"Salmon fillet with sautéed vegetables"},
+            {id:7,name:"New York Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:110,USD:3.5,EUR:3.3},desc:"Creamy New York style cheesecake"},
+            {id:8,name:"Molten Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:130,USD:4.2,EUR:3.9},desc:"Warm chocolate cake with ice cream"},
         ];
 
-        const sym = {EGP:'ج.م',USD:'$',EUR:'€'};
+        const sym = {EGP:'EGP',USD:'$',EUR:'€'};
 
         function getAutoTheme() { const h=new Date().getHours(); return (h>=6&&h<18)?'light':'dark'; }
 
+        // ===== UI Translations (static texts) =====
         const t9n = {
-            ar: {today_menu:'قائمة اليوم',how_to_order:'اختر طريقة الطلب',choose_option:'اختر الطاولة أو اطلب توصيل',dine_in:'داخل المكان',delivery:'توصيل',pick_table:'اختر رقم الطاولة',no_table:'لم تختر طاولة بعد',your_table:'طاولتك',cust_name:'اسم العميل',cust_phone:'رقم الهاتف',cust_addr:'عنوان التوصيل',your_cart:'سلة التسوق',subtotal:'المجموع الفرعي',tax:'الضريبة (14%)',service:'خدمة (10%)',total:'الإجمالي',view_cart:'عرض السلة',confirm_order:'تأكيد الطلب',cart_empty:'السلة فارغة',added_to_cart:'✅ تمت الإضافة',choose_table_or_delivery:'اختر الطاولة أو التوصيل',fill_delivery:'⚠️ أكمل بيانات التوصيل',pick_table_first:'⚠️ اختر الطاولة أولاً',table_seats:'مقاعد',add_to_cart:'➕ إضافة إلى السلة'},
-            en: {today_menu:"Today's Menu",how_to_order:'How to order?',choose_option:'Choose table or delivery',dine_in:'Dine In',delivery:'Delivery',pick_table:'Pick Table Number',no_table:'No table selected',your_table:'Your Table',cust_name:'Customer Name',cust_phone:'Phone Number',cust_addr:'Delivery Address',your_cart:'Your Cart',subtotal:'Subtotal',tax:'Tax (14%)',service:'Service (10%)',total:'Total',view_cart:'View Cart',confirm_order:'Confirm Order',cart_empty:'Cart is empty',added_to_cart:'✅ Added',choose_table_or_delivery:'Choose table or delivery',fill_delivery:'⚠️ Complete details',pick_table_first:'⚠️ Pick a table',table_seats:'seats',add_to_cart:'➕ Add'},
-            ru: {today_menu:'Меню дня',how_to_order:'Как заказать?',choose_option:'Стол или доставка',dine_in:'В ресторане',delivery:'Доставка',pick_table:'Выберите стол',no_table:'Стол не выбран',your_table:'Ваш стол',cust_name:'Имя',cust_phone:'Телефон',cust_addr:'Адрес',your_cart:'Корзина',subtotal:'Подытог',tax:'Налог',service:'Сервис',total:'Итого',view_cart:'Корзина',confirm_order:'Подтвердить',cart_empty:'Корзина пуста',added_to_cart:'✅ Добавлено',choose_table_or_delivery:'Стол или доставка',fill_delivery:'⚠️ Заполните',pick_table_first:'⚠️ Выберите стол',table_seats:'мест',add_to_cart:'➕ В корзину'},
-            it: {today_menu:'Menu del Giorno',how_to_order:'Come ordinare?',choose_option:'Tavolo o consegna',dine_in:'Al Tavolo',delivery:'Consegna',pick_table:'Scegli il Tavolo',no_table:'Nessun tavolo',your_table:'Tuo Tavolo',cust_name:'Nome',cust_phone:'Telefono',cust_addr:'Indirizzo',your_cart:'Carrello',subtotal:'Subtotale',tax:'Tasse',service:'Servizio',total:'Totale',view_cart:'Carrello',confirm_order:'Conferma',cart_empty:'Carrello vuoto',added_to_cart:'✅ Aggiunto',choose_table_or_delivery:'Tavolo o consegna',fill_delivery:'⚠️ Completa',pick_table_first:'⚠️ Scegli tavolo',table_seats:'posti',add_to_cart:'➕ Aggiungi'},
-            de: {today_menu:'Tagesmenü',how_to_order:'Bestellen?',choose_option:'Tisch oder Lieferung',dine_in:'Vor Ort',delivery:'Lieferung',pick_table:'Tisch wählen',no_table:'Kein Tisch',your_table:'Ihr Tisch',cust_name:'Name',cust_phone:'Telefon',cust_addr:'Adresse',your_cart:'Warenkorb',subtotal:'Zwischensumme',tax:'Steuer',service:'Service',total:'Gesamt',view_cart:'Warenkorb',confirm_order:'Bestätigen',cart_empty:'Warenkorb leer',added_to_cart:'✅ Hinzugefügt',choose_table_or_delivery:'Tisch oder Lieferung',fill_delivery:'⚠️ Daten ergänzen',pick_table_first:'⚠️ Tisch wählen',table_seats:'Plätze',add_to_cart:'➕ Hinzufügen'}
+            en: {hero_sub:'Choose your favorite restaurant and order easily',today_menu:"Today's Menu",how_to_order:'How to order?',choose_option:'Choose table or delivery',dine_in:'Dine In',delivery:'Delivery',pick_table:'Pick Table Number',no_table:'No table selected',your_table:'Your Table',cust_name:'Customer Name',cust_phone:'Phone Number',cust_addr:'Delivery Address',your_cart:'Your Cart',subtotal:'Subtotal',tax:'Tax (14%)',service:'Service (10%)',total:'Total',view_cart:'View Cart',confirm_order:'Confirm Order',cart_empty:'Cart is empty',added_to_cart:'✅ Added to cart',choose_table_or_delivery:'Choose table or delivery',fill_delivery:'⚠️ Complete delivery details',pick_table_first:'⚠️ Pick a table first',table_seats:'seats',add_to_cart:'➕ Add to Cart',order_success_title:'Order Placed!',order_success_msg:'Your order number',order_table_info:'Your order will be delivered to table',loading:'Loading restaurant data...'},
+            ar: {hero_sub:'اختر مطعمك المفضل واطلب بسهولة',today_menu:'قائمة اليوم',how_to_order:'اختر طريقة الطلب',choose_option:'اختر الطاولة أو اطلب توصيل',dine_in:'داخل المكان',delivery:'توصيل',pick_table:'اختر رقم الطاولة',no_table:'لم تختر طاولة بعد',your_table:'طاولتك',cust_name:'اسم العميل',cust_phone:'رقم الهاتف',cust_addr:'عنوان التوصيل',your_cart:'سلة التسوق',subtotal:'المجموع الفرعي',tax:'الضريبة (14%)',service:'خدمة (10%)',total:'الإجمالي',view_cart:'عرض السلة',confirm_order:'تأكيد الطلب',cart_empty:'السلة فارغة',added_to_cart:'✅ تمت الإضافة',choose_table_or_delivery:'اختر الطاولة أو التوصيل',fill_delivery:'⚠️ أكمل بيانات التوصيل',pick_table_first:'⚠️ اختر الطاولة أولاً',table_seats:'مقاعد',add_to_cart:'➕ إضافة إلى السلة',order_success_title:'تم الطلب بنجاح!',order_success_msg:'رقم طلبك',order_table_info:'سيتم توصيل طلبك إلى الطاولة',loading:'جاري تحميل بيانات المطعم...'},
+            ru: {hero_sub:'Выберите ресторан и закажите легко',today_menu:'Меню дня',how_to_order:'Как заказать?',choose_option:'Выберите стол или доставку',dine_in:'В ресторане',delivery:'Доставка',pick_table:'Выберите стол',no_table:'Стол не выбран',your_table:'Ваш стол',cust_name:'Имя',cust_phone:'Телефон',cust_addr:'Адрес',your_cart:'Корзина',subtotal:'Подытог',tax:'Налог',service:'Сервис',total:'Итого',view_cart:'Корзина',confirm_order:'Подтвердить',cart_empty:'Корзина пуста',added_to_cart:'✅ Добавлено',choose_table_or_delivery:'Стол или доставка',fill_delivery:'⚠️ Заполните',pick_table_first:'⚠️ Выберите стол',table_seats:'мест',add_to_cart:'➕ В корзину',order_success_title:'Заказ оформлен!',order_success_msg:'Номер заказа',order_table_info:'Заказ будет доставлен на стол',loading:'Загрузка данных...'},
+            it: {hero_sub:'Scegli il tuo ristorante e ordina facilmente',today_menu:'Menu del Giorno',how_to_order:'Come ordinare?',choose_option:'Scegli tavolo o consegna',dine_in:'Al Tavolo',delivery:'Consegna',pick_table:'Scegli il Tavolo',no_table:'Nessun tavolo',your_table:'Tuo Tavolo',cust_name:'Nome',cust_phone:'Telefono',cust_addr:'Indirizzo',your_cart:'Carrello',subtotal:'Subtotale',tax:'Tasse',service:'Servizio',total:'Totale',view_cart:'Carrello',confirm_order:'Conferma',cart_empty:'Carrello vuoto',added_to_cart:'✅ Aggiunto',choose_table_or_delivery:'Tavolo o consegna',fill_delivery:'⚠️ Completa',pick_table_first:'⚠️ Scegli tavolo',table_seats:'posti',add_to_cart:'➕ Aggiungi',order_success_title:'Ordine Effettuato!',order_success_msg:'Tuo numero ordine',order_table_info:'Ordine al tavolo',loading:'Caricamento...'},
+            de: {hero_sub:'Wählen Sie Ihr Restaurant und bestellen Sie einfach',today_menu:'Tagesmenü',how_to_order:'Bestellen?',choose_option:'Tisch oder Lieferung',dine_in:'Vor Ort',delivery:'Lieferung',pick_table:'Tisch wählen',no_table:'Kein Tisch',your_table:'Ihr Tisch',cust_name:'Name',cust_phone:'Telefon',cust_addr:'Adresse',your_cart:'Warenkorb',subtotal:'Zwischensumme',tax:'Steuer',service:'Service',total:'Gesamt',view_cart:'Warenkorb',confirm_order:'Bestätigen',cart_empty:'Warenkorb leer',added_to_cart:'✅ Hinzugefügt',choose_table_or_delivery:'Tisch oder Lieferung',fill_delivery:'⚠️ Ergänzen',pick_table_first:'⚠️ Tisch wählen',table_seats:'Plätze',add_to_cart:'➕ Hinzufügen',order_success_title:'Bestellt!',order_success_msg:'Bestellnummer',order_table_info:'Lieferung an Tisch',loading:'Laden...'}
         };
 
-        let st = {lang:'ar',cur:'EGP',theme:getAutoTheme(),viewMode:'list',screen:'restaurants',history:['restaurants'],cart:[],orderType:'dine-in',selTable:QR_TABLE||null,custName:'',custPhone:'',custAddr:''};
+        // ===== نظام الترجمة التلقائي =====
+        const translator = {
+            cache: JSON.parse(localStorage.getItem('translation_cache') || '{}'),
+            
+            saveCache() {
+                localStorage.setItem('translation_cache', JSON.stringify(this.cache));
+            },
+            
+            async translate(text, targetLang) {
+                if (!text || targetLang === 'en') return text;
+                
+                const cacheKey = `${text}_${targetLang}`;
+                if (this.cache[cacheKey]) return this.cache[cacheKey];
+                
+                try {
+                    const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+                    const data = await response.json();
+                    const translated = data[0].map(item => item[0]).join('');
+                    this.cache[cacheKey] = translated;
+                    this.saveCache();
+                    return translated;
+                } catch (e) {
+                    return text;
+                }
+            },
+            
+            async translatePage(targetLang) {
+                if (targetLang === 'en') {
+                    document.querySelectorAll('[data-original-text]').forEach(el => {
+                        el.textContent = el.dataset.originalText;
+                    });
+                    return;
+                }
+                
+                const elements = document.querySelectorAll('[data-translate="true"]');
+                const promises = [];
+                
+                for (const el of elements) {
+                    const originalText = el.dataset.originalText || el.textContent.trim();
+                    if (!el.dataset.originalText) {
+                        el.dataset.originalText = originalText;
+                    }
+                    
+                    promises.push(
+                        this.translate(originalText, targetLang).then(translated => {
+                            el.textContent = translated;
+                        })
+                    );
+                }
+                
+                await Promise.all(promises);
+            }
+        };
+
+        let st = {lang:'en',cur:'EGP',theme:getAutoTheme(),viewMode:'list',screen:'restaurants',history:['restaurants'],cart:[],orderType:'dine-in',selTable:QR_TABLE||null,custName:'',custPhone:'',custAddr:''};
         const g=id=>document.getElementById(id);
         const all=(sel,ctx)=>(ctx||document).querySelectorAll(sel);
         function t(key){return(t9n[st.lang]&&t9n[st.lang][key])||key;}
-        function pName(p){return p['name_'+st.lang]||p.name;}
-        function pDesc(p){return p['desc_'+st.lang]||p.desc;}
-        function price(p){return p['p'+st.cur]||p.pEGP;}
+        function price(p){return p.prices?.(st.cur)||p.pEGP||0;}
         function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur];}
         function cartTotal(){return st.cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?price(p)*i.qty:0);},0);}
         function cartCount(){return st.cart.reduce((s,i)=>s+i.qty,0);}
-        function applyT9n(){all('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));}
+        function applyT9n(){all('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(t9n[st.lang]&&t9n[st.lang][key])el.textContent=t9n[st.lang][key];});document.querySelector('.loading-text').textContent=t('loading');}
         function applyTheme(){document.body.classList.toggle('light-mode',st.theme==='light');}
         function showTableTag(){const tag=g('tableTag'),num=g('tableTagNum');if(QR_TABLE&&tag&&num){tag.style.display='inline-flex';num.textContent=QR_TABLE;}}
         function updateCartDot(){g('cartNavDot').classList.toggle('on',cartCount()>0);}
@@ -561,7 +533,7 @@
                 if(!res.ok)throw new Error('Failed');
                 restaurants=await res.json();
             }catch(e){
-                restaurants=[{id:1,name:"Fares Seafood",description:"Fresh seafood with Red Sea views",image:"https://images.unsplash.com/photo-1510626176961-4b57d4fbad03",cuisine:"seafood",area:"old-market",rating:4.8,reviews:1420,phone:"+201003344556"},{id:2,name:"El Masrien",description:"Authentic Egyptian cuisine",image:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c",cuisine:"egyptian",area:"naama",rating:4.6,reviews:985,phone:"+201112233445"}];
+                restaurants=[{id:1,name:"Fares Seafood",description:"Iconic seafood restaurant with panoramic Red Sea views",image:"https://images.unsplash.com/photo-1510626176961-4b57d4fbad03",cuisine:"Seafood",area:"Old Market",rating:4.8,reviews:1420,phone:"+201003344556"},{id:2,name:"El Masrien",description:"Authentic Egyptian cuisine featuring traditional dishes",image:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c",cuisine:"Egyptian",area:"Naama Bay",rating:4.6,reviews:985,phone:"+201112233445"}];
             }
             showLoading(false);
             renderRestaurants();
@@ -572,8 +544,13 @@
             grid.innerHTML=restaurants.map(r=>`
                 <div class="restaurant-card" data-rid="${r.id}">
                     <img class="restaurant-card-img" src="${r.image}" alt="${r.name}" loading="lazy">
-                    <div class="restaurant-card-body"><div class="restaurant-card-name">${r.name}</div><div class="restaurant-card-desc">${r.description}</div>
-                        <div class="restaurant-card-footer"><div class="restaurant-card-rating">⭐ ${r.rating} <span style="color:var(--text-muted);font-weight:400;">(${r.reviews})</span></div><span class="restaurant-card-cuisine">${r.cuisine}</span></div>
+                    <div class="restaurant-card-body">
+                        <div class="restaurant-card-name" data-translate="true" data-original-text="${r.name}">${r.name}</div>
+                        <div class="restaurant-card-desc" data-translate="true" data-original-text="${r.description}">${r.description}</div>
+                        <div class="restaurant-card-footer">
+                            <div class="restaurant-card-rating">⭐ ${r.rating} <span style="color:var(--text-muted);font-weight:400;">(${r.reviews})</span></div>
+                            <span class="restaurant-card-cuisine" data-translate="true" data-original-text="${r.cuisine}">${r.cuisine}</span>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -585,16 +562,19 @@
             const restaurant=restaurants.find(r=>r.id===rid);
             if(!restaurant)return;
             currentRestaurant=restaurant;
+            
             const hb=g('menuHeroBg'),ht=g('menuHeroTitle'),hs=g('menuHeroSub'),hm=g('menuHeroMeta'),hb2=g('headerBrand');
             if(hb)hb.style.backgroundImage=`url(${restaurant.image})`;
-            if(ht)ht.textContent=restaurant.name;
-            if(hs)hs.textContent=restaurant.description;
+            if(ht){ht.textContent=restaurant.name;ht.dataset.originalText=restaurant.name;}
+            if(hs){hs.textContent=restaurant.description;hs.dataset.originalText=restaurant.description;}
             if(hm)hm.innerHTML=`<span>⭐ <strong>${restaurant.rating}</strong> (${restaurant.reviews})</span><span>📍 ${restaurant.area||''}</span>`;
-            if(hb2)hb2.textContent=restaurant.name;
+            if(hb2){hb2.textContent=restaurant.name;hb2.dataset.originalText=restaurant.name;}
             document.title=restaurant.name+' | Menu';
-            // تحميل طاولات المطعم
+            
+            // ترجمة لو اللغة مش إنجليزي
+            if(st.lang!=='en') await translator.translatePage(st.lang);
+            
             await loadRestaurantTables(restaurant.id);
-            // تحميل قائمة المطعم
             await loadRestaurantMenu(restaurant.id);
             goScreen('menu');
         }
@@ -616,25 +596,21 @@
                 else{products=[...defaultProducts];}
             }catch(e){products=[...defaultProducts];}
             showLoading(false);
-            renderCats();renderProducts();
+            renderCats();
+            renderProducts();
+            // ترجمة المنتجات لو اللغة مش إنجليزي
+            if(st.lang!=='en') await translator.translatePage(st.lang);
         }
 
         // ===== تنقل =====
-        function goScreen(s){
-            if(st.screen===s)return;
-            st.history.push(s);st.screen=s;refreshUI();
-        }
-        function goBack(){
-            if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();}
-        }
+        function goScreen(s){if(st.screen===s)return;st.history.push(s);st.screen=s;refreshUI();}
+        function goBack(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();}}
         function refreshUI(){
             all('.screen').forEach(sc=>sc.classList.remove('active'));
             const tgt=g('screen-'+st.screen);if(tgt)tgt.classList.add('active');
             const back=g('navBack'),nav=g('navHeader');
-            const hasHero = (st.screen==='restaurants'||st.screen==='menu');
-            // لو فيه هيرو، الهيدر يبقى transparent
-            if(hasHero){nav.classList.add('transparent');}
-            else{nav.classList.remove('transparent');}
+            const hasHero=(st.screen==='restaurants'||st.screen==='menu');
+            if(hasHero){nav.classList.add('transparent');}else{nav.classList.remove('transparent');}
             if(st.screen==='restaurants')back.classList.remove('show');
             else if(st.history.length>1)back.classList.add('show');
             else back.classList.remove('show');
@@ -643,7 +619,7 @@
             else{btn.style.display='block';
                 if(st.screen==='menu'){btn.innerHTML='🛒 '+t('view_cart')+' ('+cnt+')';btn.onclick=()=>goScreen('cart');btn.disabled=cnt===0;}
                 else if(st.screen==='cart'){
-                    if(QR_TABLE||(currentRestaurant&&st.selTable)){btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
+                    if(QR_TABLE||st.selTable){btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
                     else{btn.innerHTML='📋 '+t('choose_table_or_delivery');btn.onclick=()=>goScreen('table-select');btn.disabled=cnt===0;}
                 }else if(st.screen==='table-select'){btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
             }
@@ -654,16 +630,44 @@
         function renderProducts(cat='all'){
             const container=g('prodContainer');if(!container)return;
             let items=cat==='all'?products:products.filter(p=>p.cat===cat);
-            if(st.viewMode==='list'){container.className='prod-list';container.innerHTML=items.map((p,i)=>`<div class="prod-row" data-pid="${p.id}" style="animation-delay:${i*0.03}s"><div class="prod-emoji">${p.emoji}</div><div class="prod-info"><div class="prod-name">${pName(p)}</div><div class="prod-desc">${pDesc(p)}</div></div><div class="prod-price">${fmt(price(p))}</div><button class="prod-add" data-pid="${p.id}">+</button></div>`).join('');}
-            else{container.className='prod-grid';container.innerHTML=items.map((p,i)=>`<div class="prod-card" data-pid="${p.id}" style="animation-delay:${i*0.03}s"><div class="prod-card-emoji">${p.emoji}</div><div class="prod-card-body"><div class="prod-card-name">${pName(p)}</div><div class="prod-card-desc">${pDesc(p)}</div><div class="prod-card-footer"><span class="prod-card-price">${fmt(price(p))}</span><button class="prod-card-add" data-pid="${p.id}">+</button></div></div></div>`).join('');}
+            if(st.viewMode==='list'){
+                container.className='prod-list';
+                container.innerHTML=items.map((p,i)=>`
+                    <div class="prod-row" data-pid="${p.id}" style="animation-delay:${i*0.03}s">
+                        <div class="prod-emoji">${p.emoji}</div>
+                        <div class="prod-info">
+                            <div class="prod-name" data-translate="true" data-original-text="${p.name.replace(/"/g,'&quot;')}">${p.name}</div>
+                            <div class="prod-desc" data-translate="true" data-original-text="${(p.desc||'').replace(/"/g,'&quot;')}">${p.desc||''}</div>
+                        </div>
+                        <div class="prod-price">${fmt(price(p))}</div>
+                        <button class="prod-add" data-pid="${p.id}">+</button>
+                    </div>
+                `).join('');
+            }else{
+                container.className='prod-grid';
+                container.innerHTML=items.map((p,i)=>`
+                    <div class="prod-card" data-pid="${p.id}" style="animation-delay:${i*0.03}s">
+                        <div class="prod-card-emoji">${p.emoji}</div>
+                        <div class="prod-card-body">
+                            <div class="prod-card-name" data-translate="true" data-original-text="${p.name.replace(/"/g,'&quot;')}">${p.name}</div>
+                            <div class="prod-card-desc" data-translate="true" data-original-text="${(p.desc||'').replace(/"/g,'&quot;')}">${p.desc||''}</div>
+                            <div class="prod-card-footer">
+                                <span class="prod-card-price">${fmt(price(p))}</span>
+                                <button class="prod-card-add" data-pid="${p.id}">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
             container.querySelectorAll('.prod-row, .prod-card').forEach(el=>{el.addEventListener('click',function(e){if(e.target.closest('.prod-add')||e.target.closest('.prod-card-add'))return;openDetailModal(parseInt(this.dataset.pid));});});
             container.querySelectorAll('.prod-add, .prod-card-add').forEach(b=>{b.addEventListener('click',function(e){e.stopPropagation();addToCart(parseInt(this.dataset.pid));});});
         }
+
         function renderCats(){
             const row=g('catsRow');if(!row)return;
-            const cats=[{id:'all',ico:'🌟',lbl:'all'},{id:'coffee',ico:'☕',lbl:'coffee'},{id:'breakfast',ico:'🥐',lbl:'breakfast'},{id:'main',ico:'🥩',lbl:'main'},{id:'dessert',ico:'🍰',lbl:'dessert'}];
-            const labels={ar:{all:'الكل',coffee:'قهوة',breakfast:'فطار',main:'رئيسي',dessert:'حلو'},en:{all:'All',coffee:'Coffee',breakfast:'Breakfast',main:'Mains',dessert:'Desserts'},ru:{all:'Всё',coffee:'Кофе',breakfast:'Завтрак',main:'Основное',dessert:'Десерты'},it:{all:'Tutto',coffee:'Caffè',breakfast:'Colazione',main:'Principale',dessert:'Dessert'},de:{all:'Alle',coffee:'Kaffee',breakfast:'Frühstück',main:'Haupt',dessert:'Desserts'}};
-            row.innerHTML=cats.map(c=>`<div class="cat-pill ${c.id==='all'?'active':''}" data-cat="${c.id}"><span class="cat-ico">${c.ico}</span><span class="cat-lbl">${(labels[st.lang]&&labels[st.lang][c.lbl])||c.lbl}</span></div>`).join('');
+            const catNames={en:{all:'All',coffee:'Coffee',breakfast:'Breakfast',main:'Mains',dessert:'Desserts'},ar:{all:'الكل',coffee:'قهوة',breakfast:'فطار',main:'رئيسي',dessert:'حلو'},ru:{all:'Всё',coffee:'Кофе',breakfast:'Завтрак',main:'Основное',dessert:'Десерты'},it:{all:'Tutto',coffee:'Caffè',breakfast:'Colazione',main:'Principale',dessert:'Dessert'},de:{all:'Alle',coffee:'Kaffee',breakfast:'Frühstück',main:'Haupt',dessert:'Desserts'}};
+            const cats=[{id:'all',ico:'🌟',key:'all'},{id:'coffee',ico:'☕',key:'coffee'},{id:'breakfast',ico:'🥐',key:'breakfast'},{id:'main',ico:'🥩',key:'main'},{id:'dessert',ico:'🍰',key:'dessert'}];
+            row.innerHTML=cats.map(c=>`<div class="cat-pill ${c.id==='all'?'active':''}" data-cat="${c.id}"><span class="cat-ico">${c.ico}</span><span class="cat-lbl">${(catNames[st.lang]&&catNames[st.lang][c.key])||c.key}</span></div>`).join('');
             row.querySelectorAll('.cat-pill').forEach(p=>p.onclick=function(){row.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active'));this.classList.add('active');renderProducts(this.dataset.cat);});
         }
 
@@ -672,7 +676,7 @@
         function updateCartUI(){
             const wrap=g('cartItemsWrap');if(!wrap)return;const sub=cartTotal(),tax=sub*0.14,svc=sub*0.10,tot=sub+tax+svc;
             if(st.cart.length===0){wrap.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem;">'+t('cart_empty')+' 🛒</p>';}
-            else{wrap.innerHTML=st.cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return'';return`<div class="cart-item"><div class="cart-item-emoji">${p.emoji}</div><div class="cart-item-mid"><div class="cart-item-name">${pName(p)}</div><div class="cart-item-price">${fmt(price(p))} × ${i.qty}</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="${i.id}" data-d="-1">-</button><span class="qty-n">${i.qty}</span><button class="qty-b" data-pid="${i.id}" data-d="1">+</button></div></div>`;}).join('');wrap.querySelectorAll('.qty-b').forEach(b=>b.onclick=function(){qtyChange(+this.dataset.pid,+this.dataset.d);});}
+            else{wrap.innerHTML=st.cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return'';return`<div class="cart-item"><div class="cart-item-emoji">${p.emoji}</div><div class="cart-item-mid"><div class="cart-item-name">${p.name}</div><div class="cart-item-price">${fmt(price(p))} × ${i.qty}</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="${i.id}" data-d="-1">-</button><span class="qty-n">${i.qty}</span><button class="qty-b" data-pid="${i.id}" data-d="1">+</button></div></div>`;}).join('');wrap.querySelectorAll('.qty-b').forEach(b=>b.onclick=function(){qtyChange(+this.dataset.pid,+this.dataset.d);});}
             g('sumSub').textContent=fmt(sub);g('sumTax').textContent=fmt(tax);g('sumSvc').textContent=fmt(svc);g('sumTotal').textContent=fmt(tot);
             const card=g('cartCustCard');
             if(QR_TABLE){card.style.display='flex';g('cartCustName').textContent=t('your_table')+' '+QR_TABLE;g('cartCustMeta').textContent=t('dine_in');}
@@ -681,7 +685,7 @@
             else{card.style.display='none';}
         }
 
-        function openDetailModal(pid){const p=products.find(x=>x.id===pid);if(!p)return;g('modalEmoji').textContent=p.emoji;g('modalName').textContent=pName(p);g('modalDesc').textContent=pDesc(p);g('modalPrice').textContent=fmt(price(p));g('modalOldPrice').textContent='';g('modalAddBtn').textContent=t('add_to_cart');g('modalAddBtn').onclick=()=>{addToCart(pid);closeDetailModal();};g('detailModal').classList.add('show');document.body.style.overflow='hidden';}
+        function openDetailModal(pid){const p=products.find(x=>x.id===pid);if(!p)return;g('modalEmoji').textContent=p.emoji;g('modalName').textContent=p.name;g('modalName').dataset.originalText=p.name;g('modalDesc').textContent=p.desc||'';g('modalDesc').dataset.originalText=p.desc||'';g('modalPrice').textContent=fmt(price(p));g('detailModal').classList.add('show');document.body.style.overflow='hidden';g('modalAddBtn').onclick=()=>{addToCart(pid);closeDetailModal();};if(st.lang!=='en')translator.translatePage(st.lang);}
         function closeDetailModal(){g('detailModal').classList.remove('show');document.body.style.overflow='';}
 
         // ===== طاولات =====
@@ -696,30 +700,41 @@
         function confirmOrder(){
             if(st.cart.length===0){toast(t('cart_empty'));return;}
             if(QR_TABLE){st.selTable=QR_TABLE;st.orderType='dine-in';}
-            if(!QR_TABLE){
-                const nm=(g('inpName')?.value||'').trim(),ph=(g('inpPhone')?.value||'').trim(),ad=(g('inpAddr')?.value||'').trim();
-                if(st.orderType==='dine-in'&&!st.selTable){toast(t('pick_table_first'));return;}
-                if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast(t('fill_delivery'));return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}
-            }
+            if(!QR_TABLE){const nm=(g('inpName')?.value||'').trim(),ph=(g('inpPhone')?.value||'').trim(),ad=(g('inpAddr')?.value||'').trim();if(st.orderType==='dine-in'&&!st.selTable){toast(t('pick_table_first'));return;}if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast(t('fill_delivery'));return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}}
             const oid=Math.floor(1000+Math.random()*9000);g('orderIdBadge').textContent='#'+oid;
             const si=g('successTableInfo');if(si)si.textContent=st.selTable?t('pick_table')+' '+st.selTable:'';
             launchConfetti();g('successOverlay').classList.add('show');
-            setTimeout(()=>{g('successOverlay').classList.remove('show');st.cart=[];st.selTable=QR_TABLE?QR_TABLE:null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['restaurants'];st.screen='restaurants';if(!QR_TABLE){if(g('inpName'))g('inpName').value='';if(g('inpPhone'))g('inpPhone').value='';if(g('inpAddr'))g('inpAddr').value='';}refreshUI();updateCartUI();renderProducts();const tsi=g('tableSelInfo');if(tsi){tsi.textContent=t('no_table');tsi.classList.remove('confirmed');}},3200);
+            setTimeout(()=>{g('successOverlay').classList.remove('show');st.cart=[];st.selTable=QR_TABLE?QR_TABLE:null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['restaurants'];st.screen='restaurants';if(!QR_TABLE){if(g('inpName'))g('inpName').value='';if(g('inpPhone'))g('inpPhone').value='';if(g('inpAddr'))g('inpAddr').value='';}refreshUI();updateCartUI();renderProducts();},3200);
         }
         function launchConfetti(){const box=g('confettiBox'),cols=['#c8a45c','#dfc07c','#ff4444','#4ade80','#60a5fa','#f472b6','#fff'];box.innerHTML='';for(let i=0;i<50;i++){const d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.8+'s';d.style.animationDuration=(2+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(5+Math.random()*7)+'px';d.style.height=(5+Math.random()*7)+'px';box.appendChild(d);}setTimeout(()=>box.innerHTML='',3000);}
         function toast(msg){const el=g('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(()=>el.classList.remove('show'),2200);}
-        function switchLang(lang){st.lang=lang;localStorage.setItem('lamaison_lang',lang);document.body.className=lang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';g('langLabel').textContent=lang.toUpperCase();all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));g('langDrop').classList.remove('open');applyT9n();renderCats();renderProducts();updateCartUI();if(!QR_TABLE)renderTables();refreshUI();}
-        function setView(mode){st.viewMode=mode;all('.vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===mode));renderProducts();}
 
+        // ===== لغة =====
+        async function switchLang(lang){
+            st.lang=lang;localStorage.setItem('lamaison_lang',lang);
+            document.body.className=lang+(st.theme==='light'?' light-mode':'');
+            document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+            g('langLabel').textContent=lang.toUpperCase();
+            all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
+            g('langDrop').classList.remove('open');
+            applyT9n();
+            await translator.translatePage(lang);
+            renderCats();
+            if(currentRestaurant){renderProducts();}else{renderRestaurants();}
+            updateCartUI();if(!QR_TABLE)renderTables();refreshUI();
+        }
+
+        function setView(mode){st.viewMode=mode;all('.vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===mode));renderProducts();}
         function checkAutoTheme(){const nt=getAutoTheme();if(nt!==st.theme){st.theme=nt;applyTheme();}}
 
         function init(){
-            const savedLang=localStorage.getItem('lamaison_lang')||'ar';st.lang=savedLang;st.theme=getAutoTheme();
+            const savedLang=localStorage.getItem('lamaison_lang')||'en';st.lang=savedLang;st.theme=getAutoTheme();
             document.body.className=savedLang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
             g('langLabel').textContent=savedLang.toUpperCase();all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===savedLang));
             applyTheme();applyT9n();
             products=[...defaultProducts];currentTables=[...defaultTables];
-            fetchRestaurants();renderCats();renderProducts();renderTables();updateCartUI();refreshUI();
+            fetchRestaurants().then(()=>{if(st.lang!=='en')translator.translatePage(st.lang);});
+            renderCats();renderProducts();renderTables();updateCartUI();refreshUI();
 
             g('navBack').onclick=goBack;g('cartNavBtn').onclick=()=>goScreen('cart');
             g('langBtn').onclick=e=>{e.stopPropagation();g('langDrop').classList.toggle('open');};
@@ -729,10 +744,7 @@
             all('#currencyRow .cur-chip').forEach(c=>c.onclick=function(){st.cur=this.dataset.currency;all('#currencyRow .cur-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active');renderProducts();updateCartUI();refreshUI();});
             all('.vt-btn').forEach(b=>b.onclick=function(){setView(this.dataset.view);});
             if(!QR_TABLE){all('#orderTypeRow .order-type-btn').forEach(b=>b.onclick=function(){st.orderType=this.dataset.type;all('#orderTypeRow .order-type-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');g('tablesBox').style.display=st.orderType==='dine-in'?'block':'none';g('deliveryFormBox').style.display=st.orderType==='delivery'?'block':'none';});}
-
-            // QR لمطعم معين
             if(QR_RESTAURANT){const check=setInterval(()=>{if(restaurants.length>0){clearInterval(check);selectRestaurant(QR_RESTAURANT);}},200);setTimeout(()=>clearInterval(check),5000);}
-
             setTimeout(()=>g('splashScreen').classList.add('hide'),2000);
             setTimeout(()=>{if(!g('splashScreen').classList.contains('hide'))g('splashScreen').classList.add('hide');},4500);
             setInterval(checkAutoTheme,60000);
