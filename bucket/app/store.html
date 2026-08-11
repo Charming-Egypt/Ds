@@ -35,9 +35,9 @@
             --hero-day: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80');
             --hero-night: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80');
             --hero-image: var(--hero-night);
+            --header-height: 52px;
         }
 
-        /* Light Mode (نهار) */
         body.light-mode {
             --bg: #f5f5f7;
             --surface: #ffffff;
@@ -50,17 +50,8 @@
             --border-active: rgba(200,164,92,0.6);
             --hero-image: var(--hero-day);
         }
-        body.light-mode .nav-header { 
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        body.light-mode .bottom-bar { 
-            background: rgba(245,245,247,0.9); 
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top-color: rgba(0,0,0,0.08); 
-        }
+        body.light-mode .nav-header { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        body.light-mode .bottom-bar { background: rgba(245,245,247,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top-color: rgba(0,0,0,0.08); }
         body.light-mode .hero-sub { color: rgba(255,255,255,0.85); }
         body.light-mode .toast { background: #1a1a1a; color: #fff; }
         body.light-mode .success-overlay { background: rgba(0,0,0,0.9); }
@@ -69,14 +60,7 @@
         body.light-mode .lang-btn { background: rgba(0,0,0,0.08); color: #fff; border-color: rgba(0,0,0,0.12); }
         body.light-mode .cart-nav-dot { border: 2px solid #fff; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
 
         body {
             font-family: 'Cairo', 'Inter', sans-serif;
@@ -88,7 +72,6 @@
             -webkit-font-smoothing: antialiased;
             transition: background 0.6s, color 0.6s;
         }
-
         body.en, body.de, body.it, body.ru { font-family: 'Inter', sans-serif; direction: ltr; }
         body.ar { font-family: 'Cairo', sans-serif; direction: rtl; }
 
@@ -103,220 +86,124 @@
             position: relative;
         }
 
-        /* ========== سبلاش ========== */
-        .splash {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.7s ease, visibility 0.7s ease;
-        }
+        /* سبلاش */
+        .splash { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.7s ease, visibility 0.7s ease; }
         .splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
         .splash-icon { font-size: 5rem; animation: floatIcon 2.2s ease-in-out infinite; }
         @keyframes floatIcon { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-        .splash-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.6rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--gold) 0%, #f0e4c8 50%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 3px;
-            margin-top: 0.5rem;
-        }
+        .splash-brand { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; background: linear-gradient(135deg, var(--gold) 0%, #f0e4c8 50%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; margin-top: 0.5rem; }
         .splash-sub { color: #737373; font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase; margin-top: 0.4rem; }
 
-        /* ========== لودر ========== */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
+        /* لودر */
+        .loading-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .loading-overlay.show { opacity: 1; pointer-events: auto; }
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { color: var(--text-secondary); font-size: 0.85rem; }
 
-        /* ========== هيدر ========== */
-        .status-bar-spacer { height: var(--safe-top); background: transparent; position: relative; z-index: 10; }
+        /* ========== هيدر ثابت لجميع الصفحات ========== */
+        .status-bar-spacer { height: var(--safe-top); background: #000; position: relative; z-index: 100; flex-shrink: 0; }
         .nav-header {
-            position: absolute;
-            top: var(--safe-top);
-            left: 0;
-            right: 0;
-            background: rgba(6,6,6,0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: var(--bg);
             padding: 0.5rem 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             z-index: 50;
-            min-height: 52px;
+            min-height: var(--header-height);
             transition: all 0.4s;
+            flex-shrink: 0;
+            border-bottom: 0.5px solid var(--border);
         }
-        .nav-header.scrolled {
-            background: rgba(6,6,6,0.85);
-            border-bottom: 0.5px solid rgba(255,255,255,0.08);
+        body.light-mode .nav-header { background: var(--bg); }
+
+        /* لو الصفحة فيها هيرو، الهيدر يبقى شفاف */
+        .nav-header.transparent {
+            background: rgba(6,6,6,0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: none;
+            position: absolute;
+            top: var(--safe-top);
+            left: 0;
+            right: 0;
         }
-        body.light-mode .nav-header { background: rgba(255,255,255,0.3); }
-        body.light-mode .nav-header.scrolled { background: rgba(255,255,255,0.8); border-bottom: 0.5px solid rgba(0,0,0,0.08); }
-        .nav-back {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(255,255,255,0.12); border: none; color: #fff;
-            font-size: 1.3rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: all 0.3s; flex-shrink: 0;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
+        body.light-mode .nav-header.transparent { background: rgba(255,255,255,0.3); }
+
+        .nav-back { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: none; color: var(--text); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s; flex-shrink: 0; }
         .nav-back.show { opacity: 1; pointer-events: auto; }
-        .nav-brand {
-            font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 800;
-            letter-spacing: 1px; color: #fff; flex: 1; text-align: center;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
+        .nav-header.transparent .nav-back { background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+        .nav-brand { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text); flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nav-header.transparent .nav-brand { color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
         .nav-right { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
-        .lang-btn {
-            padding: 0.35rem 0.55rem; border-radius: 50px; font-size: 0.7rem;
-            font-weight: 700; gap: 0.2rem; font-family: inherit; position: relative;
-            width: auto; background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.2); color: #fff;
-            cursor: pointer; display: flex; align-items: center; transition: all 0.3s;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .lang-drop {
-            position: absolute; top: calc(100% + 6px); right: 0;
-            background: var(--surface3); border: 1px solid var(--border);
-            border-radius: var(--radius-sm); overflow: hidden; min-width: 130px;
-            opacity: 0; visibility: hidden; transform: translateY(-6px);
-            transition: all 0.25s; z-index: 60; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-        }
+        .lang-btn { padding: 0.35rem 0.55rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; gap: 0.2rem; font-family: inherit; position: relative; width: auto; background: var(--surface2); border: 1px solid var(--border); color: var(--text); cursor: pointer; display: flex; align-items: center; transition: all 0.3s; }
+        .nav-header.transparent .lang-btn { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+        .lang-drop { position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; min-width: 130px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.25s; z-index: 60; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
         .lang-drop.open { opacity: 1; visibility: visible; transform: translateY(0); }
-        .lang-opt {
-            padding: 0.65rem 1rem; cursor: pointer; font-size: 0.8rem; font-weight: 500;
-            transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
-            color: var(--text-secondary); white-space: nowrap;
-        }
+        .lang-opt { padding: 0.65rem 1rem; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; color: var(--text-secondary); white-space: nowrap; }
         .lang-opt:hover { background: rgba(200,164,92,0.08); color: var(--text); }
         .lang-opt.active { color: var(--gold); font-weight: 700; background: rgba(200,164,92,0.1); }
-        .cart-nav-btn {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: rgba(255,255,255,0.12); border: none; color: #fff;
-            font-size: 1.1rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; transition: all 0.3s;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .cart-nav-dot {
-            position: absolute; top: 7px; right: 7px;
-            width: 8px; height: 8px; background: var(--red);
-            border-radius: 50%; display: none; border: 2px solid rgba(0,0,0,0.3);
-        }
+
+        .cart-nav-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--surface2); border: none; color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.3s; }
+        .nav-header.transparent .cart-nav-btn { background: rgba(255,255,255,0.12); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .cart-nav-dot { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; display: none; border: 2px solid rgba(0,0,0,0.3); }
         .cart-nav-dot.on { display: block; }
 
         /* ========== محتوى ========== */
-        .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: -52px; }
-        .screen { display: none; animation: screenIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); }
+        .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .screen { display: none; animation: screenIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1); min-height: 100%; }
         .screen.active { display: block; }
         @keyframes screenIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== هيرو ========== */
-        .hero-wrapper { position: relative; width: 100%; height: 380px; overflow: hidden; }
-        .hero-bg {
-            width: 100%; height: 100%;
-            background-image: var(--hero-image);
-            background-size: cover; background-position: center;
-            position: absolute; inset: 0; transition: background-image 0.8s ease;
-        }
-        .hero-bg::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.4) 60%, var(--bg) 100%);
-            transition: background 0.6s;
-        }
-        body.light-mode .hero-bg::after {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.2) 70%, var(--bg) 100%);
-        }
-        .hero-content { position: absolute; bottom: 2rem; left: 0; right: 0; text-align: center; padding: 0 2rem; z-index: 2; }
-        .hero-logo { font-size: 3.5rem; margin-bottom: 0.3rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
-        .hero-title {
-            font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900;
-            line-height: 1.1; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.4);
-        }
-        .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.85rem; margin: 0.3rem 0 0.5rem; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-        .hero-meta { display: flex; justify-content: center; gap: 1rem; margin-bottom: 0.5rem; font-size: 0.75rem; color: rgba(255,255,255,0.8); }
+        /* ========== هيرو (للمطاعم والقائمة) ========== */
+        .hero-wrapper { position: relative; width: 100%; height: 340px; overflow: hidden; margin-top: calc(-1 * var(--header-height) - var(--safe-top)); }
+        .hero-bg { width: 100%; height: 100%; background-image: var(--hero-image); background-size: cover; background-position: center; position: absolute; inset: 0; transition: background-image 0.8s ease; }
+        .hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.3) 60%, var(--bg) 100%); }
+        body.light-mode .hero-bg::after { background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.2) 65%, var(--bg) 100%); }
+        .hero-content { position: absolute; bottom: 1.8rem; left: 0; right: 0; text-align: center; padding: 0 2rem; z-index: 2; }
+        .hero-logo { font-size: 3rem; margin-bottom: 0.3rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); }
+        .hero-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; line-height: 1.15; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.4); word-break: break-word; }
+        .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.8rem; margin: 0.3rem 0 0.5rem; text-shadow: 0 1px 4px rgba(0,0,0,0.3); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hero-meta { display: flex; justify-content: center; gap: 1rem; margin-bottom: 0.5rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); flex-wrap: wrap; }
         .hero-meta span { display: flex; align-items: center; gap: 0.3rem; }
         .hero-rating { color: #f4b400; font-weight: 700; }
-        .table-tag {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.4rem 1.1rem; border-radius: 50px; font-weight: 700;
-            font-size: 0.85rem; color: #fff;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
+
+        .table-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); padding: 0.4rem 1.1rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem; color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .table-tag .tag-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
         @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.6)} }
 
-        /* ========== محتوى تحت الهيرو ========== */
+        /* ========== باقي الصفحات - padding top للهيدر ========== */
+        .screen-padded { padding-top: calc(var(--header-height) + var(--safe-top) + 0.5rem); }
+        .content-padded { padding: 0 1rem 1.5rem; }
+
+        /* ========== محتوى القائمة ========== */
         .content-below-hero { padding: 0 1rem 1.5rem; position: relative; z-index: 1; background: var(--bg); transition: background 0.6s; }
+
         .view-toggle-row { display: flex; justify-content: flex-end; gap: 0.4rem; margin-bottom: 0.5rem; }
-        .vt-btn {
-            width: 34px; height: 34px; border-radius: var(--radius-sm);
-            background: var(--surface2); border: 1px solid var(--border);
-            color: var(--text-muted); font-size: 0.85rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-        }
+        .vt-btn { width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
         .vt-btn.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
         .currency-row { display: flex; justify-content: center; gap: 0.4rem; margin-bottom: 1rem; }
-        .cur-chip {
-            padding: 0.4rem 0.8rem; background: var(--surface2); border: 1px solid var(--border);
-            border-radius: 50px; color: var(--text-secondary); font-size: 0.75rem;
-            font-weight: 700; cursor: pointer; transition: all 0.3s;
-        }
+        .cur-chip { padding: 0.4rem 0.8rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .cur-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
         .cats-row { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.2rem 0 0.8rem; scrollbar-width: none; }
         .cats-row::-webkit-scrollbar{display:none}
-        .cat-pill {
-            flex-shrink: 0; width: 68px; height: 76px; background: var(--surface2);
-            border: 1px solid var(--border); border-radius: var(--radius);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 0.3rem; cursor: pointer; transition: all 0.3s;
-        }
+        .cat-pill { flex-shrink: 0; width: 68px; height: 76px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; cursor: pointer; transition: all 0.3s; }
         .cat-pill:active{transform:scale(0.94)}
         .cat-pill.active { border-color: var(--gold); background: var(--surface3); box-shadow: 0 0 22px rgba(200,164,92,0.12); }
         .cat-ico{font-size:1.8rem}
         .cat-lbl{font-size:0.63rem;font-weight:600;color:var(--text-secondary)}
+
         .sec-head { margin: 1.2rem 0 0.8rem; display: flex; justify-content: space-between; align-items: center; }
         .sec-title { font-size: 1.05rem; font-weight: 700; }
 
         /* منتجات LIST */
         .prod-list { display: flex; flex-direction: column; gap: 0.6rem; padding-bottom: 0.5rem; }
-        .prod-row {
-            display: flex; align-items: center; gap: 0.7rem;
-            background: var(--surface); border: 0.5px solid var(--border);
-            border-radius: var(--radius); padding: 0.7rem; cursor: pointer;
-            transition: all 0.2s; animation: fadeSlide 0.3s ease backwards;
-        }
+        .prod-row { display: flex; align-items: center; gap: 0.7rem; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0.7rem; cursor: pointer; transition: all 0.2s; animation: fadeSlide 0.3s ease backwards; }
         .prod-row:active{background:var(--surface2)}
         @keyframes fadeSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .prod-emoji { font-size: 2.4rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--surface2); border-radius: var(--radius-sm); flex-shrink: 0; }
@@ -405,7 +292,7 @@
         .sum-row.total-line { font-size: 1.05rem; font-weight: 800; color: var(--text); border-top: 0.5px solid var(--border); padding-top: 0.7rem; margin-top: 0.5rem; }
 
         /* زر سفلي */
-        .bottom-bar { padding: 0.6rem 1rem; padding-bottom: calc(0.6rem + var(--safe-bottom)); background: var(--bg); border-top: 0.5px solid var(--border); transition: background 0.6s; }
+        .bottom-bar { padding: 0.6rem 1rem; padding-bottom: calc(0.6rem + var(--safe-bottom)); background: var(--bg); border-top: 0.5px solid var(--border); transition: background 0.6s; flex-shrink: 0; }
         .big-btn { width: 100%; padding: 0.95rem; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.95rem; font-weight: 800; cursor: pointer; letter-spacing: 0.4px; transition: all 0.3s; }
         .big-btn:active{transform:scale(0.96);opacity:0.85}
         .big-btn:disabled{background:var(--surface3);color:var(--text-muted);cursor:not-allowed}
@@ -428,45 +315,22 @@
         .success-table { color: var(--gold); font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
         .order-id-badge { background: #1a1a1a; padding: 0.45rem 1.4rem; border-radius: 50px; font-weight: 700; font-size: 1.1rem; color: var(--gold); display: inline-block; letter-spacing: 3px; }
 
-        .table-select-hero { text-align: center; padding: 2rem 0.5rem 1rem; }
-        .table-select-hero .tsh-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-        .table-select-hero .tsh-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text); }
-        .table-select-hero .tsh-sub { color: var(--text-secondary); font-size: 0.85rem; }
+        .table-select-hero { text-align: center; padding: 1rem 0.5rem 1rem; }
+        .table-select-hero .tsh-icon { font-size: 2.5rem; margin-bottom: 0.4rem; }
+        .table-select-hero .tsh-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem; color: var(--text); }
+        .table-select-hero .tsh-sub { color: var(--text-secondary); font-size: 0.8rem; }
 
-        /* ========== صفحة المطاعم ========== */
-        .restaurants-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            padding: 1rem 0;
-        }
-        .restaurant-card {
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+        /* صفحة المطاعم */
+        .restaurants-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; padding: 1rem; }
+        .restaurant-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all 0.3s; }
         .restaurant-card:active { transform: scale(0.98); }
-        .restaurant-card-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
+        .restaurant-card-img { width: 100%; height: 180px; object-fit: cover; }
         .restaurant-card-body { padding: 1rem; }
         .restaurant-card-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; color: var(--text); }
         .restaurant-card-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem; display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .restaurant-card-footer { display: flex; justify-content: space-between; align-items: center; }
         .restaurant-card-rating { display: flex; align-items: center; gap: 0.3rem; color: #f4b400; font-weight: 700; font-size: 0.85rem; }
-        .restaurant-card-cuisine {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.7rem;
-            border-radius: 50px;
-            background: var(--surface2);
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
+        .restaurant-card-cuisine { font-size: 0.7rem; padding: 0.25rem 0.7rem; border-radius: 50px; background: var(--surface2); color: var(--text-secondary); font-weight: 600; }
     </style>
 </head>
 <body class="ar">
@@ -480,12 +344,13 @@
     <!-- لودر -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">جاري تحميل بيانات المطعم...</div>
+        <div class="loading-text">جاري تحميل البيانات...</div>
     </div>
 
     <div class="app-shell" id="appShell">
         <div class="status-bar-spacer"></div>
-        
+
+        <!-- هيدر -->
         <header class="nav-header" id="navHeader">
             <button class="nav-back" id="navBack">‹</button>
             <span class="nav-brand" id="headerBrand">LA MAISON</span>
@@ -508,13 +373,13 @@
         </header>
 
         <div class="main-scroll" id="mainScroll">
-            <!-- شاشة المطاعم -->
+            <!-- ===== المطاعم ===== -->
             <div class="screen active" id="screen-restaurants">
-                <div class="hero-wrapper" style="height:300px;">
+                <div class="hero-wrapper">
                     <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80');"></div>
                     <div class="hero-content">
                         <div class="hero-logo">🍽️</div>
-                        <h1 class="hero-title">Discover <span style="color:var(--gold);">Restaurants</span></h1>
+                        <h1 class="hero-title">Our <span style="color:var(--gold);">Restaurants</span></h1>
                         <p class="hero-sub">اختر مطعمك المفضل واطلب بسهولة</p>
                     </div>
                 </div>
@@ -523,13 +388,13 @@
                 </div>
             </div>
 
-            <!-- شاشة القائمة -->
+            <!-- ===== القائمة ===== -->
             <div class="screen" id="screen-menu">
                 <div class="hero-wrapper" id="menuHeroWrapper">
                     <div class="hero-bg" id="menuHeroBg"></div>
                     <div class="hero-content">
                         <div class="hero-logo">🍽️</div>
-                        <h1 class="hero-title" id="menuHeroTitle">La <span class="hl">Maison</span></h1>
+                        <h1 class="hero-title" id="menuHeroTitle">Loading...</h1>
                         <p class="hero-sub" id="menuHeroSub"></p>
                         <div class="hero-meta" id="menuHeroMeta"></div>
                         <div class="table-tag" id="tableTag" style="display:none;">
@@ -548,17 +413,17 @@
                     <div class="sec-head">
                         <span class="sec-title">🧑‍🍳 <span data-i18n="today_menu">Today's Menu</span></span>
                         <div class="view-toggle-row" style="margin:0;">
-                            <button class="vt-btn active" data-view="list" title="List View">☰</button>
-                            <button class="vt-btn" data-view="grid" title="Grid View">⊞</button>
+                            <button class="vt-btn active" data-view="list" title="List">☰</button>
+                            <button class="vt-btn" data-view="grid" title="Grid">⊞</button>
                         </div>
                     </div>
                     <div id="prodContainer"></div>
                 </div>
             </div>
 
-            <!-- شاشة السلة -->
-            <div class="screen" id="screen-cart">
-                <div class="content-below-hero">
+            <!-- ===== السلة ===== -->
+            <div class="screen screen-padded" id="screen-cart">
+                <div class="content-padded">
                     <div class="sec-head"><span class="sec-title">🛒 <span data-i18n="your_cart">سلة التسوق</span></span></div>
                     <div class="cart-cust-card" id="cartCustCard" style="display:none;">
                         <div class="cart-cust-avatar">👤</div>
@@ -577,9 +442,9 @@
                 </div>
             </div>
 
-            <!-- شاشة اختيار الطاولة -->
-            <div class="screen" id="screen-table-select">
-                <div class="content-below-hero">
+            <!-- ===== اختيار الطاولة ===== -->
+            <div class="screen screen-padded" id="screen-table-select">
+                <div class="content-padded">
                     <div class="table-select-hero">
                         <div class="tsh-icon">🪑</div>
                         <div class="tsh-title" data-i18n="how_to_order">اختر طريقة الطلب</div>
@@ -615,10 +480,7 @@
             <div class="modal-emoji" id="modalEmoji"></div>
             <div class="modal-name" id="modalName"></div>
             <div class="modal-desc" id="modalDesc"></div>
-            <div class="modal-price-row">
-                <span class="modal-price" id="modalPrice"></span>
-                <span class="modal-old-price" id="modalOldPrice"></span>
-            </div>
+            <div class="modal-price-row"><span class="modal-price" id="modalPrice"></span><span class="modal-old-price" id="modalOldPrice"></span></div>
             <button class="modal-add-btn" id="modalAddBtn">➕ إضافة إلى السلة</button>
         </div>
     </div>
@@ -637,200 +499,127 @@
 
     <script>
     (function() {
-        // ========== تحميل بيانات المطاعم ==========
-        let currentRestaurant = null;
-        let restaurants = [];
-
-        async function fetchRestaurants() {
-            try {
-                showLoading(true);
-                const response = await fetch('/app/restaurants/restaurants.json');
-                if (!response.ok) throw new Error('Failed to fetch restaurants');
-                restaurants = await response.json();
-                renderRestaurants();
-                showLoading(false);
-            } catch (error) {
-                console.error('Error loading restaurants:', error);
-                // بيانات افتراضية لو فشل التحميل
-                restaurants = [
-                    {
-                        id: 1,
-                        name: "Fares Seafood",
-                        description: "Iconic seafood restaurant with panoramic Red Sea views",
-                        image: "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03",
-                        cuisine: "seafood",
-                        area: "old-market",
-                        rating: 4.8,
-                        reviews: 1420,
-                        phone: "+201003344556"
-                    },
-                    {
-                        id: 2,
-                        name: "El Masrien",
-                        description: "Authentic Egyptian cuisine featuring traditional dishes",
-                        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-                        cuisine: "egyptian",
-                        area: "naama",
-                        rating: 4.6,
-                        reviews: 985,
-                        phone: "+201112233445"
-                    }
-                ];
-                renderRestaurants();
-                showLoading(false);
-            }
-        }
-
-        function showLoading(show) {
-            const loader = document.getElementById('loadingOverlay');
-            if (loader) loader.classList.toggle('show', show);
-        }
-
-        function renderRestaurants() {
-            const grid = document.getElementById('restaurantsGrid');
-            if (!grid || !restaurants.length) return;
-
-            grid.innerHTML = restaurants.map(r => `
-                <div class="restaurant-card" onclick="window._selectRestaurant(${r.id})">
-                    <img class="restaurant-card-img" src="${r.image}" alt="${r.name}" loading="lazy">
-                    <div class="restaurant-card-body">
-                        <div class="restaurant-card-name">${r.name}</div>
-                        <div class="restaurant-card-desc">${r.description}</div>
-                        <div class="restaurant-card-footer">
-                            <div class="restaurant-card-rating">
-                                ⭐ ${r.rating} <span style="color:var(--text-muted);font-weight:400;">(${r.reviews})</span>
-                            </div>
-                            <span class="restaurant-card-cuisine">${r.cuisine}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ========== QR Code ==========
         const urlParams = new URLSearchParams(window.location.search);
         const QR_TABLE_ID = urlParams.get('table');
         const QR_TABLE = QR_TABLE_ID ? parseInt(QR_TABLE_ID) : null;
         const QR_RESTAURANT_ID = urlParams.get('restaurant');
         const QR_RESTAURANT = QR_RESTAURANT_ID ? parseInt(QR_RESTAURANT_ID) : null;
 
-        function getAutoTheme() {
-            const hour = new Date().getHours();
-            return (hour >= 6 && hour < 18) ? 'light' : 'dark';
-        }
-
-        const t9n = {
-            ar: {hero_sub:'فن الطهي العالمي',today_menu:'قائمة اليوم',how_to_order:'اختر طريقة الطلب',choose_option:'اختر الطاولة أو اطلب توصيل',dine_in:'داخل المكان',delivery:'توصيل',pick_table:'اختر رقم الطاولة',no_table:'لم تختر طاولة بعد',your_table:'طاولتك',cust_name:'اسم العميل',cust_phone:'رقم الهاتف',cust_addr:'عنوان التوصيل',your_cart:'سلة التسوق',subtotal:'المجموع الفرعي',tax:'الضريبة (14%)',service:'خدمة (10%)',total:'الإجمالي',view_cart:'عرض السلة',confirm_order:'تأكيد الطلب',cart_empty:'السلة فارغة',added_to_cart:'✅ تمت الإضافة',choose_table_or_delivery:'اختر الطاولة أو التوصيل',fill_delivery:'⚠️ أكمل بيانات التوصيل',pick_table_first:'⚠️ اختر الطاولة أولاً',table_seats:'مقاعد',add_to_cart:'➕ إضافة إلى السلة'},
-            en: {hero_sub:'World-class cuisine',today_menu:"Today's Menu",how_to_order:'How to order?',choose_option:'Choose table or delivery',dine_in:'Dine In',delivery:'Delivery',pick_table:'Pick Table Number',no_table:'No table selected',your_table:'Your Table',cust_name:'Customer Name',cust_phone:'Phone Number',cust_addr:'Delivery Address',your_cart:'Your Cart',subtotal:'Subtotal',tax:'Tax (14%)',service:'Service (10%)',total:'Total',view_cart:'View Cart',confirm_order:'Confirm Order',cart_empty:'Cart is empty',added_to_cart:'✅ Added',choose_table_or_delivery:'Choose table or delivery',fill_delivery:'⚠️ Complete details',pick_table_first:'⚠️ Pick a table',table_seats:'seats',add_to_cart:'➕ Add to Cart'},
-            ru: {hero_sub:'Кухня мирового класса',today_menu:'Меню дня',how_to_order:'Как заказать?',choose_option:'Стол или доставка',dine_in:'В ресторане',delivery:'Доставка',pick_table:'Выберите стол',no_table:'Стол не выбран',your_table:'Ваш стол',cust_name:'Имя',cust_phone:'Телефон',cust_addr:'Адрес',your_cart:'Корзина',subtotal:'Подытог',tax:'Налог',service:'Сервис',total:'Итого',view_cart:'Корзина',confirm_order:'Подтвердить',cart_empty:'Корзина пуста',added_to_cart:'✅ Добавлено',choose_table_or_delivery:'Стол или доставка',fill_delivery:'⚠️ Заполните',pick_table_first:'⚠️ Выберите стол',table_seats:'мест',add_to_cart:'➕ В корзину'},
-            it: {hero_sub:'Cucina mondiale',today_menu:'Menu del Giorno',how_to_order:'Come ordinare?',choose_option:'Tavolo o consegna',dine_in:'Al Tavolo',delivery:'Consegna',pick_table:'Scegli il Tavolo',no_table:'Nessun tavolo',your_table:'Tuo Tavolo',cust_name:'Nome',cust_phone:'Telefono',cust_addr:'Indirizzo',your_cart:'Carrello',subtotal:'Subtotale',tax:'Tasse',service:'Servizio',total:'Totale',view_cart:'Carrello',confirm_order:'Conferma',cart_empty:'Carrello vuoto',added_to_cart:'✅ Aggiunto',choose_table_or_delivery:'Tavolo o consegna',fill_delivery:'⚠️ Dati incompleti',pick_table_first:'⚠️ Scegli tavolo',table_seats:'posti',add_to_cart:'➕ Aggiungi'},
-            de: {hero_sub:'Weltklasse-Küche',today_menu:'Tagesmenü',how_to_order:'Bestellen?',choose_option:'Tisch oder Lieferung',dine_in:'Vor Ort',delivery:'Lieferung',pick_table:'Tisch wählen',no_table:'Kein Tisch',your_table:'Ihr Tisch',cust_name:'Name',cust_phone:'Telefon',cust_addr:'Adresse',your_cart:'Warenkorb',subtotal:'Zwischensumme',tax:'Steuer',service:'Service',total:'Gesamt',view_cart:'Warenkorb',confirm_order:'Bestätigen',cart_empty:'Warenkorb leer',added_to_cart:'✅ Hinzugefügt',choose_table_or_delivery:'Tisch oder Lieferung',fill_delivery:'⚠️ Daten ergänzen',pick_table_first:'⚠️ Tisch wählen',table_seats:'Plätze',add_to_cart:'➕ Hinzufügen'}
-        };
-
-        const defaultProducts = [
-            {id:1,name:'إسبريسو دوبيو',name_en:'Double Espresso',name_ru:'Двойной Эспрессо',name_it:'Espresso Doppio',name_de:'Doppelter Espresso',emoji:'☕',cat:'coffee',pEGP:45,pUSD:1.5,pEUR:1.35,desc:'قهوة إسبريسو مزدوجة مركزة',desc_en:'Concentrated double espresso',desc_ru:'Концентрированный двойной эспрессо',desc_it:'Espresso doppio concentrato',desc_de:'Konzentrierter doppelter Espresso'},
-            {id:2,name:'كابتشينو فاخر',name_en:'Premium Cappuccino',name_ru:'Премиум Капучино',name_it:'Cappuccino Premium',name_de:'Premium Cappuccino',emoji:'☕',cat:'coffee',pEGP:65,pUSD:2.1,pEUR:1.9,desc:'إسبريسو مع حليب مبخر ورغوة',desc_en:'Espresso with steamed milk',desc_ru:'Эспрессо с паровым молоком',desc_it:'Espresso con latte vaporizzato',desc_de:'Espresso mit Milchschaum'},
-            {id:3,name:'لاتيه مثلج',name_en:'Iced Latte',name_ru:'Ледяной Латте',name_it:'Latte Ghiacciato',name_de:'Eis-Latte',emoji:'🥤',cat:'coffee',pEGP:75,pUSD:2.4,pEUR:2.2,desc:'قهوة مثلجة منعشة',desc_en:'Refreshing iced coffee',desc_ru:'Освежающий кофе',desc_it:'Caffè ghiacciato',desc_de:'Erfrischender Eiskaffee'},
-            {id:4,name:'كرواسون زبدة',name_en:'Butter Croissant',name_ru:'Круассан',name_it:'Croissant',name_de:'Croissant',emoji:'🥐',cat:'breakfast',pEGP:55,pUSD:1.8,pEUR:1.6,desc:'كرواسون فرنسي طازج',desc_en:'Fresh French croissant',desc_ru:'Свежий круассан',desc_it:'Croissant fresco',desc_de:'Frisches Croissant'},
-            {id:5,name:'ستيك ريب آي',name_en:'Ribeye Steak',name_ru:'Стейк',name_it:'Bistecca',name_de:'Steak',emoji:'🥩',cat:'main',pEGP:450,pUSD:14.5,pEUR:13.5,desc:'ستيك لحم بقري 300 جرام',desc_en:'300g grilled ribeye',desc_ru:'Стейк 300 г',desc_it:'Bistecca 300g',desc_de:'300g Rindersteak'},
-            {id:6,name:'سلمون مشوي',name_en:'Grilled Salmon',name_ru:'Лосось',name_it:'Salmone',name_de:'Lachs',emoji:'🐟',cat:'main',pEGP:380,pUSD:12.3,pEUR:11.4,desc:'فيليه سلمون مع خضروات',desc_en:'Salmon fillet with vegetables',desc_ru:'Филе лосося',desc_it:'Filetto di salmone',desc_de:'Lachsfilet'},
-            {id:7,name:'تشيز كيك',name_en:'Cheesecake',name_ru:'Чизкейк',name_it:'Cheesecake',name_de:'Käsekuchen',emoji:'🍰',cat:'dessert',pEGP:110,pUSD:3.5,pEUR:3.3,desc:'تشيز كيك نيويورك كريمي',desc_en:'Creamy New York cheesecake',desc_ru:'Сливочный чизкейк',desc_it:'Cheesecake cremoso',desc_de:'Cremiger Käsekuchen'},
-            {id:8,name:'مولتن كيك',name_en:'Molten Cake',name_ru:'Фондан',name_it:'Tortino',name_de:'Lava-Kuchen',emoji:'🍫',cat:'dessert',pEGP:130,pUSD:4.2,pEUR:3.9,desc:'كيك شوكولاتة سائلة',desc_en:'Warm chocolate cake',desc_ru:'Шоколадный фондан',desc_it:'Tortino al cioccolato',desc_de:'Warmer Schokoladenkuchen'},
-        ];
-
-        let products = [...defaultProducts];
-
-        const tables = [
+        let currentRestaurant = null;
+        let restaurants = [];
+        let currentTables = [];
+        let products = [];
+        const defaultTables = [
             {id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},
             {id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},
             {id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false},
         ];
+        const defaultProducts = [
+            {id:1,name:'إسبريسو دوبيو',name_en:'Double Espresso',name_ru:'Двойной Эспрессо',name_it:'Espresso Doppio',name_de:'Doppelter Espresso',emoji:'☕',cat:'coffee',pEGP:45,pUSD:1.5,pEUR:1.35,desc:'قهوة إسبريسو مزدوجة مركزة',desc_en:'Concentrated double espresso shot',desc_ru:'Концентрированный двойной эспрессо',desc_it:'Espresso doppio concentrato',desc_de:'Konzentrierter doppelter Espresso'},
+            {id:2,name:'كابتشينو فاخر',name_en:'Premium Cappuccino',name_ru:'Премиум Капучино',name_it:'Cappuccino Premium',name_de:'Premium Cappuccino',emoji:'☕',cat:'coffee',pEGP:65,pUSD:2.1,pEUR:1.9,desc:'إسبريسو مع حليب مبخر ورغوة كثيفة',desc_en:'Espresso with steamed milk & foam',desc_ru:'Эспрессо с паровым молоком',desc_it:'Espresso con latte vaporizzato',desc_de:'Espresso mit Milchschaum'},
+            {id:3,name:'لاتيه مثلج',name_en:'Iced Latte',name_ru:'Ледяной Латте',name_it:'Latte Ghiacciato',name_de:'Eis-Latte',emoji:'🥤',cat:'coffee',pEGP:75,pUSD:2.4,pEUR:2.2,desc:'قهوة مثلجة منعشة مع حليب طازج',desc_en:'Refreshing iced coffee with fresh milk',desc_ru:'Освежающий кофе со льдом',desc_it:'Caffè ghiacciato rinfrescante',desc_de:'Erfrischender Eiskaffee'},
+            {id:4,name:'كرواسون زبدة',name_en:'Butter Croissant',name_ru:'Круассан',name_it:'Croissant al Burro',name_de:'Butter-Croissant',emoji:'🥐',cat:'breakfast',pEGP:55,pUSD:1.8,pEUR:1.6,desc:'كرواسون فرنسي طازج بالزبدة',desc_en:'Fresh French butter croissant',desc_ru:'Свежий французский круассан',desc_it:'Croissant francese fresco',desc_de:'Frisches französisches Croissant'},
+            {id:5,name:'ستيك ريب آي',name_en:'Ribeye Steak',name_ru:'Стейк Рибай',name_it:'Bistecca Ribeye',name_de:'Ribeye-Steak',emoji:'🥩',cat:'main',pEGP:450,pUSD:14.5,pEUR:13.5,desc:'ستيك لحم بقري 300 جرام مشوي',desc_en:'300g grilled beef ribeye',desc_ru:'Стейк из говядины 300 г',desc_it:'Bistecca di manzo 300g',desc_de:'300g gegrilltes Rindersteak'},
+            {id:6,name:'سلمون مشوي',name_en:'Grilled Salmon',name_ru:'Лосось',name_it:'Salmone alla Griglia',name_de:'Gegrillter Lachs',emoji:'🐟',cat:'main',pEGP:380,pUSD:12.3,pEUR:11.4,desc:'فيليه سلمون مع خضروات سوتيه',desc_en:'Salmon fillet with sautéed vegetables',desc_ru:'Филе лосося с овощами',desc_it:'Filetto di salmone con verdure',desc_de:'Lachsfilet mit Gemüse'},
+            {id:7,name:'تشيز كيك',name_en:'Cheesecake',name_ru:'Чизкейк',name_it:'Cheesecake',name_de:'Käsekuchen',emoji:'🍰',cat:'dessert',pEGP:110,pUSD:3.5,pEUR:3.3,desc:'تشيز كيك نيويورك كريمي',desc_en:'Creamy New York cheesecake',desc_ru:'Сливочный чизкейк',desc_it:'Cheesecake cremoso',desc_de:'Cremiger Käsekuchen'},
+            {id:8,name:'مولتن كيك',name_en:'Molten Lava Cake',name_ru:'Шоколадный фондан',name_it:'Tortino al Cioccolato',name_de:'Lava-Kuchen',emoji:'🍫',cat:'dessert',pEGP:130,pUSD:4.2,pEUR:3.9,desc:'كيك شوكولاتة سائلة مع آيس كريم',desc_en:'Warm chocolate cake with ice cream',desc_ru:'Теплый шоколадный пирог',desc_it:'Tortino caldo al cioccolato',desc_de:'Warmer Schokoladenkuchen'},
+        ];
 
         const sym = {EGP:'ج.م',USD:'$',EUR:'€'};
-        let st = {
-            lang:'ar',cur:'EGP',theme:getAutoTheme(),viewMode:'list',
-            screen:'restaurants',history:['restaurants'],
-            cart:[],orderType:'dine-in',selTable:QR_TABLE||null,
-            custName:'',custPhone:'',custAddr:'',
+
+        function getAutoTheme() { const h=new Date().getHours(); return (h>=6&&h<18)?'light':'dark'; }
+
+        const t9n = {
+            ar: {today_menu:'قائمة اليوم',how_to_order:'اختر طريقة الطلب',choose_option:'اختر الطاولة أو اطلب توصيل',dine_in:'داخل المكان',delivery:'توصيل',pick_table:'اختر رقم الطاولة',no_table:'لم تختر طاولة بعد',your_table:'طاولتك',cust_name:'اسم العميل',cust_phone:'رقم الهاتف',cust_addr:'عنوان التوصيل',your_cart:'سلة التسوق',subtotal:'المجموع الفرعي',tax:'الضريبة (14%)',service:'خدمة (10%)',total:'الإجمالي',view_cart:'عرض السلة',confirm_order:'تأكيد الطلب',cart_empty:'السلة فارغة',added_to_cart:'✅ تمت الإضافة',choose_table_or_delivery:'اختر الطاولة أو التوصيل',fill_delivery:'⚠️ أكمل بيانات التوصيل',pick_table_first:'⚠️ اختر الطاولة أولاً',table_seats:'مقاعد',add_to_cart:'➕ إضافة إلى السلة'},
+            en: {today_menu:"Today's Menu",how_to_order:'How to order?',choose_option:'Choose table or delivery',dine_in:'Dine In',delivery:'Delivery',pick_table:'Pick Table Number',no_table:'No table selected',your_table:'Your Table',cust_name:'Customer Name',cust_phone:'Phone Number',cust_addr:'Delivery Address',your_cart:'Your Cart',subtotal:'Subtotal',tax:'Tax (14%)',service:'Service (10%)',total:'Total',view_cart:'View Cart',confirm_order:'Confirm Order',cart_empty:'Cart is empty',added_to_cart:'✅ Added',choose_table_or_delivery:'Choose table or delivery',fill_delivery:'⚠️ Complete details',pick_table_first:'⚠️ Pick a table',table_seats:'seats',add_to_cart:'➕ Add'},
+            ru: {today_menu:'Меню дня',how_to_order:'Как заказать?',choose_option:'Стол или доставка',dine_in:'В ресторане',delivery:'Доставка',pick_table:'Выберите стол',no_table:'Стол не выбран',your_table:'Ваш стол',cust_name:'Имя',cust_phone:'Телефон',cust_addr:'Адрес',your_cart:'Корзина',subtotal:'Подытог',tax:'Налог',service:'Сервис',total:'Итого',view_cart:'Корзина',confirm_order:'Подтвердить',cart_empty:'Корзина пуста',added_to_cart:'✅ Добавлено',choose_table_or_delivery:'Стол или доставка',fill_delivery:'⚠️ Заполните',pick_table_first:'⚠️ Выберите стол',table_seats:'мест',add_to_cart:'➕ В корзину'},
+            it: {today_menu:'Menu del Giorno',how_to_order:'Come ordinare?',choose_option:'Tavolo o consegna',dine_in:'Al Tavolo',delivery:'Consegna',pick_table:'Scegli il Tavolo',no_table:'Nessun tavolo',your_table:'Tuo Tavolo',cust_name:'Nome',cust_phone:'Telefono',cust_addr:'Indirizzo',your_cart:'Carrello',subtotal:'Subtotale',tax:'Tasse',service:'Servizio',total:'Totale',view_cart:'Carrello',confirm_order:'Conferma',cart_empty:'Carrello vuoto',added_to_cart:'✅ Aggiunto',choose_table_or_delivery:'Tavolo o consegna',fill_delivery:'⚠️ Completa',pick_table_first:'⚠️ Scegli tavolo',table_seats:'posti',add_to_cart:'➕ Aggiungi'},
+            de: {today_menu:'Tagesmenü',how_to_order:'Bestellen?',choose_option:'Tisch oder Lieferung',dine_in:'Vor Ort',delivery:'Lieferung',pick_table:'Tisch wählen',no_table:'Kein Tisch',your_table:'Ihr Tisch',cust_name:'Name',cust_phone:'Telefon',cust_addr:'Adresse',your_cart:'Warenkorb',subtotal:'Zwischensumme',tax:'Steuer',service:'Service',total:'Gesamt',view_cart:'Warenkorb',confirm_order:'Bestätigen',cart_empty:'Warenkorb leer',added_to_cart:'✅ Hinzugefügt',choose_table_or_delivery:'Tisch oder Lieferung',fill_delivery:'⚠️ Daten ergänzen',pick_table_first:'⚠️ Tisch wählen',table_seats:'Plätze',add_to_cart:'➕ Hinzufügen'}
         };
 
+        let st = {lang:'ar',cur:'EGP',theme:getAutoTheme(),viewMode:'list',screen:'restaurants',history:['restaurants'],cart:[],orderType:'dine-in',selTable:QR_TABLE||null,custName:'',custPhone:'',custAddr:''};
         const g=id=>document.getElementById(id);
         const all=(sel,ctx)=>(ctx||document).querySelectorAll(sel);
-
+        function t(key){return(t9n[st.lang]&&t9n[st.lang][key])||key;}
+        function pName(p){return p['name_'+st.lang]||p.name;}
+        function pDesc(p){return p['desc_'+st.lang]||p.desc;}
         function price(p){return p['p'+st.cur]||p.pEGP;}
         function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur];}
         function cartTotal(){return st.cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+(p?price(p)*i.qty:0);},0);}
         function cartCount(){return st.cart.reduce((s,i)=>s+i.qty,0);}
-        function t(key){return(t9n[st.lang]&&t9n[st.lang][key])||key;}
-        function pName(p){return p['name_'+st.lang]||p.name;}
-        function pDesc(p){return p['desc_'+st.lang]||p.desc;}
+        function applyT9n(){all('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));}
+        function applyTheme(){document.body.classList.toggle('light-mode',st.theme==='light');}
+        function showTableTag(){const tag=g('tableTag'),num=g('tableTagNum');if(QR_TABLE&&tag&&num){tag.style.display='inline-flex';num.textContent=QR_TABLE;}}
+        function updateCartDot(){g('cartNavDot').classList.toggle('on',cartCount()>0);}
+        function showLoading(s){const el=g('loadingOverlay');if(el)el.classList.toggle('show',s);}
 
-        function applyTheme(){
-            document.body.classList.toggle('light-mode', st.theme==='light');
-            const metaTheme = document.querySelector('meta[name="theme-color"]');
-            if(metaTheme) metaTheme.content = st.theme==='light' ? '#f5f5f7' : '#0a0a0a';
+        // ===== تحميل المطاعم =====
+        async function fetchRestaurants(){
+            try{
+                showLoading(true);
+                const res=await fetch('/app/restaurants/restaurants.json');
+                if(!res.ok)throw new Error('Failed');
+                restaurants=await res.json();
+            }catch(e){
+                restaurants=[{id:1,name:"Fares Seafood",description:"Fresh seafood with Red Sea views",image:"https://images.unsplash.com/photo-1510626176961-4b57d4fbad03",cuisine:"seafood",area:"old-market",rating:4.8,reviews:1420,phone:"+201003344556"},{id:2,name:"El Masrien",description:"Authentic Egyptian cuisine",image:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c",cuisine:"egyptian",area:"naama",rating:4.6,reviews:985,phone:"+201112233445"}];
+            }
+            showLoading(false);
+            renderRestaurants();
         }
 
-        function applyT9n(){all('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));}
-
-        function showTableTag(){
-            const tag=g('tableTag'),num=g('tableTagNum');
-            if(QR_TABLE&&tag&&num){tag.style.display='inline-flex';num.textContent=QR_TABLE;}
+        function renderRestaurants(){
+            const grid=g('restaurantsGrid');if(!grid||!restaurants.length)return;
+            grid.innerHTML=restaurants.map(r=>`
+                <div class="restaurant-card" data-rid="${r.id}">
+                    <img class="restaurant-card-img" src="${r.image}" alt="${r.name}" loading="lazy">
+                    <div class="restaurant-card-body"><div class="restaurant-card-name">${r.name}</div><div class="restaurant-card-desc">${r.description}</div>
+                        <div class="restaurant-card-footer"><div class="restaurant-card-rating">⭐ ${r.rating} <span style="color:var(--text-muted);font-weight:400;">(${r.reviews})</span></div><span class="restaurant-card-cuisine">${r.cuisine}</span></div>
+                    </div>
+                </div>
+            `).join('');
+            grid.querySelectorAll('.restaurant-card').forEach(card=>card.onclick=function(){selectRestaurant(+this.dataset.rid);});
         }
 
         // ===== اختيار مطعم =====
-        window._selectRestaurant = function(restaurantId) {
-            const restaurant = restaurants.find(r => r.id === restaurantId);
-            if (!restaurant) return;
-            currentRestaurant = restaurant;
-            
-            // تحديث الهيرو
-            const heroBg = document.getElementById('menuHeroBg');
-            const heroTitle = document.getElementById('menuHeroTitle');
-            const heroSub = document.getElementById('menuHeroSub');
-            const heroMeta = document.getElementById('menuHeroMeta');
-            const headerBrand = document.getElementById('headerBrand');
-            
-            if (heroBg) heroBg.style.backgroundImage = `url(${restaurant.image})`;
-            if (heroTitle) heroTitle.innerHTML = restaurant.name;
-            if (heroSub) heroSub.textContent = restaurant.description;
-            if (heroMeta) heroMeta.innerHTML = `
-                <span>⭐ <strong>${restaurant.rating}</strong> (${restaurant.reviews})</span>
-                <span>📍 ${restaurant.area || ''}</span>
-            `;
-            if (headerBrand) headerBrand.textContent = restaurant.name;
-            
-            // تحديث <title>
-            document.title = restaurant.name + ' | Restaurant Menu';
-            
-            // تحميل منتجات المطعم (لو فيه API)
-            loadRestaurantMenu(restaurant.id);
-            
+        async function selectRestaurant(rid){
+            const restaurant=restaurants.find(r=>r.id===rid);
+            if(!restaurant)return;
+            currentRestaurant=restaurant;
+            const hb=g('menuHeroBg'),ht=g('menuHeroTitle'),hs=g('menuHeroSub'),hm=g('menuHeroMeta'),hb2=g('headerBrand');
+            if(hb)hb.style.backgroundImage=`url(${restaurant.image})`;
+            if(ht)ht.textContent=restaurant.name;
+            if(hs)hs.textContent=restaurant.description;
+            if(hm)hm.innerHTML=`<span>⭐ <strong>${restaurant.rating}</strong> (${restaurant.reviews})</span><span>📍 ${restaurant.area||''}</span>`;
+            if(hb2)hb2.textContent=restaurant.name;
+            document.title=restaurant.name+' | Menu';
+            // تحميل طاولات المطعم
+            await loadRestaurantTables(restaurant.id);
+            // تحميل قائمة المطعم
+            await loadRestaurantMenu(restaurant.id);
             goScreen('menu');
-        };
+        }
 
-        async function loadRestaurantMenu(restaurantId) {
-            try {
+        async function loadRestaurantTables(rid){
+            try{
+                const res=await fetch(`/app/restaurants/${rid}/tables.json`);
+                if(res.ok){currentTables=await res.json();}
+                else{currentTables=[...defaultTables];}
+            }catch(e){currentTables=[...defaultTables];}
+            renderTables();
+        }
+
+        async function loadRestaurantMenu(rid){
+            try{
                 showLoading(true);
-                const response = await fetch(`/app/restaurants/${restaurantId}/menu.json`);
-                if (response.ok) {
-                    products = await response.json();
-                }
-            } catch (e) {
-                // استخدام المنتجات الافتراضية
-                products = [...defaultProducts];
-            }
+                const res=await fetch(`/app/restaurants/${rid}/menu.json`);
+                if(res.ok){products=await res.json();}
+                else{products=[...defaultProducts];}
+            }catch(e){products=[...defaultProducts];}
             showLoading(false);
-            renderCats();
-            renderProducts();
+            renderCats();renderProducts();
         }
 
-        function setView(mode){
-            st.viewMode = mode;
-            all('.vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===mode));
-            renderProducts();
-        }
-
+        // ===== تنقل =====
         function goScreen(s){
             if(st.screen===s)return;
             st.history.push(s);st.screen=s;refreshUI();
@@ -840,107 +629,36 @@
         }
         function refreshUI(){
             all('.screen').forEach(sc=>sc.classList.remove('active'));
-            const tgt=g('screen-'+st.screen);
-            if(tgt)tgt.classList.add('active');
-            const back=g('navBack');
+            const tgt=g('screen-'+st.screen);if(tgt)tgt.classList.add('active');
+            const back=g('navBack'),nav=g('navHeader');
+            const hasHero = (st.screen==='restaurants'||st.screen==='menu');
+            // لو فيه هيرو، الهيدر يبقى transparent
+            if(hasHero){nav.classList.add('transparent');}
+            else{nav.classList.remove('transparent');}
             if(st.screen==='restaurants')back.classList.remove('show');
             else if(st.history.length>1)back.classList.add('show');
             else back.classList.remove('show');
             const btn=g('bigBtn'),cnt=cartCount();
-            if(st.screen==='restaurants'){
-                btn.style.display='none';
-            }else{
-                btn.style.display='block';
-                if(st.screen==='menu'){
-                    btn.innerHTML='🛒 '+t('view_cart')+' ('+cnt+')';
-                    btn.onclick=()=>goScreen('cart');
-                    btn.disabled=cnt===0;
-                }else if(st.screen==='cart'){
-                    if(QR_TABLE){
-                        btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';
-                        btn.onclick=confirmOrder;
-                        btn.disabled=cnt===0;
-                    }else{
-                        btn.innerHTML='📋 '+t('choose_table_or_delivery');
-                        btn.onclick=()=>goScreen('table-select');
-                        btn.disabled=cnt===0;
-                    }
-                }else if(st.screen==='table-select'){
-                    btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';
-                    btn.onclick=confirmOrder;
-                    btn.disabled=false;
-                }
+            if(st.screen==='restaurants'){btn.style.display='none';}
+            else{btn.style.display='block';
+                if(st.screen==='menu'){btn.innerHTML='🛒 '+t('view_cart')+' ('+cnt+')';btn.onclick=()=>goScreen('cart');btn.disabled=cnt===0;}
+                else if(st.screen==='cart'){
+                    if(QR_TABLE||(currentRestaurant&&st.selTable)){btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
+                    else{btn.innerHTML='📋 '+t('choose_table_or_delivery');btn.onclick=()=>goScreen('table-select');btn.disabled=cnt===0;}
+                }else if(st.screen==='table-select'){btn.innerHTML='✅ '+t('confirm_order')+' ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
             }
-            updateCartDot();
-            g('mainScroll').scrollTop=0;
+            updateCartDot();g('mainScroll').scrollTop=0;
         }
-        function updateCartDot(){g('cartNavDot').classList.toggle('on',cartCount()>0);}
 
+        // ===== منتجات =====
         function renderProducts(cat='all'){
-            const container=g('prodContainer');
-            if(!container)return;
+            const container=g('prodContainer');if(!container)return;
             let items=cat==='all'?products:products.filter(p=>p.cat===cat);
-            if(st.viewMode==='list'){
-                container.className='prod-list';
-                container.innerHTML=items.map((p,i)=>`
-                    <div class="prod-row" data-pid="${p.id}" style="animation-delay:${i*0.03}s">
-                        <div class="prod-emoji">${p.emoji}</div>
-                        <div class="prod-info">
-                            <div class="prod-name">${pName(p)}</div>
-                            <div class="prod-desc">${pDesc(p)}</div>
-                        </div>
-                        <div class="prod-price">${fmt(price(p))}</div>
-                        <button class="prod-add" data-pid="${p.id}">+</button>
-                    </div>
-                `).join('');
-            }else{
-                container.className='prod-grid';
-                container.innerHTML=items.map((p,i)=>`
-                    <div class="prod-card" data-pid="${p.id}" style="animation-delay:${i*0.03}s">
-                        <div class="prod-card-emoji">${p.emoji}</div>
-                        <div class="prod-card-body">
-                            <div class="prod-card-name">${pName(p)}</div>
-                            <div class="prod-card-desc">${pDesc(p)}</div>
-                            <div class="prod-card-footer">
-                                <span class="prod-card-price">${fmt(price(p))}</span>
-                                <button class="prod-card-add" data-pid="${p.id}">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            container.querySelectorAll('.prod-row, .prod-card').forEach(el=>{
-                el.addEventListener('click',function(e){
-                    if(e.target.closest('.prod-add')||e.target.closest('.prod-card-add'))return;
-                    openDetailModal(parseInt(this.dataset.pid));
-                });
-            });
-            container.querySelectorAll('.prod-add, .prod-card-add').forEach(b=>{
-                b.addEventListener('click',function(e){
-                    e.stopPropagation();
-                    addToCart(parseInt(this.dataset.pid));
-                });
-            });
+            if(st.viewMode==='list'){container.className='prod-list';container.innerHTML=items.map((p,i)=>`<div class="prod-row" data-pid="${p.id}" style="animation-delay:${i*0.03}s"><div class="prod-emoji">${p.emoji}</div><div class="prod-info"><div class="prod-name">${pName(p)}</div><div class="prod-desc">${pDesc(p)}</div></div><div class="prod-price">${fmt(price(p))}</div><button class="prod-add" data-pid="${p.id}">+</button></div>`).join('');}
+            else{container.className='prod-grid';container.innerHTML=items.map((p,i)=>`<div class="prod-card" data-pid="${p.id}" style="animation-delay:${i*0.03}s"><div class="prod-card-emoji">${p.emoji}</div><div class="prod-card-body"><div class="prod-card-name">${pName(p)}</div><div class="prod-card-desc">${pDesc(p)}</div><div class="prod-card-footer"><span class="prod-card-price">${fmt(price(p))}</span><button class="prod-card-add" data-pid="${p.id}">+</button></div></div></div>`).join('');}
+            container.querySelectorAll('.prod-row, .prod-card').forEach(el=>{el.addEventListener('click',function(e){if(e.target.closest('.prod-add')||e.target.closest('.prod-card-add'))return;openDetailModal(parseInt(this.dataset.pid));});});
+            container.querySelectorAll('.prod-add, .prod-card-add').forEach(b=>{b.addEventListener('click',function(e){e.stopPropagation();addToCart(parseInt(this.dataset.pid));});});
         }
-
-        function openDetailModal(pid){
-            const p=products.find(x=>x.id===pid);
-            if(!p)return;
-            g('modalEmoji').textContent=p.emoji;
-            g('modalName').textContent=pName(p);
-            g('modalDesc').textContent=pDesc(p);
-            g('modalPrice').textContent=fmt(price(p));
-            g('modalOldPrice').textContent='';
-            g('modalAddBtn').textContent=t('add_to_cart');
-            g('modalAddBtn').onclick=()=>{addToCart(pid);closeDetailModal();};
-            g('detailModal').classList.add('show');
-            document.body.style.overflow='hidden';
-        }
-        function closeDetailModal(){
-            g('detailModal').classList.remove('show');
-            document.body.style.overflow='';
-        }
-
         function renderCats(){
             const row=g('catsRow');if(!row)return;
             const cats=[{id:'all',ico:'🌟',lbl:'all'},{id:'coffee',ico:'☕',lbl:'coffee'},{id:'breakfast',ico:'🥐',lbl:'breakfast'},{id:'main',ico:'🥩',lbl:'main'},{id:'dessert',ico:'🍰',lbl:'dessert'}];
@@ -952,8 +670,7 @@
         function addToCart(pid){const ex=st.cart.find(i=>i.id===pid);ex?ex.qty++:st.cart.push({id:pid,qty:1});updateCartDot();updateCartUI();refreshUI();toast(t('added_to_cart'));}
         function qtyChange(pid,d){const it=st.cart.find(i=>i.id===pid);if(!it)return;it.qty+=d;if(it.qty<=0)st.cart=st.cart.filter(i=>i.id!==pid);updateCartDot();updateCartUI();refreshUI();}
         function updateCartUI(){
-            const wrap=g('cartItemsWrap');if(!wrap)return;
-            const sub=cartTotal(),tax=sub*0.14,svc=sub*0.10,tot=sub+tax+svc;
+            const wrap=g('cartItemsWrap');if(!wrap)return;const sub=cartTotal(),tax=sub*0.14,svc=sub*0.10,tot=sub+tax+svc;
             if(st.cart.length===0){wrap.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem;">'+t('cart_empty')+' 🛒</p>';}
             else{wrap.innerHTML=st.cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return'';return`<div class="cart-item"><div class="cart-item-emoji">${p.emoji}</div><div class="cart-item-mid"><div class="cart-item-name">${pName(p)}</div><div class="cart-item-price">${fmt(price(p))} × ${i.qty}</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="${i.id}" data-d="-1">-</button><span class="qty-n">${i.qty}</span><button class="qty-b" data-pid="${i.id}" data-d="1">+</button></div></div>`;}).join('');wrap.querySelectorAll('.qty-b').forEach(b=>b.onclick=function(){qtyChange(+this.dataset.pid,+this.dataset.d);});}
             g('sumSub').textContent=fmt(sub);g('sumTax').textContent=fmt(tax);g('sumSvc').textContent=fmt(svc);g('sumTotal').textContent=fmt(tot);
@@ -964,23 +681,18 @@
             else{card.style.display='none';}
         }
 
+        function openDetailModal(pid){const p=products.find(x=>x.id===pid);if(!p)return;g('modalEmoji').textContent=p.emoji;g('modalName').textContent=pName(p);g('modalDesc').textContent=pDesc(p);g('modalPrice').textContent=fmt(price(p));g('modalOldPrice').textContent='';g('modalAddBtn').textContent=t('add_to_cart');g('modalAddBtn').onclick=()=>{addToCart(pid);closeDetailModal();};g('detailModal').classList.add('show');document.body.style.overflow='hidden';}
+        function closeDetailModal(){g('detailModal').classList.remove('show');document.body.style.overflow='';}
+
+        // ===== طاولات =====
         function renderTables(){
             const floor=g('tablesFloor');if(!floor)return;
-            floor.innerHTML=tables.map(tb=>`
-                <div class="table-3d-wrap">
-                    <div class="table-3d-cell ${tb.occupied?'occupied':''} ${st.selTable===tb.id?'selected':''}" data-tid="${tb.id}">
-                        <span class="table-3d-dot"></span>
-                        <span class="table-3d-num">${tb.id}</span>
-                        <span class="table-3d-seats">${tb.seats} ${t('table_seats')}</span>
-                    </div>
-                </div>
-            `).join('');
-            floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(cell=>cell.onclick=function(){
-                st.selTable=+this.dataset.tid;renderTables();
-                const si=g('tableSelInfo');if(si){si.textContent='✅ '+t('pick_table')+' '+st.selTable;si.classList.add('confirmed');}
-            });
+            const tables=currentTables.length?currentTables:defaultTables;
+            floor.innerHTML=tables.map(tb=>`<div class="table-3d-wrap"><div class="table-3d-cell ${tb.occupied?'occupied':''} ${st.selTable===tb.id?'selected':''}" data-tid="${tb.id}"><span class="table-3d-dot"></span><span class="table-3d-num">${tb.id}</span><span class="table-3d-seats">${tb.seats} ${t('table_seats')}</span></div></div>`).join('');
+            floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(cell=>cell.onclick=function(){st.selTable=+this.dataset.tid;renderTables();const si=g('tableSelInfo');if(si){si.textContent='✅ '+t('pick_table')+' '+st.selTable;si.classList.add('confirmed');}});
         }
 
+        // ===== تأكيد =====
         function confirmOrder(){
             if(st.cart.length===0){toast(t('cart_empty'));return;}
             if(QR_TABLE){st.selTable=QR_TABLE;st.orderType='dine-in';}
@@ -989,81 +701,27 @@
                 if(st.orderType==='dine-in'&&!st.selTable){toast(t('pick_table_first'));return;}
                 if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast(t('fill_delivery'));return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}
             }
-            const oid=Math.floor(1000+Math.random()*9000);
-            g('orderIdBadge').textContent='#'+oid;
+            const oid=Math.floor(1000+Math.random()*9000);g('orderIdBadge').textContent='#'+oid;
             const si=g('successTableInfo');if(si)si.textContent=st.selTable?t('pick_table')+' '+st.selTable:'';
             launchConfetti();g('successOverlay').classList.add('show');
-            setTimeout(()=>{
-                g('successOverlay').classList.remove('show');
-                st.cart=[];st.selTable=QR_TABLE?QR_TABLE:null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';
-                st.history=['restaurants'];st.screen='restaurants';
-                if(!QR_TABLE){if(g('inpName'))g('inpName').value='';if(g('inpPhone'))g('inpPhone').value='';if(g('inpAddr'))g('inpAddr').value='';renderTables();g('tablesBox').style.display='block';g('deliveryFormBox').style.display='none';all('#orderTypeRow .order-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type==='dine-in'));}
-                refreshUI();updateCartUI();renderProducts();
-                const tsi=g('tableSelInfo');if(tsi){tsi.textContent=t('no_table');tsi.classList.remove('confirmed');}
-            },3200);
+            setTimeout(()=>{g('successOverlay').classList.remove('show');st.cart=[];st.selTable=QR_TABLE?QR_TABLE:null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['restaurants'];st.screen='restaurants';if(!QR_TABLE){if(g('inpName'))g('inpName').value='';if(g('inpPhone'))g('inpPhone').value='';if(g('inpAddr'))g('inpAddr').value='';}refreshUI();updateCartUI();renderProducts();const tsi=g('tableSelInfo');if(tsi){tsi.textContent=t('no_table');tsi.classList.remove('confirmed');}},3200);
         }
-
-        function launchConfetti(){
-            const box=g('confettiBox'),cols=['#c8a45c','#dfc07c','#ff4444','#4ade80','#60a5fa','#f472b6','#fff'];
-            box.innerHTML='';
-            for(let i=0;i<50;i++){const d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.8+'s';d.style.animationDuration=(2+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(5+Math.random()*7)+'px';d.style.height=(5+Math.random()*7)+'px';box.appendChild(d);}
-            setTimeout(()=>box.innerHTML='',3000);
-        }
-
+        function launchConfetti(){const box=g('confettiBox'),cols=['#c8a45c','#dfc07c','#ff4444','#4ade80','#60a5fa','#f472b6','#fff'];box.innerHTML='';for(let i=0;i<50;i++){const d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.8+'s';d.style.animationDuration=(2+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(5+Math.random()*7)+'px';d.style.height=(5+Math.random()*7)+'px';box.appendChild(d);}setTimeout(()=>box.innerHTML='',3000);}
         function toast(msg){const el=g('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(()=>el.classList.remove('show'),2200);}
+        function switchLang(lang){st.lang=lang;localStorage.setItem('lamaison_lang',lang);document.body.className=lang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';g('langLabel').textContent=lang.toUpperCase();all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));g('langDrop').classList.remove('open');applyT9n();renderCats();renderProducts();updateCartUI();if(!QR_TABLE)renderTables();refreshUI();}
+        function setView(mode){st.viewMode=mode;all('.vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===mode));renderProducts();}
 
-        function switchLang(lang){
-            st.lang=lang;localStorage.setItem('lamaison_lang',lang);
-            document.body.className=lang+(st.theme==='light'?' light-mode':'');
-            document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
-            g('langLabel').textContent=lang.toUpperCase();
-            all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===lang));
-            g('langDrop').classList.remove('open');
-            applyT9n();renderCats();renderProducts();updateCartUI();
-            if(!QR_TABLE)renderTables();refreshUI();
-        }
-
-        function checkAutoTheme() {
-            const newTheme = getAutoTheme();
-            if (newTheme !== st.theme) {
-                st.theme = newTheme;
-                applyTheme();
-            }
-        }
+        function checkAutoTheme(){const nt=getAutoTheme();if(nt!==st.theme){st.theme=nt;applyTheme();}}
 
         function init(){
-            const savedLang=localStorage.getItem('lamaison_lang')||'ar';
-            st.lang=savedLang;
-            st.theme=getAutoTheme();
-            document.body.className=savedLang+(st.theme==='light'?' light-mode':'');
-            document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
-            g('langLabel').textContent=savedLang.toUpperCase();
-            all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===savedLang));
+            const savedLang=localStorage.getItem('lamaison_lang')||'ar';st.lang=savedLang;st.theme=getAutoTheme();
+            document.body.className=savedLang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
+            g('langLabel').textContent=savedLang.toUpperCase();all('.lang-opt').forEach(o=>o.classList.toggle('active',o.dataset.lang===savedLang));
+            applyTheme();applyT9n();
+            products=[...defaultProducts];currentTables=[...defaultTables];
+            fetchRestaurants();renderCats();renderProducts();renderTables();updateCartUI();refreshUI();
 
-            applyTheme();
-            applyT9n();
-            
-            // تحميل المطاعم
-            fetchRestaurants();
-            
-            // لو فيه QR لمطعم معين، افتحه مباشرة
-            if (QR_RESTAURANT) {
-                // هنتظر تحميل البيانات وبعدين نفتح المطعم
-                const checkAndOpen = setInterval(() => {
-                    if (restaurants.length > 0) {
-                        clearInterval(checkAndOpen);
-                        window._selectRestaurant(QR_RESTAURANT);
-                    }
-                }, 200);
-                // timeout احتياطي
-                setTimeout(() => clearInterval(checkAndOpen), 5000);
-            }
-
-            renderCats();renderProducts();
-            if(!QR_TABLE)renderTables();updateCartUI();refreshUI();
-
-            g('navBack').onclick=goBack;
-            g('cartNavBtn').onclick=()=>goScreen('cart');
+            g('navBack').onclick=goBack;g('cartNavBtn').onclick=()=>goScreen('cart');
             g('langBtn').onclick=e=>{e.stopPropagation();g('langDrop').classList.toggle('open');};
             all('.lang-opt').forEach(o=>o.onclick=function(){switchLang(this.dataset.lang);});
             document.addEventListener('click',()=>g('langDrop').classList.remove('open'));
@@ -1071,20 +729,16 @@
             all('#currencyRow .cur-chip').forEach(c=>c.onclick=function(){st.cur=this.dataset.currency;all('#currencyRow .cur-chip').forEach(x=>x.classList.remove('active'));this.classList.add('active');renderProducts();updateCartUI();refreshUI();});
             all('.vt-btn').forEach(b=>b.onclick=function(){setView(this.dataset.view);});
             if(!QR_TABLE){all('#orderTypeRow .order-type-btn').forEach(b=>b.onclick=function(){st.orderType=this.dataset.type;all('#orderTypeRow .order-type-btn').forEach(x=>x.classList.remove('active'));this.classList.add('active');g('tablesBox').style.display=st.orderType==='dine-in'?'block':'none';g('deliveryFormBox').style.display=st.orderType==='delivery'?'block':'none';});}
-            
-            const mainScroll = g('mainScroll');
-            const navHeader = g('navHeader');
-            mainScroll.addEventListener('scroll', function() {
-                navHeader.classList.toggle('scrolled', mainScroll.scrollTop > 50);
-            });
+
+            // QR لمطعم معين
+            if(QR_RESTAURANT){const check=setInterval(()=>{if(restaurants.length>0){clearInterval(check);selectRestaurant(QR_RESTAURANT);}},200);setTimeout(()=>clearInterval(check),5000);}
 
             setTimeout(()=>g('splashScreen').classList.add('hide'),2000);
             setTimeout(()=>{if(!g('splashScreen').classList.contains('hide'))g('splashScreen').classList.add('hide');},4500);
-            setInterval(checkAutoTheme, 60000);
+            setInterval(checkAutoTheme,60000);
         }
 
-        if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
-        else init();
+        if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
     })();
     </script>
 </body>
