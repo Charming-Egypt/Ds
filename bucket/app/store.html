@@ -24,7 +24,6 @@
             --text-secondary: #a3a3a3;
             --text-muted: #636366;
             --border: rgba(255,255,255,0.08);
-            --border-active: rgba(200,164,92,0.5);
             --red: #ff3b30;
             --green: #34c759;
             --safe-bottom: env(safe-area-inset-bottom, 20px);
@@ -33,7 +32,6 @@
             --radius: 18px;
             --radius-lg: 24px;
             --sidebar-width: 280px;
-            --sidebar-collapsed: 0px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -53,8 +51,8 @@
         .splash-rings:nth-child(2) { inset: -50px; animation-delay: 0.5s; border-color: rgba(200,164,92,0.15); }
         .splash-rings:nth-child(3) { inset: -70px; animation-delay: 1s; border-color: rgba(200,164,92,0.08); }
         @keyframes splashRing { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+        .splash-logo-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; position: relative; z-index: 1; box-shadow: 0 0 30px rgba(200,164,92,0.3); display: none; }
         .splash-logo-placeholder { width: 80px; height: 80px; border-radius: 20px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; position: relative; z-index: 1; }
-        .splash-logo-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; position: relative; z-index: 1; box-shadow: 0 0 30px rgba(200,164,92,0.3); }
         .splash-name { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; margin-top: 0.5rem; }
 
         /* لودر */
@@ -63,43 +61,47 @@
         .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== التخطيط ===== */
+        /* التخطيط */
         .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
 
         /* زر فتح السايدبار */
         .sidebar-toggle-btn {
             display: none;
             position: fixed; top: 50%; left: 0; transform: translateY(-50%);
-            width: 32px; height: 60px; background: var(--surface2); border: 1px solid var(--border);
-            border-left: none; border-radius: 0 12px 12px 0; color: var(--gold); font-size: 1rem;
+            width: 28px; height: 56px; background: var(--surface2); border: 1px solid var(--border);
+            border-left: none; border-radius: 0 10px 10px 0; color: var(--gold); font-size: 0.9rem;
             cursor: pointer; z-index: 20; transition: all 0.3s; align-items: center; justify-content: center;
         }
-        body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 12px 0 0 12px; border-right: none; border-left: 1px solid var(--border); }
+        body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 10px 0 0 10px; border-right: none; border-left: 1px solid var(--border); }
         .sidebar-toggle-btn.show { display: flex; }
 
-        /* سايدبار كولابس */
+        /* خلفية */
+        .sidebar-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 14;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+
+        /* سايدبار */
         .desktop-sidebar {
             position: fixed; top: 0; left: 0; bottom: 0;
             width: var(--sidebar-width); background: var(--surface);
-            border-right: 1px solid var(--border); flex-direction: column;
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
             z-index: 15; overflow-y: auto;
             transform: translateX(-100%);
             transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         body.ar .desktop-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); transform: translateX(100%); }
         .desktop-sidebar.open { transform: translateX(0); }
-        
         .sidebar-close-btn {
             display: flex; align-items: center; justify-content: center;
-            width: 36px; height: 36px; border-radius: 50%; background: var(--surface2);
-            border: 1px solid var(--border); color: var(--text); font-size: 1.2rem;
+            width: 32px; height: 32px; border-radius: 50%; background: var(--surface2);
+            border: 1px solid var(--border); color: var(--text); font-size: 1rem;
             cursor: pointer; margin: 0.75rem; transition: all 0.3s; align-self: flex-end;
         }
-        .sidebar-close-btn:hover { background: var(--surface3); }
-        
         .sidebar-header { padding: 1rem 1.5rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-logo-img { width: 50px; height: 50px; border-radius: 14px; object-fit: cover; margin: 0 auto 0.5rem; display: none; }
         .sidebar-logo-placeholder { width: 50px; height: 50px; border-radius: 14px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.5rem; }
-        .sidebar-logo-img { width: 50px; height: 50px; border-radius: 14px; object-fit: cover; margin: 0 auto 0.5rem; display: block; }
         .sidebar-brand { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 1.3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .sidebar-section { padding: 1.2rem 0.75rem; border-bottom: 1px solid var(--border); }
         .sidebar-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 0.6rem; padding: 0 0.5rem; }
@@ -109,7 +111,6 @@
         .sidebar-item .s-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
         .sidebar-item .s-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 0.6rem; font-weight: 800; padding: 0.12rem 0.4rem; border-radius: 50px; min-width: 18px; text-align: center; }
         body.ar .sidebar-item .s-badge { margin-left: 0; margin-right: auto; }
-        
         .sidebar-order-btn {
             display: block; width: calc(100% - 1.5rem); margin: 0.75rem; padding: 0.7rem;
             background: var(--gold-gradient); border: none; border-radius: 50px;
@@ -117,22 +118,12 @@
             cursor: pointer; text-align: center; transition: all 0.3s;
             box-shadow: 0 4px 20px rgba(200,164,92,0.2);
         }
-        .sidebar-order-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(200,164,92,0.3); }
-        .sidebar-order-btn:disabled { background: var(--surface3); color: var(--text-muted); box-shadow: none; cursor: not-allowed; transform: none; }
+        .sidebar-order-btn:disabled { background: var(--surface3); color: var(--text-muted); box-shadow: none; cursor: not-allowed; }
         .sidebar-powered { padding: 0.75rem 1.5rem; margin-top: auto; text-align: center; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
         .sidebar-powered span { color: var(--gold); font-weight: 600; }
-        
-        /* Overlay للخلفية */
-        .sidebar-backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 14;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
-
-        /* المحتوى الرئيسي */
-        .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
         /* المحتوى */
+        .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         .main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
         .screen { display: none; animation: screenIn 0.4s ease; min-height: 100%; }
         .screen.active { display: block; }
@@ -141,38 +132,21 @@
         /* هيرو */
         .hero-wrapper { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
         .hero-bg { width: 100%; height: 100%; background-size: cover; background-position: center; position: absolute; inset: 0; transform: scale(1.04); transition: transform 8s ease; }
-        .hero-wrapper:hover .hero-bg { transform: scale(1); }
         .hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.05) 30%, rgba(10,10,10,0.4) 55%, var(--bg) 90%); }
-        
-        .hero-top-bar {
-            position: absolute; top: var(--safe-top); left: 0; right: 0;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.75rem 1rem; z-index: 10;
-        }
-        .hero-lang-btn {
-            padding: 0.35rem 0.6rem; border-radius: 50px; font-size: 0.65rem; font-weight: 700;
-            font-family: inherit; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer;
-            display: flex; align-items: center; gap: 0.2rem; position: relative;
-        }
+        .hero-top-bar { position: absolute; top: var(--safe-top); left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; z-index: 10; }
+        .hero-lang-btn { padding: 0.35rem 0.6rem; border-radius: 50px; font-size: 0.65rem; font-weight: 700; font-family: inherit; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.2rem; position: relative; }
         .hero-lang-drop { position: absolute; top: calc(100% + 6px); left: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; min-width: 120px; opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.25s; z-index: 60; box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
         body.ar .hero-lang-drop { left: auto; right: 0; }
         .hero-lang-drop.open { opacity: 1; visibility: visible; transform: translateY(0); }
         .hero-lang-opt { padding: 0.6rem 0.9rem; cursor: pointer; font-size: 0.75rem; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; color: var(--text-secondary); }
         .hero-lang-opt:hover { background: rgba(200,164,92,0.1); color: var(--text); }
         .hero-lang-opt.active { color: var(--gold); font-weight: 700; background: rgba(200,164,92,0.12); }
-        .hero-cart-btn {
-            width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; font-size: 1rem; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; position: relative;
-        }
+        .hero-cart-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
         .hero-cart-badge { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; background: var(--red); color: #fff; border-radius: 50%; font-size: 0.6rem; font-weight: 800; display: none; align-items: center; justify-content: center; padding: 0 3px; }
         .hero-cart-badge.show { display: flex; }
-
         .hero-content { position: absolute; bottom: 6rem; left: 0; right: 0; text-align: center; padding: 0 2rem; z-index: 2; }
+        .hero-logo-img { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin: 0 auto 0.8rem; display: none; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .hero-logo-placeholder { width: 70px; height: 70px; border-radius: 18px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.8rem; }
-        .hero-logo-img { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin: 0 auto 0.8rem; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .hero-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.1; margin-bottom: 0.3rem; }
         .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.78rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hero-meta { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.68rem; color: rgba(255,255,255,0.75); flex-wrap: wrap; }
@@ -181,22 +155,13 @@
         .table-tag .pulse-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: dotPulse 2s infinite; }
         @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.6)} }
 
-        /* صفحات تانية - header */
-        .page-header {
-            display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
-            background: var(--surface); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 10;
-        }
-        .page-back-btn {
-            width: 36px; height: 36px; border-radius: 50%; background: var(--surface2);
-            border: 1px solid var(--border); color: var(--text); font-size: 1.2rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s; flex-shrink: 0;
-        }
-        .page-back-btn:hover { background: var(--surface3); }
+        /* صفحات */
+        .page-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .page-back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; }
         .page-title-text { font-size: 1rem; font-weight: 700; }
+        .content-padded { padding: 0.75rem; }
 
-        /* محتوى القائمة */
+        /* قائمة */
         .menu-content { padding: 0 0.75rem 1.5rem; background: var(--bg); position: relative; z-index: 1; }
         .controls-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; padding: 0.5rem 0; }
         .currency-scroll { display: flex; gap: 0.25rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
@@ -258,7 +223,7 @@
         .tables-3d-title { font-size: 0.78rem; font-weight: 700; text-align: center; color: var(--text-secondary); margin-bottom: 0.7rem; }
         .tables-floor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; padding: 0.3rem; transform: rotateX(20deg); transform-style: preserve-3d; }
         .table-3d-cell { aspect-ratio: 1; background: var(--surface2); border: 2px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.4s; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 5px 14px rgba(0,0,0,0.3); }
-        .table-3d-cell:hover { transform: translateZ(10px); border-color: var(--border-active); }
+        .table-3d-cell:hover { transform: translateZ(10px); border-color: rgba(200,164,92,0.5); }
         .table-3d-cell.selected { border-color: var(--gold); background: rgba(200,164,92,0.12); transform: translateZ(20px); box-shadow: 0 12px 35px rgba(200,164,92,0.3); }
         .table-3d-cell.occupied { opacity: 0.2; pointer-events: none; filter: grayscale(0.5); }
         .table-num { font-size: 1.4rem; font-weight: 900; color: var(--text); }
@@ -331,7 +296,9 @@
         }
         @media (min-width: 1100px) { .prod-grid { grid-template-columns: repeat(4, 1fr); } .prod-list { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
-            .sidebar-toggle-btn { display: none; }
+            .sidebar-toggle-btn { display: none !important; }
+            .desktop-sidebar { display: none !important; }
+            .sidebar-backdrop { display: none !important; }
             .bottom-bar { display: block; }
             .hero-wrapper { height: 100vh; height: 100dvh; }
             .prod-grid { grid-template-columns: repeat(2, 1fr); }
@@ -359,10 +326,10 @@
     <!-- خلفية السايدبار -->
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
     
-    <!-- زر فتح السايدبار -->
+    <!-- زر فتح السايدبار (كمبيوتر بس) -->
     <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()">›</button>
 
-    <!-- سايدبار كولابس -->
+    <!-- سايدبار -->
     <aside class="desktop-sidebar" id="desktopSidebar">
         <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
         <div class="sidebar-header">
@@ -382,16 +349,16 @@
                 <span class="s-icon">🪑</span> Select Table
             </div>
         </div>
-        <button class="sidebar-order-btn" id="sidebarOrderBtn" onclick="handleOrderAction()" disabled>
+        <button class="sidebar-order-btn" id="sidebarOrderBtn" disabled>
             📋 View Cart (0)
         </button>
         <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
     </aside>
 
-    <!-- المحتوى الرئيسي -->
+    <!-- المحتوى -->
     <div class="main-area">
         <div class="main-scroll" id="mainScroll">
-            <!-- ===== القائمة ===== -->
+            <!-- قائمة -->
             <div class="screen active" id="screen-menu">
                 <div class="hero-wrapper">
                     <div class="hero-bg" id="menuHeroBg"></div>
@@ -443,13 +410,13 @@
                 </div>
             </div>
 
-            <!-- ===== السلة ===== -->
+            <!-- سلة -->
             <div class="screen" id="screen-cart">
                 <div class="page-header">
                     <button class="page-back-btn" onclick="goBack()">‹</button>
                     <span class="page-title-text">🛒 Your Cart</span>
                 </div>
-                <div class="content-padded" style="padding:0.75rem;">
+                <div class="content-padded">
                     <div class="cart-cust-card" id="cartCustCard" style="display:none;">
                         <div class="cart-cust-icon">👤</div>
                         <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
@@ -464,13 +431,13 @@
                 </div>
             </div>
 
-            <!-- ===== طاولات ===== -->
+            <!-- طاولات -->
             <div class="screen" id="screen-table-select">
                 <div class="page-header">
                     <button class="page-back-btn" onclick="goBack()">‹</button>
                     <span class="page-title-text">🪑 Select Table</span>
                 </div>
-                <div style="padding:0.75rem;">
+                <div class="content-padded">
                     <div style="text-align:center;padding:0.5rem 0;">
                         <div style="font-size:2rem;">🪑</div>
                         <div style="font-size:1rem;font-weight:800;">How to order?</div>
@@ -494,7 +461,7 @@
             </div>
         </div>
 
-        <!-- بار سفلي -->
+        <!-- بار سفلي (موبايل بس) -->
         <div class="bottom-bar" id="bottomBar">
             <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
         </div>
@@ -528,19 +495,23 @@
     (function() {
         function ready(fn) { if(document.readyState==='complete'||document.readyState==='interactive'){setTimeout(fn,1);}else{document.addEventListener('DOMContentLoaded',fn);} }
         ready(function() {
+            // سبلاش
             var splash=document.getElementById('splashScreen');
             function hideSplash(){if(splash){splash.classList.add('hidden');setTimeout(function(){if(splash&&splash.parentNode)splash.remove();},800);}}
             setTimeout(hideSplash,1800);
             setTimeout(function(){if(splash&&!splash.classList.contains('hidden'))hideSplash();},5000);
 
+            // URL
             var urlParams=new URLSearchParams(window.location.search);
             var RESTAURANT_ID=parseInt(urlParams.get('restaurant')||urlParams.get('id')||'1');
             var TABLE_ID=urlParams.get('table')?parseInt(urlParams.get('table')):null;
 
+            // دوال مساعدة
             function $(id){return document.getElementById(id);}
             function $$(sel,ctx){return(ctx||document).querySelectorAll(sel);}
             function isDesktop(){return window.innerWidth>768;}
 
+            // حالة
             var restaurant=null,products=[],tables=[],cart=[];
             var st={lang:localStorage.getItem('luxe_lang')||'en',cur:'EGP',viewMode:'list',screen:'menu',history:['menu'],orderType:'dine-in',selTable:TABLE_ID||null,custName:'',custPhone:'',custAddr:''};
             var sym={EGP:'EGP',USD:'$',EUR:'€'};
@@ -549,45 +520,44 @@
             function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur];}
             function cartTotal(){return cart.reduce(function(s,i){var p=products.find(function(x){return x.id===i.id;});return s+(p?price(p)*i.qty:0);},0);}
             function cartCount(){return cart.reduce(function(s,i){return s+i.qty;},0);}
-            function showTableTag(){var tag=$('tableTag');if(TABLE_ID&&tag){tag.style.display='inline-flex';$('tableTagNum').textContent=TABLE_ID;}}
 
-            // ===== سايدبار =====
-            function openSidebar(){ $('desktopSidebar').classList.add('open'); $('sidebarBackdrop').classList.add('show'); $('sidebarToggleBtn').classList.remove('show'); }
-            function closeSidebar(){ $('desktopSidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('show'); if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show'); }
+            // سايدبار
+            window.openSidebar=function(){if(isDesktop()){$('desktopSidebar').classList.add('open');$('sidebarBackdrop').classList.add('show');$('sidebarToggleBtn').classList.remove('show');}};
+            window.closeSidebar=function(){$('desktopSidebar').classList.remove('open');$('sidebarBackdrop').classList.remove('show');if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show');};
 
+            // شارات
             function updateAllBadges(){
                 var cnt=cartCount();
-                var badges=[$('heroCartBadge'),$('sidebarCartCount')];
-                badges.forEach(function(b){if(!b)return;b.textContent=cnt;b.style.display=cnt>0?'flex':'none';if(b.id==='sidebarCartCount')b.style.display=cnt>0?'inline':'none';});
-                var bigBtn=$('bigBtn');
-                if(bigBtn){
+                // Badge في الهيرو
+                var heroBadge=$('heroCartBadge');if(heroBadge){heroBadge.textContent=cnt;heroBadge.style.display=cnt>0?'flex':'none';}
+                // Badge في السايدبار
+                var sideBadge=$('sidebarCartCount');if(sideBadge){sideBadge.textContent=cnt;sideBadge.style.display=cnt>0?'inline':'none';}
+                // زر الموبايل
+                var bigBtn=$('bigBtn');if(bigBtn){
                     if(st.screen==='menu'){bigBtn.innerHTML='🛒 View Cart ('+cnt+')';bigBtn.onclick=function(){switchScreen('cart');};bigBtn.disabled=cnt===0;}
                     else if(st.screen==='cart'){
                         if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){bigBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';bigBtn.onclick=confirmOrder;bigBtn.disabled=cnt===0;}
                         else{bigBtn.innerHTML='📋 Choose Table or Delivery';bigBtn.onclick=function(){switchScreen('table-select');};bigBtn.disabled=cnt===0;}
                     }else if(st.screen==='table-select'){bigBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';bigBtn.onclick=confirmOrder;bigBtn.disabled=false;}
                 }
-                updateSidebarOrderBtn();
+                // زر السايدبار
+                var sidebarBtn=$('sidebarOrderBtn');if(sidebarBtn){
+                    if(st.screen==='cart'){
+                        if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){sidebarBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';sidebarBtn.onclick=confirmOrder;sidebarBtn.disabled=cnt===0;}
+                        else{sidebarBtn.innerHTML='📋 Choose Table or Delivery';sidebarBtn.onclick=function(){switchScreen('table-select');};sidebarBtn.disabled=cnt===0;}
+                    }else if(st.screen==='table-select'){sidebarBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';sidebarBtn.onclick=confirmOrder;sidebarBtn.disabled=false;}
+                    else{sidebarBtn.innerHTML='🛒 View Cart ('+cnt+')';sidebarBtn.onclick=function(){switchScreen('cart');};sidebarBtn.disabled=cnt===0;}
+                }
             }
 
-            function updateSidebarOrderBtn(){
-                var btn=$('sidebarOrderBtn');if(!btn)return;
-                var cnt=cartCount();
-                if(st.screen==='cart'){
-                    if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
-                    else{btn.innerHTML='📋 Choose Table or Delivery';btn.onclick=function(){switchScreen('table-select');};btn.disabled=cnt===0;}
-                }else if(st.screen==='table-select'){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
-                else{btn.innerHTML='🛒 View Cart ('+cnt+')';btn.onclick=function(){switchScreen('cart');};btn.disabled=cnt===0;}
-            }
-
-            // ===== تحميل المطعم =====
+            // تحميل
             async function loadRestaurant(){
                 try{$('loadingOverlay').classList.add('show');
                     var res=await fetch('/app/restaurants/restaurants.json');
                     if(!res.ok)throw new Error('Failed');
-                    var allRestaurants=await res.json();
-                    restaurant=allRestaurants.find(function(r){return r.id===RESTAURANT_ID;})||allRestaurants[0];
-                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine at your fingertips",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
+                    var all=await res.json();
+                    restaurant=all.find(function(r){return r.id===RESTAURANT_ID;})||all[0];
+                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
                 $('loadingOverlay').classList.remove('show');
                 renderRestaurantUI();
                 await loadMenu();await loadTables();
@@ -596,51 +566,64 @@
 
             function renderRestaurantUI(){
                 if(!restaurant)return;
-                $('menuHeroBg').style.backgroundImage='url('+restaurant.image+')';
-                $('menuHeroTitle').textContent=restaurant.name;$('menuHeroSub').textContent=restaurant.description||'';
-                var meta='';if(restaurant.rating)meta+='<span>⭐ <strong>'+restaurant.rating+'</strong>';if(restaurant.reviews)meta+=' ('+restaurant.reviews+')</span>';if(restaurant.area)meta+='<span>📍 '+restaurant.area+'</span>';if(restaurant.cuisine)meta+='<span>🍽️ '+restaurant.cuisine+'</span>';
-                $('menuHeroMeta').innerHTML=meta;
+                $('menuHeroBg').style.backgroundImage='url('+(restaurant.image||'')+')';
+                $('menuHeroTitle').textContent=restaurant.name||'';
+                $('menuHeroSub').textContent=restaurant.description||'';
+                var m='';
+                if(restaurant.rating)m+='<span>⭐ <strong>'+restaurant.rating+'</strong>';
+                if(restaurant.reviews)m+=' ('+restaurant.reviews+')</span>';
+                if(restaurant.area)m+='<span>📍 '+restaurant.area+'</span>';
+                if(restaurant.cuisine)m+='<span>🍽️ '+restaurant.cuisine+'</span>';
+                $('menuHeroMeta').innerHTML=m;
+                
+                // شعار
                 if(restaurant.logo){
-                    $('heroLogoPlaceholder').outerHTML='<img src="'+restaurant.logo+'" class="hero-logo-img" id="heroLogoPlaceholder" style="width:70px;height:70px;border-radius:18px;object-fit:cover;margin:0 auto 0.8rem;display:block;box-shadow:0 8px 30px rgba(0,0,0,0.4);">';
-                    $('sidebarLogoPlaceholder').outerHTML='<img src="'+restaurant.logo+'" class="sidebar-logo-img" id="sidebarLogoPlaceholder" style="width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;">';
-                    $('splashLogo').outerHTML='<img src="'+restaurant.logo+'" class="splash-logo-img" id="splashLogo" style="width:80px;height:80px;border-radius:20px;object-fit:cover;">';
+                    var heroPH=$('heroLogoPlaceholder');
+                    if(heroPH){heroPH.style.display='none';var heroImg=document.createElement('img');heroImg.src=restaurant.logo;heroImg.className='hero-logo-img';heroImg.id='heroLogoImg';heroImg.style.cssText='width:70px;height:70px;border-radius:18px;object-fit:cover;margin:0 auto 0.8rem;display:block;box-shadow:0 8px 30px rgba(0,0,0,0.4);';heroPH.parentNode.insertBefore(heroImg,heroPH);}
+                    var sidePH=$('sidebarLogoPlaceholder');
+                    if(sidePH){sidePH.style.display='none';var sideImg=document.createElement('img');sideImg.src=restaurant.logo;sideImg.className='sidebar-logo-img';sideImg.id='sidebarLogoImg';sideImg.style.cssText='width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;';sidePH.parentNode.insertBefore(sideImg,sidePH);}
+                    var splashPH=$('splashLogo');
+                    if(splashPH){splashPH.style.display='none';var splashImg=document.createElement('img');splashImg.src=restaurant.logo;splashImg.className='splash-logo-img';splashImg.id='splashLogoImg';splashImg.style.cssText='width:80px;height:80px;border-radius:20px;object-fit:cover;display:block;position:relative;z-index:1;box-shadow:0 0 30px rgba(200,164,92,0.3);';splashPH.parentNode.insertBefore(splashImg,splashPH);}
                 }
-                $('sidebarBrandName').textContent=restaurant.name;$('splashName').textContent=restaurant.name;
-                document.title=restaurant.name+' | QR Menu';
+                
+                $('sidebarBrandName').textContent=restaurant.name||'';
+                $('splashName').textContent=restaurant.name||'';
+                document.title=(restaurant.name||'Restaurant')+' | QR Menu';
             }
 
-            async function loadMenu(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/menu.json');if(res.ok){products=await res.json();}else{products=getDefaultProducts();}}catch(e){products=getDefaultProducts();}$('itemCount').textContent=products.length+' items';}
+            async function loadMenu(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/menu.json');if(res.ok){products=await res.json();}else{products=getDefaultProducts();}}catch(e){products=getDefaultProducts();}var ic=$('itemCount');if(ic)ic.textContent=products.length+' items';}
             async function loadTables(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/tables.json');if(res.ok){tables=await res.json();}else{tables=getDefaultTables();}}catch(e){tables=getDefaultTables();}renderTables();}
 
-            function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot of our house-roasted Arabica beans"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk over a bold espresso base"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte with handcrafted caramel drizzle"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry with cultured butter"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu, chargrilled to perfection"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared with lemon butter and herbs"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta cheesecake with citrus zest"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm dark chocolate fondant with vanilla gelato"}];}
+            function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot house-roasted Arabica"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk over bold espresso"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte with caramel drizzle"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared lemon butter"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta cheesecake"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm chocolate fondant"}];}
             function getDefaultTables(){return[{id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},{id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},{id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false}];}
 
-            // ===== تنقل =====
+            // تنقل
             window.switchScreen=function(s){
                 if(st.screen===s)return;
                 st.history.push(s);st.screen=s;refreshUI();
                 if(isDesktop()&&s!=='menu')closeSidebar();
             };
-            window.goBack=function(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();if(isDesktop()&&st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}}};
-            window.handleOrderAction=function(){
-                if(st.screen==='cart'){if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){confirmOrder();}else{switchScreen('table-select');}}
-                else if(st.screen==='table-select'){confirmOrder();}
-                else{switchScreen('cart');}
+            window.goBack=function(){
+                if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();}
             };
 
             function refreshUI(){
                 $$('.screen').forEach(function(sc){sc.classList.remove('active');});
                 var tgt=$('screen-'+st.screen);if(tgt)tgt.classList.add('active');
+                // سايدبار
                 $$('.sidebar-item').forEach(function(item){item.classList.remove('active');});
                 var activeItem=document.querySelector('.sidebar-item[data-screen="'+st.screen+'"]');
                 if(activeItem)activeItem.classList.add('active');
-                if(isDesktop()){if(st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}else{$('sidebarToggleBtn').classList.remove('show');}}
-                updateAllBadges();updateSidebarOrderBtn();
+                // Toggle button
+                if(isDesktop()){
+                    if(st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}else{$('sidebarToggleBtn').classList.remove('show');}
+                }
+                updateAllBadges();
                 $('mainScroll').scrollTop=0;
             }
 
-            // ===== منتجات =====
-            function renderProducts(cat){cat=cat||'all';var container=$('prodContainer');if(!container)return;var items=cat==='all'?products:products.filter(function(p){return p.cat===cat;});$('itemCount').textContent=items.length+' items';
+            // منتجات
+            function renderProducts(cat){cat=cat||'all';var container=$('prodContainer');if(!container)return;var items=cat==='all'?products:products.filter(function(p){return p.cat===cat;});var ic=$('itemCount');if(ic)ic.textContent=items.length+' items';
                 if(st.viewMode==='list'){container.className='prod-list';container.innerHTML=items.map(function(p){return'<div class="prod-item" data-pid="'+p.id+'"><div class="prod-visual">'+p.emoji+'</div><div class="prod-details"><div class="prod-title">'+p.name+'</div><div class="prod-subtitle">'+(p.desc||'')+'</div></div><div class="prod-price-tag">'+fmt(price(p))+'</div><button class="prod-add-btn" data-pid="'+p.id+'">+</button></div>';}).join('');}
                 else{container.className='prod-grid';container.innerHTML=items.map(function(p){return'<div class="prod-card" data-pid="'+p.id+'"><div class="prod-card-media">'+p.emoji+'</div><div class="prod-card-body"><div class="prod-card-name">'+p.name+'</div><div class="prod-card-desc">'+(p.desc||'')+'</div><div class="prod-card-bottom"><span class="prod-card-price">'+fmt(price(p))+'</span><button class="prod-card-add" data-pid="'+p.id+'">+</button></div></div></div>';}).join('');}
                 container.querySelectorAll('.prod-item, .prod-card').forEach(function(el){el.addEventListener('click',function(e){if(e.target.closest('.prod-add-btn')||e.target.closest('.prod-card-add'))return;openDetail(parseInt(this.dataset.pid));});});
@@ -655,35 +638,38 @@
             function openDetail(pid){var p=products.find(function(x){return x.id===pid;});if(!p)return;$('modalEmoji').textContent=p.emoji;$('modalName').textContent=p.name;$('modalDesc').textContent=p.desc||'';$('modalPrice').textContent=fmt(price(p));$('detailModal').classList.add('show');$('modalAddBtn').onclick=function(){addToCart(pid);closeDetail();};}
             function closeDetail(){$('detailModal').classList.remove('show');}
 
-            function renderTables(){var floor=$('tablesFloor');if(!floor)return;var tbls=tables.length?tables:getDefaultTables();floor.innerHTML=tbls.map(function(tb){return'<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+tb.seats+' seats</span></div>';}).join('');floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();var si=$('tableSelInfo');if(si){si.textContent='✅ Table #'+st.selTable+' selected';si.classList.add('confirmed');}updateAllBadges();updateSidebarOrderBtn();refreshUI();});});}
+            function renderTables(){var floor=$('tablesFloor');if(!floor)return;var tbls=tables.length?tables:getDefaultTables();floor.innerHTML=tbls.map(function(tb){return'<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+tb.seats+' seats</span></div>';}).join('');floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();var si=$('tableSelInfo');if(si){si.textContent='✅ Table #'+st.selTable+' selected';si.classList.add('confirmed');}updateAllBadges();refreshUI();});});}
 
             function confirmOrder(){if(cart.length===0){toast('Cart is empty');return;}if(TABLE_ID){st.selTable=TABLE_ID;st.orderType='dine-in';}if(!TABLE_ID){var nm=($('inpName')?.value||'').trim(),ph=($('inpPhone')?.value||'').trim(),ad=($('inpAddr')?.value||'').trim();if(st.orderType==='dine-in'&&!st.selTable){toast('⚠️ Pick a table first');return;}if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast('⚠️ Complete delivery details');return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}}var oid=Math.floor(1000+Math.random()*9000);$('orderIdBadge').textContent='#'+oid;if(st.selTable){$('successTableInfo').textContent='Delivering to table #'+st.selTable;}launchConfetti();$('successOverlay').classList.add('show');setTimeout(function(){$('successOverlay').classList.remove('show');cart=[];st.selTable=TABLE_ID||null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['menu'];st.screen='menu';['inpName','inpPhone','inpAddr'].forEach(function(id){var el=$(id);if(el)el.value='';});refreshUI();updateCartUI();renderProducts();},3000);}
             function launchConfetti(){var box=$('confettiBox'),cols=['#c8a45c','#e2c97e','#ff3b30','#34c759','#007aff','#ff9500','#fff'];box.innerHTML='';for(var i=0;i<50;i++){var d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.5+'s';d.style.animationDuration=(1.5+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(4+Math.random()*6)+'px';d.style.height=(4+Math.random()*6)+'px';box.appendChild(d);}setTimeout(function(){box.innerHTML='';},2500);}
             function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show');},2000);}
 
-            function switchLang(lang){st.lang=lang;localStorage.setItem('luxe_lang',lang);document.body.className=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';if($('heroLangLabel'))$('heroLangLabel').textContent=lang.toUpperCase();$$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang);});if($('heroLangDrop'))$('heroLangDrop').classList.remove('open');}
+            function switchLang(lang){st.lang=lang;localStorage.setItem('luxe_lang',lang);document.body.className=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';var label=$('heroLangLabel');if(label)label.textContent=lang.toUpperCase();$$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang);});var drop=$('heroLangDrop');if(drop)drop.classList.remove('open');}
             function setView(mode){st.viewMode=mode;$$('.vt-btn').forEach(function(b){b.classList.toggle('active',b.dataset.view===mode);});renderProducts();}
 
             function init(){
                 var savedLang=localStorage.getItem('luxe_lang')||'en';st.lang=savedLang;
                 document.body.className=savedLang;document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
-                if($('heroLangLabel'))$('heroLangLabel').textContent=savedLang.toUpperCase();
+                var label=$('heroLangLabel');if(label)label.textContent=savedLang.toUpperCase();
                 $$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===savedLang);});
-                showTableTag();
+                
+                // Table tag
+                var tag=$('tableTag');if(TABLE_ID&&tag){tag.style.display='inline-flex';$('tableTagNum').textContent=TABLE_ID;}
+                
                 loadRestaurant();
                 renderTables();updateCartUI();updateAllBadges();refreshUI();
 
                 // Events
-                if($('heroCartBtn'))$('heroCartBtn').addEventListener('click',function(){switchScreen('cart');});
-                if($('heroLangBtn'))$('heroLangBtn').addEventListener('click',function(e){e.stopPropagation();$('heroLangDrop').classList.toggle('open');});
+                var heroCart=$('heroCartBtn');if(heroCart)heroCart.addEventListener('click',function(){switchScreen('cart');});
+                var heroLang=$('heroLangBtn');if(heroLang)heroLang.addEventListener('click',function(e){e.stopPropagation();$('heroLangDrop').classList.toggle('open');});
                 $$('.hero-lang-opt').forEach(function(o){o.addEventListener('click',function(){switchLang(this.dataset.lang);});});
                 $$('.sidebar-item').forEach(function(item){item.addEventListener('click',function(){switchScreen(this.dataset.screen);});});
-                document.addEventListener('click',function(){if($('heroLangDrop'))$('heroLangDrop').classList.remove('open');});
-                $('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
+                document.addEventListener('click',function(){var drop=$('heroLangDrop');if(drop)drop.classList.remove('open');});
+                var modal=$('detailModal');if(modal)modal.addEventListener('click',function(e){if(e.target===this)closeDetail();});
                 $$('#currencyRow .cur-chip').forEach(function(c){c.addEventListener('click',function(){st.cur=this.dataset.currency;$$('#currencyRow .cur-chip').forEach(function(x){x.classList.remove('active');});this.classList.add('active');renderProducts();updateCartUI();refreshUI();});});
                 $$('.vt-btn').forEach(function(b){b.addEventListener('click',function(){setView(this.dataset.view);});});
-                $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');$('tablesBox').style.display=st.orderType==='dine-in'?'block':'none';$('deliveryFormBox').style.display=st.orderType==='delivery'?'block':'none';});});
-                window.addEventListener('resize',function(){refreshUI();renderProducts();if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show');});
+                $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');var tb=$('tablesBox');if(tb)tb.style.display=st.orderType==='dine-in'?'block':'none';var df=$('deliveryFormBox');if(df)df.style.display=st.orderType==='delivery'?'block':'none';});});
+                window.addEventListener('resize',function(){refreshUI();renderProducts();});
             }
             init();
         });
