@@ -33,22 +33,11 @@
             --radius: 18px;
             --radius-lg: 24px;
             --sidebar-width: 280px;
-        }
-
-        body.light-mode {
-            --bg: #f2f2f7;
-            --surface: #ffffff;
-            --surface2: #f9f9fb;
-            --surface3: #e8e8ed;
-            --text: #1c1c1e;
-            --text-secondary: #636366;
-            --text-muted: #aeaeb2;
-            --border: rgba(0,0,0,0.08);
-            --border-active: rgba(200,164,92,0.6);
+            --sidebar-collapsed: 0px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased; transition: background 0.5s, color 0.5s; }
+        body { font-family: 'Inter', 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased; }
         body.ar { font-family: 'Cairo', 'Inter', sans-serif; direction: rtl; }
         body.en, body.ru, body.it, body.de { font-family: 'Inter', sans-serif; direction: ltr; }
 
@@ -64,8 +53,8 @@
         .splash-rings:nth-child(2) { inset: -50px; animation-delay: 0.5s; border-color: rgba(200,164,92,0.15); }
         .splash-rings:nth-child(3) { inset: -70px; animation-delay: 1s; border-color: rgba(200,164,92,0.08); }
         @keyframes splashRing { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
-        .splash-logo-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; position: relative; z-index: 1; box-shadow: 0 0 30px rgba(200,164,92,0.3); }
         .splash-logo-placeholder { width: 80px; height: 80px; border-radius: 20px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; position: relative; z-index: 1; }
+        .splash-logo-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; position: relative; z-index: 1; box-shadow: 0 0 30px rgba(200,164,92,0.3); }
         .splash-name { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; margin-top: 0.5rem; }
 
         /* لودر */
@@ -77,40 +66,68 @@
         /* ===== التخطيط ===== */
         .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
 
-        /* سايدبار كمبيوتر */
-        .desktop-sidebar {
-            display: none; width: var(--sidebar-width); background: var(--surface);
-            border-right: 1px solid var(--border); flex-direction: column; height: 100%; flex-shrink: 0; z-index: 10; overflow-y: auto;
+        /* زر فتح السايدبار */
+        .sidebar-toggle-btn {
+            display: none;
+            position: fixed; top: 50%; left: 0; transform: translateY(-50%);
+            width: 32px; height: 60px; background: var(--surface2); border: 1px solid var(--border);
+            border-left: none; border-radius: 0 12px 12px 0; color: var(--gold); font-size: 1rem;
+            cursor: pointer; z-index: 20; transition: all 0.3s; align-items: center; justify-content: center;
         }
-        body.ar .desktop-sidebar { border-right: none; border-left: 1px solid var(--border); }
-        .sidebar-header { padding: 2rem 1.5rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); }
-        .sidebar-logo-img { width: 60px; height: 60px; border-radius: 16px; object-fit: cover; margin-bottom: 0.5rem; }
-        .sidebar-logo-placeholder { width: 60px; height: 60px; border-radius: 16px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.5rem; }
-        .sidebar-brand { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 1.5rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .sidebar-section { padding: 1.5rem 1rem; border-bottom: 1px solid var(--border); }
-        .sidebar-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 0.75rem; padding: 0 0.5rem; }
-        .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.3s; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.15rem; }
+        body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 12px 0 0 12px; border-right: none; border-left: 1px solid var(--border); }
+        .sidebar-toggle-btn.show { display: flex; }
+
+        /* سايدبار كولابس */
+        .desktop-sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width); background: var(--surface);
+            border-right: 1px solid var(--border); flex-direction: column;
+            z-index: 15; overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body.ar .desktop-sidebar { left: auto; right: 0; border-right: none; border-left: 1px solid var(--border); transform: translateX(100%); }
+        .desktop-sidebar.open { transform: translateX(0); }
+        
+        .sidebar-close-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%; background: var(--surface2);
+            border: 1px solid var(--border); color: var(--text); font-size: 1.2rem;
+            cursor: pointer; margin: 0.75rem; transition: all 0.3s; align-self: flex-end;
+        }
+        .sidebar-close-btn:hover { background: var(--surface3); }
+        
+        .sidebar-header { padding: 1rem 1.5rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); }
+        .sidebar-logo-placeholder { width: 50px; height: 50px; border-radius: 14px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.5rem; }
+        .sidebar-logo-img { width: 50px; height: 50px; border-radius: 14px; object-fit: cover; margin: 0 auto 0.5rem; display: block; }
+        .sidebar-brand { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 1.3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .sidebar-section { padding: 1.2rem 0.75rem; border-bottom: 1px solid var(--border); }
+        .sidebar-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 0.6rem; padding: 0 0.5rem; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.3s; color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 0.1rem; }
         .sidebar-item:hover { background: var(--surface2); color: var(--text); }
         .sidebar-item.active { background: rgba(200,164,92,0.12); color: var(--gold); font-weight: 700; }
-        .sidebar-item .s-icon { font-size: 1.1rem; width: 22px; text-align: center; flex-shrink: 0; }
-        .sidebar-item .s-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 50px; min-width: 20px; text-align: center; }
+        .sidebar-item .s-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+        .sidebar-item .s-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 0.6rem; font-weight: 800; padding: 0.12rem 0.4rem; border-radius: 50px; min-width: 18px; text-align: center; }
         body.ar .sidebar-item .s-badge { margin-left: 0; margin-right: auto; }
-        .sidebar-langs { display: flex; gap: 0.25rem; flex-wrap: wrap; padding: 0 0.25rem; }
-        .sidebar-lang-chip { padding: 0.35rem 0.5rem; border-radius: 50px; font-size: 0.65rem; font-weight: 600; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); color: var(--text-secondary); transition: all 0.3s; }
-        .sidebar-lang-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
         
-        /* زر إرسال الأوردر في السايدبار */
         .sidebar-order-btn {
-            display: block; width: calc(100% - 2rem); margin: 1rem; padding: 0.8rem;
+            display: block; width: calc(100% - 1.5rem); margin: 0.75rem; padding: 0.7rem;
             background: var(--gold-gradient); border: none; border-radius: 50px;
-            color: #000; font-family: inherit; font-size: 0.85rem; font-weight: 800;
+            color: #000; font-family: inherit; font-size: 0.8rem; font-weight: 800;
             cursor: pointer; text-align: center; transition: all 0.3s;
-            box-shadow: 0 6px 25px rgba(200,164,92,0.2);
+            box-shadow: 0 4px 20px rgba(200,164,92,0.2);
         }
-        .sidebar-order-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 35px rgba(200,164,92,0.35); }
+        .sidebar-order-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(200,164,92,0.3); }
         .sidebar-order-btn:disabled { background: var(--surface3); color: var(--text-muted); box-shadow: none; cursor: not-allowed; transform: none; }
-        .sidebar-powered { padding: 0.75rem 1.5rem; margin-top: auto; text-align: center; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
+        .sidebar-powered { padding: 0.75rem 1.5rem; margin-top: auto; text-align: center; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
         .sidebar-powered span { color: var(--gold); font-weight: 600; }
+        
+        /* Overlay للخلفية */
+        .sidebar-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 14;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
 
         /* المحتوى الرئيسي */
         .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -121,13 +138,12 @@
         .screen.active { display: block; }
         @keyframes screenIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* هيرو - بدون هيدر */
+        /* هيرو */
         .hero-wrapper { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
         .hero-bg { width: 100%; height: 100%; background-size: cover; background-position: center; position: absolute; inset: 0; transform: scale(1.04); transition: transform 8s ease; }
         .hero-wrapper:hover .hero-bg { transform: scale(1); }
         .hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.05) 30%, rgba(10,10,10,0.4) 55%, var(--bg) 90%); }
         
-        /* أزرار فوق الهيرو */
         .hero-top-bar {
             position: absolute; top: var(--safe-top); left: 0; right: 0;
             display: flex; justify-content: space-between; align-items: center;
@@ -155,8 +171,8 @@
         .hero-cart-badge.show { display: flex; }
 
         .hero-content { position: absolute; bottom: 6rem; left: 0; right: 0; text-align: center; padding: 0 2rem; z-index: 2; }
-        .hero-logo-img { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin-bottom: 0.8rem; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .hero-logo-placeholder { width: 70px; height: 70px; border-radius: 18px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.8rem; }
+        .hero-logo-img { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin: 0 auto 0.8rem; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .hero-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.1; margin-bottom: 0.3rem; }
         .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.78rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hero-meta { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.4rem; font-size: 0.68rem; color: rgba(255,255,255,0.75); flex-wrap: wrap; }
@@ -164,6 +180,21 @@
         .table-tag { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); padding: 0.3rem 0.9rem; border-radius: 50px; font-weight: 700; font-size: 0.7rem; color: #fff; margin-top: 0.4rem; }
         .table-tag .pulse-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: dotPulse 2s infinite; }
         @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.6)} }
+
+        /* صفحات تانية - header */
+        .page-header {
+            display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .page-back-btn {
+            width: 36px; height: 36px; border-radius: 50%; background: var(--surface2);
+            border: 1px solid var(--border); color: var(--text); font-size: 1.2rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; flex-shrink: 0;
+        }
+        .page-back-btn:hover { background: var(--surface3); }
+        .page-title-text { font-size: 1rem; font-weight: 700; }
 
         /* محتوى القائمة */
         .menu-content { padding: 0 0.75rem 1.5rem; background: var(--bg); position: relative; z-index: 1; }
@@ -287,9 +318,8 @@
         .success-table-info { color: var(--gold); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
         .order-id-badge { background: rgba(255,255,255,0.1); padding: 0.35rem 1.3rem; border-radius: 50px; font-weight: 800; font-size: 1rem; color: var(--gold); display: inline-block; letter-spacing: 2px; border: 1px solid rgba(200,164,92,0.3); }
 
-        /* ===== Responsive ===== */
         @media (min-width: 769px) {
-            .desktop-sidebar { display: flex; }
+            .sidebar-toggle-btn { display: flex; }
             .bottom-bar { display: none; }
             .hero-wrapper { height: 100vh; height: 100dvh; }
             .menu-content { padding: 0 1.5rem 2rem; }
@@ -298,19 +328,15 @@
             .tables-floor-grid { grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
             .modal-overlay { align-items: center; }
             .modal-sheet { border-radius: var(--radius-lg); margin: auto; }
-            .screen-padded { padding-top: 1.5rem; }
-            .content-padded { padding: 1.5rem; }
         }
         @media (min-width: 1100px) { .prod-grid { grid-template-columns: repeat(4, 1fr); } .prod-list { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
-            .desktop-sidebar { display: none; }
+            .sidebar-toggle-btn { display: none; }
             .bottom-bar { display: block; }
             .hero-wrapper { height: 100vh; height: 100dvh; }
             .prod-grid { grid-template-columns: repeat(2, 1fr); }
             .prod-list { display: flex; flex-direction: column; }
             .tables-floor-grid { grid-template-columns: repeat(3, 1fr); }
-            .screen-padded { padding-top: 0.5rem; }
-            .content-padded { padding: 0 0.75rem 1rem; }
         }
     </style>
 </head>
@@ -330,147 +356,147 @@
         <div class="loading-text">Loading menu...</div>
     </div>
 
-    <div class="app-layout" id="appLayout">
-        <!-- سايدبار كمبيوتر -->
-        <aside class="desktop-sidebar" id="desktopSidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo-placeholder" id="sidebarLogoImg">✨</div>
-                <div class="sidebar-brand" id="sidebarBrandName">Luxe Dining</div>
-            </div>
-            <div class="sidebar-section">
-                <div class="sidebar-label">Navigation</div>
-                <div class="sidebar-item active" data-screen="menu">
-                    <span class="s-icon">📋</span> Menu
-                </div>
-                <div class="sidebar-item" data-screen="cart">
-                    <span class="s-icon">🛒</span> Cart
-                    <span class="s-badge" id="sidebarCartCount">0</span>
-                </div>
-                <div class="sidebar-item" data-screen="table-select">
-                    <span class="s-icon">🪑</span> Select Table
-                </div>
-            </div>
-            <div class="sidebar-section">
-                <div class="sidebar-label">Language</div>
-                <div class="sidebar-langs" id="sidebarLangs">
-                    <button class="sidebar-lang-chip active" data-lang="en">EN</button>
-                    <button class="sidebar-lang-chip" data-lang="ar">AR</button>
-                    <button class="sidebar-lang-chip" data-lang="ru">RU</button>
-                    <button class="sidebar-lang-chip" data-lang="it">IT</button>
-                    <button class="sidebar-lang-chip" data-lang="de">DE</button>
-                </div>
-            </div>
-            <!-- زر إرسال الأوردر -->
-            <button class="sidebar-order-btn" id="sidebarOrderBtn" onclick="handleOrderAction()" disabled>
-                📋 View Cart (0)
-            </button>
-            <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
-        </aside>
+    <!-- خلفية السايدبار -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+    
+    <!-- زر فتح السايدبار -->
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()">›</button>
 
-        <!-- المحتوى الرئيسي -->
-        <div class="main-area">
-            <div class="main-scroll" id="mainScroll">
-                <!-- القائمة -->
-                <div class="screen active" id="screen-menu">
-                    <div class="hero-wrapper">
-                        <div class="hero-bg" id="menuHeroBg"></div>
-                        <!-- أزرار فوق الهيرو -->
-                        <div class="hero-top-bar">
-                            <div style="position:relative;">
-                                <button class="hero-lang-btn" id="heroLangBtn">🌐 <span id="heroLangLabel">EN</span></button>
-                                <div class="hero-lang-drop" id="heroLangDrop">
-                                    <div class="hero-lang-opt active" data-lang="en">🇬🇧 English</div>
-                                    <div class="hero-lang-opt" data-lang="ar">🇸🇦 العربية</div>
-                                    <div class="hero-lang-opt" data-lang="ru">🇷🇺 Русский</div>
-                                    <div class="hero-lang-opt" data-lang="it">🇮🇹 Italiano</div>
-                                    <div class="hero-lang-opt" data-lang="de">🇩🇪 Deutsch</div>
-                                </div>
-                            </div>
-                            <button class="hero-cart-btn" id="heroCartBtn">
-                                🛒
-                                <span class="hero-cart-badge" id="heroCartBadge">0</span>
-                            </button>
-                        </div>
-                        <div class="hero-content">
-                            <div class="hero-logo-placeholder" id="heroLogoPlaceholder">✨</div>
-                            <h1 class="hero-title" id="menuHeroTitle"></h1>
-                            <p class="hero-sub" id="menuHeroSub"></p>
-                            <div class="hero-meta" id="menuHeroMeta"></div>
-                            <div class="table-tag" id="tableTag" style="display:none;">
-                                <span class="pulse-dot"></span>
-                                <span>Table</span>: #<span id="tableTagNum"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="menu-content">
-                        <div class="controls-row">
-                            <div class="currency-scroll" id="currencyRow">
-                                <div class="cur-chip active" data-currency="EGP">EGP</div>
-                                <div class="cur-chip" data-currency="USD">USD</div>
-                                <div class="cur-chip" data-currency="EUR">EUR</div>
-                            </div>
-                            <div class="view-toggles">
-                                <button class="vt-btn active" data-view="list">☰</button>
-                                <button class="vt-btn" data-view="grid">⊞</button>
-                            </div>
-                        </div>
-                        <div class="cats-strip" id="catsRow"></div>
-                        <div class="section-row">
-                            <span class="section-label">Today's Menu</span>
-                            <span class="section-count" id="itemCount"></span>
-                        </div>
-                        <div id="prodContainer"></div>
-                    </div>
-                </div>
+    <!-- سايدبار كولابس -->
+    <aside class="desktop-sidebar" id="desktopSidebar">
+        <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
+        <div class="sidebar-header">
+            <div class="sidebar-logo-placeholder" id="sidebarLogoPlaceholder">✨</div>
+            <div class="sidebar-brand" id="sidebarBrandName">Luxe Dining</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Navigation</div>
+            <div class="sidebar-item active" data-screen="menu">
+                <span class="s-icon">📋</span> Menu
+            </div>
+            <div class="sidebar-item" data-screen="cart">
+                <span class="s-icon">🛒</span> Cart
+                <span class="s-badge" id="sidebarCartCount">0</span>
+            </div>
+            <div class="sidebar-item" data-screen="table-select">
+                <span class="s-icon">🪑</span> Select Table
+            </div>
+        </div>
+        <button class="sidebar-order-btn" id="sidebarOrderBtn" onclick="handleOrderAction()" disabled>
+            📋 View Cart (0)
+        </button>
+        <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
+    </aside>
 
-                <!-- السلة -->
-                <div class="screen screen-padded" id="screen-cart">
-                    <div class="content-padded">
-                        <div style="margin:0.5rem 0 0.7rem;"><h2 style="font-size:1.1rem;font-weight:800;">🛒 Your Cart</h2></div>
-                        <div class="cart-cust-card" id="cartCustCard" style="display:none;">
-                            <div class="cart-cust-icon">👤</div>
-                            <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
+    <!-- المحتوى الرئيسي -->
+    <div class="main-area">
+        <div class="main-scroll" id="mainScroll">
+            <!-- ===== القائمة ===== -->
+            <div class="screen active" id="screen-menu">
+                <div class="hero-wrapper">
+                    <div class="hero-bg" id="menuHeroBg"></div>
+                    <div class="hero-top-bar">
+                        <div style="position:relative;">
+                            <button class="hero-lang-btn" id="heroLangBtn">🌐 <span id="heroLangLabel">EN</span></button>
+                            <div class="hero-lang-drop" id="heroLangDrop">
+                                <div class="hero-lang-opt active" data-lang="en">🇬🇧 English</div>
+                                <div class="hero-lang-opt" data-lang="ar">🇸🇦 العربية</div>
+                                <div class="hero-lang-opt" data-lang="ru">🇷🇺 Русский</div>
+                                <div class="hero-lang-opt" data-lang="it">🇮🇹 Italiano</div>
+                                <div class="hero-lang-opt" data-lang="de">🇩🇪 Deutsch</div>
+                            </div>
                         </div>
-                        <div class="cart-items-wrap" id="cartItemsWrap"></div>
-                        <div class="cart-summary-box">
-                            <div class="sum-row"><span>Subtotal</span><span id="sumSub">0.00</span></div>
-                            <div class="sum-row"><span>Tax (14%)</span><span id="sumTax">0.00</span></div>
-                            <div class="sum-row"><span>Service (10%)</span><span id="sumSvc">0.00</span></div>
-                            <div class="sum-row total"><span>Total</span><span id="sumTotal">0.00</span></div>
+                        <button class="hero-cart-btn" id="heroCartBtn">
+                            🛒
+                            <span class="hero-cart-badge" id="heroCartBadge">0</span>
+                        </button>
+                    </div>
+                    <div class="hero-content">
+                        <div class="hero-logo-placeholder" id="heroLogoPlaceholder">✨</div>
+                        <h1 class="hero-title" id="menuHeroTitle"></h1>
+                        <p class="hero-sub" id="menuHeroSub"></p>
+                        <div class="hero-meta" id="menuHeroMeta"></div>
+                        <div class="table-tag" id="tableTag" style="display:none;">
+                            <span class="pulse-dot"></span>
+                            <span>Table</span>: #<span id="tableTagNum"></span>
                         </div>
                     </div>
                 </div>
+                <div class="menu-content">
+                    <div class="controls-row">
+                        <div class="currency-scroll" id="currencyRow">
+                            <div class="cur-chip active" data-currency="EGP">EGP</div>
+                            <div class="cur-chip" data-currency="USD">USD</div>
+                            <div class="cur-chip" data-currency="EUR">EUR</div>
+                        </div>
+                        <div class="view-toggles">
+                            <button class="vt-btn active" data-view="list">☰</button>
+                            <button class="vt-btn" data-view="grid">⊞</button>
+                        </div>
+                    </div>
+                    <div class="cats-strip" id="catsRow"></div>
+                    <div class="section-row">
+                        <span class="section-label">Today's Menu</span>
+                        <span class="section-count" id="itemCount"></span>
+                    </div>
+                    <div id="prodContainer"></div>
+                </div>
+            </div>
 
-                <!-- طاولات -->
-                <div class="screen screen-padded" id="screen-table-select">
-                    <div class="content-padded">
-                        <div style="text-align:center;padding:0.8rem 0;">
-                            <div style="font-size:2rem;">🪑</div>
-                            <div style="font-size:1.1rem;font-weight:800;">How to order?</div>
-                            <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
-                        </div>
-                        <div class="order-type-row" id="orderTypeRow">
-                            <button class="order-type-btn active" data-type="dine-in">🏠 Dine In</button>
-                            <button class="order-type-btn" data-type="delivery">🛵 Delivery</button>
-                        </div>
-                        <div class="tables-3d-box" id="tablesBox">
-                            <div class="tables-3d-title">🪑 Pick Table Number</div>
-                            <div class="tables-floor-grid" id="tablesFloor"></div>
-                            <div class="table-selected-info" id="tableSelInfo">No table selected</div>
-                        </div>
-                        <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
-                            <div class="field"><label class="field-label">👤 Name</label><input class="field-input" id="inpName"></div>
-                            <div class="field"><label class="field-label">📞 Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
-                            <div class="field"><label class="field-label">📍 Address</label><input class="field-input" id="inpAddr"></div>
-                        </div>
+            <!-- ===== السلة ===== -->
+            <div class="screen" id="screen-cart">
+                <div class="page-header">
+                    <button class="page-back-btn" onclick="goBack()">‹</button>
+                    <span class="page-title-text">🛒 Your Cart</span>
+                </div>
+                <div class="content-padded" style="padding:0.75rem;">
+                    <div class="cart-cust-card" id="cartCustCard" style="display:none;">
+                        <div class="cart-cust-icon">👤</div>
+                        <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
+                    </div>
+                    <div class="cart-items-wrap" id="cartItemsWrap"></div>
+                    <div class="cart-summary-box">
+                        <div class="sum-row"><span>Subtotal</span><span id="sumSub">0.00</span></div>
+                        <div class="sum-row"><span>Tax (14%)</span><span id="sumTax">0.00</span></div>
+                        <div class="sum-row"><span>Service (10%)</span><span id="sumSvc">0.00</span></div>
+                        <div class="sum-row total"><span>Total</span><span id="sumTotal">0.00</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- بار سفلي للموبايل -->
-            <div class="bottom-bar" id="bottomBar">
-                <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
+            <!-- ===== طاولات ===== -->
+            <div class="screen" id="screen-table-select">
+                <div class="page-header">
+                    <button class="page-back-btn" onclick="goBack()">‹</button>
+                    <span class="page-title-text">🪑 Select Table</span>
+                </div>
+                <div style="padding:0.75rem;">
+                    <div style="text-align:center;padding:0.5rem 0;">
+                        <div style="font-size:2rem;">🪑</div>
+                        <div style="font-size:1rem;font-weight:800;">How to order?</div>
+                        <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
+                    </div>
+                    <div class="order-type-row" id="orderTypeRow">
+                        <button class="order-type-btn active" data-type="dine-in">🏠 Dine In</button>
+                        <button class="order-type-btn" data-type="delivery">🛵 Delivery</button>
+                    </div>
+                    <div class="tables-3d-box" id="tablesBox">
+                        <div class="tables-3d-title">🪑 Pick Table Number</div>
+                        <div class="tables-floor-grid" id="tablesFloor"></div>
+                        <div class="table-selected-info" id="tableSelInfo">No table selected</div>
+                    </div>
+                    <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
+                        <div class="field"><label class="field-label">👤 Name</label><input class="field-input" id="inpName"></div>
+                        <div class="field"><label class="field-label">📞 Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
+                        <div class="field"><label class="field-label">📍 Address</label><input class="field-input" id="inpAddr"></div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- بار سفلي -->
+        <div class="bottom-bar" id="bottomBar">
+            <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
         </div>
     </div>
 
@@ -516,50 +542,42 @@
             function isDesktop(){return window.innerWidth>768;}
 
             var restaurant=null,products=[],tables=[],cart=[];
-            var st={lang:localStorage.getItem('luxe_lang')||'en',cur:'EGP',theme:localStorage.getItem('luxe_theme')||'dark',viewMode:'list',screen:'menu',history:['menu'],orderType:'dine-in',selTable:TABLE_ID||null,custName:'',custPhone:'',custAddr:''};
+            var st={lang:localStorage.getItem('luxe_lang')||'en',cur:'EGP',viewMode:'list',screen:'menu',history:['menu'],orderType:'dine-in',selTable:TABLE_ID||null,custName:'',custPhone:'',custAddr:''};
             var sym={EGP:'EGP',USD:'$',EUR:'€'};
 
             function price(p){return(p.prices&&p.prices[st.cur])||0;}
             function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur];}
             function cartTotal(){return cart.reduce(function(s,i){var p=products.find(function(x){return x.id===i.id;});return s+(p?price(p)*i.qty:0);},0);}
             function cartCount(){return cart.reduce(function(s,i){return s+i.qty;},0);}
-            function applyTheme(){document.body.classList.toggle('light-mode',st.theme==='light');}
             function showTableTag(){var tag=$('tableTag');if(TABLE_ID&&tag){tag.style.display='inline-flex';$('tableTagNum').textContent=TABLE_ID;}}
 
-            // ===== تحديث كل الشارات =====
+            // ===== سايدبار =====
+            function openSidebar(){ $('desktopSidebar').classList.add('open'); $('sidebarBackdrop').classList.add('show'); $('sidebarToggleBtn').classList.remove('show'); }
+            function closeSidebar(){ $('desktopSidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('show'); if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show'); }
+
             function updateAllBadges(){
                 var cnt=cartCount();
-                var badges=[$('heroCartBadge'),$('mhCartBadge'),$('sidebarCartCount')];
+                var badges=[$('heroCartBadge'),$('sidebarCartCount')];
                 badges.forEach(function(b){if(!b)return;b.textContent=cnt;b.style.display=cnt>0?'flex':'none';if(b.id==='sidebarCartCount')b.style.display=cnt>0?'inline':'none';});
-                // تحديث الزر السفلي
-                var bigBtn=$('bigBtn');if(bigBtn){bigBtn.innerHTML='🛒 View Cart ('+cnt+')';bigBtn.disabled=cnt===0;}
-                // تحديث زر السايدبار
+                var bigBtn=$('bigBtn');
+                if(bigBtn){
+                    if(st.screen==='menu'){bigBtn.innerHTML='🛒 View Cart ('+cnt+')';bigBtn.onclick=function(){switchScreen('cart');};bigBtn.disabled=cnt===0;}
+                    else if(st.screen==='cart'){
+                        if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){bigBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';bigBtn.onclick=confirmOrder;bigBtn.disabled=cnt===0;}
+                        else{bigBtn.innerHTML='📋 Choose Table or Delivery';bigBtn.onclick=function(){switchScreen('table-select');};bigBtn.disabled=cnt===0;}
+                    }else if(st.screen==='table-select'){bigBtn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';bigBtn.onclick=confirmOrder;bigBtn.disabled=false;}
+                }
                 updateSidebarOrderBtn();
             }
 
-            // ===== زر السايدبار =====
             function updateSidebarOrderBtn(){
                 var btn=$('sidebarOrderBtn');if(!btn)return;
                 var cnt=cartCount();
                 if(st.screen==='cart'){
-                    if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){
-                        btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';
-                        btn.onclick=confirmOrder;
-                        btn.disabled=cnt===0;
-                    }else{
-                        btn.innerHTML='📋 Choose Table or Delivery';
-                        btn.onclick=function(){switchScreen('table-select');};
-                        btn.disabled=cnt===0;
-                    }
-                }else if(st.screen==='table-select'){
-                    btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';
-                    btn.onclick=confirmOrder;
-                    btn.disabled=false;
-                }else{
-                    btn.innerHTML='🛒 View Cart ('+cnt+')';
-                    btn.onclick=function(){switchScreen('cart');};
-                    btn.disabled=cnt===0;
-                }
+                    if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
+                    else{btn.innerHTML='📋 Choose Table or Delivery';btn.onclick=function(){switchScreen('table-select');};btn.disabled=cnt===0;}
+                }else if(st.screen==='table-select'){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
+                else{btn.innerHTML='🛒 View Cart ('+cnt+')';btn.onclick=function(){switchScreen('cart');};btn.disabled=cnt===0;}
             }
 
             // ===== تحميل المطعم =====
@@ -569,39 +587,25 @@
                     if(!res.ok)throw new Error('Failed');
                     var allRestaurants=await res.json();
                     restaurant=allRestaurants.find(function(r){return r.id===RESTAURANT_ID;})||allRestaurants[0];
-                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine at your fingertips",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"https://images.unsplash.com/photo-1552566626-52f8b828add9?w=200&q=80",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
+                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine at your fingertips",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
                 $('loadingOverlay').classList.remove('show');
                 renderRestaurantUI();
-                await loadMenu();
-                await loadTables();
+                await loadMenu();await loadTables();
                 renderCats();renderProducts();
             }
 
             function renderRestaurantUI(){
                 if(!restaurant)return;
                 $('menuHeroBg').style.backgroundImage='url('+restaurant.image+')';
-                $('menuHeroTitle').textContent=restaurant.name;
-                $('menuHeroSub').textContent=restaurant.description||'';
-                var meta='';
-                if(restaurant.rating)meta+='<span>⭐ <strong>'+restaurant.rating+'</strong>';
-                if(restaurant.reviews)meta+=' ('+restaurant.reviews+')</span>';
-                if(restaurant.area)meta+='<span>📍 '+restaurant.area+'</span>';
-                if(restaurant.cuisine)meta+='<span>🍽️ '+restaurant.cuisine+'</span>';
+                $('menuHeroTitle').textContent=restaurant.name;$('menuHeroSub').textContent=restaurant.description||'';
+                var meta='';if(restaurant.rating)meta+='<span>⭐ <strong>'+restaurant.rating+'</strong>';if(restaurant.reviews)meta+=' ('+restaurant.reviews+')</span>';if(restaurant.area)meta+='<span>📍 '+restaurant.area+'</span>';if(restaurant.cuisine)meta+='<span>🍽️ '+restaurant.cuisine+'</span>';
                 $('menuHeroMeta').innerHTML=meta;
-                
-                // شعار المطعم
                 if(restaurant.logo){
-                    // استبدال placeholder بصورة
-                    var logoHtml='<img src="'+restaurant.logo+'" class="hero-logo-img" style="width:70px;height:70px;border-radius:18px;object-fit:cover;margin-bottom:0.8rem;box-shadow:0 8px 30px rgba(0,0,0,0.4);">';
-                    $('heroLogoPlaceholder').outerHTML=logoHtml;
-                    // السايدبار
-                    $('sidebarLogoImg').outerHTML='<img src="'+restaurant.logo+'" class="sidebar-logo-img" id="sidebarLogoImg" style="width:60px;height:60px;border-radius:16px;object-fit:cover;margin-bottom:0.5rem;">';
-                    // السبلاش
+                    $('heroLogoPlaceholder').outerHTML='<img src="'+restaurant.logo+'" class="hero-logo-img" id="heroLogoPlaceholder" style="width:70px;height:70px;border-radius:18px;object-fit:cover;margin:0 auto 0.8rem;display:block;box-shadow:0 8px 30px rgba(0,0,0,0.4);">';
+                    $('sidebarLogoPlaceholder').outerHTML='<img src="'+restaurant.logo+'" class="sidebar-logo-img" id="sidebarLogoPlaceholder" style="width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;">';
                     $('splashLogo').outerHTML='<img src="'+restaurant.logo+'" class="splash-logo-img" id="splashLogo" style="width:80px;height:80px;border-radius:20px;object-fit:cover;">';
                 }
-                
-                $('sidebarBrandName').textContent=restaurant.name;
-                $('splashName').textContent=restaurant.name;
+                $('sidebarBrandName').textContent=restaurant.name;$('splashName').textContent=restaurant.name;
                 document.title=restaurant.name+' | QR Menu';
             }
 
@@ -615,42 +619,23 @@
             window.switchScreen=function(s){
                 if(st.screen===s)return;
                 st.history.push(s);st.screen=s;refreshUI();
+                if(isDesktop()&&s!=='menu')closeSidebar();
             };
+            window.goBack=function(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();if(isDesktop()&&st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}}};
             window.handleOrderAction=function(){
-                if(st.screen==='cart'){
-                    if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){
-                        confirmOrder();
-                    }else{
-                        switchScreen('table-select');
-                    }
-                }else if(st.screen==='table-select'){
-                    confirmOrder();
-                }else{
-                    switchScreen('cart');
-                }
+                if(st.screen==='cart'){if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){confirmOrder();}else{switchScreen('table-select');}}
+                else if(st.screen==='table-select'){confirmOrder();}
+                else{switchScreen('cart');}
             };
-            function goBack(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();}}
 
             function refreshUI(){
                 $$('.screen').forEach(function(sc){sc.classList.remove('active');});
                 var tgt=$('screen-'+st.screen);if(tgt)tgt.classList.add('active');
-                // سايدبار
                 $$('.sidebar-item').forEach(function(item){item.classList.remove('active');});
                 var activeItem=document.querySelector('.sidebar-item[data-screen="'+st.screen+'"]');
                 if(activeItem)activeItem.classList.add('active');
-                // بار سفلي موبايل
-                var btn=$('bigBtn'),cnt=cartCount();
-                if(isDesktop()){if($('bottomBar'))$('bottomBar').style.display='none';}
-                else{
-                    if($('bottomBar'))$('bottomBar').style.display='block';
-                    if(st.screen==='menu'){btn.innerHTML='🛒 View Cart ('+cnt+')';btn.onclick=function(){switchScreen('cart');};btn.disabled=cnt===0;}
-                    else if(st.screen==='cart'){
-                        if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&st.custName)){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}
-                        else{btn.innerHTML='📋 Choose Table or Delivery';btn.onclick=function(){switchScreen('table-select');};btn.disabled=cnt===0;}
-                    }else if(st.screen==='table-select'){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
-                }
-                updateAllBadges();
-                updateSidebarOrderBtn();
+                if(isDesktop()){if(st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}else{$('sidebarToggleBtn').classList.remove('show');}}
+                updateAllBadges();updateSidebarOrderBtn();
                 $('mainScroll').scrollTop=0;
             }
 
@@ -676,18 +661,15 @@
             function launchConfetti(){var box=$('confettiBox'),cols=['#c8a45c','#e2c97e','#ff3b30','#34c759','#007aff','#ff9500','#fff'];box.innerHTML='';for(var i=0;i<50;i++){var d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.5+'s';d.style.animationDuration=(1.5+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(4+Math.random()*6)+'px';d.style.height=(4+Math.random()*6)+'px';box.appendChild(d);}setTimeout(function(){box.innerHTML='';},2500);}
             function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show');},2000);}
 
-            function switchLang(lang){st.lang=lang;localStorage.setItem('luxe_lang',lang);document.body.className=lang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';if($('heroLangLabel'))$('heroLangLabel').textContent=lang.toUpperCase();$$('.hero-lang-opt, .sidebar-lang-chip').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang);});if($('heroLangDrop'))$('heroLangDrop').classList.remove('open');}
+            function switchLang(lang){st.lang=lang;localStorage.setItem('luxe_lang',lang);document.body.className=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';if($('heroLangLabel'))$('heroLangLabel').textContent=lang.toUpperCase();$$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang);});if($('heroLangDrop'))$('heroLangDrop').classList.remove('open');}
             function setView(mode){st.viewMode=mode;$$('.vt-btn').forEach(function(b){b.classList.toggle('active',b.dataset.view===mode);});renderProducts();}
 
-            // ===== بدء =====
             function init(){
                 var savedLang=localStorage.getItem('luxe_lang')||'en';st.lang=savedLang;
-                st.theme=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';
-                document.body.className=savedLang+(st.theme==='light'?' light-mode':'');
-                document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
+                document.body.className=savedLang;document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
                 if($('heroLangLabel'))$('heroLangLabel').textContent=savedLang.toUpperCase();
-                $$('.hero-lang-opt, .sidebar-lang-chip').forEach(function(o){o.classList.toggle('active',o.dataset.lang===savedLang);});
-                applyTheme();showTableTag();
+                $$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===savedLang);});
+                showTableTag();
                 loadRestaurant();
                 renderTables();updateCartUI();updateAllBadges();refreshUI();
 
@@ -695,15 +677,13 @@
                 if($('heroCartBtn'))$('heroCartBtn').addEventListener('click',function(){switchScreen('cart');});
                 if($('heroLangBtn'))$('heroLangBtn').addEventListener('click',function(e){e.stopPropagation();$('heroLangDrop').classList.toggle('open');});
                 $$('.hero-lang-opt').forEach(function(o){o.addEventListener('click',function(){switchLang(this.dataset.lang);});});
-                $$('.sidebar-lang-chip').forEach(function(o){o.addEventListener('click',function(){switchLang(this.dataset.lang);});});
                 $$('.sidebar-item').forEach(function(item){item.addEventListener('click',function(){switchScreen(this.dataset.screen);});});
                 document.addEventListener('click',function(){if($('heroLangDrop'))$('heroLangDrop').classList.remove('open');});
                 $('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
                 $$('#currencyRow .cur-chip').forEach(function(c){c.addEventListener('click',function(){st.cur=this.dataset.currency;$$('#currencyRow .cur-chip').forEach(function(x){x.classList.remove('active');});this.classList.add('active');renderProducts();updateCartUI();refreshUI();});});
                 $$('.vt-btn').forEach(function(b){b.addEventListener('click',function(){setView(this.dataset.view);});});
                 $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');$('tablesBox').style.display=st.orderType==='dine-in'?'block':'none';$('deliveryFormBox').style.display=st.orderType==='delivery'?'block':'none';});});
-                window.addEventListener('resize',function(){refreshUI();renderProducts();});
-                setInterval(function(){var nt=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';if(nt!==st.theme){st.theme=nt;applyTheme();}},3600000);
+                window.addEventListener('resize',function(){refreshUI();renderProducts();if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show');});
             }
             init();
         });
