@@ -9,7 +9,7 @@
     <title>QR Menu | Restaurant</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap');
 
         :root {
             --bg: #0a0a0a;
@@ -35,7 +35,14 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', 'Cairo', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        
+        /* ===== الإصلاح الأساسي: body مش hidden ===== */
+        body { 
+            font-family: 'Inter', 'Cairo', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            -webkit-font-smoothing: antialiased; 
+        }
         body.ar { font-family: 'Cairo', 'Inter', sans-serif; direction: rtl; }
         body.en, body.ru, body.it, body.de { font-family: 'Inter', sans-serif; direction: ltr; }
 
@@ -47,7 +54,6 @@
         .splash-rings:nth-child(2) { inset: -50px; animation-delay: 0.5s; border-color: rgba(200,164,92,0.15); }
         .splash-rings:nth-child(3) { inset: -70px; animation-delay: 1s; border-color: rgba(200,164,92,0.08); }
         @keyframes splashRing { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
-        .splash-logo-img { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; position: relative; z-index: 1; box-shadow: 0 0 30px rgba(200,164,92,0.3); display: none; }
         .splash-logo-placeholder { width: 80px; height: 80px; border-radius: 20px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; position: relative; z-index: 1; }
         .splash-name { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 3px; margin-top: 0.5rem; }
 
@@ -57,13 +63,30 @@
         .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== التخطيط الرئيسي - اللي بيخلي كل حاجة تشتغل ===== */
-        .app-layout { display: flex; height: 100vh; height: 100dvh; width: 100%; overflow: hidden; }
+        /* ===== هيكل الصفحة ===== */
+        .page-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            min-height: 100dvh;
+            position: relative;
+        }
+        
+        @media (min-width: 769px) {
+            .page-wrapper {
+                max-width: 100%;
+                padding-left: 0;
+            }
+        }
 
         /* زر السايدبار */
         .sidebar-toggle-btn { display: none; position: fixed; top: 50%; left: 0; transform: translateY(-50%); width: 28px; height: 56px; background: var(--surface2); border: 1px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; color: var(--gold); font-size: 0.9rem; cursor: pointer; z-index: 20; align-items: center; justify-content: center; }
         body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 10px 0 0 10px; border-right: none; border-left: 1px solid var(--border); }
-        .sidebar-toggle-btn.show { display: flex; }
+        
+        @media (min-width: 769px) {
+            .sidebar-toggle-btn { display: flex; }
+            .sidebar-toggle-btn.show { display: flex; }
+        }
 
         /* سايدبار */
         .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 14; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -73,7 +96,6 @@
         .desktop-sidebar.open { transform: translateX(0); }
         .sidebar-close-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 1rem; cursor: pointer; margin: 0.75rem; align-self: flex-end; }
         .sidebar-header { padding: 1rem 1.5rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); }
-        .sidebar-logo-img { width: 50px; height: 50px; border-radius: 14px; object-fit: cover; margin: 0 auto 0.5rem; display: none; }
         .sidebar-logo-placeholder { width: 50px; height: 50px; border-radius: 14px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.5rem; }
         .sidebar-brand { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 1.3rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .sidebar-section { padding: 1.2rem 0.75rem; border-bottom: 1px solid var(--border); }
@@ -89,17 +111,12 @@
         .sidebar-powered { padding: 0.75rem 1.5rem; margin-top: auto; text-align: center; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
         .sidebar-powered span { color: var(--gold); font-weight: 600; }
 
-        /* المحتوى الرئيسي */
-        .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-
-        /* ===== أهم حاجة: السكرول ===== */
-        .main-scroll { flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-        .screen { display: none; animation: screenIn 0.4s ease; }
+        /* ===== الشاشات - مش hidden ===== */
+        .screen { display: none; }
         .screen.active { display: block; }
-        @keyframes screenIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== هيرو - full screen height ===== */
-        .hero-wrapper { position: relative; width: 100%; min-height: 100vh; min-height: 100dvh; overflow: hidden; }
+        /* ===== هيرو ===== */
+        .hero-wrapper { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
         .hero-bg { width: 100%; height: 100%; background-size: cover; background-position: center; position: absolute; inset: 0; transform: scale(1.04); }
         .hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.05) 30%, rgba(10,10,10,0.4) 55%, var(--bg) 90%); }
         .hero-top-bar { position: absolute; top: var(--safe-top); left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; z-index: 10; }
@@ -114,7 +131,6 @@
         .hero-cart-badge { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; background: var(--red); color: #fff; border-radius: 50%; font-size: 0.6rem; font-weight: 800; display: none; align-items: center; justify-content: center; padding: 0 3px; }
         .hero-cart-badge.show { display: flex; }
         .hero-content { position: absolute; bottom: 6rem; left: 0; right: 0; text-align: center; padding: 0 2rem; z-index: 2; }
-        .hero-logo-img { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin: 0 auto 0.8rem; display: none; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
         .hero-logo-placeholder { width: 70px; height: 70px; border-radius: 18px; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.8rem; }
         .hero-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.5); line-height: 1.1; margin-bottom: 0.3rem; }
         .hero-sub { color: rgba(255,255,255,0.85); font-size: 0.78rem; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
@@ -123,22 +139,14 @@
         .table-tag { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); padding: 0.3rem 0.9rem; border-radius: 50px; font-weight: 700; font-size: 0.7rem; color: #fff; margin-top: 0.4rem; }
         .table-tag .pulse-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: dotPulse 2s infinite; }
         @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.6)} }
-
-        /* Scroll indicator */
         .scroll-indicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 5; animation: bounceDown 2s infinite; }
         .scroll-indicator span { display: block; width: 24px; height: 40px; border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; position: relative; }
         .scroll-indicator span::after { content: ''; position: absolute; width: 4px; height: 8px; background: var(--gold); border-radius: 2px; top: 8px; left: 50%; transform: translateX(-50%); animation: scrollDot 2s infinite; }
         @keyframes bounceDown { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
         @keyframes scrollDot { 0%{opacity:1;top:8px} 100%{opacity:0;top:24px} }
 
-        /* صفحات */
-        .page-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
-        .page-back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .page-title-text { font-size: 1rem; font-weight: 700; }
-        .content-padded { padding: 0.75rem; }
-
-        /* قائمة */
-        .menu-content { padding: 0 0.75rem 1.5rem; background: var(--bg); position: relative; z-index: 1; }
+        /* ===== محتوى القائمة ===== */
+        .menu-content { padding: 0 0.75rem 1.5rem; background: var(--bg); }
         .controls-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; padding: 0.5rem 0; }
         .currency-scroll { display: flex; gap: 0.25rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
         .cur-chip { padding: 0.35rem 0.7rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; color: var(--text-secondary); font-size: 0.68rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s; flex-shrink: 0; }
@@ -159,8 +167,6 @@
         /* منتجات */
         .prod-list { display: flex; flex-direction: column; gap: 0.45rem; padding-bottom: 1rem; }
         .prod-item { display: flex; align-items: center; gap: 0.6rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.7rem; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
-        .prod-item::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold-gradient); transform: scaleY(0); transition: transform 0.3s; }
-        body.ar .prod-item::after { left: auto; right: 0; }
         .prod-item:active { background: var(--surface2); transform: scale(0.985); }
         .prod-visual { width: 48px; height: 48px; background: var(--surface2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
         .prod-details { flex: 1; min-width: 0; }
@@ -177,6 +183,12 @@
         .prod-card-bottom { display: flex; justify-content: space-between; align-items: center; }
         .prod-card-price { font-weight: 800; font-size: 0.8rem; color: var(--gold-light); }
         .prod-card-add { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); border: none; color: #000; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+        /* صفحات تانية */
+        .page-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+        .page-back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .page-title-text { font-size: 1rem; font-weight: 700; }
+        .content-padded { padding: 0.75rem; }
 
         /* مودال */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.35s; }
@@ -235,8 +247,9 @@
         .sum-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
         .sum-row.total { font-size: 0.95rem; font-weight: 800; color: var(--text); border-top: 1px solid var(--border); padding-top: 0.45rem; margin-top: 0.25rem; }
 
-        .bottom-bar { padding: 0.5rem 0.75rem; padding-bottom: calc(0.5rem + var(--safe-bottom)); background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; }
-        .big-btn { width: 100%; padding: 0.8rem; background: var(--gold-gradient); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 6px 25px rgba(200,164,92,0.2); transition: all 0.3s; }
+        /* بار سفلي - موبايل */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; padding-bottom: calc(0.5rem + var(--safe-bottom)); background: var(--surface); border-top: 1px solid var(--border); z-index: 50; }
+        .big-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 0.8rem; background: var(--gold-gradient); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 6px 25px rgba(200,164,92,0.2); transition: all 0.3s; }
         .big-btn:active { transform: scale(0.96); }
         .big-btn:disabled { background: var(--surface3); color: var(--text-muted); box-shadow: none; cursor: not-allowed; }
 
@@ -256,9 +269,10 @@
         .success-table-info { color: var(--gold); font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
         .order-id-badge { background: rgba(255,255,255,0.1); padding: 0.35rem 1.3rem; border-radius: 50px; font-weight: 800; font-size: 1rem; color: var(--gold); display: inline-block; letter-spacing: 2px; border: 1px solid rgba(200,164,92,0.3); }
 
+        /* Responsive */
         @media (min-width: 769px) {
-            .sidebar-toggle-btn { display: flex; }
             .bottom-bar { display: none; }
+            .page-wrapper { padding-bottom: 0; }
             .menu-content { padding: 0 1.5rem 2rem; }
             .prod-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
             .prod-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
@@ -271,10 +285,11 @@
             .sidebar-toggle-btn { display: none !important; }
             .desktop-sidebar { display: none !important; }
             .sidebar-backdrop { display: none !important; }
-            .bottom-bar { display: block; }
             .prod-grid { grid-template-columns: repeat(2, 1fr); }
             .prod-list { display: flex; flex-direction: column; }
             .tables-floor-grid { grid-template-columns: repeat(3, 1fr); }
+            .menu-content { padding-bottom: 5rem; }
+            .content-padded { padding-bottom: 5rem; }
         }
     </style>
 </head>
@@ -293,9 +308,9 @@
         <div class="loading-text">Loading menu...</div>
     </div>
 
+    <!-- سايدبار -->
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
     <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()">›</button>
-
     <aside class="desktop-sidebar" id="desktopSidebar">
         <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
         <div class="sidebar-header">
@@ -312,116 +327,106 @@
         <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
     </aside>
 
-    <div class="main-area">
-        <div class="main-scroll" id="mainScroll">
-            <!-- ===== القائمة - screen مع hero + menu-content جواها ===== -->
-            <div class="screen active" id="screen-menu">
-                <!-- هيرو -->
-                <div class="hero-wrapper">
-                    <div class="hero-bg" id="menuHeroBg"></div>
-                    <div class="hero-top-bar">
-                        <div style="position:relative;">
-                            <button class="hero-lang-btn" id="heroLangBtn">🌐 <span id="heroLangLabel">EN</span></button>
-                            <div class="hero-lang-drop" id="heroLangDrop">
-                                <div class="hero-lang-opt active" data-lang="en">🇬🇧 English</div>
-                                <div class="hero-lang-opt" data-lang="ar">🇸🇦 العربية</div>
-                                <div class="hero-lang-opt" data-lang="ru">🇷🇺 Русский</div>
-                                <div class="hero-lang-opt" data-lang="it">🇮🇹 Italiano</div>
-                                <div class="hero-lang-opt" data-lang="de">🇩🇪 Deutsch</div>
-                            </div>
-                        </div>
-                        <button class="hero-cart-btn" id="heroCartBtn">
-                            🛒 <span class="hero-cart-badge" id="heroCartBadge">0</span>
-                        </button>
-                    </div>
-                    <div class="hero-content">
-                        <div class="hero-logo-placeholder" id="heroLogoPlaceholder">✨</div>
-                        <h1 class="hero-title" id="menuHeroTitle"></h1>
-                        <p class="hero-sub" id="menuHeroSub"></p>
-                        <div class="hero-meta" id="menuHeroMeta"></div>
-                        <div class="table-tag" id="tableTag" style="display:none;">
-                            <span class="pulse-dot"></span> <span>Table</span>: #<span id="tableTagNum"></span>
+    <!-- ===== الصفحة الرئيسية - سكرول طبيعي ===== -->
+    <div class="page-wrapper" id="pageWrapper">
+        <!-- قائمة -->
+        <div class="screen active" id="screen-menu">
+            <div class="hero-wrapper">
+                <div class="hero-bg" id="menuHeroBg"></div>
+                <div class="hero-top-bar">
+                    <div style="position:relative;">
+                        <button class="hero-lang-btn" id="heroLangBtn">🌐 <span id="heroLangLabel">EN</span></button>
+                        <div class="hero-lang-drop" id="heroLangDrop">
+                            <div class="hero-lang-opt active" data-lang="en">🇬🇧 English</div>
+                            <div class="hero-lang-opt" data-lang="ar">🇸🇦 العربية</div>
+                            <div class="hero-lang-opt" data-lang="ru">🇷🇺 Русский</div>
+                            <div class="hero-lang-opt" data-lang="it">🇮🇹 Italiano</div>
+                            <div class="hero-lang-opt" data-lang="de">🇩🇪 Deutsch</div>
                         </div>
                     </div>
-                    <!-- سهم السكرول -->
-                    <div class="scroll-indicator"><span></span></div>
+                    <button class="hero-cart-btn" id="heroCartBtn">🛒 <span class="hero-cart-badge" id="heroCartBadge">0</span></button>
                 </div>
-                <!-- محتوى القائمة -->
-                <div class="menu-content">
-                    <div class="controls-row">
-                        <div class="currency-scroll" id="currencyRow">
-                            <div class="cur-chip active" data-currency="EGP">EGP</div>
-                            <div class="cur-chip" data-currency="USD">USD</div>
-                            <div class="cur-chip" data-currency="EUR">EUR</div>
-                        </div>
-                        <div class="view-toggles">
-                            <button class="vt-btn active" data-view="list">☰</button>
-                            <button class="vt-btn" data-view="grid">⊞</button>
-                        </div>
-                    </div>
-                    <div class="cats-strip" id="catsRow"></div>
-                    <div class="section-row">
-                        <span class="section-label">Today's Menu</span>
-                        <span class="section-count" id="itemCount"></span>
-                    </div>
-                    <div id="prodContainer"></div>
+                <div class="hero-content">
+                    <div class="hero-logo-placeholder" id="heroLogoPlaceholder">✨</div>
+                    <h1 class="hero-title" id="menuHeroTitle"></h1>
+                    <p class="hero-sub" id="menuHeroSub"></p>
+                    <div class="hero-meta" id="menuHeroMeta"></div>
+                    <div class="table-tag" id="tableTag" style="display:none;"><span class="pulse-dot"></span> <span>Table</span>: #<span id="tableTagNum"></span></div>
                 </div>
+                <div class="scroll-indicator"><span></span></div>
             </div>
-
-            <!-- سلة -->
-            <div class="screen" id="screen-cart">
-                <div class="page-header">
-                    <button class="page-back-btn" onclick="goBack()">‹</button>
-                    <span class="page-title-text">🛒 Your Cart</span>
-                </div>
-                <div class="content-padded">
-                    <div class="cart-cust-card" id="cartCustCard" style="display:none;">
-                        <div class="cart-cust-icon">👤</div>
-                        <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
+            <div class="menu-content">
+                <div class="controls-row">
+                    <div class="currency-scroll" id="currencyRow">
+                        <div class="cur-chip active" data-currency="EGP">EGP</div>
+                        <div class="cur-chip" data-currency="USD">USD</div>
+                        <div class="cur-chip" data-currency="EUR">EUR</div>
                     </div>
-                    <div class="cart-items-wrap" id="cartItemsWrap"></div>
-                    <div class="cart-summary-box">
-                        <div class="sum-row"><span>Subtotal</span><span id="sumSub">0.00</span></div>
-                        <div class="sum-row"><span>Tax (14%)</span><span id="sumTax">0.00</span></div>
-                        <div class="sum-row"><span>Service (10%)</span><span id="sumSvc">0.00</span></div>
-                        <div class="sum-row total"><span>Total</span><span id="sumTotal">0.00</span></div>
+                    <div class="view-toggles">
+                        <button class="vt-btn active" data-view="list">☰</button>
+                        <button class="vt-btn" data-view="grid">⊞</button>
                     </div>
                 </div>
+                <div class="cats-strip" id="catsRow"></div>
+                <div class="section-row"><span class="section-label">Today's Menu</span><span class="section-count" id="itemCount"></span></div>
+                <div id="prodContainer"></div>
             </div>
+        </div>
 
-            <!-- طاولات -->
-            <div class="screen" id="screen-table-select">
-                <div class="page-header">
-                    <button class="page-back-btn" onclick="goBack()">‹</button>
-                    <span class="page-title-text">🪑 Select Table</span>
+        <!-- سلة -->
+        <div class="screen" id="screen-cart">
+            <div class="page-header">
+                <button class="page-back-btn" onclick="goBack()">‹</button>
+                <span class="page-title-text">🛒 Your Cart</span>
+            </div>
+            <div class="content-padded">
+                <div class="cart-cust-card" id="cartCustCard" style="display:none;">
+                    <div class="cart-cust-icon">👤</div>
+                    <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
                 </div>
-                <div class="content-padded">
-                    <div style="text-align:center;padding:0.5rem 0;">
-                        <div style="font-size:2rem;">🪑</div>
-                        <div style="font-size:1rem;font-weight:800;">How to order?</div>
-                        <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
-                    </div>
-                    <div class="order-type-row" id="orderTypeRow">
-                        <button class="order-type-btn active" data-type="dine-in">🏠 Dine In</button>
-                        <button class="order-type-btn" data-type="delivery">🛵 Delivery</button>
-                    </div>
-                    <div class="tables-3d-box" id="tablesBox">
-                        <div class="tables-3d-title">🪑 Pick Table Number</div>
-                        <div class="tables-floor-grid" id="tablesFloor"></div>
-                        <div class="table-selected-info" id="tableSelInfo">No table selected</div>
-                    </div>
-                    <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
-                        <div class="field"><label class="field-label">👤 Name</label><input class="field-input" id="inpName"></div>
-                        <div class="field"><label class="field-label">📞 Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
-                        <div class="field"><label class="field-label">📍 Address</label><input class="field-input" id="inpAddr"></div>
-                    </div>
+                <div class="cart-items-wrap" id="cartItemsWrap"></div>
+                <div class="cart-summary-box">
+                    <div class="sum-row"><span>Subtotal</span><span id="sumSub">0.00</span></div>
+                    <div class="sum-row"><span>Tax (14%)</span><span id="sumTax">0.00</span></div>
+                    <div class="sum-row"><span>Service (10%)</span><span id="sumSvc">0.00</span></div>
+                    <div class="sum-row total"><span>Total</span><span id="sumTotal">0.00</span></div>
                 </div>
             </div>
         </div>
 
-        <div class="bottom-bar" id="bottomBar">
-            <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
+        <!-- طاولات -->
+        <div class="screen" id="screen-table-select">
+            <div class="page-header">
+                <button class="page-back-btn" onclick="goBack()">‹</button>
+                <span class="page-title-text">🪑 Select Table</span>
+            </div>
+            <div class="content-padded">
+                <div style="text-align:center;padding:0.5rem 0;">
+                    <div style="font-size:2rem;">🪑</div>
+                    <div style="font-size:1rem;font-weight:800;">How to order?</div>
+                    <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
+                </div>
+                <div class="order-type-row" id="orderTypeRow">
+                    <button class="order-type-btn active" data-type="dine-in">🏠 Dine In</button>
+                    <button class="order-type-btn" data-type="delivery">🛵 Delivery</button>
+                </div>
+                <div class="tables-3d-box" id="tablesBox">
+                    <div class="tables-3d-title">🪑 Pick Table Number</div>
+                    <div class="tables-floor-grid" id="tablesFloor"></div>
+                    <div class="table-selected-info" id="tableSelInfo">No table selected</div>
+                </div>
+                <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
+                    <div class="field"><label class="field-label">👤 Name</label><input class="field-input" id="inpName"></div>
+                    <div class="field"><label class="field-label">📞 Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
+                    <div class="field"><label class="field-label">📍 Address</label><input class="field-input" id="inpAddr"></div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- بار سفلي -->
+    <div class="bottom-bar" id="bottomBar">
+        <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
     </div>
 
     <!-- مودال -->
@@ -474,8 +479,8 @@
             function cartTotal(){return cart.reduce(function(s,i){var p=products.find(function(x){return x.id===i.id;});return s+(p?price(p)*i.qty:0);},0);}
             function cartCount(){return cart.reduce(function(s,i){return s+i.qty;},0);}
 
-            window.openSidebar=function(){if(isDesktop()){$('desktopSidebar').classList.add('open');$('sidebarBackdrop').classList.add('show');$('sidebarToggleBtn').classList.remove('show');}};
-            window.closeSidebar=function(){$('desktopSidebar').classList.remove('open');$('sidebarBackdrop').classList.remove('show');if(isDesktop()&&st.screen==='menu')$('sidebarToggleBtn').classList.add('show');};
+            window.openSidebar=function(){if(isDesktop()){$('desktopSidebar').classList.add('open');$('sidebarBackdrop').classList.add('show');}};
+            window.closeSidebar=function(){$('desktopSidebar').classList.remove('open');$('sidebarBackdrop').classList.remove('show');};
 
             function updateAllBadges(){
                 var cnt=cartCount();
@@ -503,7 +508,7 @@
                     if(!res.ok)throw new Error('Failed');
                     var all=await res.json();
                     restaurant=all.find(function(r){return r.id===RESTAURANT_ID;})||all[0];
-                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine at your fingertips",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
+                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",logo:"",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
                 $('loadingOverlay').classList.remove('show');
                 renderRestaurantUI();
                 await loadMenu();await loadTables();
@@ -518,9 +523,9 @@
                 var m='';if(restaurant.rating)m+='<span>⭐ <strong>'+restaurant.rating+'</strong>';if(restaurant.reviews)m+=' ('+restaurant.reviews+')</span>';if(restaurant.area)m+='<span>📍 '+restaurant.area+'</span>';if(restaurant.cuisine)m+='<span>🍽️ '+restaurant.cuisine+'</span>';
                 $('menuHeroMeta').innerHTML=m;
                 if(restaurant.logo){
-                    var heroPH=$('heroLogoPlaceholder');if(heroPH){heroPH.style.display='none';var hi=document.createElement('img');hi.src=restaurant.logo;hi.className='hero-logo-img';hi.id='heroLogoImg';hi.style.cssText='width:70px;height:70px;border-radius:18px;object-fit:cover;margin:0 auto 0.8rem;display:block;box-shadow:0 8px 30px rgba(0,0,0,0.4);';heroPH.parentNode.insertBefore(hi,heroPH);}
-                    var sidePH=$('sidebarLogoPlaceholder');if(sidePH){sidePH.style.display='none';var si=document.createElement('img');si.src=restaurant.logo;si.className='sidebar-logo-img';si.id='sidebarLogoImg';si.style.cssText='width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;';sidePH.parentNode.insertBefore(si,sidePH);}
-                    var splashPH=$('splashLogo');if(splashPH){splashPH.style.display='none';var spi=document.createElement('img');spi.src=restaurant.logo;spi.className='splash-logo-img';spi.id='splashLogoImg';spi.style.cssText='width:80px;height:80px;border-radius:20px;object-fit:cover;display:block;position:relative;z-index:1;box-shadow:0 0 30px rgba(200,164,92,0.3);';splashPH.parentNode.insertBefore(spi,splashPH);}
+                    var heroPH=$('heroLogoPlaceholder');if(heroPH){heroPH.style.display='none';var hi=document.createElement('img');hi.src=restaurant.logo;hi.className='hero-logo-img';hi.style.cssText='width:70px;height:70px;border-radius:18px;object-fit:cover;margin:0 auto 0.8rem;display:block;box-shadow:0 8px 30px rgba(0,0,0,0.4);';heroPH.parentNode.insertBefore(hi,heroPH);}
+                    var sidePH=$('sidebarLogoPlaceholder');if(sidePH){sidePH.style.display='none';var si=document.createElement('img');si.src=restaurant.logo;si.className='sidebar-logo-img';si.style.cssText='width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;';sidePH.parentNode.insertBefore(si,sidePH);}
+                    var splashPH=$('splashLogo');if(splashPH){splashPH.style.display='none';var spi=document.createElement('img');spi.src=restaurant.logo;spi.className='splash-logo-img';spi.style.cssText='width:80px;height:80px;border-radius:20px;object-fit:cover;display:block;position:relative;z-index:1;box-shadow:0 0 30px rgba(200,164,92,0.3);';splashPH.parentNode.insertBefore(spi,splashPH);}
                 }
                 $('sidebarBrandName').textContent=restaurant.name||'';
                 $('splashName').textContent=restaurant.name||'';
@@ -530,7 +535,7 @@
             async function loadMenu(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/menu.json');if(res.ok){products=await res.json();}else{products=getDefaultProducts();}}catch(e){products=getDefaultProducts();}var ic=$('itemCount');if(ic)ic.textContent=products.length+' items';}
             async function loadTables(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/tables.json');if(res.ok){tables=await res.json();}else{tables=getDefaultTables();}}catch(e){tables=getDefaultTables();}renderTables();}
 
-            function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot house-roasted Arabica"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk over bold espresso"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte with caramel drizzle"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared lemon butter"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta cheesecake"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm chocolate fondant"}];}
+            function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot house-roasted Arabica"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte caramel"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared lemon butter"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm chocolate fondant"}];}
             function getDefaultTables(){return[{id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},{id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},{id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false}];}
 
             window.switchScreen=function(s){if(st.screen===s)return;st.history.push(s);st.screen=s;refreshUI();if(isDesktop()&&s!=='menu')closeSidebar();};
@@ -541,8 +546,7 @@
                 var tgt=$('screen-'+st.screen);if(tgt)tgt.classList.add('active');
                 $$('.sidebar-item').forEach(function(item){item.classList.remove('active');});
                 var ai=document.querySelector('.sidebar-item[data-screen="'+st.screen+'"]');if(ai)ai.classList.add('active');
-                if(isDesktop()){if(st.screen==='menu'){$('sidebarToggleBtn').classList.add('show');}else{$('sidebarToggleBtn').classList.remove('show');}}
-                updateAllBadges();$('mainScroll').scrollTop=0;
+                updateAllBadges();
             }
 
             function renderProducts(cat){cat=cat||'all';var c=$('prodContainer');if(!c)return;var items=cat==='all'?products:products.filter(function(p){return p.cat===cat;});var ic=$('itemCount');if(ic)ic.textContent=items.length+' items';
@@ -586,7 +590,6 @@
                 $$('#currencyRow .cur-chip').forEach(function(c){c.addEventListener('click',function(){st.cur=this.dataset.currency;$$('#currencyRow .cur-chip').forEach(function(x){x.classList.remove('active');});this.classList.add('active');renderProducts();updateCartUI();refreshUI();});});
                 $$('.vt-btn').forEach(function(b){b.addEventListener('click',function(){setView(this.dataset.view);});});
                 $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');var tb=$('tablesBox');if(tb)tb.style.display=st.orderType==='dine-in'?'block':'none';var df=$('deliveryFormBox');if(df)df.style.display=st.orderType==='delivery'?'block':'none';});});
-                window.addEventListener('resize',function(){refreshUI();renderProducts();});
             }
             init();
         });
