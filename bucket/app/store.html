@@ -89,22 +89,18 @@
         .sidebar-brand { font-family: 'Great Vibes', 'Playfair Display', cursive; font-size: 1.8rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .sidebar-section { padding: 1.5rem 1rem; border-bottom: 1px solid var(--border); }
         .sidebar-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 0.75rem; padding: 0 0.5rem; }
-        .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.65rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.3s; color: var(--text-secondary); font-size: 0.85rem; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.3s; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.15rem; }
         .sidebar-item:hover { background: var(--surface2); color: var(--text); }
         .sidebar-item.active { background: rgba(200,164,92,0.12); color: var(--gold); font-weight: 700; }
-        .sidebar-item .s-icon { font-size: 1.1rem; width: 22px; text-align: center; }
-        .sidebar-item .s-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 50px; }
+        .sidebar-item .s-icon { font-size: 1.1rem; width: 22px; text-align: center; flex-shrink: 0; }
+        .sidebar-item .s-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 0.6rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 50px; min-width: 20px; text-align: center; }
         body.ar .sidebar-item .s-badge { margin-left: 0; margin-right: auto; }
         .sidebar-langs { display: flex; gap: 0.25rem; flex-wrap: wrap; padding: 0 0.25rem; }
         .sidebar-lang-chip { padding: 0.35rem 0.5rem; border-radius: 50px; font-size: 0.65rem; font-weight: 600; cursor: pointer; background: var(--surface2); border: 1px solid var(--border); color: var(--text-secondary); transition: all 0.3s; }
         .sidebar-lang-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
-        .sidebar-theme-row { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.75rem; color: var(--text-secondary); padding: 0.5rem 0.25rem; }
-        .theme-toggle { width: 40px; height: 22px; background: var(--surface3); border-radius: 50px; position: relative; transition: all 0.3s; flex-shrink: 0; }
-        .theme-toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: var(--gold); border-radius: 50%; top: 2px; left: 2px; transition: all 0.3s; }
-        body.light-mode .theme-toggle { background: #d1d1d6; }
-        body.light-mode .theme-toggle::after { left: 20px; }
-        .sidebar-footer { padding: 1rem 1.5rem; margin-top: auto; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
-        .sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .sidebar-footer { padding: 1rem 1.5rem; margin-top: auto; border-top: 1px solid var(--border); text-align: center; }
+        .sidebar-powered { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; }
+        .sidebar-powered span { color: var(--gold); font-weight: 600; }
 
         /* المحتوى الرئيسي */
         .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -163,14 +159,12 @@
         .menu-content { padding: 0 0.75rem 1.5rem; background: var(--bg); position: relative; z-index: 1; }
         .controls-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; padding: 0.5rem 0; }
         .currency-scroll { display: flex; gap: 0.25rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
-        .currency-scroll::-webkit-scrollbar{display:none}
         .cur-chip { padding: 0.35rem 0.7rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; color: var(--text-secondary); font-size: 0.68rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s; flex-shrink: 0; }
         .cur-chip.active { background: var(--gold); color: #000; border-color: var(--gold); }
         .view-toggles { display: flex; gap: 0.15rem; background: var(--surface2); border-radius: 50px; padding: 0.15rem; flex-shrink: 0; }
         .vt-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
         .vt-btn.active { background: var(--gold); color: #000; }
         .cats-strip { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.2rem 0 0.7rem; scrollbar-width: none; }
-        .cats-strip::-webkit-scrollbar{display:none}
         .cat-chip { flex-shrink: 0; padding: 0.55rem 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; color: var(--text-secondary); font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.35s; white-space: nowrap; display: flex; align-items: center; gap: 0.35rem; position: relative; overflow: hidden; }
         .cat-chip::before { content: ''; position: absolute; inset: 0; background: var(--gold-gradient); opacity: 0; transition: opacity 0.35s; }
         .cat-chip.active { color: #000; border-color: var(--gold); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(200,164,92,0.2); }
@@ -180,7 +174,7 @@
         .section-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); font-weight: 700; }
         .section-count { font-size: 0.68rem; color: var(--text-muted); }
 
-        /* منتجات List */
+        /* منتجات */
         .prod-list { display: flex; flex-direction: column; gap: 0.45rem; padding-bottom: 1rem; }
         .prod-item { display: flex; align-items: center; gap: 0.6rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.7rem; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
         .prod-item::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold-gradient); transform: scaleY(0); transition: transform 0.3s; }
@@ -194,8 +188,6 @@
         .prod-price-tag { font-weight: 800; font-size: 0.85rem; color: var(--gold-light); white-space: nowrap; margin: 0 0.4rem; }
         .prod-add-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); border: none; color: #000; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; transition: all 0.2s; box-shadow: 0 3px 10px rgba(200,164,92,0.2); }
         .prod-add-btn:active { transform: scale(0.85); }
-
-        /* منتجات Grid */
         .prod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; padding-bottom: 1rem; }
         .prod-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.3s; }
         .prod-card:active { transform: scale(0.96); }
@@ -290,24 +282,17 @@
             .desktop-sidebar { display: flex; }
             .mobile-header { display: none; }
             .bottom-bar { display: none; }
-            .hero-wrapper { height: 380px; margin-top: 0; border-radius: 0; }
+            .hero-wrapper { height: 380px; margin-top: 0; }
             .menu-content { padding: 0 1.5rem 2rem; }
             .prod-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
             .prod-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-            .prod-list .prod-item { display: flex; }
             .tables-floor-grid { grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
             .modal-overlay { align-items: center; }
             .modal-sheet { border-radius: var(--radius-lg); margin: auto; }
-            .controls-row { padding: 0.6rem 0; }
             .screen-padded { padding-top: 1.5rem; }
             .content-padded { padding: 1.5rem; }
         }
-
-        @media (min-width: 1100px) {
-            .prod-grid { grid-template-columns: repeat(4, 1fr); }
-            .prod-list { grid-template-columns: repeat(3, 1fr); }
-        }
-
+        @media (min-width: 1100px) { .prod-grid { grid-template-columns: repeat(4, 1fr); } .prod-list { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
             .desktop-sidebar { display: none; }
             .mobile-header { display: flex; }
@@ -334,7 +319,7 @@
     <!-- لودر -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Loading restaurant data...</div>
+        <div class="loading-text">Loading menu...</div>
     </div>
 
     <div class="app-layout" id="appLayout">
@@ -342,23 +327,23 @@
         <aside class="desktop-sidebar" id="desktopSidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">✨</div>
-                <div class="sidebar-brand">Luxe Dining</div>
+                <div class="sidebar-brand" id="sidebarBrandName">Luxe Dining</div>
             </div>
             <div class="sidebar-section">
-                <div class="sidebar-label">Menu</div>
-                <div class="sidebar-item active" id="sidebarMenuTab" onclick="switchScreen('menu')">
+                <div class="sidebar-label">Navigation</div>
+                <div class="sidebar-item active" data-screen="menu" id="sidebarMenuTab">
                     <span class="s-icon">📋</span> Menu
                 </div>
-                <div class="sidebar-item" id="sidebarCartTab" onclick="switchScreen('cart')">
+                <div class="sidebar-item" data-screen="cart" id="sidebarCartTab">
                     <span class="s-icon">🛒</span> Cart
                     <span class="s-badge" id="sidebarCartCount">0</span>
                 </div>
-                <div class="sidebar-item" id="sidebarTableTab" onclick="switchScreen('table-select')">
+                <div class="sidebar-item" data-screen="table-select" id="sidebarTableTab">
                     <span class="s-icon">🪑</span> Select Table
                 </div>
             </div>
             <div class="sidebar-section">
-                <div class="sidebar-label">Settings</div>
+                <div class="sidebar-label">Language</div>
                 <div class="sidebar-langs" id="sidebarLangs">
                     <button class="sidebar-lang-chip active" data-lang="en">EN</button>
                     <button class="sidebar-lang-chip" data-lang="ar">AR</button>
@@ -366,17 +351,9 @@
                     <button class="sidebar-lang-chip" data-lang="it">IT</button>
                     <button class="sidebar-lang-chip" data-lang="de">DE</button>
                 </div>
-                <div class="sidebar-theme-row" onclick="toggleTheme()">
-                    <div class="theme-toggle"></div>
-                    <span>Dark Mode</span>
-                </div>
             </div>
             <div class="sidebar-footer">
-                <div class="sidebar-avatar">👤</div>
-                <div>
-                    <div class="sidebar-user-name" style="font-size:0.75rem;font-weight:600;">Guest</div>
-                    <div style="font-size:0.6rem;color:var(--text-muted);">Restaurant QR Menu</div>
-                </div>
+                <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
             </div>
         </aside>
 
@@ -404,7 +381,7 @@
             </header>
 
             <div class="main-scroll" id="mainScroll">
-                <!-- القائمة -->
+                <!-- القائمة - الصفحة الرئيسية -->
                 <div class="screen active" id="screen-menu">
                     <div class="hero-wrapper">
                         <div class="hero-bg" id="menuHeroBg"></div>
@@ -415,7 +392,7 @@
                             <div class="hero-meta" id="menuHeroMeta"></div>
                             <div class="table-tag" id="tableTag" style="display:none;">
                                 <span class="pulse-dot"></span>
-                                <span id="tableTagText">Table</span>: #<span id="tableTagNum"></span>
+                                <span>Table</span>: #<span id="tableTagNum"></span>
                             </div>
                         </div>
                     </div>
@@ -446,10 +423,7 @@
                         <div style="margin:0.5rem 0 0.7rem;"><h2 style="font-size:1.1rem;font-weight:800;">🛒 Your Cart</h2></div>
                         <div class="cart-cust-card" id="cartCustCard" style="display:none;">
                             <div class="cart-cust-icon">👤</div>
-                            <div class="cart-cust-info">
-                                <div class="cart-cust-name" id="cartCustName">-</div>
-                                <div class="cart-cust-meta" id="cartCustMeta">-</div>
-                            </div>
+                            <div class="cart-cust-info"><div class="cart-cust-name" id="cartCustName">-</div><div class="cart-cust-meta" id="cartCustMeta">-</div></div>
                         </div>
                         <div class="cart-items-wrap" id="cartItemsWrap"></div>
                         <div class="cart-summary-box">
@@ -465,7 +439,7 @@
                 <div class="screen screen-padded" id="screen-table-select">
                     <div class="content-padded">
                         <div style="text-align:center;padding:0.8rem 0;">
-                            <div style="font-size:2rem;margin-bottom:0.2rem;">🪑</div>
+                            <div style="font-size:2rem;">🪑</div>
                             <div style="font-size:1.1rem;font-weight:800;">How to order?</div>
                             <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
                         </div>
@@ -487,7 +461,6 @@
                 </div>
             </div>
 
-            <!-- بار سفلي موبايل -->
             <div class="bottom-bar" id="bottomBar">
                 <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
             </div>
@@ -520,533 +493,153 @@
 
     <script>
     (function() {
-        // ===== انتظار تحميل DOM =====
-        function ready(fn) {
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                setTimeout(fn, 1);
-            } else {
-                document.addEventListener('DOMContentLoaded', fn);
-            }
-        }
-
+        function ready(fn) { if(document.readyState==='complete'||document.readyState==='interactive'){setTimeout(fn,1);}else{document.addEventListener('DOMContentLoaded',fn);} }
         ready(function() {
-            // ===== إخفاء السبلاش =====
-            var splash = document.getElementById('splashScreen');
-            function hideSplash() {
-                if (splash) { splash.classList.add('hidden'); setTimeout(function() { if (splash && splash.parentNode) splash.remove(); }, 800); }
-            }
-            setTimeout(hideSplash, 1800);
-            setTimeout(function() { if (splash && !splash.classList.contains('hidden')) hideSplash(); }, 5000);
+            var splash=document.getElementById('splashScreen');
+            function hideSplash(){if(splash){splash.classList.add('hidden');setTimeout(function(){if(splash&&splash.parentNode)splash.remove();},800);}}
+            setTimeout(hideSplash,1800);
+            setTimeout(function(){if(splash&&!splash.classList.contains('hidden'))hideSplash();},5000);
 
-            // ===== URL Parameters =====
-            var urlParams = new URLSearchParams(window.location.search);
-            var RESTAURANT_ID = parseInt(urlParams.get('restaurant') || urlParams.get('id') || '1');
-            var TABLE_ID = urlParams.get('table') ? parseInt(urlParams.get('table')) : null;
+            var urlParams=new URLSearchParams(window.location.search);
+            var RESTAURANT_ID=parseInt(urlParams.get('restaurant')||urlParams.get('id')||'1');
+            var TABLE_ID=urlParams.get('table')?parseInt(urlParams.get('table')):null;
 
-            // ===== عناصر DOM =====
-            function $(id) { return document.getElementById(id); }
-            function $$(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
-            function isDesktop() { return window.innerWidth > 768; }
+            function $(id){return document.getElementById(id);}
+            function $$(sel,ctx){return(ctx||document).querySelectorAll(sel);}
+            function isDesktop(){return window.innerWidth>768;}
 
-            // ===== حالة =====
-            var restaurant = null;
-            var products = [];
-            var tables = [];
-            var cart = [];
-            var st = {
-                lang: localStorage.getItem('luxe_lang') || 'en',
-                cur: 'EGP',
-                theme: localStorage.getItem('luxe_theme') || 'dark',
-                viewMode: 'list',
-                screen: 'menu',
-                history: ['menu'],
-                orderType: 'dine-in',
-                selTable: TABLE_ID || null,
-                custName: '', custPhone: '', custAddr: ''
-            };
+            var restaurant=null,products=[],tables=[],cart=[];
+            var st={lang:localStorage.getItem('luxe_lang')||'en',cur:'EGP',theme:localStorage.getItem('luxe_theme')||'dark',viewMode:'list',screen:'menu',history:['menu'],orderType:'dine-in',selTable:TABLE_ID||null,custName:'',custPhone:'',custAddr:''};
+            var sym={EGP:'EGP',USD:'$',EUR:'€'};
 
-            var sym = { EGP: 'EGP', USD: '$', EUR: '€' };
+            function price(p){return(p.prices&&p.prices[st.cur])||0;}
+            function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur];}
+            function cartTotal(){return cart.reduce(function(s,i){var p=products.find(function(x){return x.id===i.id;});return s+(p?price(p)*i.qty:0);},0);}
+            function cartCount(){return cart.reduce(function(s,i){return s+i.qty;},0);}
+            function applyTheme(){document.body.classList.toggle('light-mode',st.theme==='light');}
+            function showTableTag(){var tag=$('tableTag');if(TABLE_ID&&tag){tag.style.display='inline-flex';$('tableTagNum').textContent=TABLE_ID;}}
+            function updateAllBadges(){var cnt=cartCount();[$('mhCartBadge'),$('sidebarCartCount')].forEach(function(b){if(!b)return;b.textContent=cnt;b.style.display=cnt>0?'flex':'none';if(b.id==='sidebarCartCount')b.style.display=cnt>0?'inline':'none';});}
 
-            // ===== دوال مساعدة =====
-            function price(p) { return (p.prices && p.prices[st.cur]) || 0; }
-            function fmt(v) { return (st.cur === 'USD' || st.cur === 'EUR') ? sym[st.cur] + v.toFixed(2) : v.toFixed(2) + ' ' + sym[st.cur]; }
-            function cartTotal() { return cart.reduce(function(s, i) { var p = products.find(function(x) { return x.id === i.id; }); return s + (p ? price(p) * i.qty : 0); }, 0); }
-            function cartCount() { return cart.reduce(function(s, i) { return s + i.qty; }, 0); }
-            function applyTheme() { document.body.classList.toggle('light-mode', st.theme === 'light'); }
-            function toggleTheme() { st.theme = st.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('luxe_theme', st.theme); applyTheme(); }
-            function showTableTag() {
-                var tag = $('tableTag');
-                if (TABLE_ID && tag) {
-                    tag.style.display = 'inline-flex';
-                    $('tableTagNum').textContent = TABLE_ID;
-                }
-            }
-            function updateAllBadges() {
-                var cnt = cartCount();
-                [$('mhCartBadge'), $('sidebarCartCount')].forEach(function(b) {
-                    if (!b) return;
-                    b.textContent = cnt;
-                    b.style.display = cnt > 0 ? 'flex' : 'none';
-                });
-            }
-
-            // ===== تحميل المطعم من الملف الواحد =====
-            async function loadRestaurantFromList() {
-                try {
-                    $('loadingOverlay').classList.add('show');
-                    // تحميل ملف المطاعم كله
-                    var res = await fetch('/app/restaurants/restaurants.json');
-                    if (!res.ok) throw new Error('Cannot load restaurants');
-                    var allRestaurants = await res.json();
-                    
-                    // البحث عن المطعم بالـ ID
-                    restaurant = allRestaurants.find(function(r) { return r.id === RESTAURANT_ID; });
-                    
-                    if (!restaurant) {
-                        // لو ملقاش، استخدم أول مطعم
-                        restaurant = allRestaurants[0];
-                        console.warn('Restaurant #' + RESTAURANT_ID + ' not found, using first restaurant');
-                    }
-                } catch (e) {
-                    console.error('Error:', e);
-                    // Fallback
-                    restaurant = {
-                        id: RESTAURANT_ID,
-                        name: "Luxe Dining",
-                        description: "An exquisite culinary journey through world-class cuisine",
-                        image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
-                        cuisine: "International",
-                        area: "Downtown",
-                        rating: 4.9,
-                        reviews: 2340
-                    };
-                }
+            // ===== تحميل المطعم =====
+            async function loadRestaurant(){
+                try{$('loadingOverlay').classList.add('show');
+                    var res=await fetch('/app/restaurants/restaurants.json');
+                    if(!res.ok)throw new Error('Failed');
+                    var allRestaurants=await res.json();
+                    restaurant=allRestaurants.find(function(r){return r.id===RESTAURANT_ID;})||allRestaurants[0];
+                }catch(e){restaurant={id:RESTAURANT_ID,name:"Luxe Dining",description:"World-class cuisine at your fingertips",image:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",cuisine:"International",area:"Downtown",rating:4.9,reviews:2340};}
                 $('loadingOverlay').classList.remove('show');
-                
-                // عرض بيانات المطعم
                 renderRestaurantUI();
-                
-                // تحميل القائمة والطاولات
                 await loadMenu();
                 await loadTables();
-                
-                // عرض المنتجات
-                renderCats();
-                renderProducts();
+                renderCats();renderProducts();
             }
 
-            function renderRestaurantUI() {
-                if (!restaurant) return;
-                
-                $('menuHeroBg').style.backgroundImage = 'url(' + restaurant.image + ')';
-                $('menuHeroTitle').textContent = restaurant.name;
-                $('menuHeroSub').textContent = restaurant.description || '';
-                
-                var meta = '';
-                if (restaurant.rating) meta += '<span>⭐ <strong>' + restaurant.rating + '</strong>';
-                if (restaurant.reviews) meta += ' (' + restaurant.reviews + ')</span>';
-                if (restaurant.area) meta += '<span>📍 ' + restaurant.area + '</span>';
-                if (restaurant.cuisine) meta += '<span>🍽️ ' + restaurant.cuisine + '</span>';
-                $('menuHeroMeta').innerHTML = meta;
-                
-                $('mhBrand').textContent = restaurant.name;
-                document.title = restaurant.name + ' | QR Menu';
+            function renderRestaurantUI(){
+                if(!restaurant)return;
+                $('menuHeroBg').style.backgroundImage='url('+restaurant.image+')';
+                $('menuHeroTitle').textContent=restaurant.name;
+                $('menuHeroSub').textContent=restaurant.description||'';
+                var meta='';
+                if(restaurant.rating)meta+='<span>⭐ <strong>'+restaurant.rating+'</strong>';
+                if(restaurant.reviews)meta+=' ('+restaurant.reviews+')</span>';
+                if(restaurant.area)meta+='<span>📍 '+restaurant.area+'</span>';
+                if(restaurant.cuisine)meta+='<span>🍽️ '+restaurant.cuisine+'</span>';
+                $('menuHeroMeta').innerHTML=meta;
+                $('mhBrand').textContent=restaurant.name;
+                $('sidebarBrandName').textContent=restaurant.name;
+                document.title=restaurant.name+' | QR Menu';
             }
 
-            async function loadMenu() {
-                try {
-                    // نحاول تحميل قائمة المطعم من ملف منفصل
-                    var res = await fetch('/app/restaurants/' + RESTAURANT_ID + '/menu.json');
-                    if (res.ok) {
-                        products = await res.json();
-                    } else {
-                        // قائمة افتراضية
-                        products = getDefaultProducts();
-                    }
-                } catch (e) {
-                    products = getDefaultProducts();
-                }
-                $('itemCount').textContent = products.length + ' items';
-            }
+            async function loadMenu(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/menu.json');if(res.ok){products=await res.json();}else{products=getDefaultProducts();}}catch(e){products=getDefaultProducts();}$('itemCount').textContent=products.length+' items';}
+            async function loadTables(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/tables.json');if(res.ok){tables=await res.json();}else{tables=getDefaultTables();}}catch(e){tables=getDefaultTables();}renderTables();}
 
-            async function loadTables() {
-                try {
-                    var res = await fetch('/app/restaurants/' + RESTAURANT_ID + '/tables.json');
-                    if (res.ok) {
-                        tables = await res.json();
-                    } else {
-                        tables = getDefaultTables();
-                    }
-                } catch (e) {
-                    tables = getDefaultTables();
-                }
-                renderTables();
-            }
+            function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot of our house-roasted Arabica beans"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk over a bold espresso base"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte with handcrafted caramel drizzle"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry with cultured butter"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu, chargrilled to perfection"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared with lemon butter and herbs"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta cheesecake with citrus zest"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm dark chocolate fondant with vanilla gelato"}];}
+            function getDefaultTables(){return[{id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},{id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},{id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false}];}
 
-            function getDefaultProducts() {
-                return [
-                    {id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot of our house-roasted Arabica beans"},
-                    {id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk over a bold espresso base"},
-                    {id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte with handcrafted caramel drizzle"},
-                    {id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry with cultured butter"},
-                    {id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu, chargrilled to perfection"},
-                    {id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared with lemon butter and herbs"},
-                    {id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta cheesecake with citrus zest"},
-                    {id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm dark chocolate fondant with vanilla gelato"}
-                ];
-            }
+            // ===== تنقل - Global function =====
+            window.switchScreen=function(s){
+                if(st.screen===s)return;
+                st.history.push(s);st.screen=s;refreshUI();
+            };
+            function goBack(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];refreshUI();}}
 
-            function getDefaultTables() {
-                return [
-                    {id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},
-                    {id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},
-                    {id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false}
-                ];
-            }
-
-            // ===== تنقل بين السكرينات =====
-            function switchScreen(s) {
-                if (st.screen === s) return;
-                st.history.push(s);
-                st.screen = s;
-                refreshUI();
-            }
-            function goBack() {
-                if (st.history.length > 1) { st.history.pop(); st.screen = st.history[st.history.length - 1]; refreshUI(); }
-            }
-
-            function refreshUI() {
-                $$('.screen').forEach(function(sc) { sc.classList.remove('active'); });
-                var tgt = $('screen-' + st.screen);
-                if (tgt) tgt.classList.add('active');
-
-                // موبايل: زر الرجوع
-                var back = $('mhBack');
-                if (back) {
-                    if (st.screen === 'menu') back.classList.remove('show');
-                    else if (st.history.length > 1) back.classList.add('show');
-                    else back.classList.remove('show');
-                }
-
-                // موبايل: شفافية الهيدر
-                var mh = $('mobileHeader');
-                if (mh) {
-                    if (st.screen === 'menu') mh.classList.add('transparent');
-                    else mh.classList.remove('transparent');
-                }
-
-                // كمبيوتر: السايدبار
-                $$('.sidebar-item').forEach(function(item) { item.classList.remove('active'); });
-                var activeItem = document.querySelector('.sidebar-item[data-screen="' + st.screen + '"]');
-                if (activeItem) activeItem.classList.add('active');
-
-                // موبايل: البار السفلي
-                var btn = $('bigBtn'), bar = $('bottomBar'), cnt = cartCount();
-                if (isDesktop()) {
-                    if (bar) bar.style.display = 'none';
-                } else {
-                    if (bar) bar.style.display = 'block';
-                    if (st.screen === 'menu') {
-                        btn.style.display = 'none';
-                    } else {
-                        btn.style.display = 'block';
-                        if (st.screen === 'cart') {
-                            if (TABLE_ID || st.selTable) {
-                                btn.innerHTML = '✨ Confirm Order (' + fmt(cartTotal()) + ')';
-                                btn.onclick = confirmOrder;
-                                btn.disabled = cnt === 0;
-                            } else {
-                                btn.innerHTML = '📋 Choose Table or Delivery';
-                                btn.onclick = function() { switchScreen('table-select'); };
-                                btn.disabled = cnt === 0;
-                            }
-                        } else if (st.screen === 'table-select') {
-                            btn.innerHTML = '✨ Confirm Order (' + fmt(cartTotal()) + ')';
-                            btn.onclick = confirmOrder;
-                            btn.disabled = false;
-                        }
+            function refreshUI(){
+                $$('.screen').forEach(function(sc){sc.classList.remove('active');});
+                var tgt=$('screen-'+st.screen);if(tgt)tgt.classList.add('active');
+                var back=$('mhBack');if(back){if(st.screen==='menu')back.classList.remove('show');else if(st.history.length>1)back.classList.add('show');else back.classList.remove('show');}
+                var mh=$('mobileHeader');if(mh){if(st.screen==='menu')mh.classList.add('transparent');else mh.classList.remove('transparent');}
+                // سايدبار
+                $$('.sidebar-item').forEach(function(item){item.classList.remove('active');});
+                var activeItem=document.querySelector('.sidebar-item[data-screen="'+st.screen+'"]');
+                if(activeItem)activeItem.classList.add('active');
+                // بار سفلي
+                var btn=$('bigBtn'),bar=$('bottomBar'),cnt=cartCount();
+                if(isDesktop()){if(bar)bar.style.display='none';}
+                else{if(bar)bar.style.display='block';
+                    if(st.screen==='menu'){btn.style.display='none';}
+                    else{btn.style.display='block';
+                        if(st.screen==='cart'){if(TABLE_ID||st.selTable){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=cnt===0;}else{btn.innerHTML='📋 Choose Table or Delivery';btn.onclick=function(){switchScreen('table-select');};btn.disabled=cnt===0;}}
+                        else if(st.screen==='table-select'){btn.innerHTML='✨ Confirm Order ('+fmt(cartTotal())+')';btn.onclick=confirmOrder;btn.disabled=false;}
                     }
                 }
-                updateAllBadges();
-                $('mainScroll').scrollTop = 0;
+                updateAllBadges();$('mainScroll').scrollTop=0;
             }
 
-            // ===== عرض المنتجات =====
-            function renderProducts(cat) {
-                cat = cat || 'all';
-                var container = $('prodContainer');
-                if (!container) return;
-                var items = cat === 'all' ? products : products.filter(function(p) { return p.cat === cat; });
-                $('itemCount').textContent = items.length + ' items';
-
-                if (st.viewMode === 'list') {
-                    container.className = 'prod-list';
-                    container.innerHTML = items.map(function(p) {
-                        return '<div class="prod-item" data-pid="' + p.id + '">' +
-                            '<div class="prod-visual">' + p.emoji + '</div>' +
-                            '<div class="prod-details"><div class="prod-title">' + p.name + '</div><div class="prod-subtitle">' + (p.desc || '') + '</div></div>' +
-                            '<div class="prod-price-tag">' + fmt(price(p)) + '</div>' +
-                            '<button class="prod-add-btn" data-pid="' + p.id + '">+</button></div>';
-                    }).join('');
-                } else {
-                    container.className = 'prod-grid';
-                    container.innerHTML = items.map(function(p) {
-                        return '<div class="prod-card" data-pid="' + p.id + '">' +
-                            '<div class="prod-card-media">' + p.emoji + '</div>' +
-                            '<div class="prod-card-body"><div class="prod-card-name">' + p.name + '</div><div class="prod-card-desc">' + (p.desc || '') + '</div>' +
-                            '<div class="prod-card-bottom"><span class="prod-card-price">' + fmt(price(p)) + '</span>' +
-                            '<button class="prod-card-add" data-pid="' + p.id + '">+</button></div></div></div>';
-                    }).join('');
-                }
-
-                container.querySelectorAll('.prod-item, .prod-card').forEach(function(el) {
-                    el.addEventListener('click', function(e) {
-                        if (e.target.closest('.prod-add-btn') || e.target.closest('.prod-card-add')) return;
-                        openDetail(parseInt(this.dataset.pid));
-                    });
-                });
-                container.querySelectorAll('.prod-add-btn, .prod-card-add').forEach(function(b) {
-                    b.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        addToCart(parseInt(this.dataset.pid));
-                    });
-                });
+            // ===== منتجات =====
+            function renderProducts(cat){cat=cat||'all';var container=$('prodContainer');if(!container)return;var items=cat==='all'?products:products.filter(function(p){return p.cat===cat;});$('itemCount').textContent=items.length+' items';
+                if(st.viewMode==='list'){container.className='prod-list';container.innerHTML=items.map(function(p){return'<div class="prod-item" data-pid="'+p.id+'"><div class="prod-visual">'+p.emoji+'</div><div class="prod-details"><div class="prod-title">'+p.name+'</div><div class="prod-subtitle">'+(p.desc||'')+'</div></div><div class="prod-price-tag">'+fmt(price(p))+'</div><button class="prod-add-btn" data-pid="'+p.id+'">+</button></div>';}).join('');}
+                else{container.className='prod-grid';container.innerHTML=items.map(function(p){return'<div class="prod-card" data-pid="'+p.id+'"><div class="prod-card-media">'+p.emoji+'</div><div class="prod-card-body"><div class="prod-card-name">'+p.name+'</div><div class="prod-card-desc">'+(p.desc||'')+'</div><div class="prod-card-bottom"><span class="prod-card-price">'+fmt(price(p))+'</span><button class="prod-card-add" data-pid="'+p.id+'">+</button></div></div></div>';}).join('');}
+                container.querySelectorAll('.prod-item, .prod-card').forEach(function(el){el.addEventListener('click',function(e){if(e.target.closest('.prod-add-btn')||e.target.closest('.prod-card-add'))return;openDetail(parseInt(this.dataset.pid));});});
+                container.querySelectorAll('.prod-add-btn, .prod-card-add').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();addToCart(parseInt(this.dataset.pid));});});
             }
+            function renderCats(){var row=$('catsRow');if(!row)return;var cats=[{id:'all',emoji:'🌟',name:'All'},{id:'coffee',emoji:'☕',name:'Coffee'},{id:'breakfast',emoji:'🥐',name:'Breakfast'},{id:'main',emoji:'🥩',name:'Mains'},{id:'dessert',emoji:'🍰',name:'Desserts'}];row.innerHTML=cats.map(function(c){return'<div class="cat-chip '+(c.id==='all'?'active':'')+'" data-cat="'+c.id+'"><span>'+c.emoji+'</span><span>'+c.name+'</span></div>';}).join('');row.querySelectorAll('.cat-chip').forEach(function(chip){chip.addEventListener('click',function(){row.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active');});this.classList.add('active');renderProducts(this.dataset.cat);});});}
 
-            function renderCats() {
-                var row = $('catsRow');
-                if (!row) return;
-                var cats = [
-                    { id: 'all', emoji: '🌟', name: 'All' },
-                    { id: 'coffee', emoji: '☕', name: 'Coffee' },
-                    { id: 'breakfast', emoji: '🥐', name: 'Breakfast' },
-                    { id: 'main', emoji: '🥩', name: 'Mains' },
-                    { id: 'dessert', emoji: '🍰', name: 'Desserts' }
-                ];
-                row.innerHTML = cats.map(function(c) {
-                    return '<div class="cat-chip ' + (c.id === 'all' ? 'active' : '') + '" data-cat="' + c.id + '"><span>' + c.emoji + '</span><span>' + c.name + '</span></div>';
-                }).join('');
-                row.querySelectorAll('.cat-chip').forEach(function(chip) {
-                    chip.addEventListener('click', function() {
-                        row.querySelectorAll('.cat-chip').forEach(function(c) { c.classList.remove('active'); });
-                        this.classList.add('active');
-                        renderProducts(this.dataset.cat);
-                    });
-                });
-            }
+            function addToCart(pid){var ex=cart.find(function(i){return i.id===pid;});if(ex)ex.qty++;else cart.push({id:pid,qty:1});updateAllBadges();updateCartUI();refreshUI();toast('✨ Added to cart');}
+            function qtyChange(pid,d){var it=cart.find(function(i){return i.id===pid;});if(!it)return;it.qty+=d;if(it.qty<=0)cart=cart.filter(function(i){return i.id!==pid;});updateAllBadges();updateCartUI();refreshUI();}
+            function updateCartUI(){var wrap=$('cartItemsWrap');if(!wrap)return;var sub=cartTotal(),tax=sub*0.14,svc=sub*0.10,tot=sub+tax+svc;if(cart.length===0){wrap.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:2rem;">🛒<br>Your cart is empty</p>';}else{wrap.innerHTML=cart.map(function(i){var p=products.find(function(x){return x.id===i.id;});if(!p)return'';return'<div class="cart-item-row"><div class="cart-item-emoji">'+p.emoji+'</div><div class="cart-item-info"><div class="cart-item-title">'+p.name+'</div><div class="cart-item-price">'+fmt(price(p))+' × '+i.qty+'</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="'+i.id+'" data-d="-1">-</button><span class="qty-n">'+i.qty+'</span><button class="qty-b" data-pid="'+i.id+'" data-d="1">+</button></div></div>';}).join('');wrap.querySelectorAll('.qty-b').forEach(function(b){b.addEventListener('click',function(){qtyChange(+this.dataset.pid,+this.dataset.d);});});}$('sumSub').textContent=fmt(sub);$('sumTax').textContent=fmt(tax);$('sumSvc').textContent=fmt(svc);$('sumTotal').textContent=fmt(tot);var card=$('cartCustCard');if(card){if(TABLE_ID){card.style.display='flex';$('cartCustName').textContent='Table #'+TABLE_ID;$('cartCustMeta').textContent='Dine In';}else if(st.orderType==='delivery'&&st.custName){card.style.display='flex';$('cartCustName').textContent=st.custName;$('cartCustMeta').textContent=st.custAddr;}else if(st.orderType==='dine-in'&&st.selTable){card.style.display='flex';$('cartCustName').textContent='Table #'+st.selTable;$('cartCustMeta').textContent='Dine In';}else{card.style.display='none';}}}
 
-            function addToCart(pid) {
-                var ex = cart.find(function(i) { return i.id === pid; });
-                if (ex) ex.qty++; else cart.push({ id: pid, qty: 1 });
-                updateAllBadges(); updateCartUI(); refreshUI();
-                toast('✨ Added to cart');
-            }
-            function qtyChange(pid, d) {
-                var it = cart.find(function(i) { return i.id === pid; });
-                if (!it) return;
-                it.qty += d;
-                if (it.qty <= 0) cart = cart.filter(function(i) { return i.id !== pid; });
-                updateAllBadges(); updateCartUI(); refreshUI();
-            }
-            function updateCartUI() {
-                var wrap = $('cartItemsWrap');
-                if (!wrap) return;
-                var sub = cartTotal(), tax = sub * 0.14, svc = sub * 0.10, tot = sub + tax + svc;
-                if (cart.length === 0) {
-                    wrap.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">🛒<br>Your cart is empty</p>';
-                } else {
-                    wrap.innerHTML = cart.map(function(i) {
-                        var p = products.find(function(x) { return x.id === i.id; });
-                        if (!p) return '';
-                        return '<div class="cart-item-row"><div class="cart-item-emoji">' + p.emoji + '</div><div class="cart-item-info"><div class="cart-item-title">' + p.name + '</div><div class="cart-item-price">' + fmt(price(p)) + ' × ' + i.qty + '</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="' + i.id + '" data-d="-1">-</button><span class="qty-n">' + i.qty + '</span><button class="qty-b" data-pid="' + i.id + '" data-d="1">+</button></div></div>';
-                    }).join('');
-                    wrap.querySelectorAll('.qty-b').forEach(function(b) {
-                        b.addEventListener('click', function() { qtyChange(+this.dataset.pid, +this.dataset.d); });
-                    });
-                }
-                $('sumSub').textContent = fmt(sub);
-                $('sumTax').textContent = fmt(tax);
-                $('sumSvc').textContent = fmt(svc);
-                $('sumTotal').textContent = fmt(tot);
+            function openDetail(pid){var p=products.find(function(x){return x.id===pid;});if(!p)return;$('modalEmoji').textContent=p.emoji;$('modalName').textContent=p.name;$('modalDesc').textContent=p.desc||'';$('modalPrice').textContent=fmt(price(p));$('detailModal').classList.add('show');$('modalAddBtn').onclick=function(){addToCart(pid);closeDetail();};}
+            function closeDetail(){$('detailModal').classList.remove('show');}
 
-                var card = $('cartCustCard');
-                if (card) {
-                    if (TABLE_ID) {
-                        card.style.display = 'flex';
-                        $('cartCustName').textContent = 'Table #' + TABLE_ID;
-                        $('cartCustMeta').textContent = 'Dine In';
-                    } else if (st.orderType === 'delivery' && st.custName) {
-                        card.style.display = 'flex';
-                        $('cartCustName').textContent = st.custName;
-                        $('cartCustMeta').textContent = st.custAddr;
-                    } else if (st.orderType === 'dine-in' && st.selTable) {
-                        card.style.display = 'flex';
-                        $('cartCustName').textContent = 'Table #' + st.selTable;
-                        $('cartCustMeta').textContent = 'Dine In';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                }
-            }
+            function renderTables(){var floor=$('tablesFloor');if(!floor)return;var tbls=tables.length?tables:getDefaultTables();floor.innerHTML=tbls.map(function(tb){return'<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+tb.seats+' seats</span></div>';}).join('');floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();var si=$('tableSelInfo');if(si){si.textContent='✅ Table #'+st.selTable+' selected';si.classList.add('confirmed');}});});}
 
-            function openDetail(pid) {
-                var p = products.find(function(x) { return x.id === pid; });
-                if (!p) return;
-                $('modalEmoji').textContent = p.emoji;
-                $('modalName').textContent = p.name;
-                $('modalDesc').textContent = p.desc || '';
-                $('modalPrice').textContent = fmt(price(p));
-                $('detailModal').classList.add('show');
-                $('modalAddBtn').onclick = function() { addToCart(pid); closeDetail(); };
-            }
-            function closeDetail() { $('detailModal').classList.remove('show'); }
+            function confirmOrder(){if(cart.length===0){toast('Cart is empty');return;}if(TABLE_ID){st.selTable=TABLE_ID;st.orderType='dine-in';}if(!TABLE_ID){var nm=($('inpName')?.value||'').trim(),ph=($('inpPhone')?.value||'').trim(),ad=($('inpAddr')?.value||'').trim();if(st.orderType==='dine-in'&&!st.selTable){toast('⚠️ Pick a table first');return;}if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast('⚠️ Complete delivery details');return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}}var oid=Math.floor(1000+Math.random()*9000);$('orderIdBadge').textContent='#'+oid;if(st.selTable){$('successTableInfo').textContent='Delivering to table #'+st.selTable;}launchConfetti();$('successOverlay').classList.add('show');setTimeout(function(){$('successOverlay').classList.remove('show');cart=[];st.selTable=TABLE_ID||null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['menu'];st.screen='menu';['inpName','inpPhone','inpAddr'].forEach(function(id){var el=$(id);if(el)el.value='';});refreshUI();updateCartUI();renderProducts();},3000);}
+            function launchConfetti(){var box=$('confettiBox'),cols=['#c8a45c','#e2c97e','#ff3b30','#34c759','#007aff','#ff9500','#fff'];box.innerHTML='';for(var i=0;i<50;i++){var d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.5+'s';d.style.animationDuration=(1.5+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(4+Math.random()*6)+'px';d.style.height=(4+Math.random()*6)+'px';box.appendChild(d);}setTimeout(function(){box.innerHTML='';},2500);}
+            function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show');},2000);}
 
-            function renderTables() {
-                var floor = $('tablesFloor');
-                if (!floor) return;
-                var tbls = tables.length ? tables : getDefaultTables();
-                floor.innerHTML = tbls.map(function(tb) {
-                    return '<div class="table-3d-cell ' + (tb.occupied ? 'occupied' : '') + ' ' + (st.selTable === tb.id ? 'selected' : '') + '" data-tid="' + tb.id + '"><span class="table-dot"></span><span class="table-num">' + tb.id + '</span><span class="table-seats">' + tb.seats + ' seats</span></div>';
-                }).join('');
-                floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell) {
-                    cell.addEventListener('click', function() {
-                        st.selTable = +this.dataset.tid;
-                        renderTables();
-                        var si = $('tableSelInfo');
-                        if (si) { si.textContent = '✅ Table #' + st.selTable + ' selected'; si.classList.add('confirmed'); }
-                    });
-                });
-            }
+            function switchLang(lang){st.lang=lang;localStorage.setItem('luxe_lang',lang);document.body.className=lang+(st.theme==='light'?' light-mode':'');document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';if($('mhLangLabel'))$('mhLangLabel').textContent=lang.toUpperCase();$$('.mh-lang-opt, .sidebar-lang-chip').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang);});if($('mhLangDrop'))$('mhLangDrop').classList.remove('open');}
+            function setView(mode){st.viewMode=mode;$$('.vt-btn').forEach(function(b){b.classList.toggle('active',b.dataset.view===mode);});renderProducts();}
 
-            function confirmOrder() {
-                if (cart.length === 0) { toast('Cart is empty'); return; }
-                if (TABLE_ID) { st.selTable = TABLE_ID; st.orderType = 'dine-in'; }
-                if (!TABLE_ID) {
-                    var nm = ($('inpName')?.value || '').trim();
-                    var ph = ($('inpPhone')?.value || '').trim();
-                    var ad = ($('inpAddr')?.value || '').trim();
-                    if (st.orderType === 'dine-in' && !st.selTable) { toast('⚠️ Pick a table first'); return; }
-                    if (st.orderType === 'delivery') {
-                        if (!nm || !ph || !ad) { toast('⚠️ Complete delivery details'); return; }
-                        st.custName = nm; st.custPhone = ph; st.custAddr = ad;
-                    }
-                }
-                var oid = Math.floor(1000 + Math.random() * 9000);
-                $('orderIdBadge').textContent = '#' + oid;
-                if (st.selTable) {
-                    $('successTableInfo').textContent = 'Delivering to table #' + st.selTable;
-                }
-                launchConfetti();
-                $('successOverlay').classList.add('show');
-                setTimeout(function() {
-                    $('successOverlay').classList.remove('show');
-                    cart = [];
-                    st.selTable = TABLE_ID || null;
-                    st.orderType = 'dine-in';
-                    st.custName = ''; st.custPhone = ''; st.custAddr = '';
-                    st.history = ['menu']; st.screen = 'menu';
-                    ['inpName', 'inpPhone', 'inpAddr'].forEach(function(id) { var el = $(id); if (el) el.value = ''; });
-                    refreshUI(); updateCartUI(); renderProducts();
-                }, 3000);
-            }
-
-            function launchConfetti() {
-                var box = $('confettiBox'), cols = ['#c8a45c', '#e2c97e', '#ff3b30', '#34c759', '#007aff', '#ff9500', '#fff'];
-                box.innerHTML = '';
-                for (var i = 0; i < 50; i++) {
-                    var d = document.createElement('div');
-                    d.className = 'confetti-bit';
-                    d.style.left = Math.random() * 100 + '%';
-                    d.style.animationDelay = Math.random() * 1.5 + 's';
-                    d.style.animationDuration = (1.5 + Math.random() * 2) + 's';
-                    d.style.background = cols[Math.floor(Math.random() * cols.length)];
-                    d.style.width = (4 + Math.random() * 6) + 'px';
-                    d.style.height = (4 + Math.random() * 6) + 'px';
-                    box.appendChild(d);
-                }
-                setTimeout(function() { box.innerHTML = ''; }, 2500);
-            }
-
-            function toast(msg) {
-                var el = $('toast');
-                el.textContent = msg;
-                el.classList.add('show');
-                clearTimeout(el._tid);
-                el._tid = setTimeout(function() { el.classList.remove('show'); }, 2000);
-            }
-
-            function switchLang(lang) {
-                st.lang = lang;
-                localStorage.setItem('luxe_lang', lang);
-                document.body.className = lang + (st.theme === 'light' ? ' light-mode' : '');
-                document.documentElement.lang = lang;
-                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-                if ($('mhLangLabel')) $('mhLangLabel').textContent = lang.toUpperCase();
-                $$('.mh-lang-opt, .sidebar-lang-chip').forEach(function(o) { o.classList.toggle('active', o.dataset.lang === lang); });
-                if ($('mhLangDrop')) $('mhLangDrop').classList.remove('open');
-            }
-
-            function setView(mode) {
-                st.viewMode = mode;
-                $$('.vt-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.view === mode); });
-                renderProducts();
-            }
-
-            // ===== بدء التطبيق =====
-            function init() {
-                var savedLang = localStorage.getItem('luxe_lang') || 'en';
-                var savedTheme = localStorage.getItem('luxe_theme') || 'dark';
-                st.lang = savedLang; st.theme = savedTheme;
-                document.body.className = savedLang + (savedTheme === 'light' ? ' light-mode' : '');
-                document.documentElement.lang = savedLang;
-                document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
-                if ($('mhLangLabel')) $('mhLangLabel').textContent = savedLang.toUpperCase();
-                $$('.mh-lang-opt, .sidebar-lang-chip').forEach(function(o) { o.classList.toggle('active', o.dataset.lang === savedLang); });
-
-                applyTheme();
-                showTableTag();
-                
-                // تحميل بيانات المطعم من الملف الواحد
-                loadRestaurantFromList();
-                
-                renderTables();
-                updateCartUI();
-                updateAllBadges();
-                refreshUI();
+            // ===== بدء =====
+            function init(){
+                var savedLang=localStorage.getItem('luxe_lang')||'en';st.lang=savedLang;
+                st.theme=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';
+                document.body.className=savedLang+(st.theme==='light'?' light-mode':'');
+                document.documentElement.lang=savedLang;document.documentElement.dir=savedLang==='ar'?'rtl':'ltr';
+                if($('mhLangLabel'))$('mhLangLabel').textContent=savedLang.toUpperCase();
+                $$('.mh-lang-opt, .sidebar-lang-chip').forEach(function(o){o.classList.toggle('active',o.dataset.lang===savedLang);});
+                applyTheme();showTableTag();
+                loadRestaurant();
+                renderTables();updateCartUI();updateAllBadges();refreshUI();
 
                 // Events
-                if ($('mhBack')) $('mhBack').addEventListener('click', goBack);
-                if ($('mhCartBtn')) $('mhCartBtn').addEventListener('click', function() { switchScreen('cart'); });
-                if ($('mhLangBtn')) $('mhLangBtn').addEventListener('click', function(e) { e.stopPropagation(); $('mhLangDrop').classList.toggle('open'); });
-                $$('.mh-lang-opt').forEach(function(o) { o.addEventListener('click', function() { switchLang(this.dataset.lang); }); });
-                $$('.sidebar-lang-chip').forEach(function(o) { o.addEventListener('click', function() { switchLang(this.dataset.lang); }); });
-                document.addEventListener('click', function() { if ($('mhLangDrop')) $('mhLangDrop').classList.remove('open'); });
-                $('detailModal').addEventListener('click', function(e) { if (e.target === this) closeDetail(); });
-                
-                $$('#currencyRow .cur-chip').forEach(function(c) {
-                    c.addEventListener('click', function() {
-                        st.cur = this.dataset.currency;
-                        $$('#currencyRow .cur-chip').forEach(function(x) { x.classList.remove('active'); });
-                        this.classList.add('active');
-                        renderProducts(); updateCartUI(); refreshUI();
-                    });
-                });
-                
-                $$('.vt-btn').forEach(function(b) { b.addEventListener('click', function() { setView(this.dataset.view); }); });
-                
-                $$('#orderTypeRow .order-type-btn').forEach(function(b) {
-                    b.addEventListener('click', function() {
-                        st.orderType = this.dataset.type;
-                        $$('#orderTypeRow .order-type-btn').forEach(function(x) { x.classList.remove('active'); });
-                        this.classList.add('active');
-                        $('tablesBox').style.display = st.orderType === 'dine-in' ? 'block' : 'none';
-                        $('deliveryFormBox').style.display = st.orderType === 'delivery' ? 'block' : 'none';
-                    });
-                });
-
-                window.addEventListener('resize', function() { refreshUI(); renderProducts(); });
+                if($('mhBack'))$('mhBack').addEventListener('click',goBack);
+                if($('mhCartBtn'))$('mhCartBtn').addEventListener('click',function(){switchScreen('cart');});
+                if($('mhLangBtn'))$('mhLangBtn').addEventListener('click',function(e){e.stopPropagation();$('mhLangDrop').classList.toggle('open');});
+                $$('.mh-lang-opt').forEach(function(o){o.addEventListener('click',function(){switchLang(this.dataset.lang);});});
+                $$('.sidebar-lang-chip').forEach(function(o){o.addEventListener('click',function(){switchLang(this.dataset.lang);});});
+                // سايدبار navigation
+                $$('.sidebar-item').forEach(function(item){item.addEventListener('click',function(){switchScreen(this.dataset.screen);});});
+                document.addEventListener('click',function(){if($('mhLangDrop'))$('mhLangDrop').classList.remove('open');});
+                $('detailModal').addEventListener('click',function(e){if(e.target===this)closeDetail();});
+                $$('#currencyRow .cur-chip').forEach(function(c){c.addEventListener('click',function(){st.cur=this.dataset.currency;$$('#currencyRow .cur-chip').forEach(function(x){x.classList.remove('active');});this.classList.add('active');renderProducts();updateCartUI();refreshUI();});});
+                $$('.vt-btn').forEach(function(b){b.addEventListener('click',function(){setView(this.dataset.view);});});
+                $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');$('tablesBox').style.display=st.orderType==='dine-in'?'block':'none';$('deliveryFormBox').style.display=st.orderType==='delivery'?'block':'none';});});
+                window.addEventListener('resize',function(){refreshUI();renderProducts();});
+                // تحديث الثيم كل ساعة
+                setInterval(function(){var nt=(new Date().getHours()>=6&&new Date().getHours()<18)?'light':'dark';if(nt!==st.theme){st.theme=nt;applyTheme();}},3600000);
             }
-
             init();
         });
     })();
