@@ -9,7 +9,7 @@
     <title>QR Menu | Restaurant</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Great+Vibes&display=swap');
 
         :root {
             --bg: #0a0a0a;
@@ -35,14 +35,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        /* ===== الإصلاح الأساسي: body مش hidden ===== */
-        body { 
-            font-family: 'Inter', 'Cairo', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            -webkit-font-smoothing: antialiased; 
-        }
+        body { font-family: 'Inter', 'Cairo', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
         body.ar { font-family: 'Cairo', 'Inter', sans-serif; direction: rtl; }
         body.en, body.ru, body.it, body.de { font-family: 'Inter', sans-serif; direction: ltr; }
 
@@ -64,29 +57,32 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ===== هيكل الصفحة ===== */
-        .page-wrapper {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            min-height: 100dvh;
-            position: relative;
-        }
+        .page-wrapper { max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh; position: relative; }
         
-        @media (min-width: 769px) {
-            .page-wrapper {
-                max-width: 100%;
-                padding-left: 0;
-            }
+        /* زر السايدبار - في النص بالظبط */
+        .sidebar-toggle-btn {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 64px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-left: none;
+            border-radius: 0 14px 14px 0;
+            color: var(--gold);
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 20;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
-
-        /* زر السايدبار */
-        .sidebar-toggle-btn { display: none; position: fixed; top: 50%; left: 0; transform: translateY(-50%); width: 28px; height: 56px; background: var(--surface2); border: 1px solid var(--border); border-left: none; border-radius: 0 10px 10px 0; color: var(--gold); font-size: 0.9rem; cursor: pointer; z-index: 20; align-items: center; justify-content: center; }
-        body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 10px 0 0 10px; border-right: none; border-left: 1px solid var(--border); }
-        
-        @media (min-width: 769px) {
-            .sidebar-toggle-btn { display: flex; }
-            .sidebar-toggle-btn.show { display: flex; }
-        }
+        body.ar .sidebar-toggle-btn { left: auto; right: 0; border-radius: 14px 0 0 14px; border-right: none; border-left: 1px solid var(--border); }
+        .sidebar-toggle-btn:hover { background: var(--surface3); width: 36px; }
 
         /* سايدبار */
         .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 14; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -111,7 +107,7 @@
         .sidebar-powered { padding: 0.75rem 1.5rem; margin-top: auto; text-align: center; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1px; }
         .sidebar-powered span { color: var(--gold); font-weight: 600; }
 
-        /* ===== الشاشات - مش hidden ===== */
+        /* ===== الشاشات ===== */
         .screen { display: none; }
         .screen.active { display: block; }
 
@@ -184,7 +180,7 @@
         .prod-card-price { font-weight: 800; font-size: 0.8rem; color: var(--gold-light); }
         .prod-card-add { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); border: none; color: #000; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 
-        /* صفحات تانية */
+        /* صفحات */
         .page-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
         .page-back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .page-title-text { font-size: 1rem; font-weight: 700; }
@@ -203,7 +199,7 @@
         .modal-price-display .price { font-size: 2rem; font-weight: 900; color: var(--gold); }
         .modal-action { width: 100%; padding: 0.85rem; background: var(--gold-gradient); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
 
-        /* طاولات */
+        /* ===== طاولات موبايل ===== */
         .tables-3d-box { background: var(--surface); border-radius: var(--radius-lg); padding: 1rem; margin-bottom: 1rem; perspective: 700px; }
         .tables-3d-title { font-size: 0.78rem; font-weight: 700; text-align: center; color: var(--text-secondary); margin-bottom: 0.7rem; }
         .tables-floor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; padding: 0.3rem; transform: rotateX(20deg); transform-style: preserve-3d; }
@@ -228,6 +224,99 @@
         .field-input { width: 100%; padding: 0.6rem 0.7rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 0.8rem; outline: none; transition: all 0.3s; }
         .field-input:focus { border-color: var(--gold); }
 
+        /* ===== تصميم الطاولات للكمبيوتر ===== */
+        .tables-desktop-container {
+            display: none;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .floor-plan-bg {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(200,164,92,0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(200,164,92,0.04) 0%, transparent 50%);
+        }
+        .floor-grid {
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+        }
+        .tables-desktop-title { font-size: 1rem; font-weight: 800; text-align: center; color: var(--text); margin-bottom: 0.3rem; position: relative; z-index: 1; }
+        .tables-desktop-subtitle { font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-bottom: 2rem; position: relative; z-index: 1; }
+        .table-legend { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; position: relative; z-index: 1; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; color: var(--text-secondary); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.3); }
+        .legend-dot.available { background: var(--green); border-color: rgba(74,222,128,0.4); }
+        .legend-dot.occupied { background: var(--red); border-color: rgba(255,68,68,0.4); }
+        .legend-dot.selected { background: var(--gold); border-color: rgba(200,164,92,0.6); box-shadow: 0 0 10px rgba(200,164,92,0.3); }
+        .tables-desktop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; max-width: 700px; margin: 0 auto; position: relative; z-index: 1; padding: 0.5rem; }
+        .table-desktop-cell { position: relative; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .table-shape {
+            aspect-ratio: 1.4; background: var(--surface2); border: 2px solid var(--border);
+            border-radius: 50%; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .table-shape.square-table { aspect-ratio: 1; border-radius: var(--radius); }
+        .table-shape.long-table { aspect-ratio: 2; border-radius: var(--radius); }
+        .table-desktop-cell:hover .table-shape { transform: translateY(-4px); border-color: var(--border-active); box-shadow: 0 12px 30px rgba(200,164,92,0.25), inset 0 1px 0 rgba(255,255,255,0.08); }
+        .table-desktop-cell.selected .table-shape {
+            border-color: var(--gold); background: linear-gradient(145deg, rgba(200,164,92,0.2) 0%, rgba(200,164,92,0.05) 100%);
+            box-shadow: 0 0 40px rgba(200,164,92,0.35), 0 8px 25px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: translateY(-6px) scale(1.04);
+        }
+        .table-desktop-cell.occupied { pointer-events: none; }
+        .table-desktop-cell.occupied .table-shape { opacity: 0.3; border-color: rgba(255,68,68,0.3); filter: grayscale(0.6); }
+        .table-desktop-cell.occupied .table-shape::after {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,68,68,0.08) 3px, rgba(255,68,68,0.08) 6px);
+            border-radius: inherit;
+        }
+        .table-number-display { font-size: 1.6rem; font-weight: 900; color: var(--text); position: relative; z-index: 1; transition: all 0.3s; }
+        .table-desktop-cell.selected .table-number-display { color: var(--gold); text-shadow: 0 0 20px rgba(200,164,92,0.5); font-size: 1.8rem; }
+        .table-desktop-cell.occupied .table-number-display { color: var(--text-muted); }
+        .table-seats-display { font-size: 0.65rem; color: var(--text-muted); position: relative; z-index: 1; margin-top: 0.1rem; display: flex; align-items: center; gap: 0.2rem; }
+        .table-chairs { position: absolute; inset: -8px; pointer-events: none; }
+        .chair {
+            position: absolute; width: 14px; height: 14px; background: var(--surface3);
+            border: 1px solid var(--border); border-radius: 50%; transition: all 0.3s;
+        }
+        .table-desktop-cell:hover .chair { background: var(--surface2); border-color: var(--border-active); }
+        .table-desktop-cell.selected .chair { background: rgba(200,164,92,0.2); border-color: var(--gold); }
+        .table-desktop-cell.occupied .chair { opacity: 0.3; }
+        .chair.top { top: -2px; left: 50%; transform: translateX(-50%); }
+        .chair.bottom { bottom: -2px; left: 50%; transform: translateX(-50%); }
+        .chair.top-left { top: 2px; left: 2px; }
+        .chair.top-right { top: 2px; right: 2px; }
+        .chair.bottom-left { bottom: 2px; left: 2px; }
+        .chair.bottom-right { bottom: 2px; right: 2px; }
+        .chair.mid-top { top: -2px; left: 50%; transform: translateX(-50%); }
+        .chair.mid-bottom { bottom: -2px; left: 50%; transform: translateX(-50%); }
+        .chair.mid-left { top: 50%; left: -2px; transform: translateY(-50%); }
+        .chair.mid-right { top: 50%; right: -2px; transform: translateY(-50%); }
+        .table-status-indicator { position: absolute; top: 0.3rem; right: 0.3rem; width: 8px; height: 8px; border-radius: 50%; z-index: 2; transition: all 0.3s; }
+        .table-desktop-cell:not(.occupied) .table-status-indicator { background: var(--green); box-shadow: 0 0 8px rgba(74,222,128,0.5); }
+        .table-desktop-cell.occupied .table-status-indicator { background: var(--red); box-shadow: 0 0 8px rgba(255,68,68,0.5); }
+        .table-desktop-cell.selected .table-status-indicator { background: var(--gold); box-shadow: 0 0 12px rgba(200,164,92,0.6); }
+        .table-tooltip {
+            position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%) translateY(5px);
+            background: var(--surface3); color: var(--text); padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 600;
+            white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.3s;
+            border: 1px solid var(--border); box-shadow: 0 8px 25px rgba(0,0,0,0.4); z-index: 5;
+        }
+        .table-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid var(--surface3); }
+        .table-desktop-cell:hover .table-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .table-desktop-cell.selected .table-tooltip { background: rgba(200,164,92,0.2); border-color: var(--gold); color: var(--gold); }
+        .table-desktop-cell.selected .table-tooltip::after { border-top-color: rgba(200,164,92,0.2); }
+        .table-desktop-cell:active .table-shape { transform: scale(0.95); transition: transform 0.1s; }
+
         /* سلة */
         .cart-cust-card { background: var(--surface); border-radius: var(--radius); padding: 0.6rem 0.7rem; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
         .cart-cust-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
@@ -247,7 +336,6 @@
         .sum-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
         .sum-row.total { font-size: 0.95rem; font-weight: 800; color: var(--text); border-top: 1px solid var(--border); padding-top: 0.45rem; margin-top: 0.25rem; }
 
-        /* بار سفلي - موبايل */
         .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 0.5rem 0.75rem; padding-bottom: calc(0.5rem + var(--safe-bottom)); background: var(--surface); border-top: 1px solid var(--border); z-index: 50; }
         .big-btn { width: 100%; max-width: 480px; margin: 0 auto; display: block; padding: 0.8rem; background: var(--gold-gradient); border: none; border-radius: 50px; color: #000; font-family: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 6px 25px rgba(200,164,92,0.2); transition: all 0.3s; }
         .big-btn:active { transform: scale(0.96); }
@@ -271,30 +359,35 @@
 
         /* Responsive */
         @media (min-width: 769px) {
+            .page-wrapper { max-width: 100%; padding-bottom: 0; }
+            .sidebar-toggle-btn { display: flex; }
             .bottom-bar { display: none; }
-            .page-wrapper { padding-bottom: 0; }
             .menu-content { padding: 0 1.5rem 2rem; }
             .prod-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
             .prod-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-            .tables-floor-grid { grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
             .modal-overlay { align-items: center; }
             .modal-sheet { border-radius: var(--radius-lg); margin: auto; }
+            .tables-desktop-container { display: block; }
+            .tables-3d-box { display: none; }
+            .tables-floor-grid { display: none; }
         }
         @media (min-width: 1100px) { .prod-grid { grid-template-columns: repeat(4, 1fr); } .prod-list { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
             .sidebar-toggle-btn { display: none !important; }
             .desktop-sidebar { display: none !important; }
             .sidebar-backdrop { display: none !important; }
+            .bottom-bar { display: block; }
             .prod-grid { grid-template-columns: repeat(2, 1fr); }
             .prod-list { display: flex; flex-direction: column; }
-            .tables-floor-grid { grid-template-columns: repeat(3, 1fr); }
+            .tables-desktop-container { display: none; }
+            .tables-3d-box { display: block; }
+            .tables-floor-grid { display: grid; }
             .menu-content { padding-bottom: 5rem; }
             .content-padded { padding-bottom: 5rem; }
         }
     </style>
 </head>
 <body class="en">
-    <!-- سبلاش -->
     <div id="splashScreen" class="splash-screen">
         <div class="splash-logo-wrapper">
             <div class="splash-rings"></div><div class="splash-rings"></div><div class="splash-rings"></div>
@@ -308,9 +401,9 @@
         <div class="loading-text">Loading menu...</div>
     </div>
 
-    <!-- سايدبار -->
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
     <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()">›</button>
+
     <aside class="desktop-sidebar" id="desktopSidebar">
         <button class="sidebar-close-btn" onclick="closeSidebar()">✕</button>
         <div class="sidebar-header">
@@ -327,9 +420,7 @@
         <div class="sidebar-powered">Powered by <span>Discover Sharm</span></div>
     </aside>
 
-    <!-- ===== الصفحة الرئيسية - سكرول طبيعي ===== -->
     <div class="page-wrapper" id="pageWrapper">
-        <!-- قائمة -->
         <div class="screen active" id="screen-menu">
             <div class="hero-wrapper">
                 <div class="hero-bg" id="menuHeroBg"></div>
@@ -373,7 +464,6 @@
             </div>
         </div>
 
-        <!-- سلة -->
         <div class="screen" id="screen-cart">
             <div class="page-header">
                 <button class="page-back-btn" onclick="goBack()">‹</button>
@@ -394,14 +484,13 @@
             </div>
         </div>
 
-        <!-- طاولات -->
         <div class="screen" id="screen-table-select">
             <div class="page-header">
                 <button class="page-back-btn" onclick="goBack()">‹</button>
                 <span class="page-title-text">🪑 Select Table</span>
             </div>
             <div class="content-padded">
-                <div style="text-align:center;padding:0.5rem 0;">
+                <div style="text-align:center;padding:0.5rem 0 1rem;">
                     <div style="font-size:2rem;">🪑</div>
                     <div style="font-size:1rem;font-weight:800;">How to order?</div>
                     <div style="color:var(--text-secondary);font-size:0.75rem;">Choose table or delivery</div>
@@ -410,11 +499,29 @@
                     <button class="order-type-btn active" data-type="dine-in">🏠 Dine In</button>
                     <button class="order-type-btn" data-type="delivery">🛵 Delivery</button>
                 </div>
+                
+                <!-- كمبيوتر -->
+                <div class="tables-desktop-container" id="tablesDesktopContainer">
+                    <div class="floor-plan-bg"></div>
+                    <div class="floor-grid"></div>
+                    <div class="tables-desktop-title">🪑 Select Your Table</div>
+                    <div class="tables-desktop-subtitle">Click on an available table to select it</div>
+                    <div class="table-legend">
+                        <div class="legend-item"><span class="legend-dot available"></span> Available</div>
+                        <div class="legend-item"><span class="legend-dot occupied"></span> Occupied</div>
+                        <div class="legend-item"><span class="legend-dot selected"></span> Selected</div>
+                    </div>
+                    <div class="tables-desktop-grid" id="tablesDesktopGrid"></div>
+                    <div id="tableSelInfoDesktop" style="text-align:center;margin-top:1.5rem;font-size:0.8rem;color:var(--text-muted);">Click on a table to select it</div>
+                </div>
+                
+                <!-- موبايل -->
                 <div class="tables-3d-box" id="tablesBox">
                     <div class="tables-3d-title">🪑 Pick Table Number</div>
                     <div class="tables-floor-grid" id="tablesFloor"></div>
                     <div class="table-selected-info" id="tableSelInfo">No table selected</div>
                 </div>
+                
                 <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
                     <div class="field"><label class="field-label">👤 Name</label><input class="field-input" id="inpName"></div>
                     <div class="field"><label class="field-label">📞 Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
@@ -424,12 +531,10 @@
         </div>
     </div>
 
-    <!-- بار سفلي -->
     <div class="bottom-bar" id="bottomBar">
         <button class="big-btn" id="bigBtn">🛒 View Cart (0)</button>
     </div>
 
-    <!-- مودال -->
     <div class="modal-overlay" id="detailModal">
         <div class="modal-sheet">
             <div class="modal-handle"></div>
@@ -527,13 +632,12 @@
                     var sidePH=$('sidebarLogoPlaceholder');if(sidePH){sidePH.style.display='none';var si=document.createElement('img');si.src=restaurant.logo;si.className='sidebar-logo-img';si.style.cssText='width:50px;height:50px;border-radius:14px;object-fit:cover;margin:0 auto 0.5rem;display:block;';sidePH.parentNode.insertBefore(si,sidePH);}
                     var splashPH=$('splashLogo');if(splashPH){splashPH.style.display='none';var spi=document.createElement('img');spi.src=restaurant.logo;spi.className='splash-logo-img';spi.style.cssText='width:80px;height:80px;border-radius:20px;object-fit:cover;display:block;position:relative;z-index:1;box-shadow:0 0 30px rgba(200,164,92,0.3);';splashPH.parentNode.insertBefore(spi,splashPH);}
                 }
-                $('sidebarBrandName').textContent=restaurant.name||'';
-                $('splashName').textContent=restaurant.name||'';
+                $('sidebarBrandName').textContent=restaurant.name||'';$('splashName').textContent=restaurant.name||'';
                 document.title=(restaurant.name||'Restaurant')+' | QR Menu';
             }
 
             async function loadMenu(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/menu.json');if(res.ok){products=await res.json();}else{products=getDefaultProducts();}}catch(e){products=getDefaultProducts();}var ic=$('itemCount');if(ic)ic.textContent=products.length+' items';}
-            async function loadTables(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/tables.json');if(res.ok){tables=await res.json();}else{tables=getDefaultTables();}}catch(e){tables=getDefaultTables();}renderTables();}
+            async function loadTables(){try{var res=await fetch('/app/restaurants/'+RESTAURANT_ID+'/tables.json');if(res.ok){tables=await res.json();}else{tables=getDefaultTables();}}catch(e){tables=getDefaultTables();}renderTables();renderDesktopTables();}
 
             function getDefaultProducts(){return[{id:1,name:"Signature Espresso",emoji:"☕",cat:"coffee",prices:{EGP:55,USD:1.8,EUR:1.6},desc:"Double shot house-roasted Arabica"},{id:2,name:"Velvet Cappuccino",emoji:"☕",cat:"coffee",prices:{EGP:72,USD:2.3,EUR:2.1},desc:"Silky steamed milk"},{id:3,name:"Caramel Cloud Latte",emoji:"🥤",cat:"coffee",prices:{EGP:85,USD:2.7,EUR:2.5},desc:"Iced latte caramel"},{id:4,name:"Artisan Croissant",emoji:"🥐",cat:"breakfast",prices:{EGP:48,USD:1.5,EUR:1.4},desc:"Flaky French pastry"},{id:5,name:"Wagyu Ribeye",emoji:"🥩",cat:"main",prices:{EGP:520,USD:16.8,EUR:15.5},desc:"300-day grain-fed Wagyu"},{id:6,name:"Atlantic Salmon",emoji:"🐟",cat:"main",prices:{EGP:340,USD:11,EUR:10.2},desc:"Pan-seared lemon butter"},{id:7,name:"Sicilian Cheesecake",emoji:"🍰",cat:"dessert",prices:{EGP:95,USD:3.1,EUR:2.8},desc:"Creamy ricotta"},{id:8,name:"Belgian Lava Cake",emoji:"🍫",cat:"dessert",prices:{EGP:125,USD:4,EUR:3.7},desc:"Warm chocolate fondant"}];}
             function getDefaultTables(){return[{id:1,seats:2,occupied:false},{id:2,seats:4,occupied:false},{id:3,seats:2,occupied:true},{id:4,seats:6,occupied:false},{id:5,seats:4,occupied:false},{id:6,seats:2,occupied:false},{id:7,seats:8,occupied:false},{id:8,seats:4,occupied:true},{id:9,seats:2,occupied:false}];}
@@ -564,9 +668,32 @@
             function openDetail(pid){var p=products.find(function(x){return x.id===pid;});if(!p)return;$('modalEmoji').textContent=p.emoji;$('modalName').textContent=p.name;$('modalDesc').textContent=p.desc||'';$('modalPrice').textContent=fmt(price(p));$('detailModal').classList.add('show');$('modalAddBtn').onclick=function(){addToCart(pid);closeDetail();};}
             function closeDetail(){$('detailModal').classList.remove('show');}
 
-            function renderTables(){var floor=$('tablesFloor');if(!floor)return;var tbls=tables.length?tables:getDefaultTables();floor.innerHTML=tbls.map(function(tb){return'<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+tb.seats+' seats</span></div>';}).join('');floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();var si=$('tableSelInfo');if(si){si.textContent='✅ Table #'+st.selTable+' selected';si.classList.add('confirmed');}updateAllBadges();refreshUI();});});}
+            function renderTables(){var floor=$('tablesFloor');if(!floor)return;var tbls=tables.length?tables:getDefaultTables();floor.innerHTML=tbls.map(function(tb){return'<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+tb.seats+' seats</span></div>';}).join('');floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();renderDesktopTables();var si=$('tableSelInfo');if(si){si.textContent='✅ Table #'+st.selTable+' selected';si.classList.add('confirmed');}updateAllBadges();refreshUI();});});}
 
-            function confirmOrder(){if(cart.length===0){toast('Cart is empty');return;}if(TABLE_ID){st.selTable=TABLE_ID;st.orderType='dine-in';}if(!TABLE_ID){var nm=($('inpName')?.value||'').trim(),ph=($('inpPhone')?.value||'').trim(),ad=($('inpAddr')?.value||'').trim();if(st.orderType==='dine-in'&&!st.selTable){toast('⚠️ Pick a table first');return;}if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast('⚠️ Complete delivery details');return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}}var oid=Math.floor(1000+Math.random()*9000);$('orderIdBadge').textContent='#'+oid;if(st.selTable){$('successTableInfo').textContent='Delivering to table #'+st.selTable;}launchConfetti();$('successOverlay').classList.add('show');setTimeout(function(){$('successOverlay').classList.remove('show');cart=[];st.selTable=TABLE_ID||null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['menu'];st.screen='menu';['inpName','inpPhone','inpAddr'].forEach(function(id){var el=$(id);if(el)el.value='';});refreshUI();updateCartUI();renderProducts();},3000);}
+            function renderDesktopTables(){
+                var grid=$('tablesDesktopGrid');if(!grid||!isDesktop())return;
+                var tbls=tables.length?tables:getDefaultTables();
+                grid.innerHTML=tbls.map(function(tb){
+                    var isSelected=st.selTable===tb.id,isOccupied=tb.occupied;
+                    var shapeClass='',chairsHTML='';
+                    if(tb.seats<=2){shapeClass='';chairsHTML='<span class="chair top"></span><span class="chair bottom"></span>';}
+                    else if(tb.seats<=4){shapeClass='square-table';chairsHTML='<span class="chair top-left"></span><span class="chair top-right"></span><span class="chair bottom-left"></span><span class="chair bottom-right"></span>';}
+                    else if(tb.seats<=6){shapeClass='square-table';chairsHTML='<span class="chair top-left"></span><span class="chair top-right"></span><span class="chair mid-left"></span><span class="chair mid-right"></span><span class="chair bottom-left"></span><span class="chair bottom-right"></span>';}
+                    else{shapeClass='long-table';chairsHTML='<span class="chair top-left"></span><span class="chair top-right"></span><span class="chair mid-top"></span><span class="chair mid-left"></span><span class="chair mid-right"></span><span class="chair mid-bottom"></span><span class="chair bottom-left"></span><span class="chair bottom-right"></span>';}
+                    var statusText=isOccupied?'Occupied':(isSelected?'Selected':'Available');
+                    return'<div class="table-desktop-cell '+(isOccupied?'occupied':'')+' '+(isSelected?'selected':'')+'" data-tid="'+tb.id+'" '+(isOccupied?'':'onclick="selectDesktopTable('+tb.id+')"')+'><div class="table-shape '+shapeClass+'"><span class="table-status-indicator"></span><span class="table-number-display">'+tb.id+'</span><span class="table-seats-display">👥 '+tb.seats+'</span><div class="table-chairs">'+chairsHTML+'</div></div><div class="table-tooltip">'+statusText+' - Table '+tb.id+' - '+tb.seats+' seats</div></div>';
+                }).join('');
+            }
+
+            window.selectDesktopTable=function(tableId){
+                st.selTable=tableId;
+                renderDesktopTables();renderTables();
+                var info=$('tableSelInfoDesktop');if(info){info.innerHTML='<span style="color:var(--gold);font-weight:700;">✅ Table #'+tableId+' selected</span>';}
+                var infoMob=$('tableSelInfo');if(infoMob){infoMob.textContent='✅ Table #'+tableId+' selected';infoMob.classList.add('confirmed');}
+                updateAllBadges();refreshUI();
+            };
+
+            function confirmOrder(){if(cart.length===0){toast('Cart is empty');return;}if(TABLE_ID){st.selTable=TABLE_ID;st.orderType='dine-in';}if(!TABLE_ID){var nm=($('inpName')?.value||'').trim(),ph=($('inpPhone')?.value||'').trim(),ad=($('inpAddr')?.value||'').trim();if(st.orderType==='dine-in'&&!st.selTable){toast('⚠️ Pick a table first');return;}if(st.orderType==='delivery'){if(!nm||!ph||!ad){toast('⚠️ Complete delivery details');return;}st.custName=nm;st.custPhone=ph;st.custAddr=ad;}}var oid=Math.floor(1000+Math.random()*9000);$('orderIdBadge').textContent='#'+oid;if(st.selTable){$('successTableInfo').textContent='Delivering to table #'+st.selTable;}launchConfetti();$('successOverlay').classList.add('show');setTimeout(function(){$('successOverlay').classList.remove('show');cart=[];st.selTable=TABLE_ID||null;st.orderType='dine-in';st.custName='';st.custPhone='';st.custAddr='';st.history=['menu'];st.screen='menu';['inpName','inpPhone','inpAddr'].forEach(function(id){var el=$(id);if(el)el.value='';});refreshUI();updateCartUI();renderProducts();renderDesktopTables();},3000);}
             function launchConfetti(){var box=$('confettiBox'),cols=['#c8a45c','#e2c97e','#ff3b30','#34c759','#007aff','#ff9500','#fff'];box.innerHTML='';for(var i=0;i<50;i++){var d=document.createElement('div');d.className='confetti-bit';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*1.5+'s';d.style.animationDuration=(1.5+Math.random()*2)+'s';d.style.background=cols[Math.floor(Math.random()*cols.length)];d.style.width=(4+Math.random()*6)+'px';d.style.height=(4+Math.random()*6)+'px';box.appendChild(d);}setTimeout(function(){box.innerHTML='';},2500);}
             function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show');},2000);}
 
@@ -579,7 +706,7 @@
                 var label=$('heroLangLabel');if(label)label.textContent=savedLang.toUpperCase();
                 $$('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===savedLang);});
                 var tag=$('tableTag');if(TABLE_ID&&tag){tag.style.display='inline-flex';$('tableTagNum').textContent=TABLE_ID;}
-                loadRestaurant();renderTables();updateCartUI();updateAllBadges();refreshUI();
+                loadRestaurant();renderTables();renderDesktopTables();updateCartUI();updateAllBadges();refreshUI();
 
                 var hc=$('heroCartBtn');if(hc)hc.addEventListener('click',function(){switchScreen('cart');});
                 var hl=$('heroLangBtn');if(hl)hl.addEventListener('click',function(e){e.stopPropagation();$('heroLangDrop').classList.toggle('open');});
@@ -589,7 +716,7 @@
                 var modal=$('detailModal');if(modal)modal.addEventListener('click',function(e){if(e.target===this)closeDetail();});
                 $$('#currencyRow .cur-chip').forEach(function(c){c.addEventListener('click',function(){st.cur=this.dataset.currency;$$('#currencyRow .cur-chip').forEach(function(x){x.classList.remove('active');});this.classList.add('active');renderProducts();updateCartUI();refreshUI();});});
                 $$('.vt-btn').forEach(function(b){b.addEventListener('click',function(){setView(this.dataset.view);});});
-                $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');var tb=$('tablesBox');if(tb)tb.style.display=st.orderType==='dine-in'?'block':'none';var df=$('deliveryFormBox');if(df)df.style.display=st.orderType==='delivery'?'block':'none';});});
+                $$('#orderTypeRow .order-type-btn').forEach(function(b){b.addEventListener('click',function(){st.orderType=this.dataset.type;$$('#orderTypeRow .order-type-btn').forEach(function(x){x.classList.remove('active');});this.classList.add('active');var tb=$('tablesBox');if(tb)tb.style.display=st.orderType==='dine-in'?'block':'none';var dc=$('tablesDesktopContainer');if(dc)dc.style.display=st.orderType==='dine-in'?'block':'none';var df=$('deliveryFormBox');if(df)df.style.display=st.orderType==='delivery'?'block':'none';});});
             }
             init();
         });
