@@ -33,7 +33,7 @@ img{display:block;max-width:100%}
 *{scrollbar-width:none}
 /* AMBIENT */
 .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.ambient::before{content:'';position:absolute;top:-50%;left:-50%;width:400%;height:400%;background:radial-gradient(circle at 30% 20%,rgba(127,90,240,.25),transparent 40%),radial-gradient(circle at 70% 80%,rgba(255,61,127,.2),transparent 40%),radial-gradient(circle at 50% 50%,rgba(0,229,255,.1),transparent 50%);animation:ambientMove 20s ease-in-out infinite}
+.ambient::before{content:'';position:absolute;top:-50%;left:-50%;width:263%;height:293%;background:radial-gradient(circle at 30% 20%,rgba(127,90,240,.25),transparent 40%),radial-gradient(circle at 70% 80%,rgba(255,61,127,.2),transparent 40%),radial-gradient(circle at 50% 50%,rgba(0,229,255,.1),transparent 50%);animation:ambientMove 20s ease-in-out infinite}
 @keyframes ambientMove{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(-5%,5%) rotate(180deg)}}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* SHELL */
