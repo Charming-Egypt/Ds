@@ -357,13 +357,12 @@
     var sym={EGP:'EGP',USD:'$',EUR:'€'};
     var translationCache={};
 
-    // ✅ الترجمة الكاملة
     var translations={
-        en:{menu:'Menu',cart:'Cart',selectTable:'Select Table',viewCart:'View Cart',confirmOrder:'Confirm Order',chooseTable:'Choose Table',noItems:'No items',cartEmpty:'Cart is empty',subtotal:'Subtotal',tax:'Tax',service:'Service',total:'Total',dineIn:'Dine In',delivery:'Delivery',name:'Name',phone:'Phone',address:'Address',pickTable:'Pick Table',noTable:'No table selected',tableSelected:'Table selected',orderConfirmed:'Order Confirmed!',yourOrder:'Your order number',deliveringTo:'Table',addedToCart:'Added',pickTableFirst:'Pick a table first',completeDelivery:'Complete details',addToCart:'Add to Cart',welcome:'Welcome!',enterName:'Enter your name',enterPhone:'Enter your phone',phoneRequired:'Phone number is required',invalidPhone:'Invalid phone number',myOrders:'My Orders',signUp:'Sign Up',login:'Login',guest:'Guest',fullName:'Full Name',email:'Email',password:'Password',createAccount:'Create Account',continueAsGuest:'Continue as Guest'},
-        ar:{menu:'القائمة',cart:'السلة',selectTable:'اختر الطاولة',viewCart:'عرض السلة',confirmOrder:'تأكيد',chooseTable:'اختر الطاولة',noItems:'لا توجد عناصر',cartEmpty:'السلة فارغة',subtotal:'المجموع',tax:'الضريبة',service:'الخدمة',total:'الإجمالي',dineIn:'داخل',delivery:'توصيل',name:'الاسم',phone:'الهاتف',address:'العنوان',pickTable:'اختر',noTable:'لم يتم الاختيار',tableSelected:'تم الاختيار',orderConfirmed:'تم التأكيد!',yourOrder:'رقم الطلب',deliveringTo:'طاولة',addedToCart:'تمت الإضافة',pickTableFirst:'اختر الطاولة',completeDelivery:'أكمل البيانات',addToCart:'أضف',welcome:'أهلاً!',enterName:'أدخل اسمك',enterPhone:'أدخل الهاتف',phoneRequired:'رقم الهاتف مطلوب',invalidPhone:'رقم هاتف غير صحيح',myOrders:'طلباتي',signUp:'تسجيل',login:'دخول',guest:'ضيف',fullName:'الاسم الكامل',email:'البريد',password:'كلمة المرور',createAccount:'إنشاء حساب',continueAsGuest:'متابعة كضيف'},
-        ru:{menu:'Меню',cart:'Корзина',selectTable:'Стол',viewCart:'Корзина',confirmOrder:'ОК',chooseTable:'Стол',noItems:'Пусто',cartEmpty:'Пусто',subtotal:'Сумма',tax:'Налог',service:'Сервис',total:'Итого',dineIn:'Зал',delivery:'Доставка',name:'Имя',phone:'Тел',address:'Адрес',pickTable:'Стол',noTable:'Нет',tableSelected:'Выбран',orderConfirmed:'ОК!',yourOrder:'Номер',deliveringTo:'Стол',addedToCart:'ОК',pickTableFirst:'Выберите стол',completeDelivery:'Данные',addToCart:'Добавить',welcome:'Добро пожаловать!',enterName:'Введите имя',enterPhone:'Введите телефон',phoneRequired:'Телефон обязателен',invalidPhone:'Неверный телефон',myOrders:'Мои заказы',signUp:'Регистрация',login:'Вход',guest:'Гость',fullName:'Полное имя',email:'Email',password:'Пароль',createAccount:'Создать',continueAsGuest:'Как гость'},
-        de:{menu:'Menü',cart:'Warenkorb',selectTable:'Tisch',viewCart:'Warenkorb',confirmOrder:'OK',chooseTable:'Tisch',noItems:'Leer',cartEmpty:'Leer',subtotal:'Summe',tax:'Steuer',service:'Service',total:'Gesamt',dineIn:'Lokal',delivery:'Lieferung',name:'Name',phone:'Tel',address:'Adresse',pickTable:'Tisch',noTable:'Kein',tableSelected:'Gewählt',orderConfirmed:'OK!',yourOrder:'Nummer',deliveringTo:'Tisch',addedToCart:'OK',pickTableFirst:'Tisch wählen',completeDelivery:'Daten',addToCart:'Hinzufügen',welcome:'Willkommen!',enterName:'Name eingeben',enterPhone:'Telefon eingeben',phoneRequired:'Telefon erforderlich',invalidPhone:'Ungültige Nummer',myOrders:'Meine Bestellungen',signUp:'Registrieren',login:'Anmelden',guest:'Gast',fullName:'Vollständiger Name',email:'Email',password:'Passwort',createAccount:'Erstellen',continueAsGuest:'Als Gast'},
-        it:{menu:'Menù',cart:'Carrello',selectTable:'Tavolo',viewCart:'Carrello',confirmOrder:'OK',chooseTable:'Tavolo',noItems:'Vuoto',cartEmpty:'Vuoto',subtotal:'Totale',tax:'Tasse',service:'Servizio',total:'Totale',dineIn:'Sala',delivery:'Consegna',name:'Nome',phone:'Tel',address:'Indirizzo',pickTable:'Tavolo',noTable:'No',tableSelected:'Scelto',orderConfirmed:'OK!',yourOrder:'Numero',deliveringTo:'Tavolo',addedToCart:'OK',pickTableFirst:'Scegli tavolo',completeDelivery:'Dati',addToCart:'Aggiungi',welcome:'Benvenuto!',enterName:'Inserisci nome',enterPhone:'Inserisci telefono',phoneRequired:'Telefono obbligatorio',invalidPhone:'Numero non valido',myOrders:'I miei ordini',signUp:'Registrati',login:'Accedi',guest:'Ospite',fullName:'Nome completo',email:'Email',password:'Password',createAccount:'Crea',continueAsGuest:'Come ospite'}
+        en:{menu:'Menu',cart:'Cart',selectTable:'Select Table',viewCart:'View Cart',confirmOrder:'Confirm Order',chooseTable:'Choose Table',noItems:'No items',cartEmpty:'Cart is empty',subtotal:'Subtotal',tax:'Tax',service:'Service',total:'Total',dineIn:'Dine In',delivery:'Delivery',name:'Name',phone:'Phone',address:'Address',pickTable:'Pick Table',noTable:'No table selected',tableSelected:'Table selected',orderConfirmed:'Order Confirmed!',yourOrder:'Your order number',deliveringTo:'Table',addedToCart:'Added',pickTableFirst:'Pick a table first',completeDelivery:'Complete details',addToCart:'Add to Cart',welcome:'Welcome!',myOrders:'My Orders',signUp:'Sign Up',login:'Login',guest:'Guest',fullName:'Full Name',email:'Email',password:'Password',createAccount:'Create Account',continueAsGuest:'Continue as Guest'},
+        ar:{menu:'القائمة',cart:'السلة',selectTable:'اختر الطاولة',viewCart:'عرض السلة',confirmOrder:'تأكيد',chooseTable:'اختر الطاولة',noItems:'لا توجد عناصر',cartEmpty:'السلة فارغة',subtotal:'المجموع',tax:'الضريبة',service:'الخدمة',total:'الإجمالي',dineIn:'داخل',delivery:'توصيل',name:'الاسم',phone:'الهاتف',address:'العنوان',pickTable:'اختر',noTable:'لم يتم الاختيار',tableSelected:'تم الاختيار',orderConfirmed:'تم التأكيد!',yourOrder:'رقم الطلب',deliveringTo:'طاولة',addedToCart:'تمت الإضافة',pickTableFirst:'اختر الطاولة',completeDelivery:'أكمل البيانات',addToCart:'أضف',welcome:'أهلاً!',myOrders:'طلباتي',signUp:'تسجيل',login:'دخول',guest:'ضيف',fullName:'الاسم الكامل',email:'البريد',password:'كلمة المرور',createAccount:'إنشاء حساب',continueAsGuest:'متابعة كضيف'},
+        ru:{menu:'Меню',cart:'Корзина',selectTable:'Стол',viewCart:'Корзина',confirmOrder:'ОК',chooseTable:'Стол',noItems:'Пусто',cartEmpty:'Пусто',subtotal:'Сумма',tax:'Налог',service:'Сервис',total:'Итого',dineIn:'Зал',delivery:'Доставка',name:'Имя',phone:'Тел',address:'Адрес',pickTable:'Стол',noTable:'Нет',tableSelected:'Выбран',orderConfirmed:'ОК!',yourOrder:'Номер',deliveringTo:'Стол',addedToCart:'ОК',pickTableFirst:'Выберите стол',completeDelivery:'Данные',addToCart:'Добавить',welcome:'Добро пожаловать!',myOrders:'Мои заказы',signUp:'Регистрация',login:'Вход',guest:'Гость',fullName:'Полное имя',email:'Email',password:'Пароль',createAccount:'Создать',continueAsGuest:'Как гость'},
+        de:{menu:'Menü',cart:'Warenkorb',selectTable:'Tisch',viewCart:'Warenkorb',confirmOrder:'OK',chooseTable:'Tisch',noItems:'Leer',cartEmpty:'Leer',subtotal:'Summe',tax:'Steuer',service:'Service',total:'Gesamt',dineIn:'Lokal',delivery:'Lieferung',name:'Name',phone:'Tel',address:'Adresse',pickTable:'Tisch',noTable:'Kein',tableSelected:'Gewählt',orderConfirmed:'OK!',yourOrder:'Nummer',deliveringTo:'Tisch',addedToCart:'OK',pickTableFirst:'Tisch wählen',completeDelivery:'Daten',addToCart:'Hinzufügen',welcome:'Willkommen!',myOrders:'Meine Bestellungen',signUp:'Registrieren',login:'Anmelden',guest:'Gast',fullName:'Vollständiger Name',email:'Email',password:'Passwort',createAccount:'Erstellen',continueAsGuest:'Als Gast'},
+        it:{menu:'Menù',cart:'Carrello',selectTable:'Tavolo',viewCart:'Carrello',confirmOrder:'OK',chooseTable:'Tavolo',noItems:'Vuoto',cartEmpty:'Vuoto',subtotal:'Totale',tax:'Tasse',service:'Servizio',total:'Totale',dineIn:'Sala',delivery:'Consegna',name:'Nome',phone:'Tel',address:'Indirizzo',pickTable:'Tavolo',noTable:'No',tableSelected:'Scelto',orderConfirmed:'OK!',yourOrder:'Numero',deliveringTo:'Tavolo',addedToCart:'OK',pickTableFirst:'Scegli tavolo',completeDelivery:'Dati',addToCart:'Aggiungi',welcome:'Benvenuto!',myOrders:'I miei ordini',signUp:'Registrati',login:'Accedi',guest:'Ospite',fullName:'Nome completo',email:'Email',password:'Password',createAccount:'Crea',continueAsGuest:'Come ospite'}
     };
 
     function t(key){return(translations[st.lang]&&translations[st.lang][key])||translations.en[key]||key}
@@ -375,12 +374,95 @@
     function getTodayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
     function showToast(msg){var el=$('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show')},2000)}
 
-    // ✅ إغلاق المودال
+    // ✅ Google Translate Free API
+    async function translateText(text, targetLang) {
+        if (!text || targetLang === 'en') return text;
+        var cacheKey = targetLang + '_' + text;
+        if (translationCache[cacheKey]) return translationCache[cacheKey];
+        try {
+            var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + targetLang + '&dt=t&q=' + encodeURIComponent(text);
+            var response = await fetch(url);
+            var data = await response.json();
+            var translated = data[0].map(function(item) { return item[0]; }).join('');
+            translationCache[cacheKey] = translated;
+            return translated;
+        } catch(e) {
+            return text;
+        }
+    }
+
+    // ✅ ترجمة المنتجات والكاتيجوريز
+    async function translateAllContent() {
+        if (st.lang === 'en') {
+            products = JSON.parse(JSON.stringify(originalProducts));
+            categories = JSON.parse(JSON.stringify(originalCategories));
+            renderProducts();
+            renderCats();
+            return;
+        }
+        var productPromises = originalProducts.map(async function(p) {
+            var np = JSON.parse(JSON.stringify(p));
+            if (np.name) np.name = await translateText(np.name, st.lang);
+            if (np.desc) np.desc = await translateText(np.desc, st.lang);
+            return np;
+        });
+        var catPromises = originalCategories.map(async function(c) {
+            var nc = JSON.parse(JSON.stringify(c));
+            if (nc.name) nc.name = await translateText(nc.name, st.lang);
+            return nc;
+        });
+        products = await Promise.all(productPromises);
+        categories = await Promise.all(catPromises);
+        renderProducts();
+        renderCats();
+    }
+
+    // ✅ ترجمة وصف المطعم
+    async function translateRestaurantDesc() {
+        if (!restaurant) return;
+        var descEl = $('menuHeroDesc');
+        if (!descEl) return;
+        var descText = restaurant.desc || restaurant.description || '';
+        if (st.lang === 'en') {
+            descEl.textContent = descText;
+            return;
+        }
+        descEl.textContent = await translateText(descText, st.lang);
+    }
+
+    // ✅ setLang مع الترجمة الكاملة
+    window.setLang = async function(lang) {
+        st.lang = lang;
+        document.body.className = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+        var ll = $('langLabel');
+        if (ll) ll.textContent = lang.toUpperCase();
+        var d = $('langDrop');
+        if (d) d.classList.remove('open');
+        document.querySelectorAll('.hero-lang-opt').forEach(function(o) {
+            o.classList.toggle('active', o.dataset.lang === lang);
+        });
+        applyTranslations();
+        await translateRestaurantDesc();
+        await translateAllContent();
+        updateAllBadges();
+    };
+
+    function applyTranslations() {
+        var map = {menuLabel:'menu',cartTitle:'cart',tableTitle:'selectTable',ordersTitle:'myOrders',lblSubtotal:'subtotal',lblTax:'tax',lblService:'service',lblTotal:'total',pickTableLabel:'pickTable',lblName:'name',lblPhone:'phone',lblAddress:'address',successTitle:'orderConfirmed',successMsg:'yourOrder',modalAddBtn:'addToCart',authTitle:'welcome',signupTab:'signUp',loginTab:'login',guestTab:'guest',lblSignupName:'fullName',lblSignupPhone:'phone',lblSignupEmail:'email',lblSignupPassword:'password',lblLoginEmail:'email',lblLoginPassword:'password',lblGuestName:'name',lblGuestPhone:'phone',signupBtn:'createAccount',loginBtn:'login',guestBtn:'continueAsGuest'};
+        Object.keys(map).forEach(function(id){var el=$(id);if(el)el.textContent=t(map[id])});
+        var dbn=$('dineInBtn');if(dbn)dbn.textContent='🏠 '+t('dineIn');
+        var dvb=$('deliveryBtn');if(dvb)dvb.textContent='🛵 '+t('delivery');
+        var ct=$('cartTitle');if(ct)ct.textContent='🛒 '+t('cart');
+        var tt=$('tableTitle');if(tt)tt.textContent='🪑 '+t('selectTable');
+        var ot=$('ordersTitle');if(ot)ot.textContent='📋 '+t('myOrders');
+    }
+
     window.closeModal=function(id){var m=$(id);if(m)m.classList.remove('show')};
     window.closeDetail=function(){closeModal('detailModal')};
     document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal('authModal');closeModal('detailModal')}});
 
-    // ✅ Auth
     auth.onAuthStateChanged(function(user){
         if(user){currentUser=user;db.ref('customers/'+user.uid).once('value').then(function(snap){if(snap.exists()){currentCustomer=snap.val();currentCustomer.uid=user.uid;updateCustomerUI();}});}
         else{currentUser=null;currentCustomer=null;updateCustomerUI();}
@@ -390,13 +472,12 @@
     window.showSignup=function(){$('signupForm').style.display='block';$('loginForm').style.display='none';$('guestForm').style.display='none'};
     window.showLogin=function(){$('signupForm').style.display='none';$('loginForm').style.display='block';$('guestForm').style.display='none'};
     window.showGuest=function(){$('signupForm').style.display='none';$('loginForm').style.display='none';$('guestForm').style.display='block'};
-    
     window.signupWithEmail=function(){
         var name=$('signupName').value.trim();
         var phone=$('signupPhone').value.trim();
         var email=$('signupEmail').value.trim();
         var password=$('signupPassword').value;
-        if(!name||!phone||!email||!password){showToast('⚠️ '+t('completeDelivery'));return}
+        if(!name||!phone||!email||!password){showToast('⚠️ Fill all fields');return}
         if(password.length<6){showToast('⚠️ Password 6+');return}
         auth.createUserWithEmailAndPassword(email,password).then(function(cred){
             var user=cred.user;
@@ -404,17 +485,15 @@
             db.ref('customers/'+user.uid).set(customerData).then(function(){currentCustomer=customerData;currentUser=user;closeModal('authModal');updateCustomerUI();showToast('👋 '+name);});
         }).catch(function(e){showToast('⚠️ '+e.message)});
     };
-    
     window.loginWithEmail=function(){
         var email=$('loginEmail').value.trim();
         var password=$('loginPassword').value;
         auth.signInWithEmailAndPassword(email,password).then(function(){closeModal('authModal');showToast('👋 Welcome!');}).catch(function(e){showToast('⚠️ '+e.message)});
     };
-    
     window.continueAsGuest=function(){
         var name=$('guestName').value.trim();
         var phone=$('guestPhone').value.trim();
-        if(!name||!phone){showToast('⚠️ '+t('completeDelivery'));return}
+        if(!name||!phone){showToast('⚠️ Fill all fields');return}
         currentCustomer={id:'guest_'+Date.now(),name:name,phone:phone,type:'guest'};
         closeModal('authModal');updateCustomerUI();showToast('👋 '+name);
     };
@@ -439,30 +518,7 @@
         });
     };
 
-    // ✅ الترجمة الكاملة عند تغيير اللغة
     window.toggleLangDrop=function(){var d=$('langDrop');if(d)d.classList.toggle('open')};
-    window.setLang=function(lang){
-        st.lang=lang;
-        document.body.className=lang;
-        document.documentElement.dir=lang==='ar'?'rtl':'ltr';
-        document.documentElement.lang=lang;
-        var ll=$('langLabel');if(ll)ll.textContent=lang.toUpperCase();
-        var d=$('langDrop');if(d)d.classList.remove('open');
-        document.querySelectorAll('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang)});
-        applyTranslations();
-        showToast('🌐 '+lang.toUpperCase());
-    };
-
-    function applyTranslations(){
-        var map={menuLabel:'menu',cartTitle:'cart',tableTitle:'selectTable',ordersTitle:'myOrders',lblSubtotal:'subtotal',lblTax:'tax',lblService:'service',lblTotal:'total',pickTableLabel:'pickTable',lblName:'name',lblPhone:'phone',lblAddress:'address',successTitle:'orderConfirmed',successMsg:'yourOrder',modalAddBtn:'addToCart',authTitle:'welcome',signupTab:'signUp',loginTab:'login',guestTab:'guest',lblSignupName:'fullName',lblSignupPhone:'phone',lblSignupEmail:'email',lblSignupPassword:'password',lblLoginEmail:'email',lblLoginPassword:'password',lblGuestName:'name',lblGuestPhone:'phone',signupBtn:'createAccount',loginBtn:'login',guestBtn:'continueAsGuest'};
-        Object.keys(map).forEach(function(id){var el=$(id);if(el)el.textContent=t(map[id])});
-        var dbn=$('dineInBtn');if(dbn)dbn.textContent='🏠 '+t('dineIn');
-        var dvb=$('deliveryBtn');if(dvb)dvb.textContent='🛵 '+t('delivery');
-        var ct=$('cartTitle');if(ct)ct.textContent='🛒 '+t('cart');
-        var tt=$('tableTitle');if(tt)tt.textContent='🪑 '+t('selectTable');
-        var ot=$('ordersTitle');if(ot)ot.textContent='📋 '+t('myOrders');
-    }
-
     window.goBack=function(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-'+st.screen).classList.add('active');updateAllBadges()}};
     window.goToCart=function(){st.history.push('cart');st.screen='cart';document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-cart').classList.add('active');updateAllBadges()};
     window.setCur=function(cur,el){st.cur=cur;document.querySelectorAll('.cur-chip').forEach(function(c){c.classList.remove('active')});el.classList.add('active');renderProducts();updateCartUI()};
