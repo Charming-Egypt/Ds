@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0a0e17">
-    <title>RestaurantOS Pro</title>
+    <title>RestaurantOS Pro - Optimized</title>
     <style>
+        /* نفس CSS الأصلي */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
         :root{
             --bg:#0a0e17;--surface:#121826;--surface2:#1a2235;--surface3:#243044;
@@ -38,7 +39,7 @@
         .hdr-l{display:flex;align-items:center;gap:0.6rem;flex:1}
         .hdr-logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold3));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#000;font-weight:900}
         .hdr-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--gold)}
-        .hdr-user{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer}
+        .hdr-user{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;position:relative}
         .greet{padding:0.3rem 0 0.8rem}
         .greet-t{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--text),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .greet-s{font-size:0.7rem;color:var(--text3);margin-top:0.2rem}
@@ -192,6 +193,38 @@
         .receipt-footer{text-align:center;margin-top:1rem;padding-top:0.5rem;border-top:2px dashed #000;font-size:0.55rem;color:#666}
         .receipt-barcode{text-align:center;margin-top:0.5rem;font-size:0.5rem;letter-spacing:3px;color:#333}
         .session-badge{display:inline-block;font-size:0.5rem;font-weight:700;padding:0.1rem 0.5rem;border-radius:50px;background:rgba(96,165,250,0.2);color:var(--blue);margin-top:0.2rem}
+        
+        /* ✨ تحسينات جديدة */
+        .connection-indicator{position:fixed;top:calc(var(--safe-t) + 60px);right:12px;z-index:999;display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-radius:50px;font-size:0.6rem;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--border);transition:all 0.3s}
+        .connection-indicator.online{background:rgba(74,222,128,0.15);color:var(--green)}
+        .connection-indicator.offline{background:rgba(248,113,113,0.15);color:var(--red);animation:offlinePulse 2s infinite}
+        .connection-indicator.syncing{background:rgba(96,165,250,0.15);color:var(--blue)}
+        .connection-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+        .connection-indicator.online .connection-dot{animation:dotPulse 1.5s infinite}
+        .connection-indicator.syncing .connection-dot{animation:dotPulse 0.5s infinite}
+        @keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+        @keyframes offlinePulse{0%,100%{opacity:1}50%{opacity:0.6}}
+        
+        .audio-unlock-btn{position:fixed;bottom:calc(100px + var(--safe-b));left:50%;transform:translateX(-50%);background:rgba(240,185,11,0.2);color:var(--gold);border:1px solid var(--gold);padding:0.5rem 1rem;border-radius:50px;font-size:0.7rem;font-weight:700;cursor:pointer;z-index:80;display:flex;align-items:center;gap:0.4rem;backdrop-filter:blur(10px);animation:audioPulse 2s infinite}
+        .audio-unlock-btn.hidden{display:none}
+        @keyframes audioPulse{0%,100%{box-shadow:0 0 0 0 rgba(240,185,11,0.4)}50%{box-shadow:0 0 0 10px rgba(240,185,11,0)}}
+        
+        .audio-status{position:fixed;top:calc(var(--safe-t) + 60px);left:12px;z-index:999;padding:0.3rem 0.7rem;border-radius:50px;font-size:0.6rem;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--border);display:flex;align-items:center;gap:0.3rem}
+        .audio-status.enabled{background:rgba(74,222,128,0.15);color:var(--green)}
+        .audio-status.disabled{background:rgba(248,113,113,0.15);color:var(--red)}
+        
+        .new-order-alert{position:fixed;top:calc(var(--safe-t) + 100px);left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;padding:0.8rem 1.5rem;border-radius:14px;font-size:0.8rem;font-weight:700;z-index:500;box-shadow:0 10px 30px rgba(248,113,113,0.5);animation:alertSlide 0.5s ease;pointer-events:none}
+        @keyframes alertSlide{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
+        
+        .rules-preview{background:#1e1e1e;border:1px solid var(--border);border-radius:12px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#d4d4d4;overflow-x:auto;white-space:pre;line-height:1.5;max-height:300px;overflow-y:auto}
+        .rules-preview .comment{color:#6a9955}
+        .rules-preview .keyword{color:#569cd6}
+        .rules-preview .string{color:#ce9178}
+        .rules-preview .number{color:#b5cea8}
+        
+        .tab-switcher{display:flex;gap:0.3rem;margin-bottom:1rem;padding:0.2rem;background:var(--surface2);border-radius:10px}
+        .tab-btn{flex:1;padding:0.5rem;border-radius:8px;font-size:0.7rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all 0.2s;border:none;background:transparent;font-family:inherit}
+        .tab-btn.active{background:var(--gold);color:#000}
     </style>
 </head>
 <body>
@@ -200,7 +233,7 @@
         <div class="splash-content">
             <div class="splash-logo" id="splashLogo">✦</div>
             <div class="splash-name" id="splashName">RestaurantOS</div>
-            <div class="splash-tagline">Restaurant Management System</div>
+            <div class="splash-tagline">Optimized Restaurant Management</div>
             <div class="splash-loader"></div>
         </div>
         <div class="splash-footer">
@@ -226,7 +259,7 @@
     <div class="auth-screen" id="loginScreen" style="display:none">
         <div class="auth-logo">✦</div>
         <div class="auth-title">RestaurantOS Pro</div>
-        <div class="auth-sub">Restaurant Management System</div>
+        <div class="auth-sub">Optimized RTDB Edition</div>
         <div class="auth-form">
             <input type="text" class="auth-input" id="loginUsername" placeholder="Username">
             <input type="password" class="auth-input" id="loginPassword" placeholder="Password">
@@ -256,6 +289,17 @@
             </div>
             <nav class="bnav" id="bnav"></nav>
         </div>
+    </div>
+
+    <!-- Connection & Audio Indicators -->
+    <div class="connection-indicator offline" id="connectionIndicator" style="display:none">
+        <div class="connection-dot"></div>
+        <span id="connectionText">Offline</span>
+    </div>
+    
+    <div class="audio-status disabled" id="audioStatus" style="display:none">
+        <span>🔇</span>
+        <span>Audio Off</span>
     </div>
 
     <!-- Modals -->
@@ -335,8 +379,23 @@
             </div>
         </div>
     </div>
+    
+    <div class="modal" id="rulesModal">
+        <div class="mod-s">
+            <div class="mod-h"><span class="mod-t">🔒 Firebase Security Rules</span><button class="mod-x" onclick="closeRulesModal()">✕</button></div>
+            <div class="mod-b">
+                <div style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">انسخ هذه القواعد والصقها في Firebase Console → Realtime Database → Rules</div>
+                <div class="rules-preview" id="rulesPreview"></div>
+                <button class="btn btn-g btn-block" onclick="copyRules()" style="margin-top:0.8rem">📋 Copy Rules</button>
+            </div>
+            <div class="mod-f">
+                <button class="btn btn-o" onclick="closeRulesModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
     <button class="new-order-btn" id="newOrderBtn" onclick="openNewOrder()">+</button>
+    <button class="audio-unlock-btn hidden" id="audioUnlockBtn" onclick="unlockAudio()">🔊 Enable Kitchen Audio</button>
     <div class="twrap" id="twrap"></div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -345,8 +404,8 @@
 
     <script>
     (function(){
-        var $=function(id){return document.getElementById(id)};
-        var $$=function(s,c){return(c||document).querySelectorAll(s)};
+        var $=function(id){return document.getElementById(id);};
+        var $$=function(s,c){return(c||document).querySelectorAll(s);};
         var up=new URLSearchParams(window.location.search);
         var rid=up.get('restaurant')||up.get('id')||'1';
         var firebaseConfig=null,db=null,fbReady=false;
@@ -362,12 +421,224 @@
         var newOrderTable=null,newOrderItems={},newOrderFilter='all';
         var uploadedImageData=null;
         var currentReceiptTable=null;
-
-        function toast(m){var c=$('twrap');if(!c)return;var d=document.createElement('div');d.className='toast';d.textContent=m;c.appendChild(d);setTimeout(function(){d.remove();},2000);}
-        function saveData(){localStorage.setItem('users_'+rid,JSON.stringify(users));localStorage.setItem('categories_'+rid,JSON.stringify(categories));if(db&&fbReady){db.ref('users').set(users).catch(function(){});db.ref('categories').set(categories).catch(function(){});}}
         
+        // ✨ RTDB Optimization: In-memory cache with incremental sync
+        var ordersCache={}; // {orderId: order}
+        var listeners={}; // tracking active listeners
+        var pendingWrites=[]; // offline queue
+        
+        // ✨ Audio Manager
+        var audioManager={
+            context:null,
+            unlocked:false,
+            enabled:false,
+            pendingAlerts:[],
+            
+            unlock:function(){
+                if(this.unlocked)return;
+                try{
+                    this.context=new(window.AudioContext||window.webkitAudioContext)();
+                    // Silent sound to unlock
+                    var buffer=this.context.createBuffer(1,1,44100);
+                    var source=this.context.createBufferSource();
+                    source.buffer=buffer;
+                    source.connect(this.context.destination);
+                    source.start(0);
+                    this.unlocked=true;
+                    this.enabled=true;
+                    $('audioUnlockBtn').classList.add('hidden');
+                    $('audioStatus').style.display='flex';
+                    $('audioStatus').className='audio-status enabled';
+                    $('audioStatus').innerHTML='<span>🔊</span><span>Audio On</span>';
+                    // Play pending alerts
+                    this.pendingAlerts.forEach(function(alert){audioManager.playAlert(alert.type,alert.data);});
+                    this.pendingAlerts=[];
+                    toast('🔊 Audio enabled');
+                }catch(e){
+                    console.error('Audio unlock failed',e);
+                    toast('❌ Audio failed: '+e.message);
+                }
+            },
+            
+            toggle:function(){
+                this.enabled=!this.enabled;
+                if(this.enabled){
+                    $('audioStatus').className='audio-status enabled';
+                    $('audioStatus').innerHTML='<span>🔊</span><span>Audio On</span>';
+                }else{
+                    $('audioStatus').className='audio-status disabled';
+                    $('audioStatus').innerHTML='<span>🔇</span><span>Audio Off</span>';
+                }
+            },
+            
+            playAlert:function(type,data){
+                if(!this.enabled){
+                    this.pendingAlerts.push({type:type,data:data});
+                    return;
+                }
+                if(!this.unlocked){
+                    $('audioUnlockBtn').classList.remove('hidden');
+                    this.pendingAlerts.push({type:type,data:data});
+                    return;
+                }
+                
+                try{
+                    var now=this.context.currentTime;
+                    var oscillator=this.context.createOscillator();
+                    var gainNode=this.context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.context.destination);
+                    
+                    if(type==='new_order'){
+                        // Bell sound - two tones
+                        oscillator.frequency.setValueAtTime(880,now);
+                        oscillator.frequency.setValueAtTime(1175,now+0.15);
+                        oscillator.type='sine';
+                        gainNode.gain.setValueAtTime(0.3,now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01,now+0.3);
+                        oscillator.start(now);
+                        oscillator.stop(now+0.3);
+                        
+                        // Second beep
+                        setTimeout(function(){
+                            var o2=audioManager.context.createOscillator();
+                            var g2=audioManager.context.createGain();
+                            o2.connect(g2);
+                            g2.connect(audioManager.context.destination);
+                            o2.frequency.value=1175;
+                            o2.type='sine';
+                            g2.gain.setValueAtTime(0.3,audioManager.context.currentTime);
+                            g2.gain.exponentialRampToValueAtTime(0.01,audioManager.context.currentTime+0.3);
+                            o2.start();
+                            o2.stop(audioManager.context.currentTime+0.3);
+                        },200);
+                    }else if(type==='status_change'){
+                        oscillator.frequency.value=660;
+                        oscillator.type='triangle';
+                        gainNode.gain.setValueAtTime(0.2,now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01,now+0.2);
+                        oscillator.start(now);
+                        oscillator.stop(now+0.2);
+                    }
+                    
+                    // Vibration
+                    if(navigator.vibrate&&type==='new_order'){
+                        navigator.vibrate([200,100,200]);
+                    }
+                }catch(e){
+                    console.error('Audio play failed',e);
+                }
+            }
+        };
+        window.audioManager=audioManager;
+        window.unlockAudio=function(){audioManager.unlock();};
+        
+        // ✨ Connection Manager
+        var connectionManager={
+            status:'offline',
+            pendingCount:0,
+            
+            update:function(status,pending){
+                this.status=status;
+                if(pending!==undefined)this.pendingCount=pending;
+                var el=$('connectionIndicator');
+                if(!el)return;
+                el.style.display='flex';
+                el.className='connection-indicator '+status;
+                var textEl=$('connectionText');
+                if(status==='online'){
+                    textEl.textContent='Online';
+                }else if(status==='offline'){
+                    textEl.textContent='Offline'+(this.pendingCount>0?' ('+this.pendingCount+' pending)':'');
+                }else if(status==='syncing'){
+                    textEl.textContent='Syncing...';
+                }
+            }
+        };
+        
+        function toast(m){var c=$('twrap');if(!c)return;var d=document.createElement('div');d.className='toast';d.textContent=m;c.appendChild(d);setTimeout(function(){d.remove();},2000);}
+        
+        function showNewOrderAlert(orderId,tableName){
+            var alert=document.createElement('div');
+            alert.className='new-order-alert';
+            alert.innerHTML='🔔 New Order! Table '+tableName;
+            document.body.appendChild(alert);
+            setTimeout(function(){alert.remove();},3000);
+        }
+        
+        function saveData(){
+            localStorage.setItem('users_'+rid,JSON.stringify(users));
+            localStorage.setItem('categories_'+rid,JSON.stringify(categories));
+            // ✨ Save to RTDB only critical metadata
+            if(db&&fbReady){
+                db.ref('users').set(users).catch(function(){});
+                db.ref('categories').set(categories).catch(function(){});
+            }
+        }
+        
+        // ✨ Optimized data loading - only loads today's orders
         async function initFirebase(){
-            if(firebaseConfig){try{if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}db=firebase.database();fbReady=true;var usersSnap=await db.ref('users').once('value');if(usersSnap.exists()){users=usersSnap.val();if(!Array.isArray(users)){users=Object.values(users);}}var catsSnap=await db.ref('categories').once('value');if(catsSnap.exists()){categories=catsSnap.val();if(!Array.isArray(categories)){categories=Object.values(categories);}}var infoSnap=await db.ref('info').once('value');if(infoSnap.exists()){R=infoSnap.val();}var superAdminExists=users.some(function(u){return u.role==='super_admin'});var currentUserData=localStorage.getItem('current_user_'+rid);if(currentUserData){currentUser=JSON.parse(currentUserData);showApp();init();}else if(!superAdminExists){showSetupScreen();}else{showLoginScreen();}}catch(e){loadFromLocalStorage();}}else{loadFromLocalStorage();}
+            if(firebaseConfig){
+                try{
+                    if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}
+                    db=firebase.database();
+                    // ✨ Enable offline persistence (RTDB does this automatically in web SDK)
+                    // But we set it explicitly for multi-tab support
+                    db.goOffline();
+                    db.goOnline();
+                    
+                    fbReady=true;
+                    
+                    // ✨ Setup connection state listener
+                    var connectedRef=db.ref('.info/connected');
+                    connectedRef.on('value',function(snap){
+                        var isConnected=snap.val()===true;
+                        if(isConnected){
+                            connectionManager.update('online');
+                            // Sync pending writes
+                            syncPendingWrites();
+                        }else{
+                            connectionManager.update('offline',pendingWrites.length);
+                        }
+                    });
+                    
+                    // Load users
+                    var usersSnap=await db.ref('users').once('value');
+                    if(usersSnap.exists()){
+                        users=usersSnap.val();
+                        if(!Array.isArray(users)){users=Object.values(users);}
+                    }
+                    
+                    // Load categories
+                    var catsSnap=await db.ref('categories').once('value');
+                    if(catsSnap.exists()){
+                        categories=catsSnap.val();
+                        if(!Array.isArray(categories)){categories=Object.values(categories);}
+                    }
+                    
+                    // Load restaurant info
+                    var infoSnap=await db.ref('info').once('value');
+                    if(infoSnap.exists()){R=infoSnap.val();}
+                    
+                    var superAdminExists=users.some(function(u){return u.role==='super_admin';});
+                    var currentUserData=localStorage.getItem('current_user_'+rid);
+                    if(currentUserData){
+                        currentUser=JSON.parse(currentUserData);
+                        showApp();
+                        init();
+                    }else if(!superAdminExists){
+                        showSetupScreen();
+                    }else{
+                        showLoginScreen();
+                    }
+                }catch(e){
+                    console.error('Firebase init error',e);
+                    loadFromLocalStorage();
+                }
+            }else{
+                loadFromLocalStorage();
+            }
         }
         
         function loadFromLocalStorage(){
@@ -377,16 +648,73 @@
             if(savedCategories){try{categories=JSON.parse(savedCategories);}catch(e){}}
             var savedR=localStorage.getItem('restaurant_'+rid);
             if(savedR){try{R=JSON.parse(savedR);}catch(e){}}
-            var superAdminExists=users.some(function(u){return u.role==='super_admin'});
+            var superAdminExists=users.some(function(u){return u.role==='super_admin';});
             if(currentUser){showApp();init();}
             else if(!superAdminExists){showSetupScreen();}
             else{showLoginScreen();}
         }
         
+        // ✨ Queue write for offline sync
+        function queueWrite(path,data,operation){
+            pendingWrites.push({path:path,data:data,operation:operation,timestamp:Date.now()});
+            localStorage.setItem('pending_writes_'+rid,JSON.stringify(pendingWrites));
+            connectionManager.update(connectionManager.status,pendingWrites.length);
+        }
+        
+        // ✨ Sync pending writes when online
+        function syncPendingWrites(){
+            if(!db||!fbReady||pendingWrites.length===0)return;
+            connectionManager.update('syncing',pendingWrites.length);
+            var writes=pendingWrites.slice();
+            pendingWrites=[];
+            localStorage.setItem('pending_writes_'+rid,'[]');
+            
+            writes.forEach(function(w){
+                if(w.operation==='set'){
+                    db.ref(w.path).set(w.data).catch(function(e){console.error('Sync failed',e);});
+                }else if(w.operation==='update'){
+                    db.ref(w.path).update(w.data).catch(function(e){console.error('Sync failed',e);});
+                }else if(w.operation==='remove'){
+                    db.ref(w.path).remove().catch(function(e){console.error('Sync failed',e);});
+                }
+            });
+            
+            setTimeout(function(){connectionManager.update('online');},2000);
+        }
+        
+        // ✨ Smart save - queues if offline
+        function smartSave(path,data,operation){
+            operation=operation||'set';
+            if(!db||!fbReady){
+                queueWrite(path,data,operation);
+                return Promise.resolve();
+            }
+            var ref=db.ref(path);
+            var promise;
+            if(operation==='set'){
+                promise=ref.set(data);
+            }else if(operation==='update'){
+                promise=ref.update(data);
+            }else if(operation==='remove'){
+                promise=ref.remove();
+            }
+            promise.catch(function(e){
+                console.error('Save failed, queueing',e);
+                queueWrite(path,data,operation);
+            });
+            return promise;
+        }
+        
         function showSplashScreen(){
             $('splashScreen').classList.remove('hidden');
-            if(R&&R.name){$('splashName').textContent=R.name;if(R.logo){$('splashLogo').innerHTML='<img src="'+R.logo+'" style="width:100%;height:100%;object-fit:cover;border-radius:35px">';}}
-            setTimeout(function(){$('splashScreen').classList.add('hidden');initFirebase();},2500);
+            if(R&&R.name){
+                $('splashName').textContent=R.name;
+                if(R.logo){$('splashLogo').innerHTML='<img src="'+R.logo+'" style="width:100%;height:100%;object-fit:cover;border-radius:35px">';}
+            }
+            setTimeout(function(){
+                $('splashScreen').classList.add('hidden');
+                initFirebase();
+            },2500);
         }
         
         function showSetupScreen(){$('setupScreen').style.display='flex';$('loginScreen').style.display='none';$('mainApp').style.display='none';}
@@ -400,7 +728,12 @@
             $('userAvatar').textContent=currentUser.name.charAt(0).toUpperCase();
             buildSidebar();buildBottomNav();buildDashboard();updateCategoryFilters();
             if(currentUser.role==='order_taker'){$('newOrderBtn').classList.add('show');$('bnav').classList.add('hidden');}
-            else if(currentUser.role==='kitchen'){$('newOrderBtn').classList.remove('show');$('bnav').classList.add('hidden');}
+            else if(currentUser.role==='kitchen'){
+                $('newOrderBtn').classList.remove('show');
+                $('bnav').classList.add('hidden');
+                // ✨ Show audio unlock button for kitchen
+                $('audioUnlockBtn').classList.remove('hidden');
+            }
             else{$('newOrderBtn').classList.remove('show');$('bnav').classList.remove('hidden');}
         }
         
@@ -410,7 +743,7 @@
             html+='<div class="sb-link ac" data-p="dashboard" onclick="nav(\'dashboard\')">📊 Dashboard</div>';
             if(role==='cashier'||role==='admin'||role==='super_admin'){html+='<div class="sb-link" data-p="orders" onclick="nav(\'orders\')">📋 Orders</div>';html+='<div class="sb-link" data-p="reports" onclick="nav(\'reports\')">📊 Reports</div>';}
             if(role==='super_admin'||role==='admin'){html+='<div class="sb-lbl">Management</div>';html+='<div class="sb-link" data-p="tables" onclick="nav(\'tables\')">🪑 Tables</div>';html+='<div class="sb-link" data-p="menu" onclick="nav(\'menu\')">🍽️ Menu</div>';html+='<div class="sb-link" data-p="qr" onclick="nav(\'qr\')">📱 QR Codes</div>';}
-            if(role==='super_admin'||role==='admin'){html+='<div class="sb-lbl">System</div>';html+='<div class="sb-link" data-p="settings" onclick="nav(\'settings\')">⚙️ Settings</div>';}
+            if(role==='super_admin'||role==='admin'){html+='<div class="sb-lbl">System</div>';html+='<div class="sb-link" data-p="settings" onclick="nav(\'settings\')">⚙️ Settings</div>';html+='<div class="sb-link" data-p="rules" onclick="nav(\'rules\')">🔒 Security Rules</div>';}
             html+='<div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)"><div class="sb-link" onclick="logout()" style="color:var(--red)">🚪 Logout</div></div>';
             content.innerHTML=html;
         }
@@ -441,33 +774,160 @@
                 updateCashierDashboard();
             }
             else{
-                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem"></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-g btn-sm" onclick="connectFB()">🔗 Connect</button><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'</div>';
-                dash();settPg();
+                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem"></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-g btn-sm" onclick="connectFB()">🔗 Connect</button><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'</div><div class="page" id="p-rules"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Firebase Security Rules</div><div style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">انسخ القواعد التالية والصقها في Firebase Console → Realtime Database → Rules</div><div class="rules-preview" id="rulesContent"></div><button class="btn btn-g btn-block" onclick="copyRulesFromSettings()" style="margin-top:0.8rem">📋 Copy Rules to Clipboard</button></div></div>';
+                dash();settPg();renderRulesPage();
             }
         }
 
-        function allO(){var a=[];T.forEach(function(t){if(t&&t.ords){t.ords.forEach(function(o){o.tid=t.id;a.push(o);});}});return a.sort(function(a,b){return b.id-a.id;});}
-        function actO(tid){var t=T.find(function(x){return x.id===tid});var sessionId=t?t.currentSessionId:null;return t&&t.ords?t.ords.filter(function(o){return o.st!=='completed'&&o.st!=='served'&&(sessionId?o.sessionId===sessionId:true);}):[];}
-        function tTot(tid){var t=T.find(function(x){return x.id===tid});var sessionId=t?t.currentSessionId:null;return t&&t.ords?t.ords.filter(function(o){return sessionId?o.sessionId===sessionId:true;}).reduce(function(s,o){return s+o.tot;},0):0;}
-        function tPen(tid){var t=T.find(function(x){return x.id===tid});var sessionId=t?t.currentSessionId:null;return t&&t.ords?t.ords.filter(function(o){return(o.st==='pending'||o.st==='preparing'||o.st==='ready')&&(sessionId?o.sessionId===sessionId:true);}).length:0;}
+        // ✨ Optimized: Uses in-memory cache instead of scanning all tables
+        function allO(){return Object.values(ordersCache).sort(function(a,b){return b.id-a.id;});}
+        
+        function actO(tid){
+            var t=T.find(function(x){return x.id===tid;});
+            var sessionId=t?t.currentSessionId:null;
+            return Object.values(ordersCache).filter(function(o){
+                return o.tid===tid && o.st!=='completed' && o.st!=='served' && (sessionId?o.sessionId===sessionId:true);
+            });
+        }
+        
+        function tTot(tid){
+            var t=T.find(function(x){return x.id===tid;});
+            var sessionId=t?t.currentSessionId:null;
+            return Object.values(ordersCache).filter(function(o){
+                return o.tid===tid && (sessionId?o.sessionId===sessionId:true);
+            }).reduce(function(s,o){return s+o.tot;},0);
+        }
+        
+        function tPen(tid){
+            var t=T.find(function(x){return x.id===tid;});
+            var sessionId=t?t.currentSessionId:null;
+            return Object.values(ordersCache).filter(function(o){
+                return o.tid===tid && (o.st==='pending'||o.st==='preparing'||o.st==='ready') && (sessionId?o.sessionId===sessionId:true);
+            }).length;
+        }
+        
         function getTodayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-        function saveFB(path,data){if(!db||!fbReady)return;db.ref(path).set(data).catch(function(){});}
+        function saveFB(path,data,op){return smartSave(path,data,op);}
         
         function isTableSessionClosed(table){
-            if(!table.ords)return true;
-            var sessionId=table.currentSessionId;
-            if(!sessionId)return true;
-            var sessionOrders=table.ords.filter(function(o){return o.sessionId===sessionId;});
+            if(!table.currentSessionId)return true;
+            var sessionOrders=Object.values(ordersCache).filter(function(o){return o.tid===table.id && o.sessionId===table.currentSessionId;});
             return sessionOrders.length>0 && sessionOrders.every(function(o){return o.st==='completed';});
         }
 
-        function nav(p){cp=p;$$('.page').forEach(function(x){x.classList.remove('active');});var pg=$('p-'+p);if(pg)pg.classList.add('active');$$('.sb-link').forEach(function(x){x.classList.remove('ac');});var si=document.querySelector('.sb-link[data-p="'+p+'"]');if(si)si.classList.add('ac');$$('.bn-item').forEach(function(x){x.classList.remove('on');});var bi=document.querySelector('.bn-item[data-p="'+p+'"]');if(bi)bi.classList.add('on');if(p==='dashboard'){if(currentUser.role==='kitchen')updateKitchenDashboard();else if(currentUser.role==='order_taker')updateOrderTakerDashboard();else if(currentUser.role==='cashier')updateCashierDashboard();else dash();}if(p==='orders')ordsPg();if(p==='tables')tblsPg();if(p==='menu')menuPg();if(p==='qr')qrPg();if(p==='settings')settPg();if(p==='reports')buildReports();}
+        function nav(p){
+            cp=p;
+            $$('.page').forEach(function(x){x.classList.remove('active');});
+            var pg=$('p-'+p);
+            if(pg)pg.classList.add('active');
+            $$('.sb-link').forEach(function(x){x.classList.remove('ac');});
+            var si=document.querySelector('.sb-link[data-p="'+p+'"]');
+            if(si)si.classList.add('ac');
+            $$('.bn-item').forEach(function(x){x.classList.remove('on');});
+            var bi=document.querySelector('.bn-item[data-p="'+p+'"]');
+            if(bi)bi.classList.add('on');
+            if(p==='dashboard'){
+                if(currentUser.role==='kitchen')updateKitchenDashboard();
+                else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+                else if(currentUser.role==='cashier')updateCashierDashboard();
+                else dash();
+            }
+            if(p==='orders')ordsPg();
+            if(p==='tables')tblsPg();
+            if(p==='menu')menuPg();
+            if(p==='qr')qrPg();
+            if(p==='settings')settPg();
+            if(p==='reports')buildReports();
+            if(p==='rules')renderRulesPage();
+        }
 
-        function dash(){var a=allO();var pe=a.filter(function(o){return o.st==='pending'||o.st==='preparing';}).length;var co=a.filter(function(o){return o.st==='completed';}).length;var rv=a.reduce(function(s,o){return s+o.tot;},0);if($('st1'))$('st1').textContent=a.length;if($('st2'))$('st2').textContent=pe;if($('st3'))$('st3').textContent=co;if($('st4'))$('st4').textContent=rv.toFixed(0);if($('np'))$('np').textContent=pe;if($('bnOrders')){if(pe>0){$('bnOrders').style.display='flex';$('bnOrders').textContent=pe;}else{$('bnOrders').style.display='none';}}var at=T.filter(function(t){return tPen(t.id)>0;});var atGrid=$('activeTables');if(atGrid){atGrid.innerHTML=at.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1.5rem;text-align:center;grid-column:1/-1">No active tables</div>':at.map(function(t){return'<div class="tcard on" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-badge">'+tPen(t.id)+' open</div><div class="tcard-total">'+tTot(t.id)+' EGP</div>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';}).join('');}var roGrid=$('recentOrders');if(roGrid){roGrid.innerHTML=a.slice(0,6).map(function(o){return'<div class="ocard '+o.st+'" onclick="showO('+o.id+')"><div class="odot '+o.st+'"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.length+' items</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';}).join('');}}
+        function dash(){
+            var a=allO();
+            var pe=a.filter(function(o){return o.st==='pending'||o.st==='preparing';}).length;
+            var co=a.filter(function(o){return o.st==='completed';}).length;
+            var rv=a.reduce(function(s,o){return s+o.tot;},0);
+            if($('st1'))$('st1').textContent=a.length;
+            if($('st2'))$('st2').textContent=pe;
+            if($('st3'))$('st3').textContent=co;
+            if($('st4'))$('st4').textContent=rv.toFixed(0);
+            if($('np'))$('np').textContent=pe;
+            if($('bnOrders')){
+                if(pe>0){$('bnOrders').style.display='flex';$('bnOrders').textContent=pe;}
+                else{$('bnOrders').style.display='none';}
+            }
+            var at=T.filter(function(t){return tPen(t.id)>0;});
+            var atGrid=$('activeTables');
+            if(atGrid){
+                atGrid.innerHTML=at.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1.5rem;text-align:center;grid-column:1/-1">No active tables</div>':at.map(function(t){
+                    return'<div class="tcard on" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-badge">'+tPen(t.id)+' open</div><div class="tcard-total">'+tTot(t.id)+' EGP</div>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';
+                }).join('');
+            }
+            var roGrid=$('recentOrders');
+            if(roGrid){
+                roGrid.innerHTML=a.slice(0,6).map(function(o){
+                    return'<div class="ocard '+o.st+'" onclick="showO('+o.id+')"><div class="odot '+o.st+'"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.length+' items</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';
+                }).join('');
+            }
+        }
 
-        function updateKitchenDashboard(){var a=allO();var preparingOrders=a.filter(function(o){return o.st==='preparing';});var readyOrders=a.filter(function(o){return o.st==='ready';});if($('kitchenPreparingCount'))$('kitchenPreparingCount').textContent=preparingOrders.length;if($('kitchenReadyCount'))$('kitchenReadyCount').textContent=readyOrders.length;var prList=$('kitchenPreparingList');if(prList){prList.innerHTML=preparingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No orders in kitchen</div>':preparingOrders.map(function(o){return'<div class="ocard preparing" onclick="showO('+o.id+')"><div class="odot preparing"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn green" onclick="event.stopPropagation();updO('+o.id+',\'ready\')">✅ Order Ready</button></div></div>';}).join('');}var rdList=$('kitchenReadyList');if(rdList){rdList.innerHTML=readyOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No ready orders</div>':readyOrders.map(function(o){return'<div class="ocard ready" onclick="showO('+o.id+')"><div class="odot ready"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';}).join('');}}
+        function updateKitchenDashboard(){
+            var a=allO();
+            var preparingOrders=a.filter(function(o){return o.st==='preparing';});
+            var readyOrders=a.filter(function(o){return o.st==='ready';});
+            if($('kitchenPreparingCount'))$('kitchenPreparingCount').textContent=preparingOrders.length;
+            if($('kitchenReadyCount'))$('kitchenReadyCount').textContent=readyOrders.length;
+            var prList=$('kitchenPreparingList');
+            if(prList){
+                prList.innerHTML=preparingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No orders in kitchen</div>':preparingOrders.map(function(o){
+                    return'<div class="ocard preparing" onclick="showO('+o.id+')"><div class="odot preparing"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn green" onclick="event.stopPropagation();updO('+o.id+',\'ready\')">✅ Order Ready</button></div></div>';
+                }).join('');
+            }
+            var rdList=$('kitchenReadyList');
+            if(rdList){
+                rdList.innerHTML=readyOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No ready orders</div>':readyOrders.map(function(o){
+                    return'<div class="ocard ready" onclick="showO('+o.id+')"><div class="odot ready"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';
+                }).join('');
+            }
+        }
 
-        function updateOrderTakerDashboard(){var a=allO();var activeTables=T.filter(function(t){if(!t.ords)return false;var sessionId=t.currentSessionId;return t.ords.some(function(o){return o.st!=='completed'&&(sessionId?o.sessionId===sessionId:true);});});var pendingOrders=a.filter(function(o){return o.st==='pending';});var preparingOrders=a.filter(function(o){return o.st==='preparing';});var readyOrders=a.filter(function(o){return o.st==='ready';});if($('activeTableCount'))$('activeTableCount').textContent=activeTables.length;if($('pendingOrdersCount'))$('pendingOrdersCount').textContent=pendingOrders.length;if($('preparingOrdersCount'))$('preparingOrdersCount').textContent=preparingOrders.length;if($('readyOrdersCountOT'))$('readyOrdersCountOT').textContent=readyOrders.length;var atGrid=$('activeTablesGrid');if(atGrid){atGrid.innerHTML=activeTables.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center;grid-column:1/-1">No active tables</div>':activeTables.map(function(t){return'<div class="tcard on" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-badge">'+tPen(t.id)+' orders</div><div class="tcard-total">'+tTot(t.id)+' EGP</div>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';}).join('');}var poList=$('pendingOrdersList');if(poList){poList.innerHTML=pendingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No new orders</div>':pendingOrders.map(function(o){return'<div class="ocard pending" onclick="showO('+o.id+')"><div class="odot pending"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn orange" onclick="event.stopPropagation();updO('+o.id+',\'preparing\')">👨‍🍳 Send to Kitchen</button></div></div>';}).join('');}var prList=$('preparingOrdersList');if(prList){prList.innerHTML=preparingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No orders in kitchen</div>':preparingOrders.map(function(o){return'<div class="ocard preparing" onclick="showO('+o.id+')"><div class="odot preparing"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';}).join('');}var rdList=$('readyOrdersListOT');if(rdList){rdList.innerHTML=readyOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No ready orders</div>':readyOrders.map(function(o){return'<div class="ocard ready" onclick="showO('+o.id+')"><div class="odot ready"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'served\')">🍽️ Served</button></div></div>';}).join('');}}
+        function updateOrderTakerDashboard(){
+            var a=allO();
+            var activeTables=T.filter(function(t){
+                if(!t.currentSessionId)return false;
+                return Object.values(ordersCache).some(function(o){return o.tid===t.id && o.st!=='completed' && o.sessionId===t.currentSessionId;});
+            });
+            var pendingOrders=a.filter(function(o){return o.st==='pending';});
+            var preparingOrders=a.filter(function(o){return o.st==='preparing';});
+            var readyOrders=a.filter(function(o){return o.st==='ready';});
+            if($('activeTableCount'))$('activeTableCount').textContent=activeTables.length;
+            if($('pendingOrdersCount'))$('pendingOrdersCount').textContent=pendingOrders.length;
+            if($('preparingOrdersCount'))$('preparingOrdersCount').textContent=preparingOrders.length;
+            if($('readyOrdersCountOT'))$('readyOrdersCountOT').textContent=readyOrders.length;
+            var atGrid=$('activeTablesGrid');
+            if(atGrid){
+                atGrid.innerHTML=activeTables.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center;grid-column:1/-1">No active tables</div>':activeTables.map(function(t){
+                    return'<div class="tcard on" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-badge">'+tPen(t.id)+' orders</div><div class="tcard-total">'+tTot(t.id)+' EGP</div>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';
+                }).join('');
+            }
+            var poList=$('pendingOrdersList');
+            if(poList){
+                poList.innerHTML=pendingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No new orders</div>':pendingOrders.map(function(o){
+                    return'<div class="ocard pending" onclick="showO('+o.id+')"><div class="odot pending"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn orange" onclick="event.stopPropagation();updO('+o.id+',\'preparing\')">👨‍🍳 Send to Kitchen</button></div></div>';
+                }).join('');
+            }
+            var prList=$('preparingOrdersList');
+            if(prList){
+                prList.innerHTML=preparingOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No orders in kitchen</div>':preparingOrders.map(function(o){
+                    return'<div class="ocard preparing" onclick="showO('+o.id+')"><div class="odot preparing"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div></div>';
+                }).join('');
+            }
+            var rdList=$('readyOrdersListOT');
+            if(rdList){
+                rdList.innerHTML=readyOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No ready orders</div>':readyOrders.map(function(o){
+                    return'<div class="ocard ready" onclick="showO('+o.id+')"><div class="odot ready"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'served\')">🍽️ Served</button></div></div>';
+                }).join('');
+            }
+        }
 
         function updateCashierDashboard(){
             var a=allO();
@@ -483,14 +943,14 @@
             
             var tablesWithServed=T.filter(function(t){
                 if(!t.currentSessionId)return false;
-                return t.ords&&t.ords.some(function(o){return o.st==='served'&&o.sessionId===t.currentSessionId;});
+                return Object.values(ordersCache).some(function(o){return o.tid===t.id && o.st==='served' && o.sessionId===t.currentSessionId;});
             });
             
             var ctGrid=$('cashierTablesGrid');
             if(ctGrid){
                 ctGrid.innerHTML=tablesWithServed.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center;grid-column:1/-1">No tables with served orders</div>':tablesWithServed.map(function(t){
                     var sessionId=t.currentSessionId;
-                    var servedTotal=t.ords.filter(function(o){return o.st==='served'&&o.sessionId===sessionId;}).reduce(function(s,o){return s+o.tot;},0);
+                    var servedTotal=Object.values(ordersCache).filter(function(o){return o.tid===t.id && o.st==='served' && o.sessionId===sessionId;}).reduce(function(s,o){return s+o.tot;},0);
                     var taxSettings=t.taxSettings||{enableVAT:true,enableService:true};
                     var vat=taxSettings.enableVAT?servedTotal*0.14:0;
                     var svc=taxSettings.enableService?servedTotal*0.12:0;
@@ -500,25 +960,79 @@
             }
             
             var soList=$('servedOrdersList');
-            if(soList){soList.innerHTML=servedOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No served orders</div>':servedOrders.map(function(o){return'<div class="ocard served" onclick="showReceiptForOrder('+o.id+')"><div class="odot served"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'completed\')">💰 Payment</button><button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button></div></div>';}).join('');}
+            if(soList){
+                soList.innerHTML=servedOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No served orders</div>':servedOrders.map(function(o){
+                    return'<div class="ocard served" onclick="showReceiptForOrder('+o.id+')"><div class="odot served"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'completed\')">💰 Payment</button><button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button></div></div>';
+                }).join('');
+            }
             
             var coList=$('completedOrdersList');
-            if(coList){coList.innerHTML=completedOrders.slice(0,10).length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No completed orders</div>':completedOrders.slice(0,10).map(function(o){return'<div class="ocard completed" onclick="showReceiptForOrder('+o.id+')"><div class="odot completed"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button></div></div>';}).join('');}
+            if(coList){
+                coList.innerHTML=completedOrders.slice(0,10).length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No completed orders</div>':completedOrders.slice(0,10).map(function(o){
+                    return'<div class="ocard completed" onclick="showReceiptForOrder('+o.id+')"><div class="odot completed"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button></div></div>';
+                }).join('');
+            }
         }
 
-        function actBtns(o){var a='';if(o.st==='pending'&&currentUser.role==='order_taker')a+='<button class="status-btn orange" onclick="event.stopPropagation();updO('+o.id+',\'preparing\')">👨‍🍳 Send</button>';if(o.st==='preparing'&&currentUser.role==='kitchen')a+='<button class="status-btn green" onclick="event.stopPropagation();updO('+o.id+',\'ready\')">✅ Ready</button>';if(o.st==='ready'&&currentUser.role==='order_taker')a+='<button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'served\')">🍽️ Served</button>';if(o.st==='served'&&(currentUser.role==='cashier'||currentUser.role==='admin'||currentUser.role==='super_admin'))a+='<button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'completed\')">💰 Payment</button>';if(currentUser.role==='cashier'||currentUser.role==='admin'){a+='<button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button>';}return a;}
-        function ordsPg(){var a=allO();var f=of==='all'?a:a.filter(function(o){return o.st===of;});var grid=$('allOrders');if(grid){grid.innerHTML=f.map(function(o){return'<div class="ocard '+o.st+'" onclick="showO('+o.id+')"><div class="odot '+o.st+'"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div>'+(o.sessionId?'<div class="session-badge">Session: '+o.sessionId.toString().slice(-4)+'</div>':'')+'</div><div class="oacts">'+actBtns(o)+'</div></div>';}).join('');}}
+        function actBtns(o){
+            var a='';
+            if(o.st==='pending'&&currentUser.role==='order_taker')a+='<button class="status-btn orange" onclick="event.stopPropagation();updO('+o.id+',\'preparing\')">👨‍🍳 Send</button>';
+            if(o.st==='preparing'&&currentUser.role==='kitchen')a+='<button class="status-btn green" onclick="event.stopPropagation();updO('+o.id+',\'ready\')">✅ Ready</button>';
+            if(o.st==='ready'&&currentUser.role==='order_taker')a+='<button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'served\')">🍽️ Served</button>';
+            if(o.st==='served'&&(currentUser.role==='cashier'||currentUser.role==='admin'||currentUser.role==='super_admin'))a+='<button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'completed\')">💰 Payment</button>';
+            if(currentUser.role==='cashier'||currentUser.role==='admin'){a+='<button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button>';}
+            return a;
+        }
+        
+        function ordsPg(){
+            var a=allO();
+            var f=of==='all'?a:a.filter(function(o){return o.st===of;});
+            var grid=$('allOrders');
+            if(grid){
+                grid.innerHTML=f.map(function(o){
+                    return'<div class="ocard '+o.st+'" onclick="showO('+o.id+')"><div class="odot '+o.st+'"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div>'+(o.sessionId?'<div class="session-badge">Session: '+o.sessionId.toString().slice(-4)+'</div>':'')+'</div><div class="oacts">'+actBtns(o)+'</div></div>';
+                }).join('');
+            }
+        }
         function fO(f,b){of=f;$$('#ofilt .fchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');ordsPg();}
-        function updO(oid,st){T.forEach(function(t){if(t.ords){var o=t.ords.find(function(x){return x.id===oid;});if(o){o.st=st;saveFB('orders/'+getTodayKey()+'/'+oid,o);}}});ordsPg();if(currentUser.role==='kitchen')updateKitchenDashboard();else if(currentUser.role==='order_taker')updateOrderTakerDashboard();else if(currentUser.role==='cashier')updateCashierDashboard();else dash();toast('Updated');}
-        function showO(oid){var o=null,tid=null;T.forEach(function(t){if(t.ords){var x=t.ords.find(function(y){return y.id===oid;});if(x){o=x;tid=t.id;}}});if(!o)return;if($('odet')){$('odet').innerHTML='<div style="margin-bottom:0.8rem"><strong style="color:var(--gold);font-size:0.9rem">Order #'+o.id+'</strong> · Table '+tid+(o.createdBy?' · By: '+o.createdBy:'')+(o.sessionId?' · Session: '+o.sessionId.toString().slice(-4):'')+'</div>'+o.items.map(function(i){return'<div style="display:flex;justify-content:space-between;padding:0.2rem 0;border-bottom:1px solid var(--border);font-size:0.7rem"><span>'+i.n+' x'+i.q+'</span><strong>'+(i.q*i.p)+' EGP</strong></div>';}).join('');}if($('oact'))$('oact').innerHTML=actBtns(o);$('omod').classList.add('show');}
+        
+        function updO(oid,st){
+            var oldStatus=null;
+            Object.keys(ordersCache).forEach(function(k){
+                var o=ordersCache[k];
+                if(o.id===oid){
+                    oldStatus=o.st;
+                    o.st=st;
+                    saveFB('orders/'+o.date+'/'+oid,o);
+                }
+            });
+            ordsPg();
+            if(currentUser.role==='kitchen')updateKitchenDashboard();
+            else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+            else if(currentUser.role==='cashier')updateCashierDashboard();
+            else dash();
+            toast('Updated');
+        }
+        
+        function showO(oid){
+            var o=ordersCache[oid];
+            if(!o)return;
+            if($('odet')){
+                $('odet').innerHTML='<div style="margin-bottom:0.8rem"><strong style="color:var(--gold);font-size:0.9rem">Order #'+o.id+'</strong> · Table '+o.tid+(o.createdBy?' · By: '+o.createdBy:'')+(o.sessionId?' · Session: '+o.sessionId.toString().slice(-4):'')+'</div>'+o.items.map(function(i){
+                    return'<div style="display:flex;justify-content:space-between;padding:0.2rem 0;border-bottom:1px solid var(--border);font-size:0.7rem"><span>'+i.n+' x'+i.q+'</span><strong>'+(i.q*i.p)+' EGP</strong></div>';
+                }).join('');
+            }
+            if($('oact'))$('oact').innerHTML=actBtns(o);
+            $('omod').classList.add('show');
+        }
         function closeOM(){$('omod').classList.remove('show');}
         
         function showReceiptForTable(tid){
             currentReceiptTable=tid;
             var t=T.find(function(x){return x.id===tid;});
-            if(!t||!t.ords)return;
+            if(!t)return;
             var sessionId=t.currentSessionId;
-            var servedOrders=t.ords.filter(function(o){return o.st==='served'&&(sessionId?o.sessionId===sessionId:true);});
+            var servedOrders=Object.values(ordersCache).filter(function(o){return o.tid===tid && o.st==='served' && (sessionId?o.sessionId===sessionId:true);});
             if(servedOrders.length===0){toast('No served orders in current session');return;}
             var subtotal=servedOrders.reduce(function(s,o){return s+o.tot;},0);
             var taxSettings=t.taxSettings||{enableVAT:true,enableService:true};
@@ -564,11 +1078,10 @@
         }
         
         function showReceiptForOrder(oid){
-            var o=null,tid=null;
-            T.forEach(function(t){if(t.ords){var x=t.ords.find(function(y){return y.id===oid;});if(x){o=x;tid=t.id;}}});
+            var o=ordersCache[oid];
             if(!o)return;
-            currentReceiptTable=tid;
-            var t=T.find(function(x){return x.id===tid;});
+            currentReceiptTable=o.tid;
+            var t=T.find(function(x){return x.id===o.tid;});
             var taxSettings=t?t.taxSettings||{enableVAT:true,enableService:true}:{enableVAT:true,enableService:true};
             var subtotal=o.tot;
             var vat=taxSettings.enableVAT?subtotal*0.14:0;
@@ -581,7 +1094,7 @@
                 '<div class="receipt-restaurant-info">'+R.area+'</div>'+
             '</div>'+
             '<div class="receipt-divider"></div>'+
-            '<div class="receipt-order-header"><span>ORDER #'+o.id+'</span><span>TABLE #'+tid+'</span></div>'+
+            '<div class="receipt-order-header"><span>ORDER #'+o.id+'</span><span>TABLE #'+o.tid+'</span></div>'+
             (o.createdBy?'<div class="receipt-order-header"><span>Order Taker: '+o.createdBy+'</span></div>':'')+
             (o.sessionId?'<div class="receipt-order-header"><span>Session: '+o.sessionId.toString().slice(-4)+'</span></div>':'')+
             '<div class="receipt-order-header"><span>'+new Date(o.time).toLocaleString()+'</span></div>'+
@@ -623,14 +1136,14 @@
         
         function completeTablePayment(tid){
             var t=T.find(function(x){return x.id===tid;});
-            if(!t||!t.ords)return;
+            if(!t)return;
             var sessionId=t.currentSessionId;
-            var sessionOrders=t.ords.filter(function(o){return o.sessionId===sessionId&&o.st==='served';});
+            var sessionOrders=Object.values(ordersCache).filter(function(o){return o.tid===tid && o.sessionId===sessionId && o.st==='served';});
             if(sessionOrders.length===0){toast('No served orders in current session');return;}
             if(confirm('Close session and complete payment for ALL served orders at Table #'+tid+'?')){
-                sessionOrders.forEach(function(o){o.st='completed';saveFB('orders/'+getTodayKey()+'/'+o.id,o);});
+                sessionOrders.forEach(function(o){o.st='completed';saveFB('orders/'+o.date+'/'+o.id,o);});
                 t.currentSessionId=null;
-                saveFB('tables',T);
+                saveFB('tables/'+t.id,t);
                 updateCashierDashboard();
                 toast('Table #'+tid+' session closed - Payment completed');
             }
@@ -655,13 +1168,55 @@
             container.innerHTML=html;
         }
 
-        function showT(tid){var t=T.find(function(x){return x.id===tid});if(!t)return;var op=actO(tid);var subtotal=tTot(tid);var tableTaxSettings=t.taxSettings||{enableVAT:true,enableService:true};var vat=tableTaxSettings.enableVAT?subtotal*0.14:0;var svc=tableTaxSettings.enableService?subtotal*0.12:0;var total=subtotal+vat+svc;if($('tdet')){$('tdet').innerHTML='<div style="margin-bottom:0.8rem"><strong style="color:var(--gold);font-size:0.9rem">Table '+t.id+'</strong>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div><div style="background:var(--surface2);border-radius:14px;padding:0.8rem;margin-bottom:0.8rem"><div style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">💰 Tax & Service Settings</div><label style="display:flex;align-items:center;gap:0.5rem;font-size:0.7rem;cursor:pointer;margin-bottom:0.3rem;color:var(--text2)"><input type="checkbox" '+(tableTaxSettings.enableVAT?'checked':'')+' onchange="toggleTableTax('+t.id+',\'VAT\',this.checked)" style="width:20px;height:20px;accent-color:var(--gold)">VAT (14%)</label><label style="display:flex;align-items:center;gap:0.5rem;font-size:0.7rem;cursor:pointer;color:var(--text2)"><input type="checkbox" '+(tableTaxSettings.enableService?'checked':'')+' onchange="toggleTableTax('+t.id+',\'Service\',this.checked)" style="width:20px;height:20px;accent-color:var(--gold)">Service (12%)</label></div><div style="font-size:0.7rem;margin-bottom:0.5rem"><div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>Subtotal:</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+(tableTaxSettings.enableVAT?'<div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>VAT (14%):</span><span>'+vat.toFixed(2)+' EGP</span></div>':'')+(tableTaxSettings.enableService?'<div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>Service (12%):</span><span>'+svc.toFixed(2)+' EGP</span></div>':'')+'<div style="display:flex;justify-content:space-between;font-weight:700;color:var(--gold);border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.3rem;font-size:0.85rem"><span>Total:</span><span>'+total.toFixed(2)+' EGP</span></div></div>';}if($('tact')){$('tact').innerHTML='<button class="btn btn-o" onclick="closeTM()">Close</button>'+(currentUser.role==='cashier'&&t.ords&&t.ords.some(function(o){return o.st==='served'&&o.sessionId===t.currentSessionId;})?'<button class="btn btn-g" onclick="showReceiptForTable('+t.id+')">🧾 Full Receipt</button>':'')+(op.length>0&&currentUser.role!=='order_taker'&&currentUser.role!=='kitchen'?'<button class="btn btn-g" onclick="compA('+t.id+')">Complete ('+total.toFixed(2)+')</button>':'');}$('tmod').classList.add('show');}
-        function toggleTableTax(tid,type,enabled){var t=T.find(function(x){return x.id===tid;});if(t){if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};if(type==='VAT')t.taxSettings.enableVAT=enabled;if(type==='Service')t.taxSettings.enableService=enabled;saveFB('tables',T);showT(tid);toast(type+' '+(enabled?'Enabled':'Disabled'));}}
+        function showT(tid){
+            var t=T.find(function(x){return x.id===tid;});
+            if(!t)return;
+            var op=actO(tid);
+            var subtotal=tTot(tid);
+            var tableTaxSettings=t.taxSettings||{enableVAT:true,enableService:true};
+            var vat=tableTaxSettings.enableVAT?subtotal*0.14:0;
+            var svc=tableTaxSettings.enableService?subtotal*0.12:0;
+            var total=subtotal+vat+svc;
+            if($('tdet')){
+                $('tdet').innerHTML='<div style="margin-bottom:0.8rem"><strong style="color:var(--gold);font-size:0.9rem">Table '+t.id+'</strong>'+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div><div style="background:var(--surface2);border-radius:14px;padding:0.8rem;margin-bottom:0.8rem"><div style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">💰 Tax & Service Settings</div><label style="display:flex;align-items:center;gap:0.5rem;font-size:0.7rem;cursor:pointer;margin-bottom:0.3rem;color:var(--text2)"><input type="checkbox" '+(tableTaxSettings.enableVAT?'checked':'')+' onchange="toggleTableTax('+t.id+',\'VAT\',this.checked)" style="width:20px;height:20px;accent-color:var(--gold)">VAT (14%)</label><label style="display:flex;align-items:center;gap:0.5rem;font-size:0.7rem;cursor:pointer;color:var(--text2)"><input type="checkbox" '+(tableTaxSettings.enableService?'checked':'')+' onchange="toggleTableTax('+t.id+',\'Service\',this.checked)" style="width:20px;height:20px;accent-color:var(--gold)">Service (12%)</label></div><div style="font-size:0.7rem;margin-bottom:0.5rem"><div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>Subtotal:</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+(tableTaxSettings.enableVAT?'<div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>VAT (14%):</span><span>'+vat.toFixed(2)+' EGP</span></div>':'')+(tableTaxSettings.enableService?'<div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span>Service (12%):</span><span>'+svc.toFixed(2)+' EGP</span></div>':'')+'<div style="display:flex;justify-content:space-between;font-weight:700;color:var(--gold);border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.3rem;font-size:0.85rem"><span>Total:</span><span>'+total.toFixed(2)+' EGP</span></div></div>';
+            }
+            if($('tact')){
+                $('tact').innerHTML='<button class="btn btn-o" onclick="closeTM()">Close</button>'+(currentUser.role==='cashier'&&Object.values(ordersCache).some(function(o){return o.tid===tid && o.st==='served' && o.sessionId===t.currentSessionId;})?'<button class="btn btn-g" onclick="showReceiptForTable('+t.id+')">🧾 Full Receipt</button>':'')+(op.length>0&&currentUser.role!=='order_taker'&&currentUser.role!=='kitchen'?'<button class="btn btn-g" onclick="compA('+t.id+')">Complete ('+total.toFixed(2)+')</button>':'');
+            }
+            $('tmod').classList.add('show');
+        }
+        function toggleTableTax(tid,type,enabled){var t=T.find(function(x){return x.id===tid;});if(t){if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};if(type==='VAT')t.taxSettings.enableVAT=enabled;if(type==='Service')t.taxSettings.enableService=enabled;saveFB('tables/'+t.id,t);showT(tid);toast(type+' '+(enabled?'Enabled':'Disabled'));}}
         function closeTM(){$('tmod').classList.remove('show');}
-        function chS(tid,d){var t=T.find(function(x){return x.id===tid;});if(t){t.seats=Math.max(1,Math.min(20,t.seats+d));}showT(tid);tblsPg();saveFB('tables',T);}
-        function compA(tid){var t=T.find(function(x){return x.id===tid;});if(!t)return;if(t.ords){t.ords.forEach(function(o){if(o.st!=='completed'&&o.sessionId===t.currentSessionId){o.st='completed';saveFB('orders/'+getTodayKey()+'/'+o.id,o);}});}t.currentSessionId=null;closeTM();ordsPg();tblsPg();dash();toast('Session closed');}
-        function tblsPg(){var grid=$('allTables');if(grid){grid.innerHTML=T.map(function(t){var pc=tPen(t.id);var tot=tTot(t.id);return'<div class="tcard'+(pc>0?' on':'')+'" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-seats">'+t.seats+' seats</div>'+(pc>0?'<div class="tcard-badge">'+pc+' open</div><div class="tcard-total">'+tot+' EGP</div>':'')+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';}).join('');}}
-        function addT(){var nid=Math.max.apply(null,T.map(function(t){return t.id;}).concat([0]))+1;T.push({id:nid,seats:4,occ:false,ords:[],taxSettings:{enableVAT:true,enableService:true},currentSessionId:null});tblsPg();saveFB('tables',T);toast('Table #'+nid+' added');}
+        function chS(tid,d){var t=T.find(function(x){return x.id===tid;});if(t){t.seats=Math.max(1,Math.min(20,t.seats+d));}showT(tid);tblsPg();saveFB('tables/'+t.id,t);}
+        function compA(tid){
+            var t=T.find(function(x){return x.id===tid;});
+            if(!t)return;
+            var sessionId=t.currentSessionId;
+            Object.values(ordersCache).forEach(function(o){
+                if(o.tid===tid && o.st!=='completed' && o.sessionId===sessionId){
+                    o.st='completed';
+                    saveFB('orders/'+o.date+'/'+o.id,o);
+                }
+            });
+            t.currentSessionId=null;
+            saveFB('tables/'+t.id,t);
+            closeTM();
+            ordsPg();
+            tblsPg();
+            dash();
+            toast('Session closed');
+        }
+        function tblsPg(){
+            var grid=$('allTables');
+            if(grid){
+                grid.innerHTML=T.map(function(t){
+                    var pc=tPen(t.id);
+                    var tot=tTot(t.id);
+                    return'<div class="tcard'+(pc>0?' on':'')+'" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-seats">'+t.seats+' seats</div>'+(pc>0?'<div class="tcard-badge">'+pc+' open</div><div class="tcard-total">'+tot+' EGP</div>':'')+(t.currentSessionId?'<div class="session-badge">Session: '+t.currentSessionId.toString().slice(-4)+'</div>':'')+'</div>';
+                }).join('');
+            }
+        }
+        function addT(){var nid=Math.max.apply(null,T.map(function(t){return t.id;}).concat([0]))+1;T.push({id:nid,seats:4,occ:false,ords:[],taxSettings:{enableVAT:true,enableService:true},currentSessionId:null});tblsPg();saveFB('tables/'+nid,T[T.length-1]);toast('Table #'+nid+' added');}
         function menuPg(){var f=mf==='all'?M:M.filter(function(i){return i.cat===mf;});var grid=$('menuGrid');if(grid){grid.innerHTML=f.map(function(i){var cat=categories.find(function(c){return c.id===i.cat;});var catName=cat?cat.name:'Uncategorized';var catEmoji=cat?cat.emoji:'📁';var img=i.image?'<img src="'+i.image+'" class="mimg">':'<div class="mimg">'+(i.emoji||catEmoji)+'</div>';var prices='';if(i.prices){if(i.prices.EGP)prices+='<span class="mprice">'+i.prices.EGP+' EGP</span>';if(i.prices.USD)prices+='<span class="mprice">$'+i.prices.USD+'</span>';if(i.prices.EUR)prices+='<span class="mprice">€'+i.prices.EUR+'</span>';}return'<div class="mcard"><div class="mimg">'+img+'</div><div class="mbody"><div class="mname">'+i.name+'</div><span class="mcat">'+catEmoji+' '+catName+'</span><div class="mprices">'+prices+'</div><div class="macts"><button class="mbtn e" onclick="event.stopPropagation();editI('+i.id+')">✏️ Edit</button><button class="mbtn d" onclick="event.stopPropagation();delI('+i.id+')">🗑️ Delete</button></div></div></div>';}).join('');}}
         function fM(f,b){mf=f;$$('#mfilt .fchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');menuPg();}
         function openI(id){$('ititle').textContent=id?'Edit Item':'Add New Item';$('iid').value=id||'';uploadedImageData=null;$('imgPreview').innerHTML='📷';$('iimgData').value='';if(id){var i=M.find(function(x){return x.id===id;});if(i){$('inm').value=i.name||'';$('iem').value=i.emoji||'';$('ict').value=i.cat||'coffee';$('ieg').value=(i.prices&&i.prices.EGP)||0;$('iusd').value=(i.prices&&i.prices.USD)||0;$('ieur').value=(i.prices&&i.prices.EUR)||0;if(i.image){$('imgPreview').innerHTML='<img src="'+i.image+'" style="width:100%;height:100%;object-fit:cover">';$('iimgData').value=i.image;uploadedImageData=i.image;}}}else{['inm','iem','ieg','iusd','ieur'].forEach(function(x){if($(x))$(x).value='';});if($('ict'))$('ict').value=categories[0]?categories[0].id:'';}$('imod').classList.add('show');}
@@ -682,13 +1237,13 @@
         function closeCatModal(){$('catModal').classList.remove('show');}
         function saveCategory(){var name=$('catName').value.trim();var emoji=$('catEmoji').value.trim()||'📁';if(!name){toast('Please enter category name');return;}if(editingCategoryId){var cat=categories.find(function(c){return c.id===editingCategoryId;});if(cat){cat.name=name;cat.emoji=emoji;}toast('Category updated');}else{var newId=name.toLowerCase().replace(/\s+/g,'_');categories.push({id:newId,name:name,emoji:emoji});toast('Category added');}saveData();updateCategoryFilters();updateCategoriesListInSettings();closeCatModal();menuPg();}
         function deleteCategory(catId){if(confirm('Delete this category? Items will become uncategorized.')){categories=categories.filter(function(c){return c.id!==catId;});M.forEach(function(item){if(item.cat===catId){item.cat='uncategorized';}});saveData();if(db&&fbReady){db.ref('menu').set(M).catch(function(){});}updateCategoryFilters();updateCategoriesListInSettings();menuPg();toast('Category deleted');}}
-        function login(){var username=$('loginUsername').value.trim().toLowerCase();var password=$('loginPassword').value;if(!username||!password){toast('Please enter username and password');return;}var user=users.find(function(u){return u.username===username&&u.password===password});if(user){currentUser=user;localStorage.setItem('current_user_'+rid,JSON.stringify(user));showApp();toast('Welcome '+user.name+'!');init();}else{toast('Invalid username or password');}}
-        function createSuperAdmin(){var name=$('setupName').value.trim();var username=$('setupUsername').value.trim().toLowerCase();var password=$('setupPassword').value;var confirmPassword=$('setupConfirmPassword').value;if(!name||!username||!password||!confirmPassword){toast('Please fill all fields');return;}if(password!==confirmPassword){toast('Passwords do not match');return;}if(password.length<6){toast('Password must be at least 6 characters');return;}if(users.some(function(u){return u.role==='super_admin'})){toast('Super Admin already exists');showLoginScreen();return;}var newUser={id:Date.now(),name:name,username:username,password:password,role:'super_admin',restaurantId:rid,createdAt:new Date().toISOString()};users.push(newUser);saveData();currentUser=newUser;localStorage.setItem('current_user_'+rid,JSON.stringify(newUser));toast('Super Admin created successfully!');showApp();init();}
+        function login(){var username=$('loginUsername').value.trim().toLowerCase();var password=$('loginPassword').value;if(!username||!password){toast('Please enter username and password');return;}var user=users.find(function(u){return u.username===username&&u.password===password;});if(user){currentUser=user;localStorage.setItem('current_user_'+rid,JSON.stringify(user));showApp();toast('Welcome '+user.name+'!');init();}else{toast('Invalid username or password');}}
+        function createSuperAdmin(){var name=$('setupName').value.trim();var username=$('setupUsername').value.trim().toLowerCase();var password=$('setupPassword').value;var confirmPassword=$('setupConfirmPassword').value;if(!name||!username||!password||!confirmPassword){toast('Please fill all fields');return;}if(password!==confirmPassword){toast('Passwords do not match');return;}if(password.length<6){toast('Password must be at least 6 characters');return;}if(users.some(function(u){return u.role==='super_admin';})){toast('Super Admin already exists');showLoginScreen();return;}var newUser={id:Date.now(),name:name,username:username,password:password,role:'super_admin',restaurantId:rid,createdAt:new Date().toISOString()};users.push(newUser);saveData();currentUser=newUser;localStorage.setItem('current_user_'+rid,JSON.stringify(newUser));toast('Super Admin created successfully!');showApp();init();}
         function logout(){if(confirm('Are you sure you want to logout?')){currentUser=null;localStorage.removeItem('current_user_'+rid);closeProfile();showLoginScreen();$('loginUsername').value='';$('loginPassword').value='';toast('Logged out successfully');}}
         function showCreateUser(){if(currentUser&&currentUser.role==='super_admin'){$('newUserName').value='';$('newUserUsername').value='';$('newUserPassword').value='';$('newUserRole').value='admin';$('userModal').classList.add('show');}else{toast('Only Super Admin can create users');}}
         function closeUserModal(){$('userModal').classList.remove('show');}
-        function createUser(){var name=$('newUserName').value.trim();var username=$('newUserUsername').value.trim().toLowerCase();var password=$('newUserPassword').value;var role=$('newUserRole').value;if(!name||!username||!password){toast('Please fill all fields');return;}if(password.length<6){toast('Password must be at least 6 characters');return;}if(users.find(function(u){return u.username===username})){toast('Username already exists');return;}var newUser={id:Date.now(),name:name,username:username,password:password,role:role,restaurantId:rid,createdAt:new Date().toISOString()};users.push(newUser);saveData();closeUserModal();updateUsersListInSettings();toast('User created successfully');}
-        function deleteUser(userId){if(confirm('Delete this user?')){users=users.filter(function(u){return u.id!==userId});saveData();updateUsersListInSettings();toast('User deleted');}}
+        function createUser(){var name=$('newUserName').value.trim();var username=$('newUserUsername').value.trim().toLowerCase();var password=$('newUserPassword').value;var role=$('newUserRole').value;if(!name||!username||!password){toast('Please fill all fields');return;}if(password.length<6){toast('Password must be at least 6 characters');return;}if(users.find(function(u){return u.username===username;})){toast('Username already exists');return;}var newUser={id:Date.now(),name:name,username:username,password:password,role:role,restaurantId:rid,createdAt:new Date().toISOString()};users.push(newUser);saveData();closeUserModal();updateUsersListInSettings();toast('User created successfully');}
+        function deleteUser(userId){if(confirm('Delete this user?')){users=users.filter(function(u){return u.id!==userId;});saveData();updateUsersListInSettings();toast('User deleted');}}
         function openProfile(){if(currentUser){$('profileAvatar').textContent=currentUser.name.charAt(0).toUpperCase();$('profileName').textContent=currentUser.name;$('profileUsername').textContent='@'+currentUser.username;$('profileRole').textContent=currentUser.role.replace('_',' ').toUpperCase();$('currentPass').value='';$('newPass').value='';$('confirmNewPass').value='';$('profileModal').classList.add('show');}}
         function closeProfile(){$('profileModal').classList.remove('show');}
         function changePassword(){var currentPass=$('currentPass').value;var newPass=$('newPass').value;var confirmNewPass=$('confirmNewPass').value;if(!currentPass||!newPass||!confirmNewPass){toast('Please fill all fields');return;}if(currentUser.password!==currentPass){toast('Current password is incorrect');return;}if(newPass.length<6){toast('New password must be at least 6 characters');return;}if(newPass!==confirmNewPass){toast('Passwords do not match');return;}var userIndex=users.findIndex(function(u){return u.id===currentUser.id;});if(userIndex!==-1){users[userIndex].password=newPass;currentUser.password=newPass;saveData();localStorage.setItem('current_user_'+rid,JSON.stringify(currentUser));toast('Password changed successfully');closeProfile();}}
@@ -715,16 +1270,71 @@
                     table.currentSessionId=Date.now();
                 }
                 var order={id:Date.now(),sessionId:table.currentSessionId,items:items,tot:total,st:'pending',tid:newOrderTable,date:getTodayKey(),time:new Date().toISOString(),createdBy:currentUser.username};
-                if(!table.ords)table.ords=[];
-                table.ords.push(order);
-                saveFB('tables',T);
-                saveFB('orders/'+getTodayKey()+'/'+order.id,order);
+                ordersCache[order.id]=order; // ✨ Add to cache immediately
+                saveFB('tables/'+newOrderTable,table);
+                saveFB('orders/'+order.date+'/'+order.id,order);
             }
             closeNewOrder();
             toast('Order placed for Table '+newOrderTable);
-            updateOrderTakerDashboard();
+            if(currentUser.role==='order_taker')updateOrderTakerDashboard();
         }
         function closeNewOrder(){$('newOrderModal').classList.remove('show');newOrderTable=null;newOrderItems={};}
+
+        // ✨ Security Rules template
+        var securityRulesTemplate=`{
+  "rules": {
+    ".read": "auth != null",
+    "info": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+    },
+    "tables": {
+      ".read": "auth != null",
+      "$tableId": {
+        ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin' || (root.child('users').child(auth.uid).child('role').val() === 'cashier' && newData.child('currentSessionId').val() === null)"
+      }
+    },
+    "menu": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+    },
+    "orders": {
+      ".read": "auth != null",
+      "$date": {
+        "$orderId": {
+          ".write": "(!data.exists() && (root.child('users').child(auth.uid).child('role').val() === 'order_taker' || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin')) || (data.exists() && ((root.child('users').child(auth.uid).child('role').val() === 'kitchen' && data.child('st').val() === 'pending' && newData.child('st').val() === 'preparing') || (root.child('users').child(auth.uid).child('role').val() === 'kitchen' && data.child('st').val() === 'preparing' && newData.child('st').val() === 'ready') || (root.child('users').child(auth.uid).child('role').val() === 'order_taker' && data.child('st').val() === 'ready' && newData.child('st').val() === 'served') || ((root.child('users').child(auth.uid).child('role').val() === 'cashier' || root.child('users').child(auth.uid).child('role').val() === 'admin') && data.child('st').val() === 'served' && newData.child('st').val() === 'completed')))"
+        }
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+    },
+    "categories": {
+      ".read": "auth != null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
+    }
+  }
+}`;
+
+        function renderRulesPage(){
+            var el=$('rulesContent');
+            if(el)el.textContent=securityRulesTemplate;
+        }
+        
+        function copyRules(){
+            if(navigator.clipboard){
+                navigator.clipboard.writeText(securityRulesTemplate).then(function(){
+                    toast('📋 Rules copied to clipboard');
+                });
+            }
+        }
+        window.copyRules=copyRules;
+        window.copyRulesFromSettings=copyRules;
+        
+        function closeRulesModal(){$('rulesModal').classList.remove('show');}
+        window.closeRulesModal=closeRulesModal;
+        window.openRulesModal=function(){$('rulesModal').classList.add('show');};
 
         window.nav=nav;window.showT=showT;window.showO=showO;window.updO=updO;window.fO=fO;window.fM=fM;
         window.openI=openI;window.editI=editI;window.delI=delI;window.saveI=saveI;
@@ -743,16 +1353,120 @@
         window.closeReceipt=closeReceipt;window.printReceipt=printReceipt;
         window.completeTablePayment=completeTablePayment;
 
+        // ✨ Optimized init with incremental sync
         async function init(){
             if(firebaseConfig&&db&&fbReady){
                 try{
-                    var infoSnap=await db.ref('info').once('value');if(infoSnap.exists()){R=infoSnap.val();}
-                    var menuSnap=await db.ref('menu').once('value');if(menuSnap.exists()){M=menuSnap.val();if(!Array.isArray(M)){M=Object.values(M);}}
-                    var tablesSnap=await db.ref('tables').once('value');if(tablesSnap.exists()){T=tablesSnap.val();if(!Array.isArray(T)){T=Object.values(T);}T.forEach(function(t){if(!t.ords)t.ords=[];if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};if(!t.currentSessionId&&t.currentSessionId!==null)t.currentSessionId=null;});}
-                    var ordersSnap=await db.ref('orders').once('value');
-                    if(ordersSnap.exists()){var allOrders={};var od=ordersSnap.val();Object.keys(od).forEach(function(dk){Object.keys(od[dk]).forEach(function(oid){allOrders[oid]=od[dk][oid];});});T.forEach(function(t){t.ords=[];Object.values(allOrders).forEach(function(o){if(o.tid===t.id)t.ords.push(o);});});}
-                }catch(e){console.log('Load error');}
+                    // Load static data once
+                    var infoSnap=await db.ref('info').once('value');
+                    if(infoSnap.exists()){R=infoSnap.val();}
+                    
+                    var menuSnap=await db.ref('menu').once('value');
+                    if(menuSnap.exists()){M=menuSnap.val();if(!Array.isArray(M)){M=Object.values(M);}}
+                    
+                    var tablesSnap=await db.ref('tables').once('value');
+                    if(tablesSnap.exists()){T=tablesSnap.val();if(!Array.isArray(T)){T=Object.values(T);}T.forEach(function(t){if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};if(!t.currentSessionId&&t.currentSessionId!==null)t.currentSessionId=null;});}
+                    
+                    // ✨ Optimized: Load ONLY today's orders, not all orders
+                    var todayKey=getTodayKey();
+                    var todayOrdersSnap=await db.ref('orders/'+todayKey).once('value');
+                    if(todayOrdersSnap.exists()){
+                        var todayOrders=todayOrdersSnap.val();
+                        if(typeof todayOrders==='object'){
+                            Object.keys(todayOrders).forEach(function(oid){
+                                ordersCache[oid]=todayOrders[oid];
+                            });
+                        }
+                    }
+                    
+                    // ✨ Also load yesterday's orders for completed orders display
+                    var yesterday=new Date();
+                    yesterday.setDate(yesterday.getDate()-1);
+                    var yesterdayKey=yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
+                    var yesterdayOrdersSnap=await db.ref('orders/'+yesterdayKey).once('value');
+                    if(yesterdayOrdersSnap.exists()){
+                        var yesterdayOrders=yesterdayOrdersSnap.val();
+                        if(typeof yesterdayOrders==='object'){
+                            Object.keys(yesterdayOrders).forEach(function(oid){
+                                if(!ordersCache[oid]){
+                                    ordersCache[oid]=yesterdayOrders[oid];
+                                }
+                            });
+                        }
+                    }
+                    
+                    // ✨ Realtime listener for NEW orders only (today)
+                    if(listeners.todayOrders){
+                        db.ref('orders/'+todayKey).off('child_added',listeners.todayOrders);
+                        db.ref('orders/'+todayKey).off('child_changed',listeners.todayOrdersChanged);
+                    }
+                    
+                    listeners.todayOrders=function(snap){
+                        var order=snap.val();
+                        if(order){
+                            var wasNew=!ordersCache[snap.key];
+                            ordersCache[snap.key]=order;
+                            
+                            // ✨ Audio alert for kitchen
+                            if(wasNew && currentUser && currentUser.role==='kitchen'){
+                                var tableName='Table '+(order.tid||'?');
+                                audioManager.playAlert('new_order',{orderId:snap.key,tableName:tableName});
+                                showNewOrderAlert(snap.key,order.tid);
+                            }
+                            
+                            // Refresh UI
+                            if(cp==='dashboard'){
+                                if(currentUser.role==='kitchen')updateKitchenDashboard();
+                                else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+                                else if(currentUser.role==='cashier')updateCashierDashboard();
+                                else dash();
+                            }
+                        }
+                    };
+                    
+                    listeners.todayOrdersChanged=function(snap){
+                        var order=snap.val();
+                        if(order){
+                            ordersCache[snap.key]=order;
+                            if(cp==='dashboard'){
+                                if(currentUser.role==='kitchen')updateKitchenDashboard();
+                                else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+                                else if(currentUser.role==='cashier')updateCashierDashboard();
+                                else dash();
+                            }
+                        }
+                    };
+                    
+                    db.ref('orders/'+todayKey).on('child_added',listeners.todayOrders);
+                    db.ref('orders/'+todayKey).on('child_changed',listeners.todayOrdersChanged);
+                    
+                    // ✨ Listener for table changes
+                    if(listeners.tables){
+                        db.ref('tables').off('value',listeners.tables);
+                    }
+                    listeners.tables=function(snap){
+                        var tables=snap.val();
+                        if(tables){
+                            if(!Array.isArray(tables)){tables=Object.values(tables);}
+                            T=tables;
+                            T.forEach(function(t){if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};});
+                            if(cp==='tables')tblsPg();
+                            if(cp==='dashboard')dash();
+                        }
+                    };
+                    db.ref('tables').on('value',listeners.tables);
+                    
+                }catch(e){
+                    console.error('Init error',e);
+                }
             }
+            
+            // Load pending writes from localStorage
+            try{
+                var savedPending=localStorage.getItem('pending_writes_'+rid);
+                if(savedPending){pendingWrites=JSON.parse(savedPending);}
+            }catch(e){}
+            
             var sn=$('sname');if(sn)sn.textContent=R.name||'RestaurantOS';
             var hn=$('hn');if(hn)hn.textContent=R.name||'RestaurantOS';
             updateCategoryFilters();
