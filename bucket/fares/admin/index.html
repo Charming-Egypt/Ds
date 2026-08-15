@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#0a0e17">
     <title>RestaurantOS Pro - Optimized</title>
     <style>
-        /* نفس CSS الأصلي */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
         :root{
             --bg:#0a0e17;--surface:#121826;--surface2:#1a2235;--surface3:#243044;
@@ -39,7 +38,7 @@
         .hdr-l{display:flex;align-items:center;gap:0.6rem;flex:1}
         .hdr-logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold3));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#000;font-weight:900}
         .hdr-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--gold)}
-        .hdr-user{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;position:relative}
+        .hdr-user{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer}
         .greet{padding:0.3rem 0 0.8rem}
         .greet-t{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--text),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
         .greet-s{font-size:0.7rem;color:var(--text3);margin-top:0.2rem}
@@ -193,8 +192,6 @@
         .receipt-footer{text-align:center;margin-top:1rem;padding-top:0.5rem;border-top:2px dashed #000;font-size:0.55rem;color:#666}
         .receipt-barcode{text-align:center;margin-top:0.5rem;font-size:0.5rem;letter-spacing:3px;color:#333}
         .session-badge{display:inline-block;font-size:0.5rem;font-weight:700;padding:0.1rem 0.5rem;border-radius:50px;background:rgba(96,165,250,0.2);color:var(--blue);margin-top:0.2rem}
-        
-        /* ✨ تحسينات جديدة */
         .connection-indicator{position:fixed;top:calc(var(--safe-t) + 60px);right:12px;z-index:999;display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-radius:50px;font-size:0.6rem;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--border);transition:all 0.3s}
         .connection-indicator.online{background:rgba(74,222,128,0.15);color:var(--green)}
         .connection-indicator.offline{background:rgba(248,113,113,0.15);color:var(--red);animation:offlinePulse 2s infinite}
@@ -204,31 +201,26 @@
         .connection-indicator.syncing .connection-dot{animation:dotPulse 0.5s infinite}
         @keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
         @keyframes offlinePulse{0%,100%{opacity:1}50%{opacity:0.6}}
-        
-        .audio-unlock-btn{position:fixed;bottom:calc(100px + var(--safe-b));left:50%;transform:translateX(-50%);background:rgba(240,185,11,0.2);color:var(--gold);border:1px solid var(--gold);padding:0.5rem 1rem;border-radius:50px;font-size:0.7rem;font-weight:700;cursor:pointer;z-index:80;display:flex;align-items:center;gap:0.4rem;backdrop-filter:blur(10px);animation:audioPulse 2s infinite}
-        .audio-unlock-btn.hidden{display:none}
-        @keyframes audioPulse{0%,100%{box-shadow:0 0 0 0 rgba(240,185,11,0.4)}50%{box-shadow:0 0 0 10px rgba(240,185,11,0)}}
-        
-        .audio-status{position:fixed;top:calc(var(--safe-t) + 60px);left:12px;z-index:999;padding:0.3rem 0.7rem;border-radius:50px;font-size:0.6rem;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--border);display:flex;align-items:center;gap:0.3rem}
+        .audio-unlock-btn{position:fixed;bottom:calc(100px + var(--safe-b));left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--gold3));color:#000;border:none;padding:0.7rem 1.4rem;border-radius:50px;font-size:0.8rem;font-weight:700;cursor:pointer;z-index:80;display:none;align-items:center;gap:0.5rem;box-shadow:0 4px 20px rgba(240,185,11,0.5);animation:audioPulse 2s infinite;font-family:inherit}
+        .audio-unlock-btn.show{display:flex}
+        @keyframes audioPulse{0%,100%{box-shadow:0 4px 20px rgba(240,185,11,0.5),0 0 0 0 rgba(240,185,11,0.7)}50%{box-shadow:0 4px 20px rgba(240,185,11,0.5),0 0 0 15px rgba(240,185,11,0)}}
+        .audio-status{position:fixed;top:calc(var(--safe-t) + 60px);left:12px;z-index:999;padding:0.3rem 0.7rem;border-radius:50px;font-size:0.6rem;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--border);display:none;align-items:center;gap:0.3rem;cursor:pointer}
+        .audio-status.show{display:flex}
         .audio-status.enabled{background:rgba(74,222,128,0.15);color:var(--green)}
         .audio-status.disabled{background:rgba(248,113,113,0.15);color:var(--red)}
-        
-        .new-order-alert{position:fixed;top:calc(var(--safe-t) + 100px);left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;padding:0.8rem 1.5rem;border-radius:14px;font-size:0.8rem;font-weight:700;z-index:500;box-shadow:0 10px 30px rgba(248,113,113,0.5);animation:alertSlide 0.5s ease;pointer-events:none}
+        .new-order-alert{position:fixed;top:calc(var(--safe-t) + 100px);left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;padding:0.8rem 1.5rem;border-radius:14px;font-size:0.8rem;font-weight:700;z-index:500;box-shadow:0 10px 30px rgba(248,113,113,0.5);animation:alertSlide 0.5s ease;pointer-events:none;display:flex;align-items:center;gap:0.5rem}
         @keyframes alertSlide{from{opacity:0;transform:translate(-50%,-20px)}to{opacity:1;transform:translate(-50%,0)}}
-        
-        .rules-preview{background:#1e1e1e;border:1px solid var(--border);border-radius:12px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#d4d4d4;overflow-x:auto;white-space:pre;line-height:1.5;max-height:300px;overflow-y:auto}
-        .rules-preview .comment{color:#6a9955}
-        .rules-preview .keyword{color:#569cd6}
-        .rules-preview .string{color:#ce9178}
-        .rules-preview .number{color:#b5cea8}
-        
+        .rules-preview{background:#1e1e1e;border:1px solid var(--border);border-radius:12px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#d4d4d4;overflow-x:auto;white-space:pre;line-height:1.5;max-height:400px;overflow-y:auto}
         .tab-switcher{display:flex;gap:0.3rem;margin-bottom:1rem;padding:0.2rem;background:var(--surface2);border-radius:10px}
         .tab-btn{flex:1;padding:0.5rem;border-radius:8px;font-size:0.7rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all 0.2s;border:none;background:transparent;font-family:inherit}
         .tab-btn.active{background:var(--gold);color:#000}
+        .load-more-btn{width:100%;padding:0.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:700;font-size:0.7rem;cursor:pointer;margin-top:0.8rem;font-family:inherit;transition:all 0.2s}
+        .load-more-btn:hover{background:var(--surface3)}
+        .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
     </style>
 </head>
 <body>
-    <!-- Splash Screen -->
     <div class="splash-screen" id="splashScreen">
         <div class="splash-content">
             <div class="splash-logo" id="splashLogo">✦</div>
@@ -242,7 +234,6 @@
         </div>
     </div>
 
-    <!-- Setup & Login Screens -->
     <div class="auth-screen" id="setupScreen" style="display:none">
         <div class="auth-logo">👑</div>
         <div class="auth-title">Create Super Admin</div>
@@ -267,7 +258,6 @@
         </div>
     </div>
 
-    <!-- Main App -->
     <div class="app" id="mainApp" style="display:none">
         <aside class="sidebar" id="sidebar">
             <div class="sb-brand">
@@ -291,18 +281,16 @@
         </div>
     </div>
 
-    <!-- Connection & Audio Indicators -->
     <div class="connection-indicator offline" id="connectionIndicator" style="display:none">
         <div class="connection-dot"></div>
         <span id="connectionText">Offline</span>
     </div>
     
-    <div class="audio-status disabled" id="audioStatus" style="display:none">
+    <div class="audio-status disabled" id="audioStatus" onclick="toggleAudio()">
         <span>🔇</span>
         <span>Audio Off</span>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="newOrderModal">
         <div class="mod-s">
             <div class="mod-h"><span class="mod-t">📝 New Order</span><button class="mod-x" onclick="closeNewOrder()">✕</button></div>
@@ -379,23 +367,9 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal" id="rulesModal">
-        <div class="mod-s">
-            <div class="mod-h"><span class="mod-t">🔒 Firebase Security Rules</span><button class="mod-x" onclick="closeRulesModal()">✕</button></div>
-            <div class="mod-b">
-                <div style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">انسخ هذه القواعد والصقها في Firebase Console → Realtime Database → Rules</div>
-                <div class="rules-preview" id="rulesPreview"></div>
-                <button class="btn btn-g btn-block" onclick="copyRules()" style="margin-top:0.8rem">📋 Copy Rules</button>
-            </div>
-            <div class="mod-f">
-                <button class="btn btn-o" onclick="closeRulesModal()">Close</button>
-            </div>
-        </div>
-    </div>
 
     <button class="new-order-btn" id="newOrderBtn" onclick="openNewOrder()">+</button>
-    <button class="audio-unlock-btn hidden" id="audioUnlockBtn" onclick="unlockAudio()">🔊 Enable Kitchen Audio</button>
+    <button class="audio-unlock-btn" id="audioUnlockBtn" onclick="unlockAudio()">🔊 Enable Kitchen Alerts</button>
     <div class="twrap" id="twrap"></div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -422,38 +396,49 @@
         var uploadedImageData=null;
         var currentReceiptTable=null;
         
-        // ✨ RTDB Optimization: In-memory cache with incremental sync
-        var ordersCache={}; // {orderId: order}
-        var listeners={}; // tracking active listeners
-        var pendingWrites=[]; // offline queue
+        // ✨ In-memory cache: Only TODAY's active orders
+        var ordersCache={};
+        var listeners={};
+        var pendingWrites=[];
         
-        // ✨ Audio Manager
+        // ✨ Timestamp when listeners started (to distinguish new vs old)
+        var listenersStartedAt=0;
+        
+        // ✨ Archived orders cache (loaded on-demand for reports)
+        var archivedOrdersCache={};
+        var oldestLoadedDate=null;
+        
+        // ✨ Audio Manager - Enhanced
         var audioManager={
             context:null,
             unlocked:false,
-            enabled:false,
+            enabled:localStorage.getItem('audio_enabled_'+rid)==='true',
             pendingAlerts:[],
             
             unlock:function(){
                 if(this.unlocked)return;
                 try{
                     this.context=new(window.AudioContext||window.webkitAudioContext)();
-                    // Silent sound to unlock
-                    var buffer=this.context.createBuffer(1,1,44100);
+                    // Play silent buffer to unlock
+                    var buffer=this.context.createBuffer(1,1,22050);
                     var source=this.context.createBufferSource();
                     source.buffer=buffer;
                     source.connect(this.context.destination);
                     source.start(0);
+                    
                     this.unlocked=true;
                     this.enabled=true;
-                    $('audioUnlockBtn').classList.add('hidden');
-                    $('audioStatus').style.display='flex';
-                    $('audioStatus').className='audio-status enabled';
+                    localStorage.setItem('audio_enabled_'+rid,'true');
+                    
+                    $('audioUnlockBtn').classList.remove('show');
+                    $('audioStatus').classList.add('show');
+                    $('audioStatus').className='audio-status show enabled';
                     $('audioStatus').innerHTML='<span>🔊</span><span>Audio On</span>';
+                    
                     // Play pending alerts
-                    this.pendingAlerts.forEach(function(alert){audioManager.playAlert(alert.type,alert.data);});
+                    this.pendingAlerts.forEach(function(a){audioManager.playAlert(a.type,a.data);});
                     this.pendingAlerts=[];
-                    toast('🔊 Audio enabled');
+                    toast('🔊 Kitchen alerts enabled!');
                 }catch(e){
                     console.error('Audio unlock failed',e);
                     toast('❌ Audio failed: '+e.message);
@@ -462,22 +447,24 @@
             
             toggle:function(){
                 this.enabled=!this.enabled;
+                localStorage.setItem('audio_enabled_'+rid,this.enabled?'true':'false');
                 if(this.enabled){
-                    $('audioStatus').className='audio-status enabled';
+                    $('audioStatus').className='audio-status show enabled';
                     $('audioStatus').innerHTML='<span>🔊</span><span>Audio On</span>';
+                    toast('🔊 Audio enabled');
                 }else{
-                    $('audioStatus').className='audio-status disabled';
+                    $('audioStatus').className='audio-status show disabled';
                     $('audioStatus').innerHTML='<span>🔇</span><span>Audio Off</span>';
+                    toast('🔇 Audio disabled');
                 }
             },
             
             playAlert:function(type,data){
                 if(!this.enabled){
-                    this.pendingAlerts.push({type:type,data:data});
                     return;
                 }
                 if(!this.unlocked){
-                    $('audioUnlockBtn').classList.remove('hidden');
+                    $('audioUnlockBtn').classList.add('show');
                     this.pendingAlerts.push({type:type,data:data});
                     return;
                 }
@@ -491,28 +478,15 @@
                     gainNode.connect(this.context.destination);
                     
                     if(type==='new_order'){
-                        // Bell sound - two tones
+                        // Three-tone alert (like a doorbell)
                         oscillator.frequency.setValueAtTime(880,now);
-                        oscillator.frequency.setValueAtTime(1175,now+0.15);
+                        oscillator.frequency.setValueAtTime(988,now+0.1);
+                        oscillator.frequency.setValueAtTime(1047,now+0.2);
                         oscillator.type='sine';
-                        gainNode.gain.setValueAtTime(0.3,now);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01,now+0.3);
+                        gainNode.gain.setValueAtTime(0.4,now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01,now+0.4);
                         oscillator.start(now);
-                        oscillator.stop(now+0.3);
-                        
-                        // Second beep
-                        setTimeout(function(){
-                            var o2=audioManager.context.createOscillator();
-                            var g2=audioManager.context.createGain();
-                            o2.connect(g2);
-                            g2.connect(audioManager.context.destination);
-                            o2.frequency.value=1175;
-                            o2.type='sine';
-                            g2.gain.setValueAtTime(0.3,audioManager.context.currentTime);
-                            g2.gain.exponentialRampToValueAtTime(0.01,audioManager.context.currentTime+0.3);
-                            o2.start();
-                            o2.stop(audioManager.context.currentTime+0.3);
-                        },200);
+                        oscillator.stop(now+0.4);
                     }else if(type==='status_change'){
                         oscillator.frequency.value=660;
                         oscillator.type='triangle';
@@ -522,9 +496,9 @@
                         oscillator.stop(now+0.2);
                     }
                     
-                    // Vibration
+                    // Vibrate
                     if(navigator.vibrate&&type==='new_order'){
-                        navigator.vibrate([200,100,200]);
+                        navigator.vibrate([200,50,200,50,200]);
                     }
                 }catch(e){
                     console.error('Audio play failed',e);
@@ -533,12 +507,22 @@
         };
         window.audioManager=audioManager;
         window.unlockAudio=function(){audioManager.unlock();};
+        window.toggleAudio=function(){audioManager.toggle();};
         
-        // ✨ Connection Manager
+        // Show audio status on start
+        if(audioManager.enabled){
+            $('audioStatus').classList.add('show');
+            $('audioStatus').className='audio-status show enabled';
+            $('audioStatus').innerHTML='<span>🔊</span><span>Audio On</span>';
+        }else{
+            $('audioStatus').classList.add('show');
+            $('audioStatus').className='audio-status show disabled';
+            $('audioStatus').innerHTML='<span>🔇</span><span>Audio Off</span>';
+        }
+        
         var connectionManager={
             status:'offline',
             pendingCount:0,
-            
             update:function(status,pending){
                 this.status=status;
                 if(pending!==undefined)this.pendingCount=pending;
@@ -547,77 +531,63 @@
                 el.style.display='flex';
                 el.className='connection-indicator '+status;
                 var textEl=$('connectionText');
-                if(status==='online'){
-                    textEl.textContent='Online';
-                }else if(status==='offline'){
-                    textEl.textContent='Offline'+(this.pendingCount>0?' ('+this.pendingCount+' pending)':'');
-                }else if(status==='syncing'){
-                    textEl.textContent='Syncing...';
-                }
+                if(status==='online')textEl.textContent='Online';
+                else if(status==='offline')textEl.textContent='Offline'+(this.pendingCount>0?' ('+this.pendingCount+' pending)':'');
+                else if(status==='syncing')textEl.textContent='Syncing...';
             }
         };
         
         function toast(m){var c=$('twrap');if(!c)return;var d=document.createElement('div');d.className='toast';d.textContent=m;c.appendChild(d);setTimeout(function(){d.remove();},2000);}
         
-        function showNewOrderAlert(orderId,tableName){
+        function showNewOrderAlert(orderId,tableId){
             var alert=document.createElement('div');
             alert.className='new-order-alert';
-            alert.innerHTML='🔔 New Order! Table '+tableName;
+            alert.innerHTML='🔔 New Order! Table '+tableId;
             document.body.appendChild(alert);
-            setTimeout(function(){alert.remove();},3000);
+            setTimeout(function(){alert.remove();},4000);
         }
         
         function saveData(){
             localStorage.setItem('users_'+rid,JSON.stringify(users));
             localStorage.setItem('categories_'+rid,JSON.stringify(categories));
-            // ✨ Save to RTDB only critical metadata
             if(db&&fbReady){
                 db.ref('users').set(users).catch(function(){});
                 db.ref('categories').set(categories).catch(function(){});
             }
         }
         
-        // ✨ Optimized data loading - only loads today's orders
         async function initFirebase(){
             if(firebaseConfig){
                 try{
                     if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}
                     db=firebase.database();
-                    // ✨ Enable offline persistence (RTDB does this automatically in web SDK)
-                    // But we set it explicitly for multi-tab support
                     db.goOffline();
                     db.goOnline();
-                    
                     fbReady=true;
                     
-                    // ✨ Setup connection state listener
                     var connectedRef=db.ref('.info/connected');
                     connectedRef.on('value',function(snap){
                         var isConnected=snap.val()===true;
                         if(isConnected){
                             connectionManager.update('online');
-                            // Sync pending writes
                             syncPendingWrites();
                         }else{
                             connectionManager.update('offline',pendingWrites.length);
                         }
                     });
                     
-                    // Load users
                     var usersSnap=await db.ref('users').once('value');
                     if(usersSnap.exists()){
                         users=usersSnap.val();
                         if(!Array.isArray(users)){users=Object.values(users);}
                     }
                     
-                    // Load categories
                     var catsSnap=await db.ref('categories').once('value');
                     if(catsSnap.exists()){
                         categories=catsSnap.val();
                         if(!Array.isArray(categories)){categories=Object.values(categories);}
                     }
                     
-                    // Load restaurant info
                     var infoSnap=await db.ref('info').once('value');
                     if(infoSnap.exists()){R=infoSnap.val();}
                     
@@ -654,35 +624,26 @@
             else{showLoginScreen();}
         }
         
-        // ✨ Queue write for offline sync
         function queueWrite(path,data,operation){
             pendingWrites.push({path:path,data:data,operation:operation,timestamp:Date.now()});
             localStorage.setItem('pending_writes_'+rid,JSON.stringify(pendingWrites));
             connectionManager.update(connectionManager.status,pendingWrites.length);
         }
         
-        // ✨ Sync pending writes when online
         function syncPendingWrites(){
             if(!db||!fbReady||pendingWrites.length===0)return;
             connectionManager.update('syncing',pendingWrites.length);
             var writes=pendingWrites.slice();
             pendingWrites=[];
             localStorage.setItem('pending_writes_'+rid,'[]');
-            
             writes.forEach(function(w){
-                if(w.operation==='set'){
-                    db.ref(w.path).set(w.data).catch(function(e){console.error('Sync failed',e);});
-                }else if(w.operation==='update'){
-                    db.ref(w.path).update(w.data).catch(function(e){console.error('Sync failed',e);});
-                }else if(w.operation==='remove'){
-                    db.ref(w.path).remove().catch(function(e){console.error('Sync failed',e);});
-                }
+                if(w.operation==='set')db.ref(w.path).set(w.data).catch(function(e){console.error('Sync failed',e);});
+                else if(w.operation==='update')db.ref(w.path).update(w.data).catch(function(e){console.error('Sync failed',e);});
+                else if(w.operation==='remove')db.ref(w.path).remove().catch(function(e){console.error('Sync failed',e);});
             });
-            
             setTimeout(function(){connectionManager.update('online');},2000);
         }
         
-        // ✨ Smart save - queues if offline
         function smartSave(path,data,operation){
             operation=operation||'set';
             if(!db||!fbReady){
@@ -691,13 +652,9 @@
             }
             var ref=db.ref(path);
             var promise;
-            if(operation==='set'){
-                promise=ref.set(data);
-            }else if(operation==='update'){
-                promise=ref.update(data);
-            }else if(operation==='remove'){
-                promise=ref.remove();
-            }
+            if(operation==='set')promise=ref.set(data);
+            else if(operation==='update')promise=ref.update(data);
+            else if(operation==='remove')promise=ref.remove();
             promise.catch(function(e){
                 console.error('Save failed, queueing',e);
                 queueWrite(path,data,operation);
@@ -731,8 +688,10 @@
             else if(currentUser.role==='kitchen'){
                 $('newOrderBtn').classList.remove('show');
                 $('bnav').classList.add('hidden');
-                // ✨ Show audio unlock button for kitchen
-                $('audioUnlockBtn').classList.remove('hidden');
+                // Show audio unlock button if not unlocked
+                if(!audioManager.unlocked){
+                    $('audioUnlockBtn').classList.add('show');
+                }
             }
             else{$('newOrderBtn').classList.remove('show');$('bnav').classList.remove('hidden');}
         }
@@ -741,9 +700,19 @@
             var content=$('sidebarContent');if(!content)return;var role=currentUser.role;
             var html='<div class="sb-lbl">Overview</div>';
             html+='<div class="sb-link ac" data-p="dashboard" onclick="nav(\'dashboard\')">📊 Dashboard</div>';
-            if(role==='cashier'||role==='admin'||role==='super_admin'){html+='<div class="sb-link" data-p="orders" onclick="nav(\'orders\')">📋 Orders</div>';html+='<div class="sb-link" data-p="reports" onclick="nav(\'reports\')">📊 Reports</div>';}
-            if(role==='super_admin'||role==='admin'){html+='<div class="sb-lbl">Management</div>';html+='<div class="sb-link" data-p="tables" onclick="nav(\'tables\')">🪑 Tables</div>';html+='<div class="sb-link" data-p="menu" onclick="nav(\'menu\')">🍽️ Menu</div>';html+='<div class="sb-link" data-p="qr" onclick="nav(\'qr\')">📱 QR Codes</div>';}
-            if(role==='super_admin'||role==='admin'){html+='<div class="sb-lbl">System</div>';html+='<div class="sb-link" data-p="settings" onclick="nav(\'settings\')">⚙️ Settings</div>';html+='<div class="sb-link" data-p="rules" onclick="nav(\'rules\')">🔒 Security Rules</div>';}
+            if(role==='cashier'||role==='admin'||role==='super_admin'){
+                html+='<div class="sb-link" data-p="orders" onclick="nav(\'orders\')">📋 Orders</div>';
+                html+='<div class="sb-link" data-p="reports" onclick="nav(\'reports\')">📊 Reports</div>';
+            }
+            if(role==='super_admin'||role==='admin'){
+                html+='<div class="sb-lbl">Management</div>';
+                html+='<div class="sb-link" data-p="tables" onclick="nav(\'tables\')">🪑 Tables</div>';
+                html+='<div class="sb-link" data-p="menu" onclick="nav(\'menu\')">🍽️ Menu</div>';
+                html+='<div class="sb-link" data-p="qr" onclick="nav(\'qr\')">📱 QR Codes</div>';
+                html+='<div class="sb-lbl">System</div>';
+                html+='<div class="sb-link" data-p="settings" onclick="nav(\'settings\')">⚙️ Settings</div>';
+                html+='<div class="sb-link" data-p="rules" onclick="nav(\'rules\')">🔒 Security Rules</div>';
+            }
             html+='<div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)"><div class="sb-link" onclick="logout()" style="color:var(--red)">🚪 Logout</div></div>';
             content.innerHTML=html;
         }
@@ -753,9 +722,15 @@
             if(role==='order_taker'||role==='kitchen'){bnav.innerHTML='';return;}
             var html='';
             html+='<div class="bn-item on" data-p="dashboard" onclick="nav(\'dashboard\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg></div><span class="bn-label">Home</span></div>';
-            if(role==='cashier'||role==='admin'||role==='super_admin'){html+='<div class="bn-item" data-p="orders" onclick="nav(\'orders\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="bn-badge" id="bnOrders" style="display:none">0</span></div><span class="bn-label">Orders</span></div>';html+='<div class="bn-item" data-p="reports" onclick="nav(\'reports\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="bn-label">Reports</span></div>';}
-            if(role==='super_admin'||role==='admin'){html+='<div class="bn-item" data-p="tables" onclick="nav(\'tables\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg></div><span class="bn-label">Tables</span></div>';html+='<div class="bn-item" data-p="menu" onclick="nav(\'menu\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><span class="bn-label">Menu</span></div>';}
-            if(role==='super_admin'||role==='admin'){html+='<div class="bn-item" data-p="settings" onclick="nav(\'settings\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span class="bn-label">Settings</span></div>';}
+            if(role==='cashier'||role==='admin'||role==='super_admin'){
+                html+='<div class="bn-item" data-p="orders" onclick="nav(\'orders\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="bn-badge" id="bnOrders" style="display:none">0</span></div><span class="bn-label">Orders</span></div>';
+                html+='<div class="bn-item" data-p="reports" onclick="nav(\'reports\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="bn-label">Reports</span></div>';
+            }
+            if(role==='super_admin'||role==='admin'){
+                html+='<div class="bn-item" data-p="tables" onclick="nav(\'tables\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg></div><span class="bn-label">Tables</span></div>';
+                html+='<div class="bn-item" data-p="menu" onclick="nav(\'menu\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><span class="bn-label">Menu</span></div>';
+                html+='<div class="bn-item" data-p="rules" onclick="nav(\'rules\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span class="bn-label">Security</span></div>';
+            }
             bnav.innerHTML=html;
         }
 
@@ -774,14 +749,12 @@
                 updateCashierDashboard();
             }
             else{
-                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem"></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-g btn-sm" onclick="connectFB()">🔗 Connect</button><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'</div><div class="page" id="p-rules"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Firebase Security Rules</div><div style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">انسخ القواعد التالية والصقها في Firebase Console → Realtime Database → Rules</div><div class="rules-preview" id="rulesContent"></div><button class="btn btn-g btn-block" onclick="copyRulesFromSettings()" style="margin-top:0.8rem">📋 Copy Rules to Clipboard</button></div></div>';
+                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem"></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-g btn-sm" onclick="connectFB()">🔗 Connect</button><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Security Rules</div><p style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">View and configure Firebase security rules</p><button class="btn btn-g btn-block" onclick="nav(\'rules\')">View Security Rules</button></div></div><div class="page" id="p-rules"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Firebase Security Rules</div><div style="background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:12px;padding:0.8rem;margin-bottom:1rem"><div style="font-size:0.7rem;font-weight:700;color:var(--blue);margin-bottom:0.3rem">📌 How to apply these rules:</div><ol style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>Go to <strong>Firebase Console</strong></li><li>Select your project</li><li>Go to <strong>Realtime Database</strong> → <strong>Rules</strong> tab</li><li>Click <strong>"Copy Rules"</strong> button below</li><li>Paste and click <strong>Publish</strong></li></ol></div><button class="btn btn-g btn-block" onclick="copyRules()" style="margin-bottom:1rem">📋 Copy Rules to Clipboard</button><div class="rules-preview" id="rulesContent"></div><div style="margin-top:1rem;padding:1rem;background:rgba(248,113,113,0.1);border:1px solid var(--red);border-radius:12px"><div style="font-size:0.7rem;font-weight:700;color:var(--red);margin-bottom:0.3rem">⚠️ Important Notes:</div><ul style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>These rules require Firebase <strong>Authentication</strong> to be enabled</li><li>Users must have a valid <code>role</code> field</li><li>Orders cannot be deleted (for audit trail)</li><li>Each role has specific write permissions</li></ul></div></div></div>';
                 dash();settPg();renderRulesPage();
             }
         }
 
-        // ✨ Optimized: Uses in-memory cache instead of scanning all tables
         function allO(){return Object.values(ordersCache).sort(function(a,b){return b.id-a.id;});}
-        
         function actO(tid){
             var t=T.find(function(x){return x.id===tid;});
             var sessionId=t?t.currentSessionId:null;
@@ -789,7 +762,6 @@
                 return o.tid===tid && o.st!=='completed' && o.st!=='served' && (sessionId?o.sessionId===sessionId:true);
             });
         }
-        
         function tTot(tid){
             var t=T.find(function(x){return x.id===tid;});
             var sessionId=t?t.currentSessionId:null;
@@ -797,7 +769,6 @@
                 return o.tid===tid && (sessionId?o.sessionId===sessionId:true);
             }).reduce(function(s,o){return s+o.tot;},0);
         }
-        
         function tPen(tid){
             var t=T.find(function(x){return x.id===tid;});
             var sessionId=t?t.currentSessionId:null;
@@ -805,10 +776,8 @@
                 return o.tid===tid && (o.st==='pending'||o.st==='preparing'||o.st==='ready') && (sessionId?o.sessionId===sessionId:true);
             }).length;
         }
-        
         function getTodayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
         function saveFB(path,data,op){return smartSave(path,data,op);}
-        
         function isTableSessionClosed(table){
             if(!table.currentSessionId)return true;
             var sessionOrders=Object.values(ordersCache).filter(function(o){return o.tid===table.id && o.sessionId===table.currentSessionId;});
@@ -935,17 +904,14 @@
             var servedOrders=a.filter(function(o){return o.st==='served';});
             var activeTables=T.filter(function(t){return tPen(t.id)>0;});
             var revenue=completedOrders.reduce(function(s,o){return s+o.tot;},0);
-            
             if($('todayRevenue'))$('todayRevenue').textContent=revenue.toFixed(0);
             if($('completedOrdersCount'))$('completedOrdersCount').textContent=completedOrders.length;
             if($('servedOrdersCount'))$('servedOrdersCount').textContent=servedOrders.length;
             if($('activeTablesCashier'))$('activeTablesCashier').textContent=activeTables.length;
-            
             var tablesWithServed=T.filter(function(t){
                 if(!t.currentSessionId)return false;
                 return Object.values(ordersCache).some(function(o){return o.tid===t.id && o.st==='served' && o.sessionId===t.currentSessionId;});
             });
-            
             var ctGrid=$('cashierTablesGrid');
             if(ctGrid){
                 ctGrid.innerHTML=tablesWithServed.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center;grid-column:1/-1">No tables with served orders</div>':tablesWithServed.map(function(t){
@@ -958,14 +924,12 @@
                     return'<div class="tcard on" onclick="showT('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="session-badge">Session: '+sessionId.toString().slice(-4)+'</div><div class="tcard-total">'+total.toFixed(0)+' EGP</div><div style="margin-top:0.5rem;display:flex;gap:0.3rem;justify-content:center;flex-wrap:wrap"><button class="status-btn gold" onclick="event.stopPropagation();showReceiptForTable('+t.id+')">🧾 Full Receipt</button><button class="status-btn orange" onclick="event.stopPropagation();completeTablePayment('+t.id+')">💰 Close Session</button></div></div>';
                 }).join('');
             }
-            
             var soList=$('servedOrdersList');
             if(soList){
                 soList.innerHTML=servedOrders.length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No served orders</div>':servedOrders.map(function(o){
                     return'<div class="ocard served" onclick="showReceiptForOrder('+o.id+')"><div class="odot served"></div><div class="oinfo"><div class="otop"><span class="oid">#'+o.id+'</span><span class="otable">Table '+o.tid+'</span></div><div class="oitems">'+o.items.map(function(i){return i.n+' x'+i.q;}).join(', ')+'</div><div class="obot"><span class="ototal">'+o.tot+' EGP</span></div></div><div class="oacts"><button class="status-btn gold" onclick="event.stopPropagation();updO('+o.id+',\'completed\')">💰 Payment</button><button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button></div></div>';
                 }).join('');
             }
-            
             var coList=$('completedOrdersList');
             if(coList){
                 coList.innerHTML=completedOrders.slice(0,10).length===0?'<div style="color:var(--text3);font-size:0.7rem;padding:1rem;text-align:center">No completed orders</div>':completedOrders.slice(0,10).map(function(o){
@@ -983,7 +947,6 @@
             if(currentUser.role==='cashier'||currentUser.role==='admin'){a+='<button class="status-btn orange" onclick="event.stopPropagation();showReceiptForOrder('+o.id+')">🧾 Receipt</button>';}
             return a;
         }
-        
         function ordsPg(){
             var a=allO();
             var f=of==='all'?a:a.filter(function(o){return o.st===of;});
@@ -995,13 +958,10 @@
             }
         }
         function fO(f,b){of=f;$$('#ofilt .fchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');ordsPg();}
-        
         function updO(oid,st){
-            var oldStatus=null;
             Object.keys(ordersCache).forEach(function(k){
                 var o=ordersCache[k];
                 if(o.id===oid){
-                    oldStatus=o.st;
                     o.st=st;
                     saveFB('orders/'+o.date+'/'+oid,o);
                 }
@@ -1013,9 +973,8 @@
             else dash();
             toast('Updated');
         }
-        
         function showO(oid){
-            var o=ordersCache[oid];
+            var o=ordersCache[oid]||archivedOrdersCache[oid];
             if(!o)return;
             if($('odet')){
                 $('odet').innerHTML='<div style="margin-bottom:0.8rem"><strong style="color:var(--gold);font-size:0.9rem">Order #'+o.id+'</strong> · Table '+o.tid+(o.createdBy?' · By: '+o.createdBy:'')+(o.sessionId?' · Session: '+o.sessionId.toString().slice(-4):'')+'</div>'+o.items.map(function(i){
@@ -1039,46 +998,25 @@
             var vat=taxSettings.enableVAT?subtotal*0.14:0;
             var svc=taxSettings.enableService?subtotal*0.12:0;
             var total=subtotal+vat+svc;
-            
-            var html='<div class="receipt-header">'+
-                '<div class="receipt-logo">'+(R.logo?'<img src="'+R.logo+'" style="width:60px;height:60px;border-radius:50%;object-fit:cover">':'🍽️')+'</div>'+
-                '<div class="receipt-restaurant-name">'+R.name+'</div>'+
-                '<div class="receipt-restaurant-info">'+R.area+'</div>'+
-                '<div class="receipt-restaurant-info">Tel: '+R.phone+'</div>'+
-            '</div>'+
-            '<div class="receipt-divider"></div>'+
-            '<div class="receipt-order-header"><span>TABLE #'+tid+'</span><span>SESSION: '+sessionId.toString().slice(-4)+'</span></div>'+
-            '<div class="receipt-order-header"><span>Orders: '+servedOrders.length+'</span><span>'+new Date().toLocaleString()+'</span></div>'+
-            '<div class="receipt-divider"></div>';
-            
+            var html='<div class="receipt-header">'+'<div class="receipt-logo">'+(R.logo?'<img src="'+R.logo+'" style="width:60px;height:60px;border-radius:50%;object-fit:cover">':'🍽️')+'</div>'+'<div class="receipt-restaurant-name">'+R.name+'</div>'+'<div class="receipt-restaurant-info">'+R.area+'</div>'+'<div class="receipt-restaurant-info">Tel: '+R.phone+'</div>'+'</div>'+'<div class="receipt-divider"></div>'+'<div class="receipt-order-header"><span>TABLE #'+tid+'</span><span>SESSION: '+sessionId.toString().slice(-4)+'</span></div>'+'<div class="receipt-order-header"><span>Orders: '+servedOrders.length+'</span><span>'+new Date().toLocaleString()+'</span></div>'+'<div class="receipt-divider"></div>';
             servedOrders.forEach(function(o,idx){
-                html+='<div style="margin-bottom:0.4rem">'+
-                    '<div style="font-size:0.6rem;font-weight:700;color:#333;margin-bottom:0.2rem">Order #'+o.id+(o.createdBy?' - By: '+o.createdBy:'')+'</div>';
+                html+='<div style="margin-bottom:0.4rem">'+'<div style="font-size:0.6rem;font-weight:700;color:#333;margin-bottom:0.2rem">Order #'+o.id+(o.createdBy?' - By: '+o.createdBy:'')+'</div>';
                 o.items.forEach(function(i){
                     html+='<div class="receipt-item"><span class="receipt-item-name">'+i.n+' x'+i.q+'</span><span class="receipt-item-price">'+(i.q*i.p)+' EGP</span></div>';
                 });
                 html+='</div>';
                 if(idx<servedOrders.length-1)html+='<div class="receipt-divider"></div>';
             });
-            
-            html+='<div class="receipt-total-section">'+
-                '<div class="receipt-total-row"><span>Subtotal</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+
+            html+='<div class="receipt-total-section">'+'<div class="receipt-total-row"><span>Subtotal</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+
                 (taxSettings.enableVAT?'<div class="receipt-total-row"><span>VAT (14%)</span><span>'+vat.toFixed(2)+' EGP</span></div>':'')+
                 (taxSettings.enableService?'<div class="receipt-total-row"><span>Service (12%)</span><span>'+svc.toFixed(2)+' EGP</span></div>':'')+
-                '<div class="receipt-grand-total"><span>TOTAL</span><span>'+total.toFixed(2)+' EGP</span></div>'+
-            '</div>'+
-            '<div class="receipt-footer">'+
-                '<div>Thank you for dining with us!</div>'+
-                '<div style="margin-top:0.3rem">Powered by Discover Sharm</div>'+
-                '<div class="receipt-barcode">'+sessionId.toString().slice(-10)+'</div>'+
-            '</div>';
-            
+                '<div class="receipt-grand-total"><span>TOTAL</span><span>'+total.toFixed(2)+' EGP</span></div>'+'</div>'+'<div class="receipt-footer">'+'<div>Thank you for dining with us!</div>'+'<div style="margin-top:0.3rem">Powered by Discover Sharm</div>'+'<div class="receipt-barcode">'+sessionId.toString().slice(-10)+'</div>'+'</div>';
             $('receiptContent').innerHTML=html;
             $('receiptModal').classList.add('show');
         }
         
         function showReceiptForOrder(oid){
-            var o=ordersCache[oid];
+            var o=ordersCache[oid]||archivedOrdersCache[oid];
             if(!o)return;
             currentReceiptTable=o.tid;
             var t=T.find(function(x){return x.id===o.tid;});
@@ -1087,41 +1025,21 @@
             var vat=taxSettings.enableVAT?subtotal*0.14:0;
             var svc=taxSettings.enableService?subtotal*0.12:0;
             var total=subtotal+vat+svc;
-            
-            var html='<div class="receipt-header">'+
-                '<div class="receipt-logo">'+(R.logo?'<img src="'+R.logo+'" style="width:60px;height:60px;border-radius:50%;object-fit:cover">':'🍽️')+'</div>'+
-                '<div class="receipt-restaurant-name">'+R.name+'</div>'+
-                '<div class="receipt-restaurant-info">'+R.area+'</div>'+
-            '</div>'+
-            '<div class="receipt-divider"></div>'+
-            '<div class="receipt-order-header"><span>ORDER #'+o.id+'</span><span>TABLE #'+o.tid+'</span></div>'+
-            (o.createdBy?'<div class="receipt-order-header"><span>Order Taker: '+o.createdBy+'</span></div>':'')+
-            (o.sessionId?'<div class="receipt-order-header"><span>Session: '+o.sessionId.toString().slice(-4)+'</span></div>':'')+
-            '<div class="receipt-order-header"><span>'+new Date(o.time).toLocaleString()+'</span></div>'+
-            '<div class="receipt-divider"></div>';
-            
+            var html='<div class="receipt-header">'+'<div class="receipt-logo">'+(R.logo?'<img src="'+R.logo+'" style="width:60px;height:60px;border-radius:50%;object-fit:cover">':'🍽️')+'</div>'+'<div class="receipt-restaurant-name">'+R.name+'</div>'+'<div class="receipt-restaurant-info">'+R.area+'</div>'+'</div>'+'<div class="receipt-divider"></div>'+'<div class="receipt-order-header"><span>ORDER #'+o.id+'</span><span>TABLE #'+o.tid+'</span></div>'+
+                (o.createdBy?'<div class="receipt-order-header"><span>Order Taker: '+o.createdBy+'</span></div>':'')+
+                (o.sessionId?'<div class="receipt-order-header"><span>Session: '+o.sessionId.toString().slice(-4)+'</span></div>':'')+
+                '<div class="receipt-order-header"><span>'+new Date(o.time).toLocaleString()+'</span></div>'+'<div class="receipt-divider"></div>';
             o.items.forEach(function(i){
                 html+='<div class="receipt-item"><span class="receipt-item-name">'+i.n+' x'+i.q+'</span><span class="receipt-item-price">'+(i.q*i.p)+' EGP</span></div>';
             });
-            
-            html+='<div class="receipt-total-section">'+
-                '<div class="receipt-total-row"><span>Subtotal</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+
+            html+='<div class="receipt-total-section">'+'<div class="receipt-total-row"><span>Subtotal</span><span>'+subtotal.toFixed(2)+' EGP</span></div>'+
                 (taxSettings.enableVAT?'<div class="receipt-total-row"><span>VAT (14%)</span><span>'+vat.toFixed(2)+' EGP</span></div>':'')+
                 (taxSettings.enableService?'<div class="receipt-total-row"><span>Service (12%)</span><span>'+svc.toFixed(2)+' EGP</span></div>':'')+
-                '<div class="receipt-grand-total"><span>TOTAL</span><span>'+total.toFixed(2)+' EGP</span></div>'+
-            '</div>'+
-            '<div class="receipt-footer">'+
-                '<div>Thank you for dining with us!</div>'+
-                '<div style="margin-top:0.3rem">Powered by Discover Sharm</div>'+
-                '<div class="receipt-barcode">'+o.id.toString().slice(-10)+'</div>'+
-            '</div>';
-            
+                '<div class="receipt-grand-total"><span>TOTAL</span><span>'+total.toFixed(2)+' EGP</span></div>'+'</div>'+'<div class="receipt-footer">'+'<div>Thank you for dining with us!</div>'+'<div style="margin-top:0.3rem">Powered by Discover Sharm</div>'+'<div class="receipt-barcode">'+o.id.toString().slice(-10)+'</div>'+'</div>';
             $('receiptContent').innerHTML=html;
             $('receiptModal').classList.add('show');
         }
-        
         function closeReceipt(){$('receiptModal').classList.remove('show');}
-        
         function printReceipt(){
             var content=$('receiptContent');
             if(!content)return;
@@ -1133,7 +1051,6 @@
             w.document.write(html);
             w.print();
         }
-        
         function completeTablePayment(tid){
             var t=T.find(function(x){return x.id===tid;});
             if(!t)return;
@@ -1149,24 +1066,120 @@
             }
         }
 
-        function buildReports(){
+        // ✨ Load archived orders on-demand for reports
+        async function loadArchivedOrders(days){
+            days=days||30;
+            var endDate=new Date();
+            endDate.setDate(endDate.getDate()-1); // Skip today
+            var startDate=new Date();
+            startDate.setDate(startDate.getDate()-days);
+            
+            var loadedCount=0;
+            for(var d=new Date(startDate);d<=endDate;d.setDate(d.getDate()+1)){
+                var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                if(archivedOrdersCache['__loaded_'+key])continue;
+                
+                try{
+                    var snap=await db.ref('orders/'+key).once('value');
+                    if(snap.exists()){
+                        var dayOrders=snap.val();
+                        if(typeof dayOrders==='object'){
+                            Object.keys(dayOrders).forEach(function(oid){
+                                if(!ordersCache[oid]&&!archivedOrdersCache[oid]){
+                                    archivedOrdersCache[oid]=dayOrders[oid];
+                                    loadedCount++;
+                                }
+                            });
+                        }
+                    }
+                    archivedOrdersCache['__loaded_'+key]=true;
+                }catch(e){
+                    console.error('Load archived day '+key+' failed',e);
+                }
+            }
+            
+            oldestLoadedDate=startDate;
+            return loadedCount;
+        }
+
+        async function buildReports(){
             var container=$('reportsContent');
             if(!container)return;
-            var a=allO();
+            
+            container.innerHTML='<div style="text-align:center;padding:2rem"><div class="loading-spinner"></div><div style="margin-top:0.5rem;font-size:0.7rem;color:var(--text2)">Loading reports...</div></div>';
+            
+            // Load archived orders (last 30 days)
+            try{
+                var loaded=await loadArchivedOrders(30);
+                if(loaded>0)toast('Loaded '+loaded+' archived orders');
+            }catch(e){
+                console.error('Load archived failed',e);
+            }
+            
+            var allOrders=allO().concat(Object.values(archivedOrdersCache).filter(function(o){return o&&o.id;}));
             var todayKey=getTodayKey();
-            var todayOrders=a.filter(function(o){return o.date===todayKey;});
+            var todayOrders=allOrders.filter(function(o){return o.date===todayKey;});
             var completedToday=todayOrders.filter(function(o){return o.st==='completed';});
             var revenueToday=completedToday.reduce(function(s,o){return s+o.tot;},0);
-            var totalOrders=a.length;
-            var totalRevenue=a.filter(function(o){return o.st==='completed';}).reduce(function(s,o){return s+o.tot;},0);
+            var totalOrders=allOrders.length;
+            var totalRevenue=allOrders.filter(function(o){return o.st==='completed';}).reduce(function(s,o){return s+o.tot;},0);
             var orderTakerStats={};
-            a.forEach(function(o){if(o.createdBy){if(!orderTakerStats[o.createdBy])orderTakerStats[o.createdBy]={count:0,total:0};orderTakerStats[o.createdBy].count++;orderTakerStats[o.createdBy].total+=o.tot;}});
+            allOrders.forEach(function(o){if(o.createdBy){if(!orderTakerStats[o.createdBy])orderTakerStats[o.createdBy]={count:0,total:0};orderTakerStats[o.createdBy].count++;orderTakerStats[o.createdBy].total+=o.tot;}});
             
             var html='<div class="report-card"><div class="report-title">📊 Today Summary</div><div class="report-row"><span>Date:</span><span>'+new Date().toLocaleDateString()+'</span></div><div class="report-row"><span>Total Orders Today:</span><span>'+todayOrders.length+'</span></div><div class="report-row"><span>Completed Today:</span><span>'+completedToday.length+'</span></div><div class="report-row"><span>Revenue Today:</span><span style="color:var(--gold);font-weight:700">'+revenueToday.toFixed(2)+' EGP</span></div></div>';
-            html+='<div class="report-card"><div class="report-title">💰 Overall Statistics</div><div class="report-row"><span>Total Orders:</span><span>'+totalOrders+'</span></div><div class="report-row"><span>Total Revenue:</span><span style="color:var(--gold);font-weight:700">'+totalRevenue.toFixed(2)+' EGP</span></div><div class="report-row"><span>Average Order Value:</span><span>'+(totalOrders>0?(totalRevenue/totalOrders).toFixed(2):'0')+' EGP</span></div></div>';
-            if(Object.keys(orderTakerStats).length>0){html+='<div class="report-card"><div class="report-title">👥 Order Taker Performance</div>';Object.keys(orderTakerStats).forEach(function(name){html+='<div class="report-row"><span>'+name+':</span><span>'+orderTakerStats[name].count+' orders · '+orderTakerStats[name].total.toFixed(0)+' EGP</span></div>';});html+='</div>';}
+            html+='<div class="report-card"><div class="report-title">💰 Overall Statistics (Last 30 days)</div><div class="report-row"><span>Total Orders:</span><span>'+totalOrders+'</span></div><div class="report-row"><span>Total Revenue:</span><span style="color:var(--gold);font-weight:700">'+totalRevenue.toFixed(2)+' EGP</span></div><div class="report-row"><span>Average Order Value:</span><span>'+(totalOrders>0?(totalRevenue/totalOrders).toFixed(2):'0')+' EGP</span></div></div>';
+            if(Object.keys(orderTakerStats).length>0){
+                html+='<div class="report-card"><div class="report-title">👥 Order Taker Performance</div>';
+                Object.keys(orderTakerStats).forEach(function(name){
+                    html+='<div class="report-row"><span>'+name+':</span><span>'+orderTakerStats[name].count+' orders · '+orderTakerStats[name].total.toFixed(0)+' EGP</span></div>';
+                });
+                html+='</div>';
+            }
+            html+='<button class="load-more-btn" onclick="loadMoreHistory()">📅 Load Older History (30 more days)</button>';
             container.innerHTML=html;
         }
+        
+        window.loadMoreHistory=async function(){
+            if(!oldestLoadedDate)return;
+            var daysToLoad=30;
+            var btn=document.querySelector('.load-more-btn');
+            if(btn){
+                btn.innerHTML='<span class="loading-spinner"></span> Loading...';
+                btn.disabled=true;
+            }
+            try{
+                var endDate=new Date(oldestLoadedDate);
+                endDate.setDate(endDate.getDate()-1);
+                var startDate=new Date(endDate);
+                startDate.setDate(startDate.getDate()-daysToLoad);
+                
+                var loadedCount=0;
+                for(var d=new Date(startDate);d<=endDate;d.setDate(d.getDate()+1)){
+                    var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                    if(archivedOrdersCache['__loaded_'+key])continue;
+                    try{
+                        var snap=await db.ref('orders/'+key).once('value');
+                        if(snap.exists()){
+                            var dayOrders=snap.val();
+                            if(typeof dayOrders==='object'){
+                                Object.keys(dayOrders).forEach(function(oid){
+                                    if(!ordersCache[oid]&&!archivedOrdersCache[oid]){
+                                        archivedOrdersCache[oid]=dayOrders[oid];
+                                        loadedCount++;
+                                    }
+                                });
+                            }
+                        }
+                        archivedOrdersCache['__loaded_'+key]=true;
+                    }catch(e){}
+                }
+                oldestLoadedDate=startDate;
+                toast('Loaded '+loadedCount+' more orders');
+                buildReports();
+            }catch(e){
+                toast('Error loading history');
+            }
+        };
 
         function showT(tid){
             var t=T.find(function(x){return x.id===tid;});
@@ -1270,7 +1283,7 @@
                     table.currentSessionId=Date.now();
                 }
                 var order={id:Date.now(),sessionId:table.currentSessionId,items:items,tot:total,st:'pending',tid:newOrderTable,date:getTodayKey(),time:new Date().toISOString(),createdBy:currentUser.username};
-                ordersCache[order.id]=order; // ✨ Add to cache immediately
+                ordersCache[order.id]=order;
                 saveFB('tables/'+newOrderTable,table);
                 saveFB('orders/'+order.date+'/'+order.id,order);
             }
@@ -1280,8 +1293,8 @@
         }
         function closeNewOrder(){$('newOrderModal').classList.remove('show');newOrderTable=null;newOrderItems={};}
 
-        // ✨ Security Rules template
-        var securityRulesTemplate=`{
+        // ✨ Security Rules
+        var securityRulesTemplate=JSON.stringify({
   "rules": {
     ".read": "auth != null",
     "info": {
@@ -1315,7 +1328,7 @@
       ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'super_admin'"
     }
   }
-}`;
+},null,2);
 
         function renderRulesPage(){
             var el=$('rulesContent');
@@ -1325,16 +1338,20 @@
         function copyRules(){
             if(navigator.clipboard){
                 navigator.clipboard.writeText(securityRulesTemplate).then(function(){
-                    toast('📋 Rules copied to clipboard');
+                    toast('📋 Rules copied to clipboard!');
                 });
+            }else{
+                // Fallback for older browsers
+                var textarea=document.createElement('textarea');
+                textarea.value=securityRulesTemplate;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                toast('📋 Rules copied!');
             }
         }
         window.copyRules=copyRules;
-        window.copyRulesFromSettings=copyRules;
-        
-        function closeRulesModal(){$('rulesModal').classList.remove('show');}
-        window.closeRulesModal=closeRulesModal;
-        window.openRulesModal=function(){$('rulesModal').classList.add('show');};
 
         window.nav=nav;window.showT=showT;window.showO=showO;window.updO=updO;window.fO=fO;window.fM=fM;
         window.openI=openI;window.editI=editI;window.delI=delI;window.saveI=saveI;
@@ -1353,11 +1370,9 @@
         window.closeReceipt=closeReceipt;window.printReceipt=printReceipt;
         window.completeTablePayment=completeTablePayment;
 
-        // ✨ Optimized init with incremental sync
         async function init(){
             if(firebaseConfig&&db&&fbReady){
                 try{
-                    // Load static data once
                     var infoSnap=await db.ref('info').once('value');
                     if(infoSnap.exists()){R=infoSnap.val();}
                     
@@ -1365,9 +1380,16 @@
                     if(menuSnap.exists()){M=menuSnap.val();if(!Array.isArray(M)){M=Object.values(M);}}
                     
                     var tablesSnap=await db.ref('tables').once('value');
-                    if(tablesSnap.exists()){T=tablesSnap.val();if(!Array.isArray(T)){T=Object.values(T);}T.forEach(function(t){if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};if(!t.currentSessionId&&t.currentSessionId!==null)t.currentSessionId=null;});}
+                    if(tablesSnap.exists()){
+                        T=tablesSnap.val();
+                        if(!Array.isArray(T)){T=Object.values(T);}
+                        T.forEach(function(t){
+                            if(!t.taxSettings)t.taxSettings={enableVAT:true,enableService:true};
+                            if(!t.currentSessionId&&t.currentSessionId!==null)t.currentSessionId=null;
+                        });
+                    }
                     
-                    // ✨ Optimized: Load ONLY today's orders, not all orders
+                    // ✨ Load ONLY today's orders
                     var todayKey=getTodayKey();
                     var todayOrdersSnap=await db.ref('orders/'+todayKey).once('value');
                     if(todayOrdersSnap.exists()){
@@ -1379,21 +1401,8 @@
                         }
                     }
                     
-                    // ✨ Also load yesterday's orders for completed orders display
-                    var yesterday=new Date();
-                    yesterday.setDate(yesterday.getDate()-1);
-                    var yesterdayKey=yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
-                    var yesterdayOrdersSnap=await db.ref('orders/'+yesterdayKey).once('value');
-                    if(yesterdayOrdersSnap.exists()){
-                        var yesterdayOrders=yesterdayOrdersSnap.val();
-                        if(typeof yesterdayOrders==='object'){
-                            Object.keys(yesterdayOrders).forEach(function(oid){
-                                if(!ordersCache[oid]){
-                                    ordersCache[oid]=yesterdayOrders[oid];
-                                }
-                            });
-                        }
-                    }
+                    // ✨ Set listenersStartedAt BEFORE attaching listeners
+                    listenersStartedAt=Date.now();
                     
                     // ✨ Realtime listener for NEW orders only (today)
                     if(listeners.todayOrders){
@@ -1403,44 +1412,50 @@
                     
                     listeners.todayOrders=function(snap){
                         var order=snap.val();
-                        if(order){
-                            var wasNew=!ordersCache[snap.key];
-                            ordersCache[snap.key]=order;
-                            
-                            // ✨ Audio alert for kitchen
-                            if(wasNew && currentUser && currentUser.role==='kitchen'){
+                        if(!order)return;
+                        
+                        // ✨ CRITICAL: Check if this is a genuinely NEW order
+                        // by comparing the order's timestamp with when listeners started
+                        var orderTime=order.time?new Date(order.time).getTime():0;
+                        var isNewOrder=orderTime>listenersStartedAt;
+                        
+                        var wasNotInCache=!ordersCache[snap.key];
+                        ordersCache[snap.key]=order;
+                        
+                        // Only trigger alert for genuinely new orders after listeners started
+                        if(isNewOrder && wasNotInCache && currentUser){
+                            if(currentUser.role==='kitchen'){
                                 var tableName='Table '+(order.tid||'?');
                                 audioManager.playAlert('new_order',{orderId:snap.key,tableName:tableName});
                                 showNewOrderAlert(snap.key,order.tid);
                             }
-                            
-                            // Refresh UI
-                            if(cp==='dashboard'){
-                                if(currentUser.role==='kitchen')updateKitchenDashboard();
-                                else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
-                                else if(currentUser.role==='cashier')updateCashierDashboard();
-                                else dash();
-                            }
+                        }
+                        
+                        // Refresh UI
+                        if(cp==='dashboard'){
+                            if(currentUser.role==='kitchen')updateKitchenDashboard();
+                            else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+                            else if(currentUser.role==='cashier')updateCashierDashboard();
+                            else dash();
                         }
                     };
                     
                     listeners.todayOrdersChanged=function(snap){
                         var order=snap.val();
-                        if(order){
-                            ordersCache[snap.key]=order;
-                            if(cp==='dashboard'){
-                                if(currentUser.role==='kitchen')updateKitchenDashboard();
-                                else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
-                                else if(currentUser.role==='cashier')updateCashierDashboard();
-                                else dash();
-                            }
+                        if(!order)return;
+                        ordersCache[snap.key]=order;
+                        if(cp==='dashboard'){
+                            if(currentUser.role==='kitchen')updateKitchenDashboard();
+                            else if(currentUser.role==='order_taker')updateOrderTakerDashboard();
+                            else if(currentUser.role==='cashier')updateCashierDashboard();
+                            else dash();
                         }
                     };
                     
                     db.ref('orders/'+todayKey).on('child_added',listeners.todayOrders);
                     db.ref('orders/'+todayKey).on('child_changed',listeners.todayOrdersChanged);
                     
-                    // ✨ Listener for table changes
+                    // Table changes listener
                     if(listeners.tables){
                         db.ref('tables').off('value',listeners.tables);
                     }
@@ -1461,7 +1476,6 @@
                 }
             }
             
-            // Load pending writes from localStorage
             try{
                 var savedPending=localStorage.getItem('pending_writes_'+rid);
                 if(savedPending){pendingWrites=JSON.parse(savedPending);}
