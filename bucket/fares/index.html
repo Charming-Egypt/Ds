@@ -11,7 +11,7 @@
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{font-family:'Inter','Cairo',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
         body.ar{font-family:'Cairo','Inter',sans-serif;direction:rtl}
-        body.en{font-family:'Inter',sans-serif;direction:ltr}
+        body.en,body.ru,body.it,body.de{font-family:'Inter',sans-serif;direction:ltr}
         .splash-screen{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a1a2e 0%,#0a0a0a 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s,visibility .8s;padding:2rem;overflow:hidden}
         .splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
         .splash-particles{position:absolute;inset:0;pointer-events:none}
@@ -239,45 +239,45 @@
                     </div>
                 </div>
                 <div class="cats-strip" id="catsRow"></div>
-                <div class="section-row"><span class="section-label">Menu</span><span class="section-count" id="itemCount"></span></div>
+                <div class="section-row"><span class="section-label" id="menuLabel">Menu</span><span class="section-count" id="itemCount"></span></div>
                 <div id="prodContainer" class="prod-grid"></div>
             </div>
         </div>
 
         <div class="screen" id="screen-cart">
-            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text">🛒 Cart</span></div>
+            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text" id="cartTitle">🛒 Cart</span></div>
             <div class="content-padded">
                 <div class="cart-items-wrap" id="cartItemsWrap"></div>
                 <div class="cart-summary-box">
-                    <div class="sum-row"><span>Subtotal</span><span id="sumSub">0</span></div>
-                    <div class="sum-row"><span>Tax</span><span id="sumTax">0</span></div>
-                    <div class="sum-row"><span>Service</span><span id="sumSvc">0</span></div>
-                    <div class="sum-row total"><span>Total</span><span id="sumTotal">0</span></div>
+                    <div class="sum-row"><span id="lblSubtotal">Subtotal</span><span id="sumSub">0</span></div>
+                    <div class="sum-row"><span id="lblTax">Tax</span><span id="sumTax">0</span></div>
+                    <div class="sum-row"><span id="lblService">Service</span><span id="sumSvc">0</span></div>
+                    <div class="sum-row total"><span id="lblTotal">Total</span><span id="sumTotal">0</span></div>
                 </div>
             </div>
         </div>
 
         <div class="screen" id="screen-orders">
-            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text">📋 My Orders</span></div>
+            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text" id="ordersTitle">📋 My Orders</span></div>
             <div class="content-padded" id="ordersContainer"></div>
         </div>
 
         <div class="screen" id="screen-table">
-            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text">🪑 Select Table</span></div>
+            <div class="page-header"><button class="page-back-btn" onclick="goBack()">‹</button><span class="page-title-text" id="tableTitle">🪑 Select Table</span></div>
             <div class="content-padded">
                 <div class="order-type-row">
-                    <button class="order-type-btn active" onclick="setOrderType('dine-in',this)">🏠 Dine In</button>
-                    <button class="order-type-btn" onclick="setOrderType('delivery',this)">🛵 Delivery</button>
+                    <button class="order-type-btn active" onclick="setOrderType('dine-in',this)" id="dineInBtn">🏠 Dine In</button>
+                    <button class="order-type-btn" onclick="setOrderType('delivery',this)" id="deliveryBtn">🛵 Delivery</button>
                 </div>
                 <div class="tables-3d-box" id="tablesBox">
-                    <div class="tables-3d-title">Pick Table</div>
+                    <div class="tables-3d-title" id="pickTableLabel">Pick Table</div>
                     <div class="tables-floor-grid" id="tablesFloor"></div>
                     <div class="table-selected-info" id="tableSelInfo">No table selected</div>
                 </div>
                 <div class="delivery-form-box" id="deliveryFormBox" style="display:none;">
-                    <div class="field"><label class="field-label">Name</label><input class="field-input" id="inpName"></div>
-                    <div class="field"><label class="field-label">Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
-                    <div class="field"><label class="field-label">Address</label><input class="field-input" id="inpAddr"></div>
+                    <div class="field"><label class="field-label" id="lblName">Name</label><input class="field-input" id="inpName"></div>
+                    <div class="field"><label class="field-label" id="lblPhone">Phone</label><input class="field-input" id="inpPhone" type="tel"></div>
+                    <div class="field"><label class="field-label" id="lblAddress">Address</label><input class="field-input" id="inpAddr"></div>
                 </div>
             </div>
         </div>
@@ -290,28 +290,28 @@
             <button class="modal-close-btn" onclick="closeModal('authModal')">✕</button>
             <div class="modal-handle"></div>
             <div style="text-align:center;font-size:3rem;margin-bottom:.5rem;">👤</div>
-            <div class="modal-title">Welcome!</div>
+            <div class="modal-title" id="authTitle">Welcome!</div>
             <div style="display:flex;gap:.3rem;margin-bottom:.8rem;flex-wrap:wrap;">
-                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--gold-gradient);border:none;border-radius:50px;color:#000;font-weight:800;font-size:.68rem;cursor:pointer;" onclick="showSignup()">📝 Sign Up</button>
-                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;color:var(--text);font-weight:700;font-size:.68rem;cursor:pointer;" onclick="showLogin()">🔑 Login</button>
-                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;color:var(--text);font-weight:700;font-size:.68rem;cursor:pointer;" onclick="showGuest()">👤 Guest</button>
+                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--gold-gradient);border:none;border-radius:50px;color:#000;font-weight:800;font-size:.68rem;cursor:pointer;" onclick="showSignup()" id="signupTab">📝 Sign Up</button>
+                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;color:var(--text);font-weight:700;font-size:.68rem;cursor:pointer;" onclick="showLogin()" id="loginTab">🔑 Login</button>
+                <button style="flex:1;min-width:90px;padding:.7rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;color:var(--text);font-weight:700;font-size:.68rem;cursor:pointer;" onclick="showGuest()" id="guestTab">👤 Guest</button>
             </div>
             <div id="signupForm">
-                <div class="field"><label class="field-label">Full Name *</label><input class="field-input" id="signupName"></div>
-                <div class="field"><label class="field-label">Phone *</label><input class="field-input" id="signupPhone" type="tel"></div>
-                <div class="field"><label class="field-label">Email *</label><input class="field-input" id="signupEmail" type="email"></div>
-                <div class="field"><label class="field-label">Password *</label><input class="field-input" id="signupPassword" type="password"></div>
-                <button class="modal-action" onclick="signupWithEmail()">✨ Create Account</button>
+                <div class="field"><label class="field-label" id="lblSignupName">Full Name *</label><input class="field-input" id="signupName"></div>
+                <div class="field"><label class="field-label" id="lblSignupPhone">Phone *</label><input class="field-input" id="signupPhone" type="tel"></div>
+                <div class="field"><label class="field-label" id="lblSignupEmail">Email *</label><input class="field-input" id="signupEmail" type="email"></div>
+                <div class="field"><label class="field-label" id="lblSignupPassword">Password *</label><input class="field-input" id="signupPassword" type="password"></div>
+                <button class="modal-action" onclick="signupWithEmail()" id="signupBtn">✨ Create Account</button>
             </div>
             <div id="loginForm" style="display:none;">
-                <div class="field"><label class="field-label">Email *</label><input class="field-input" id="loginEmail" type="email"></div>
-                <div class="field"><label class="field-label">Password *</label><input class="field-input" id="loginPassword" type="password"></div>
-                <button class="modal-action" onclick="loginWithEmail()">🔑 Login</button>
+                <div class="field"><label class="field-label" id="lblLoginEmail">Email *</label><input class="field-input" id="loginEmail" type="email"></div>
+                <div class="field"><label class="field-label" id="lblLoginPassword">Password *</label><input class="field-input" id="loginPassword" type="password"></div>
+                <button class="modal-action" onclick="loginWithEmail()" id="loginBtn">🔑 Login</button>
             </div>
             <div id="guestForm" style="display:none;">
-                <div class="field"><label class="field-label">Your Name *</label><input class="field-input" id="guestName"></div>
-                <div class="field"><label class="field-label">Phone *</label><input class="field-input" id="guestPhone" type="tel"></div>
-                <button class="modal-action" onclick="continueAsGuest()">👤 Continue as Guest</button>
+                <div class="field"><label class="field-label" id="lblGuestName">Your Name *</label><input class="field-input" id="guestName"></div>
+                <div class="field"><label class="field-label" id="lblGuestPhone">Phone *</label><input class="field-input" id="guestPhone" type="tel"></div>
+                <button class="modal-action" onclick="continueAsGuest()" id="guestBtn">👤 Continue as Guest</button>
             </div>
         </div>
     </div>
@@ -332,35 +332,41 @@
     <div class="success-overlay" id="successOverlay">
         <div class="success-card">
             <div class="success-icon">🎉</div>
-            <div class="success-title">Order Confirmed!</div>
-            <p class="success-msg">Your order number</p>
+            <div class="success-title" id="successTitle">Order Confirmed!</div>
+            <p class="success-msg" id="successMsg">Your order number</p>
             <p class="success-table-info" id="successTableInfo"></p>
             <div class="order-id-badge" id="orderIdBadge">#0000</div>
         </div>
     </div>
 
-    <!-- ✅ ملف الكونفيج الخارجي -->
     <script src="/fares/js/config.js"></script>
-    
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <script>
-    // ✅ استخدام الكونفيج من الملف الخارجي
     firebase.initializeApp(FIREBASE_CONFIG);
     var db = firebase.database();
     var auth = firebase.auth();
-    
     var urlParams = new URLSearchParams(window.location.search);
     var RESTAURANT_ID = parseInt(urlParams.get('restaurant') || urlParams.get('id') || '1');
     var TABLE_ID = urlParams.get('table') ? parseInt(urlParams.get('table')) : null;
-    
-    var restaurant = null, products = [], tables = [], categories = [], cart = [], currentCustomer = null, currentUser = null;
-    var st = {lang:'en', cur:'EGP', viewMode:'grid', screen:'menu', history:['menu'], orderType:'dine-in', selTable:TABLE_ID||null};
-    var sym = {EGP:'EGP', USD:'$', EUR:'€'};
+    var restaurant=null,products=[],tables=[],categories=[],cart=[],currentCustomer=null,currentUser=null;
+    var originalProducts=[],originalCategories=[];
+    var st={lang:'en',cur:'EGP',viewMode:'grid',screen:'menu',history:['menu'],orderType:'dine-in',selTable:TABLE_ID||null};
+    var sym={EGP:'EGP',USD:'$',EUR:'€'};
+    var translationCache={};
 
+    // ✅ الترجمة الكاملة
+    var translations={
+        en:{menu:'Menu',cart:'Cart',selectTable:'Select Table',viewCart:'View Cart',confirmOrder:'Confirm Order',chooseTable:'Choose Table',noItems:'No items',cartEmpty:'Cart is empty',subtotal:'Subtotal',tax:'Tax',service:'Service',total:'Total',dineIn:'Dine In',delivery:'Delivery',name:'Name',phone:'Phone',address:'Address',pickTable:'Pick Table',noTable:'No table selected',tableSelected:'Table selected',orderConfirmed:'Order Confirmed!',yourOrder:'Your order number',deliveringTo:'Table',addedToCart:'Added',pickTableFirst:'Pick a table first',completeDelivery:'Complete details',addToCart:'Add to Cart',welcome:'Welcome!',enterName:'Enter your name',enterPhone:'Enter your phone',phoneRequired:'Phone number is required',invalidPhone:'Invalid phone number',myOrders:'My Orders',signUp:'Sign Up',login:'Login',guest:'Guest',fullName:'Full Name',email:'Email',password:'Password',createAccount:'Create Account',continueAsGuest:'Continue as Guest'},
+        ar:{menu:'القائمة',cart:'السلة',selectTable:'اختر الطاولة',viewCart:'عرض السلة',confirmOrder:'تأكيد',chooseTable:'اختر الطاولة',noItems:'لا توجد عناصر',cartEmpty:'السلة فارغة',subtotal:'المجموع',tax:'الضريبة',service:'الخدمة',total:'الإجمالي',dineIn:'داخل',delivery:'توصيل',name:'الاسم',phone:'الهاتف',address:'العنوان',pickTable:'اختر',noTable:'لم يتم الاختيار',tableSelected:'تم الاختيار',orderConfirmed:'تم التأكيد!',yourOrder:'رقم الطلب',deliveringTo:'طاولة',addedToCart:'تمت الإضافة',pickTableFirst:'اختر الطاولة',completeDelivery:'أكمل البيانات',addToCart:'أضف',welcome:'أهلاً!',enterName:'أدخل اسمك',enterPhone:'أدخل الهاتف',phoneRequired:'رقم الهاتف مطلوب',invalidPhone:'رقم هاتف غير صحيح',myOrders:'طلباتي',signUp:'تسجيل',login:'دخول',guest:'ضيف',fullName:'الاسم الكامل',email:'البريد',password:'كلمة المرور',createAccount:'إنشاء حساب',continueAsGuest:'متابعة كضيف'},
+        ru:{menu:'Меню',cart:'Корзина',selectTable:'Стол',viewCart:'Корзина',confirmOrder:'ОК',chooseTable:'Стол',noItems:'Пусто',cartEmpty:'Пусто',subtotal:'Сумма',tax:'Налог',service:'Сервис',total:'Итого',dineIn:'Зал',delivery:'Доставка',name:'Имя',phone:'Тел',address:'Адрес',pickTable:'Стол',noTable:'Нет',tableSelected:'Выбран',orderConfirmed:'ОК!',yourOrder:'Номер',deliveringTo:'Стол',addedToCart:'ОК',pickTableFirst:'Выберите стол',completeDelivery:'Данные',addToCart:'Добавить',welcome:'Добро пожаловать!',enterName:'Введите имя',enterPhone:'Введите телефон',phoneRequired:'Телефон обязателен',invalidPhone:'Неверный телефон',myOrders:'Мои заказы',signUp:'Регистрация',login:'Вход',guest:'Гость',fullName:'Полное имя',email:'Email',password:'Пароль',createAccount:'Создать',continueAsGuest:'Как гость'},
+        de:{menu:'Menü',cart:'Warenkorb',selectTable:'Tisch',viewCart:'Warenkorb',confirmOrder:'OK',chooseTable:'Tisch',noItems:'Leer',cartEmpty:'Leer',subtotal:'Summe',tax:'Steuer',service:'Service',total:'Gesamt',dineIn:'Lokal',delivery:'Lieferung',name:'Name',phone:'Tel',address:'Adresse',pickTable:'Tisch',noTable:'Kein',tableSelected:'Gewählt',orderConfirmed:'OK!',yourOrder:'Nummer',deliveringTo:'Tisch',addedToCart:'OK',pickTableFirst:'Tisch wählen',completeDelivery:'Daten',addToCart:'Hinzufügen',welcome:'Willkommen!',enterName:'Name eingeben',enterPhone:'Telefon eingeben',phoneRequired:'Telefon erforderlich',invalidPhone:'Ungültige Nummer',myOrders:'Meine Bestellungen',signUp:'Registrieren',login:'Anmelden',guest:'Gast',fullName:'Vollständiger Name',email:'Email',password:'Passwort',createAccount:'Erstellen',continueAsGuest:'Als Gast'},
+        it:{menu:'Menù',cart:'Carrello',selectTable:'Tavolo',viewCart:'Carrello',confirmOrder:'OK',chooseTable:'Tavolo',noItems:'Vuoto',cartEmpty:'Vuoto',subtotal:'Totale',tax:'Tasse',service:'Servizio',total:'Totale',dineIn:'Sala',delivery:'Consegna',name:'Nome',phone:'Tel',address:'Indirizzo',pickTable:'Tavolo',noTable:'No',tableSelected:'Scelto',orderConfirmed:'OK!',yourOrder:'Numero',deliveringTo:'Tavolo',addedToCart:'OK',pickTableFirst:'Scegli tavolo',completeDelivery:'Dati',addToCart:'Aggiungi',welcome:'Benvenuto!',enterName:'Inserisci nome',enterPhone:'Inserisci telefono',phoneRequired:'Telefono obbligatorio',invalidPhone:'Numero non valido',myOrders:'I miei ordini',signUp:'Registrati',login:'Accedi',guest:'Ospite',fullName:'Nome completo',email:'Email',password:'Password',createAccount:'Crea',continueAsGuest:'Come ospite'}
+    };
+
+    function t(key){return(translations[st.lang]&&translations[st.lang][key])||translations.en[key]||key}
     function $(id){return document.getElementById(id)}
     function price(p){return(p&&p.prices&&p.prices[st.cur])||0}
     function fmt(v){return(st.cur==='USD'||st.cur==='EUR')?sym[st.cur]+v.toFixed(2):v.toFixed(2)+' '+sym[st.cur]}
@@ -370,18 +376,14 @@
     function showToast(msg){var el=$('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(el._tid);el._tid=setTimeout(function(){el.classList.remove('show')},2000)}
 
     // ✅ إغلاق المودال
-    window.closeModal = function(id){var m=$(id);if(m)m.classList.remove('show')};
-    window.closeDetail = function(){closeModal('detailModal')};
+    window.closeModal=function(id){var m=$(id);if(m)m.classList.remove('show')};
+    window.closeDetail=function(){closeModal('detailModal')};
     document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal('authModal');closeModal('detailModal')}});
 
     // ✅ Auth
     auth.onAuthStateChanged(function(user){
-        if(user){
-            currentUser=user;
-            db.ref('customers/'+user.uid).once('value').then(function(snap){
-                if(snap.exists()){currentCustomer=snap.val();currentCustomer.uid=user.uid;updateCustomerUI();}
-            });
-        }else{currentUser=null;currentCustomer=null;updateCustomerUI();}
+        if(user){currentUser=user;db.ref('customers/'+user.uid).once('value').then(function(snap){if(snap.exists()){currentCustomer=snap.val();currentCustomer.uid=user.uid;updateCustomerUI();}});}
+        else{currentUser=null;currentCustomer=null;updateCustomerUI();}
     });
 
     window.showAuthModal=function(){$('authModal').classList.add('show');showSignup()};
@@ -394,50 +396,33 @@
         var phone=$('signupPhone').value.trim();
         var email=$('signupEmail').value.trim();
         var password=$('signupPassword').value;
-        if(!name||!phone||!email||!password){showToast('⚠️ Fill all fields');return}
-        if(password.length<6){showToast('⚠️ Password 6+ chars');return}
+        if(!name||!phone||!email||!password){showToast('⚠️ '+t('completeDelivery'));return}
+        if(password.length<6){showToast('⚠️ Password 6+');return}
         auth.createUserWithEmailAndPassword(email,password).then(function(cred){
             var user=cred.user;
             var customerData={name:name,phone:phone,email:email,uid:user.uid,createdAt:new Date().toISOString()};
-            db.ref('customers/'+user.uid).set(customerData).then(function(){
-                currentCustomer=customerData;currentUser=user;
-                closeModal('authModal');
-                updateCustomerUI();
-                showToast('👋 '+name);
-            });
+            db.ref('customers/'+user.uid).set(customerData).then(function(){currentCustomer=customerData;currentUser=user;closeModal('authModal');updateCustomerUI();showToast('👋 '+name);});
         }).catch(function(e){showToast('⚠️ '+e.message)});
     };
     
     window.loginWithEmail=function(){
         var email=$('loginEmail').value.trim();
         var password=$('loginPassword').value;
-        auth.signInWithEmailAndPassword(email,password).then(function(){
-            closeModal('authModal');
-            showToast('👋 Welcome back!');
-        }).catch(function(e){showToast('⚠️ '+e.message)});
+        auth.signInWithEmailAndPassword(email,password).then(function(){closeModal('authModal');showToast('👋 Welcome!');}).catch(function(e){showToast('⚠️ '+e.message)});
     };
     
     window.continueAsGuest=function(){
         var name=$('guestName').value.trim();
         var phone=$('guestPhone').value.trim();
-        if(!name||!phone){showToast('⚠️ Fill all fields');return}
+        if(!name||!phone){showToast('⚠️ '+t('completeDelivery'));return}
         currentCustomer={id:'guest_'+Date.now(),name:name,phone:phone,type:'guest'};
-        closeModal('authModal');
-        updateCustomerUI();
-        showToast('👋 '+name);
+        closeModal('authModal');updateCustomerUI();showToast('👋 '+name);
     };
 
     function updateCustomerUI(){
         var avatar=$('customerAvatar');var name=$('customerName');var btn=$('customerLoginBtn');var info=$('customerInfo');
-        if(currentCustomer){
-            if(avatar)avatar.textContent=currentCustomer.name.charAt(0).toUpperCase();
-            if(name)name.textContent=currentCustomer.name;
-            if(btn)btn.style.display='none';
-            if(info)info.style.display='flex';
-        }else{
-            if(btn)btn.style.display='flex';
-            if(info)info.style.display='none';
-        }
+        if(currentCustomer){if(avatar)avatar.textContent=currentCustomer.name.charAt(0).toUpperCase();if(name)name.textContent=currentCustomer.name;if(btn)btn.style.display='none';if(info)info.style.display='flex';}
+        else{if(btn)btn.style.display='flex';if(info)info.style.display='none';}
     }
 
     window.goToOrders=function(){
@@ -448,29 +433,36 @@
         var container=$('ordersContainer');
         var customerId=currentCustomer.uid||currentCustomer.id;
         db.ref('customers/'+customerId+'/orders').once('value').then(function(snap){
-            if(snap.exists()){
-                var orders=snap.val();
-                if(!Array.isArray(orders))orders=Object.values(orders);
-                if(orders.length===0){container.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">📋 No orders yet</p>';return}
-                container.innerHTML=orders.reverse().map(function(o){
-                    var statusClass=o.st||'pending';
-                    return '<div class="order-card"><div class="order-card-header"><span class="order-card-id">#'+o.id+'</span><span class="order-card-status '+statusClass+'">'+statusClass+'</span></div><div class="order-card-items">'+(o.items?o.items.map(function(i){return i.n+' ×'+i.q}).join(', '):'')+'</div><div class="order-card-total">'+o.tot+' EGP</div></div>';
-                }).join('');
-            }else{
-                container.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">📋 No orders yet</p>';
-            }
+            if(snap.exists()){var orders=snap.val();if(!Array.isArray(orders))orders=Object.values(orders);if(orders.length===0){container.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">📋 '+t('noItems')+'</p>';return}
+                container.innerHTML=orders.reverse().map(function(o){var statusClass=o.st||'pending';return '<div class="order-card"><div class="order-card-header"><span class="order-card-id">#'+o.id+'</span><span class="order-card-status '+statusClass+'">'+statusClass+'</span></div><div class="order-card-items">'+(o.items?o.items.map(function(i){return i.n+' ×'+i.q}).join(', '):'')+'</div><div class="order-card-total">'+o.tot+' EGP</div></div>';}).join('');
+            }else{container.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">📋 '+t('noItems')+'</p>';}
         });
     };
 
+    // ✅ الترجمة الكاملة عند تغيير اللغة
     window.toggleLangDrop=function(){var d=$('langDrop');if(d)d.classList.toggle('open')};
     window.setLang=function(lang){
         st.lang=lang;
         document.body.className=lang;
         document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+        document.documentElement.lang=lang;
         var ll=$('langLabel');if(ll)ll.textContent=lang.toUpperCase();
         var d=$('langDrop');if(d)d.classList.remove('open');
+        document.querySelectorAll('.hero-lang-opt').forEach(function(o){o.classList.toggle('active',o.dataset.lang===lang)});
+        applyTranslations();
         showToast('🌐 '+lang.toUpperCase());
     };
+
+    function applyTranslations(){
+        var map={menuLabel:'menu',cartTitle:'cart',tableTitle:'selectTable',ordersTitle:'myOrders',lblSubtotal:'subtotal',lblTax:'tax',lblService:'service',lblTotal:'total',pickTableLabel:'pickTable',lblName:'name',lblPhone:'phone',lblAddress:'address',successTitle:'orderConfirmed',successMsg:'yourOrder',modalAddBtn:'addToCart',authTitle:'welcome',signupTab:'signUp',loginTab:'login',guestTab:'guest',lblSignupName:'fullName',lblSignupPhone:'phone',lblSignupEmail:'email',lblSignupPassword:'password',lblLoginEmail:'email',lblLoginPassword:'password',lblGuestName:'name',lblGuestPhone:'phone',signupBtn:'createAccount',loginBtn:'login',guestBtn:'continueAsGuest'};
+        Object.keys(map).forEach(function(id){var el=$(id);if(el)el.textContent=t(map[id])});
+        var dbn=$('dineInBtn');if(dbn)dbn.textContent='🏠 '+t('dineIn');
+        var dvb=$('deliveryBtn');if(dvb)dvb.textContent='🛵 '+t('delivery');
+        var ct=$('cartTitle');if(ct)ct.textContent='🛒 '+t('cart');
+        var tt=$('tableTitle');if(tt)tt.textContent='🪑 '+t('selectTable');
+        var ot=$('ordersTitle');if(ot)ot.textContent='📋 '+t('myOrders');
+    }
+
     window.goBack=function(){if(st.history.length>1){st.history.pop();st.screen=st.history[st.history.length-1];document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-'+st.screen).classList.add('active');updateAllBadges()}};
     window.goToCart=function(){st.history.push('cart');st.screen='cart';document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-cart').classList.add('active');updateAllBadges()};
     window.setCur=function(cur,el){st.cur=cur;document.querySelectorAll('.cur-chip').forEach(function(c){c.classList.remove('active')});el.classList.add('active');renderProducts();updateCartUI()};
@@ -478,40 +470,24 @@
     window.setOrderType=function(type,el){st.orderType=type;document.querySelectorAll('.order-type-btn').forEach(function(b){b.classList.remove('active')});el.classList.add('active');$('tablesBox').style.display=type==='dine-in'?'block':'none';$('deliveryFormBox').style.display=type==='delivery'?'block':'none'};
     window.handleBigBtn=function(){var cnt=cartCount();if(st.screen==='menu'){if(cnt>0)goToCart()}else if(st.screen==='cart'){if(TABLE_ID||st.selTable||(st.orderType==='delivery'&&currentCustomer)){confirmOrder()}else{st.history.push('table');st.screen='table';document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-table').classList.add('active');renderTables()}}else if(st.screen==='table'){confirmOrder()}};
 
-    function updateAllBadges(){var cnt=cartCount();var hb=$('heroCartBadge');if(hb){hb.textContent=cnt;hb.style.display=cnt>0?'flex':'none'}var bb=$('bigBtn');if(bb){if(st.screen==='menu'){bb.innerHTML='🛒 Cart ('+cnt+')';bb.disabled=cnt===0}else if(st.screen==='cart'){bb.innerHTML='✨ Confirm Order';bb.disabled=cnt===0}else if(st.screen==='table'){bb.innerHTML='✨ Confirm Order';bb.disabled=false}}}
+    function updateAllBadges(){var cnt=cartCount();var hb=$('heroCartBadge');if(hb){hb.textContent=cnt;hb.style.display=cnt>0?'flex':'none'}var bb=$('bigBtn');if(bb){if(st.screen==='menu'){bb.innerHTML='🛒 '+t('viewCart')+' ('+cnt+')';bb.disabled=cnt===0}else if(st.screen==='cart'){bb.innerHTML='✨ '+t('confirmOrder');bb.disabled=cnt===0}else if(st.screen==='table'){bb.innerHTML='✨ '+t('confirmOrder');bb.disabled=false}}}
 
     async function loadSplashData(){
-        try{
-            var is=await db.ref('info').once('value');
-            if(is.exists()){
-                restaurant=is.val();
-                var sl=$('splashLogo');if(sl&&restaurant.logo){sl.innerHTML='<img src="'+restaurant.logo+'" alt="Logo">'}
-                var sn=$('splashName');if(sn&&restaurant.name){sn.textContent=restaurant.name}
-                if(restaurant.name){document.title=restaurant.name+' | QR Menu'}
-            }
-        }catch(e){console.error(e)}
+        try{var is=await db.ref('info').once('value');if(is.exists()){restaurant=is.val();var sl=$('splashLogo');if(sl&&restaurant.logo){sl.innerHTML='<img src="'+restaurant.logo+'" alt="Logo">'}var sn=$('splashName');if(sn&&restaurant.name){sn.textContent=restaurant.name}if(restaurant.name){document.title=restaurant.name+' | QR Menu'}}}catch(e){}
     }
 
     async function loadData(){
         var lo=$('loadingOverlay');if(lo)lo.classList.add('show');
         try{
-            var results=await Promise.all([
-                db.ref('info').once('value'),
-                db.ref('menu').once('value'),
-                db.ref('tables').once('value'),
-                db.ref('categories').once('value')
-            ]);
+            var results=await Promise.all([db.ref('info').once('value'),db.ref('menu').once('value'),db.ref('tables').once('value'),db.ref('categories').once('value')]);
             if(results[0].exists()){restaurant=results[0].val()}
-            if(results[1].exists()){var md=results[1].val();products=Array.isArray(md)?md:Object.values(md)}
+            if(results[1].exists()){var md=results[1].val();originalProducts=Array.isArray(md)?md:Object.values(md);products=JSON.parse(JSON.stringify(originalProducts))}
             if(results[2].exists()){var td=results[2].val();tables=Array.isArray(td)?td:Object.values(td)}
-            if(results[3].exists()){var cd=results[3].val();categories=Array.isArray(cd)?cd:Object.values(cd)}
-        }catch(e){console.error(e)}
-        if(!restaurant)restaurant={};
-        if(!products)products=[];
-        if(!tables)tables=[];
-        if(!categories)categories=[];
+            if(results[3].exists()){var cd=results[3].val();originalCategories=Array.isArray(cd)?cd:Object.values(cd);categories=JSON.parse(JSON.stringify(originalCategories))}
+        }catch(e){}
+        if(!restaurant)restaurant={};if(!products)products=[];if(!tables)tables=[];if(!categories)categories=[];
         if(lo)lo.classList.remove('show');
-        renderRestaurantUI();renderCats();renderProducts();renderTables();updateCartUI();updateAllBadges();
+        renderRestaurantUI();renderCats();renderProducts();renderTables();updateCartUI();updateAllBadges();applyTranslations();
     }
 
     function renderRestaurantUI(){
@@ -519,16 +495,16 @@
         var bg=$('menuHeroBg');if(bg)bg.style.backgroundImage=restaurant.image?'url('+restaurant.image+')':'';
         var title=$('menuHeroTitle');if(title)title.textContent=restaurant.name||'';
         var desc=$('menuHeroDesc');if(desc)desc.textContent=restaurant.desc||restaurant.description||'';
-        var meta=$('menuHeroMeta');
-        if(meta){var m='';if(restaurant.area)m+='<span>📍 '+restaurant.area+'</span>';if(restaurant.cuisine)m+='<span>🍽️ '+restaurant.cuisine+'</span>';meta.innerHTML=m}
+        var meta=$('menuHeroMeta');if(meta){var m='';if(restaurant.area)m+='<span>📍 '+restaurant.area+'</span>';if(restaurant.cuisine)m+='<span>🍽️ '+restaurant.cuisine+'</span>';meta.innerHTML=m}
         if(restaurant.logo){var hl=$('heroLogo');if(hl)hl.innerHTML='<img src="'+restaurant.logo+'" alt="">'}
         if(TABLE_ID){var tag=$('tableTag');if(tag)tag.style.display='inline-flex';var tn=$('tableTagNum');if(tn)tn.textContent=TABLE_ID}
     }
 
     function renderCats(){
         var row=$('catsRow');if(!row)return;
-        var cats=[{id:'all',emoji:'🌟',name:'All'}];
+        var cats=[{id:'all',emoji:'🌟',name:st.lang==='ar'?'الكل':'All'}];
         categories.forEach(function(c){cats.push({id:c.id,emoji:c.emoji||'🍽️',name:c.name||c.id})});
+        if(categories.length===0){var seen={};products.forEach(function(p){if(p&&p.cat&&!seen[p.cat]){seen[p.cat]=1;cats.push({id:p.cat,emoji:'🍽️',name:p.cat})}})}
         row.innerHTML=cats.map(function(c){return '<button class="cat-chip '+(c.id==='all'?'active':'')+'" onclick="filterCat(\''+c.id+'\',this)">'+c.emoji+' '+c.name+'</button>'}).join('');
     }
     window.filterCat=function(cat,el){document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active')});el.classList.add('active');renderProducts(cat)};
@@ -538,21 +514,10 @@
         var c=$('prodContainer');if(!c)return;
         var items=cat==='all'?products:products.filter(function(p){return p&&p.cat===cat});
         var ic=$('itemCount');if(ic)ic.textContent=items.length+' items';
-        if(items.length===0){c.innerHTML='<div style="text-align:center;padding:2rem;color:#636366;">🍽️ No items</div>';return}
+        if(items.length===0){c.innerHTML='<div style="text-align:center;padding:2rem;color:#636366;">🍽️ '+t('noItems')+'</div>';return}
         var html='';
-        if(st.viewMode==='grid'){
-            c.className='prod-grid';
-            html=items.map(function(p){
-                var img=p.image?'<img src="'+p.image+'" alt="">':(p.emoji||'🍽️');
-                return '<div class="prod-card" data-pid="'+p.id+'"><div class="prod-card-media">'+img+'</div><div class="prod-card-body"><div class="prod-card-name">'+p.name+'</div><div class="prod-card-desc">'+(p.desc||'')+'</div><div class="prod-card-bottom"><span class="prod-card-price">'+fmt(price(p))+'</span><button class="prod-card-add" data-pid="'+p.id+'">+</button></div></div></div>';
-            }).join('');
-        }else{
-            c.className='prod-list';
-            html=items.map(function(p){
-                var img=p.image?'<img src="'+p.image+'" alt="">':(p.emoji||'🍽️');
-                return '<div class="prod-item" data-pid="'+p.id+'"><div class="prod-visual">'+img+'</div><div class="prod-details"><div class="prod-title">'+p.name+'</div><div class="prod-subtitle">'+(p.desc||'')+'</div></div><div class="prod-price-tag">'+fmt(price(p))+'</div><button class="prod-add-btn" data-pid="'+p.id+'">+</button></div>';
-            }).join('');
-        }
+        if(st.viewMode==='grid'){c.className='prod-grid';html=items.map(function(p){var img=p.image?'<img src="'+p.image+'" alt="">':(p.emoji||'🍽️');return '<div class="prod-card" data-pid="'+p.id+'"><div class="prod-card-media">'+img+'</div><div class="prod-card-body"><div class="prod-card-name">'+p.name+'</div><div class="prod-card-desc">'+(p.desc||'')+'</div><div class="prod-card-bottom"><span class="prod-card-price">'+fmt(price(p))+'</span><button class="prod-card-add" data-pid="'+p.id+'">+</button></div></div></div>';}).join('');}
+        else{c.className='prod-list';html=items.map(function(p){var img=p.image?'<img src="'+p.image+'" alt="">':(p.emoji||'🍽️');return '<div class="prod-item" data-pid="'+p.id+'"><div class="prod-visual">'+img+'</div><div class="prod-details"><div class="prod-title">'+p.name+'</div><div class="prod-subtitle">'+(p.desc||'')+'</div></div><div class="prod-price-tag">'+fmt(price(p))+'</div><button class="prod-add-btn" data-pid="'+p.id+'">+</button></div>';}).join('');}
         c.innerHTML=html;
         c.querySelectorAll('.prod-card,.prod-item').forEach(function(el){el.addEventListener('click',function(e){if(e.target.closest('.prod-card-add')||e.target.closest('.prod-add-btn'))return;openDetail(parseInt(this.dataset.pid))})});
         c.querySelectorAll('.prod-card-add,.prod-add-btn').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();addToCart(parseInt(this.dataset.pid))})});
@@ -560,37 +525,31 @@
 
     function openDetail(pid){
         var p=products.find(function(x){return x.id===pid});if(!p)return;
-        var mv=$('modalVisual');
-        if(mv){if(p.image){mv.innerHTML='<img src="'+p.image+'" alt="">'}else{mv.textContent=p.emoji||'🍽️'}}
-        $('modalName').textContent=p.name;
-        $('modalDesc').textContent=p.desc||'';
-        $('modalPrice').textContent=fmt(price(p));
+        var mv=$('modalVisual');if(mv){if(p.image){mv.innerHTML='<img src="'+p.image+'" alt="">'}else{mv.textContent=p.emoji||'🍽️'}}
+        $('modalName').textContent=p.name;$('modalDesc').textContent=p.desc||'';$('modalPrice').textContent=fmt(price(p));
         $('detailModal').classList.add('show');
         $('modalAddBtn').onclick=function(){addToCart(pid);closeDetail()};
     }
 
-    function addToCart(pid){var ex=cart.find(function(i){return i.id===pid});if(ex)ex.qty++;else cart.push({id:pid,qty:1});updateAllBadges();updateCartUI();showToast('✨ Added')}
+    function addToCart(pid){var ex=cart.find(function(i){return i.id===pid});if(ex)ex.qty++;else cart.push({id:pid,qty:1});updateAllBadges();updateCartUI();showToast('✨ '+t('addedToCart'))}
     function qtyChange(pid,d){var it=cart.find(function(i){return i.id===pid});if(!it)return;it.qty+=d;if(it.qty<=0)cart=cart.filter(function(i){return i.id!==pid});updateAllBadges();updateCartUI()}
     function updateCartUI(){
         var wrap=$('cartItemsWrap');if(!wrap)return;
         var sub=cartTotal(),tax=sub*0.14,svc=sub*0.10,tot=sub+tax+svc;
-        if(cart.length===0){wrap.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">🛒 Empty</p>'}
-        else{
-            wrap.innerHTML=cart.map(function(i){var p=products.find(function(x){return x.id===i.id});if(!p)return'';return '<div class="cart-item-row"><div class="cart-item-emoji">'+(p.emoji||'🍽️')+'</div><div class="cart-item-info"><div class="cart-item-title">'+p.name+'</div><div class="cart-item-price">'+fmt(price(p))+' × '+i.qty+'</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="'+i.id+'" data-d="-1">-</button><span class="qty-n">'+i.qty+'</span><button class="qty-b" data-pid="'+i.id+'" data-d="1">+</button></div></div>'}).join('');
-            wrap.querySelectorAll('.qty-b').forEach(function(b){b.addEventListener('click',function(){qtyChange(+this.dataset.pid,+this.dataset.d)})});
-        }
+        if(cart.length===0){wrap.innerHTML='<p style="text-align:center;color:#636366;padding:2rem;">🛒 '+t('cartEmpty')+'</p>'}
+        else{wrap.innerHTML=cart.map(function(i){var p=products.find(function(x){return x.id===i.id});if(!p)return'';return '<div class="cart-item-row"><div class="cart-item-emoji">'+(p.emoji||'🍽️')+'</div><div class="cart-item-info"><div class="cart-item-title">'+p.name+'</div><div class="cart-item-price">'+fmt(price(p))+' × '+i.qty+'</div></div><div class="cart-qty-ctrl"><button class="qty-b" data-pid="'+i.id+'" data-d="-1">-</button><span class="qty-n">'+i.qty+'</span><button class="qty-b" data-pid="'+i.id+'" data-d="1">+</button></div></div>'}).join('');wrap.querySelectorAll('.qty-b').forEach(function(b){b.addEventListener('click',function(){qtyChange(+this.dataset.pid,+this.dataset.d)})});}
         $('sumSub').textContent=fmt(sub);$('sumTax').textContent=fmt(tax);$('sumSvc').textContent=fmt(svc);$('sumTotal').textContent=fmt(tot);
     }
 
     function renderTables(){
         var floor=$('tablesFloor');if(!floor)return;
-        if(!tables||tables.length===0){floor.innerHTML='<div style="text-align:center;padding:1rem;color:#636366;">No tables</div>';return}
+        if(!tables||tables.length===0){floor.innerHTML='<div style="text-align:center;padding:1rem;color:#636366;">'+t('noItems')+'</div>';return}
         floor.innerHTML=tables.map(function(tb){return '<div class="table-3d-cell '+(tb.occupied?'occupied':'')+' '+(st.selTable===tb.id?'selected':'')+'" data-tid="'+tb.id+'"><span class="table-dot"></span><span class="table-num">'+tb.id+'</span><span class="table-seats">'+(tb.seats||2)+' seats</span></div>'}).join('');
-        floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();$('tableSelInfo').textContent='✅ Table #'+st.selTable;updateAllBadges()})});
+        floor.querySelectorAll('.table-3d-cell:not(.occupied)').forEach(function(cell){cell.addEventListener('click',function(){st.selTable=+this.dataset.tid;renderTables();$('tableSelInfo').textContent='✅ '+t('tableSelected')+' #'+st.selTable;updateAllBadges()})});
     }
 
     function confirmOrder(){
-        if(cart.length===0){showToast('Cart is empty');return}
+        if(cart.length===0){showToast(t('cartEmpty'));return}
         if(!currentCustomer){showAuthModal();return}
         var orderId=Date.now();
         var customerId=currentCustomer.uid||currentCustomer.id;
@@ -599,7 +558,7 @@
         db.ref('customers/'+customerId+'/orders').once('value').then(function(snap){var ords=snap.exists()?snap.val():[];if(!Array.isArray(ords))ords=Object.values(ords);ords.push(order);db.ref('customers/'+customerId+'/orders').set(ords).catch(function(){})});
         if(st.selTable){db.ref('tables/'+st.selTable).once('value').then(function(snap){var td=snap.exists()?snap.val():{id:st.selTable,seats:2,occupied:true};if(!td.ords)td.ords=[];td.ords.push(order);td.occupied=true;db.ref('tables/'+st.selTable).update(td).catch(function(){})})}
         $('orderIdBadge').textContent='#'+Math.floor(1000+Math.random()*9000);
-        $('successTableInfo').textContent=st.selTable?'Table #'+st.selTable:'Delivery';
+        $('successTableInfo').textContent=st.selTable?t('deliveringTo')+' #'+st.selTable:t('delivery');
         launchConfetti();
         $('successOverlay').classList.add('show');
         setTimeout(function(){$('successOverlay').classList.remove('show');cart=[];st.selTable=TABLE_ID||null;st.history=['menu'];st.screen='menu';document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active')});$('screen-menu').classList.add('active');updateAllBadges();updateCartUI();renderProducts();renderTables()},3000);
@@ -609,17 +568,7 @@
 
     function createParticles(){
         var box=$('splashParticles');if(!box)return;
-        for(var i=0;i<30;i++){
-            var p=document.createElement('div');
-            p.className='splash-particle';
-            p.style.left=Math.random()*100+'%';
-            p.style.top=Math.random()*100+'%';
-            p.style.animationDelay=Math.random()*3+'s';
-            p.style.animationDuration=(3+Math.random()*3)+'s';
-            p.style.width=(2+Math.random()*3)+'px';
-            p.style.height=p.style.width;
-            box.appendChild(p);
-        }
+        for(var i=0;i<30;i++){var p=document.createElement('div');p.className='splash-particle';p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*3+'s';p.style.animationDuration=(3+Math.random()*3)+'s';p.style.width=(2+Math.random()*3)+'px';p.style.height=p.style.width;box.appendChild(p);}
     }
 
     createParticles();
