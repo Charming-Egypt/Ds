@@ -62,7 +62,19 @@ img{display:block;max-width:100%}
 .sp-bar{margin-top:32px;width:140px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
 .sp-bar::after{content:'';display:block;height:100%;width:30%;background:var(--grad);animation:barSlide 1.4s ease-in-out infinite}
 @keyframes barSlide{0%{transform:translateX(-100%)}100%{transform:translateX(450%)}}
+/* SPLASH FOOTER - POWERED BY */
+.sp-footer{position:absolute;bottom:calc(28px + var(--sb));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeUp 1s var(--ease) 1.2s both;z-index:2}
+.sp-footer .pb-label{font-size:.55rem;letter-spacing:.4em;text-transform:uppercase;color:var(--ink3)}
+.sp-footer a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:'Syncopate',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;padding:12px 24px;border-radius:100px;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);position:relative;overflow:hidden;transition:all .3s var(--ease)}
+.sp-footer a::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,61,127,.15) 50%,transparent 60%);transform:translateX(-100%);animation:shine 3s ease-in-out infinite}
+@keyframes shine{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+.sp-footer a:active{transform:scale(.95)}
+.sp-footer .ds-mark{width:26px;height:26px;border-radius:8px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;box-shadow:0 4px 12px rgba(255,61,127,.4)}
+.sp-footer .ds-name{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
+
+
+  
 /* TOP BAR */
 .topbar{padding:calc(14px + var(--st)) 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;background:linear-gradient(to bottom,var(--bg) 70%,transparent)}
 .logo-sm{display:flex;align-items:center;gap:10px}
@@ -328,6 +340,14 @@ body.ar .hero-nav.next{right:auto;left:8px}
   <div class="sp-name" id="spName">Fares</div>
   <div class="sp-sub" id="spSub">Sea Food</div>
   <div class="sp-bar"></div>
+  
+  <!-- Powered by Discover Sharm -->
+  <div class="sp-footer">
+    <span class="pb-label">Powered by</span>
+    <a href="https://www.discover-sharm.com" target="_blank" rel="noopener">
+      <span class="ds-name">DISCOVER SHARM</span>
+    </a>
+  </div>
 </div>
 
 <div class="shell">
@@ -986,7 +1006,7 @@ function renderTrendCard(p,i){
 
 function renderCats(){
   let el=$('cats');if(!el)return;
-  let cats=[{id:'all',name:t('all'),emoji:'✨'}];
+  let cats=[{id:'all',name:t('all'),emoji:''}];
   categories.forEach(c=>cats.push({id:c.id,name:c.name||c.id,emoji:c.emoji||'🍽️'}));
   if(!categories.length){let s={};products.forEach(p=>{if(p.cat&&!s[p.cat]){s[p.cat]=1;cats.push({id:p.cat,name:p.cat,emoji:'🍽️'})}})}
   el.innerHTML=cats.map(c=>`<button class="cat ${st.cat===c.id?'on':''}" onclick="setCat('${esc(c.id)}')"><span class="e">${c.emoji}</span>${esc(c.name)}</button>`).join('');
@@ -1029,7 +1049,7 @@ function renderCart(){
       <div class="sum-r"><span>${esc(t('service'))}</span><span>${fmt(svc)}</span></div>
       <div class="sum-r tot"><span>${esc(t('total'))}</span><span>${fmt(tot)}</span></div>
     </div>
-    <button class="big-btn" onclick="openCk()"><span>✨</span> ${esc(t('checkout'))} • ${fmt(tot)}</button>
+    <button class="big-btn" onclick="openCk()"><span></span> ${esc(t('checkout'))} • ${fmt(tot)}</button>
   `;
 }
 
@@ -1073,14 +1093,14 @@ function addCart(pid,btn){
   if(ex)ex.qty++;else cart.push({id:pid,qty:1});
   saveL();updateBadges();renderCart();renderMenuGrid();renderHero();renderTrend();
   if(btn){btn.classList.add('done');fly(btn)}
-  toast('✨ '+t('added'));
+  toast(' '+t('added'));
   if(navigator.vibrate)navigator.vibrate(15);
 }
 
 function fly(btn){
   if(!btn)return;
   let r=btn.getBoundingClientRect();
-  let f=document.createElement('div');f.className='fly';f.textContent='✨';
+  let f=document.createElement('div');f.className='fly';f.textContent='';
   f.style.left=r.left+'px';f.style.top=r.top+'px';
   document.body.appendChild(f);
   let nav=document.querySelector('.nav-i[data-pg="cart"]');
@@ -1201,7 +1221,7 @@ function doLogin(){
   let e=$('loginEmail').value.trim(),pw=$('loginPass').value;
   if(!e||!pw){toast('⚠️ '+t('fill'));return}
   auth.signInWithEmailAndPassword(e,pw).then(u=>{
-    closeAu();toast('✨ Welcome!');
+    closeAu();toast(' Welcome!');
     if(u.user){
       db.ref('customers/'+u.user.uid).once('value').then(s=>{
         if(s.exists()){currentCustomer={...s.val(),uid:u.user.uid};userPoints=s.val().points||0}
@@ -1224,7 +1244,7 @@ function doSignup(){
       userPoints=10;
       localStorage.removeItem('luxe_guest');
       saveL();closeAu();updateUser();
-      toast('✨ Welcome! +10 points');
+      toast(' Welcome! +10 points');
     });
   }).catch(e=>toast('⚠️ '+e.message));
 }
@@ -1235,7 +1255,7 @@ function doGuest(){
   currentCustomer={id:'guest_'+Date.now(),name:n,phone:p,type:'guest'};
   localStorage.setItem('luxe_guest',JSON.stringify(currentCustomer));
   closeAu();updateUser();
-  toast('✨ '+n);
+  toast(' '+n);
 }
 
 function doLogout(){
