@@ -80,7 +80,7 @@
         .loading-spinner { width: 45px; height: 45px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ✅ DESKTOP & TABLET LAYOUT (min-width: 768px) */
+        /* ✅ DESKTOP & TABLET LAYOUT */
         @media (min-width: 768px) {
             .page-wrapper { max-width: 1200px !important; padding: 0 1.5rem; }
             .hero-wrapper { min-height: 40vh; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; }
@@ -436,22 +436,20 @@
         </div>
     </div>
 
+    <!-- ✅ Load config.js first -->
+    <script src="/fares/js/config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
     <script>
-        // ✅ FIREBASE CONFIG (replace with your actual config)
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDfakeKey1234567890",
-            authDomain: "demo.firebaseapp.com",
-            databaseURL: "https://demo-default-rtdb.firebaseio.com",
-            projectId: "demo",
-            storageBucket: "demo.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
-        };
-        firebase.initializeApp(FIREBASE_CONFIG);
+        // Initialize Firebase with config from config.js
+        if (typeof FIREBASE_CONFIG !== 'undefined') {
+            firebase.initializeApp(FIREBASE_CONFIG);
+        } else {
+            console.error('FIREBASE_CONFIG not found in config.js');
+        }
+
         var db = firebase.database();
         var auth = firebase.auth();
         var urlParams = new URLSearchParams(window.location.search);
