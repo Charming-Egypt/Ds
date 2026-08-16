@@ -8,15 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="manifest.json">
-    <title>RestaurantOS Pro - Optimized</title>
+    <title>RestaurantOS Pro</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
-        :root{
-            --bg:#0a0e17;--surface:#121826;--surface2:#1a2235;--surface3:#243044;
-            --text:#ffffff;--text2:#a0aec0;--text3:#718096;--border:rgba(255,255,255,0.1);
-            --gold:#f0b90b;--gold3:#92400e;--red:#f87171;--orange:#fb923c;--green:#4ade80;--blue:#60a5fa;
-            --r:16px;--r2:20px;--r3:28px;--safe-b:env(safe-area-inset-bottom,20px);--safe-t:env(safe-area-inset-top,0px);
-        }
+        :root{--bg:#0a0e17;--surface:#121826;--surface2:#1a2235;--surface3:#243044;--text:#ffffff;--text2:#a0aec0;--text3:#718096;--border:rgba(255,255,255,0.1);--gold:#f0b90b;--gold3:#92400e;--red:#f87171;--orange:#fb923c;--green:#4ade80;--blue:#60a5fa;--r:16px;--r2:20px;--r3:28px;--safe-b:env(safe-area-inset-bottom,20px);--safe-t:env(safe-area-inset-top,0px)}
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;height:100dvh;overflow:hidden;-webkit-font-smoothing:antialiased;touch-action:manipulation;user-select:none;-webkit-user-select:none}
         ::-webkit-scrollbar{width:0;height:0}
@@ -32,7 +27,6 @@
         .sb-link{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 0.8rem;border-radius:var(--r);cursor:pointer;transition:all 0.2s;color:var(--text2);font-size:0.85rem;margin-bottom:0.08rem;position:relative}
         .sb-link:hover{background:var(--surface2);color:var(--text)}
         .sb-link.ac{background:rgba(240,185,11,0.1);color:var(--gold);font-weight:600}
-        .sb-badge{margin-left:auto;font-size:0.6rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:50px;background:rgba(248,113,113,0.2);color:var(--red)}
         .sb-ft{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);text-align:center;font-size:0.6rem;color:var(--text3)}
         .mn{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
         .stbar{height:var(--safe-t);flex-shrink:0}
@@ -101,8 +95,6 @@
         .mprice{font-weight:700;font-size:0.65rem;color:var(--gold);background:rgba(240,185,11,0.1);padding:0.15rem 0.5rem;border-radius:6px}
         .macts{display:flex;gap:0.3rem;margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border)}
         .mbtn{flex:1;padding:0.35rem;border-radius:8px;font-size:0.55rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-family:inherit}
-        .mbtn.e:hover{background:var(--blue);color:#fff}
-        .mbtn.d:hover{background:var(--red);color:#fff}
         .mqty{display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem}
         .mqty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center}
         .mqty-val{font-weight:700;font-size:0.8rem;min-width:30px;text-align:center}
@@ -219,7 +211,6 @@
         .tab-btn{flex:1;padding:0.5rem;border-radius:8px;font-size:0.7rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all 0.2s;border:none;background:transparent;font-family:inherit}
         .tab-btn.active{background:var(--gold);color:#000}
         .load-more-btn{width:100%;padding:0.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-weight:700;font-size:0.7rem;cursor:pointer;margin-top:0.8rem;font-family:inherit;transition:all 0.2s}
-        .load-more-btn:hover{background:var(--surface3)}
         .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
         @keyframes spin{to{transform:rotate(360deg)}}
     </style>
@@ -372,10 +363,52 @@
         </div>
     </div>
 
+    <!-- ✨ Audio Settings Modal (for Kitchen) -->
+    <div class="modal" id="audioSettingsModal">
+        <div class="mod-s">
+            <div class="mod-h">
+                <span class="mod-t">🗣️ Kitchen Voice Settings</span>
+                <button class="mod-x" onclick="closeAudioSettings()">✕</button>
+            </div>
+            <div class="mod-b">
+                <div style="margin-bottom:1rem">
+                    <label class="fd-l">🌍 Voice Language</label>
+                    <div class="tab-switcher">
+                        <button class="tab-btn" id="langEn" onclick="setSpeechLang('en-US',this)">🇺🇸 English</button>
+                        <button class="tab-btn" id="langAr" onclick="setSpeechLang('ar-EG',this)">🇪🇬 عربي</button>
+                    </div>
+                </div>
+                <div style="margin-bottom:1rem">
+                    <label class="fd-l">⚡ Voice Speed: <span id="speechRateVal2">0.9</span>x</label>
+                    <input type="range" min="0.5" max="1.5" step="0.1" id="speechRateSlider2" style="width:100%;accent-color:var(--gold)" onchange="setSpeechRate(this.value)">
+                </div>
+                <button class="btn btn-g btn-block" onclick="testVoice()" style="margin-bottom:0.8rem">🗣️ Test Voice</button>
+                <div style="margin-bottom:1rem">
+                    <label class="fd-l">✏️ Test Custom Text</label>
+                    <div style="display:flex;gap:0.5rem">
+                        <input class="fd-i" id="testVoiceText" placeholder="New Order Table 5" style="flex:1">
+                        <button class="btn btn-o btn-sm" onclick="testCustomText()">▶️</button>
+                    </div>
+                </div>
+                <div style="padding:0.8rem;background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:10px;font-size:0.6rem;color:var(--text2);line-height:1.6">
+                    💡 <strong>ملاحظات:</strong><br>
+                    • المتصفح هو اللي بينطق بصوت بشري<br>
+                    • يشتغل بدون إنترنت في معظم الأجهزة<br>
+                    • لو الصوت مش شغال، جرب Chrome
+                </div>
+            </div>
+            <div class="mod-f">
+                <button class="btn btn-g btn-block" onclick="closeAudioSettings()">✅ Done</button>
+            </div>
+        </div>
+    </div>
+
     <button class="new-order-btn" id="newOrderBtn" onclick="openNewOrder()">+</button>
     <button class="audio-unlock-btn" id="audioUnlockBtn" onclick="unlockAudio()">🔊 Tap to Enable Kitchen Alerts</button>
     <div class="twrap" id="twrap"></div>
 
+    <!-- ✨ Load Firebase config from external file FIRST -->
+    <script src="https://www.discover-sharm.com/fares/js/config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -386,8 +419,14 @@
         var $$=function(s,c){return(c||document).querySelectorAll(s);};
         var up=new URLSearchParams(window.location.search);
         var rid=up.get('restaurant')||up.get('id')||'1';
-        var firebaseConfig=null,db=null,fbReady=false;
-        try{firebaseConfig=JSON.parse(localStorage.getItem('fb_config_'+rid)||'null');}catch(e){}
+        
+        // ✨ Load config from external file (global window.firebaseConfig) or fallback
+        var firebaseConfig=window.firebaseConfig||null;
+        if(!firebaseConfig){
+            try{firebaseConfig=JSON.parse(localStorage.getItem('fb_config_'+rid)||'null');}catch(e){}
+        }
+        
+        var db=null,fbReady=false;
         var currentUser=null;
         var users=[];
         var R={id:parseInt(rid),name:"RestaurantOS",phone:"",desc:"",cuisine:"",area:"",image:"",logo:""};
@@ -407,34 +446,28 @@
         var oldestLoadedDate=null;
 
         // ═══════════════════════════════════════════════════════════
-        // ✨ ADVANCED AUDIO MANAGER
+        // ✨ ADVANCED AUDIO MANAGER - Speech Synthesis Only
         // ═══════════════════════════════════════════════════════════
         var audioManager={
             context:null,
             unlocked:false,
             enabled:localStorage.getItem('audio_enabled_'+rid)==='true',
             pendingAlerts:[],
-            voiceMode:localStorage.getItem('voice_mode_'+rid)||'both',
-            customSoundData:localStorage.getItem('custom_sound_'+rid)||null,
-            customSoundAudio:null,
             speechVoice:null,
             speechRate:parseFloat(localStorage.getItem('speech_rate_'+rid)||'0.9'),
+            speechLang:localStorage.getItem('speech_lang_'+rid)||'en-US',
             
             init:function(){
                 var self=this;
                 if('speechSynthesis' in window){
                     function loadVoices(){
                         var voices=speechSynthesis.getVoices();
-                        self.speechVoice=voices.find(function(v){return v.lang==='en-US'&&v.name.indexOf('Google')>-1;})
-                            ||voices.find(function(v){return v.lang.startsWith('en');})
+                        self.speechVoice=voices.find(function(v){return v.lang===self.speechLang;})
+                            ||voices.find(function(v){return v.lang.startsWith(self.speechLang.split('-')[0]);})
                             ||voices[0]||null;
                     }
                     loadVoices();
                     speechSynthesis.onvoiceschanged=loadVoices;
-                }
-                if(this.customSoundData){
-                    this.customSoundAudio=new Audio(this.customSoundData);
-                    this.customSoundAudio.preload='auto';
                 }
                 if('serviceWorker' in navigator){
                     navigator.serviceWorker.register('sw.js').then(function(reg){
@@ -460,13 +493,10 @@
                 if('wakeLock' in navigator){
                     navigator.wakeLock.request('screen').then(function(sentinel){
                         self.wakeLockSentinel=sentinel;
-                        console.log('🔆 Wake Lock active');
                         sentinel.addEventListener('release',function(){
                             setTimeout(function(){self.requestWakeLock();},2000);
                         });
-                    }).catch(function(e){
-                        console.log('Wake Lock not available:',e);
-                    });
+                    }).catch(function(e){});
                 }
             },
             
@@ -492,6 +522,9 @@
                     this.pendingAlerts=[];
                     pending.forEach(function(a){audioManager.playAlert(a.type,a.data);});
                     toast('🔊 Kitchen alerts enabled!');
+                    if(Notification.permission==='default'){
+                        Notification.requestPermission();
+                    }
                     setTimeout(function(){audioManager.speakText('Audio enabled');},500);
                 }catch(e){
                     console.error('Audio unlock failed',e);
@@ -547,50 +580,30 @@
             },
             
             speakText:function(text){
-                if(!('speechSynthesis' in window))return;
-                if(this.voiceMode==='sound')return;
+                if(!('speechSynthesis' in window)){
+                    toast('⚠️ Speech not supported');
+                    return;
+                }
                 try{
                     speechSynthesis.cancel();
-                    var msg=new SpeechSynthesisUtterance(text);
-                    msg.lang='en-US';
-                    msg.rate=this.speechRate;
-                    msg.pitch=1.1;
-                    msg.volume=1;
-                    if(this.speechVoice)msg.voice=this.speechVoice;
-                    speechSynthesis.speak(msg);
+                    var self=this;
+                    this._speak(text,function(){
+                        setTimeout(function(){self._speak(text);},300);
+                    });
                 }catch(e){
                     console.log('Speech failed:',e);
                 }
             },
             
-            playCustomSound:function(){
-                if(this.customSoundAudio){
-                    try{
-                        this.customSoundAudio.currentTime=0;
-                        this.customSoundAudio.play().catch(function(e){console.log('Custom sound failed',e);});
-                        return true;
-                    }catch(e){return false;}
-                }
-                return false;
-            },
-            
-            playBell:function(){
-                if(!this.context||!this.unlocked)return;
-                try{
-                    var now=this.context.currentTime;
-                    var osc=this.context.createOscillator();
-                    var gain=this.context.createGain();
-                    osc.connect(gain);
-                    gain.connect(this.context.destination);
-                    osc.frequency.setValueAtTime(880,now);
-                    osc.frequency.setValueAtTime(988,now+0.12);
-                    osc.frequency.setValueAtTime(1047,now+0.24);
-                    osc.type='sine';
-                    gain.gain.setValueAtTime(0.4,now);
-                    gain.gain.exponentialRampToValueAtTime(0.01,now+0.5);
-                    osc.start(now);
-                    osc.stop(now+0.5);
-                }catch(e){}
+            _speak:function(text,onEnd){
+                var msg=new SpeechSynthesisUtterance(text);
+                msg.lang=this.speechLang||'en-US';
+                msg.rate=this.speechRate||0.9;
+                msg.pitch=1.1;
+                msg.volume=1;
+                if(this.speechVoice)msg.voice=this.speechVoice;
+                if(onEnd)msg.onend=onEnd;
+                speechSynthesis.speak(msg);
             },
             
             playAlert:function(type,data){
@@ -603,32 +616,14 @@
                 var self=this;
                 var tableNum=(data&&data.tableName)||'';
                 if(type==='new_order'){
-                    var playedCustom=this.playCustomSound();
-                    if(!playedCustom){
-                        this.playBell();
-                    }
-                    var delay=playedCustom?1500:600;
-                    setTimeout(function(){
-                        self.speakText('New Order! Table '+tableNum);
-                    },delay);
+                    var message=this.speechLang==='ar-EG'?
+                        'طلب جديد! ترابيزة '+tableNum:
+                        'New Order! Table '+tableNum;
+                    this.speakText(message);
                     if(navigator.vibrate){
                         navigator.vibrate([200,100,200,100,300]);
                     }
                     this.showBrowserNotification(tableNum,data);
-                }else if(type==='status_change'){
-                    if(this.context&&this.unlocked){
-                        var now=this.context.currentTime;
-                        var osc=this.context.createOscillator();
-                        var gain=this.context.createGain();
-                        osc.connect(gain);
-                        gain.connect(this.context.destination);
-                        osc.frequency.value=660;
-                        osc.type='triangle';
-                        gain.gain.setValueAtTime(0.2,now);
-                        gain.gain.exponentialRampToValueAtTime(0.01,now+0.2);
-                        osc.start(now);
-                        osc.stop(now+0.2);
-                    }
                 }
             },
             
@@ -656,35 +651,65 @@
                 }
             },
             
-            uploadCustomSound:function(file){
-                var self=this;
-                var reader=new FileReader();
-                reader.onload=function(e){
-                    self.customSoundData=e.target.result;
-                    self.customSoundAudio=new Audio(self.customSoundData);
-                    self.customSoundAudio.preload='auto';
-                    localStorage.setItem('custom_sound_'+rid,self.customSoundData);
-                    toast('✅ Custom sound uploaded!');
-                    setTimeout(function(){self.playCustomSound();},300);
-                };
-                reader.readAsDataURL(file);
-            },
-            
-            removeCustomSound:function(){
-                this.customSoundData=null;
-                this.customSoundAudio=null;
-                localStorage.removeItem('custom_sound_'+rid);
-                toast('🗑️ Custom sound removed');
-            },
-            
             test:function(){
-                this.playAlert('new_order',{tableName:'5'});
+                var message=this.speechLang==='ar-EG'?
+                    'طلب جديد! ترابيزة 5':
+                    'New Order! Table 5';
+                this.speakText(message);
             }
         };
 
         window.audioManager=audioManager;
         window.unlockAudio=function(){audioManager.unlock();};
         window.toggleAudio=function(){audioManager.toggle();};
+        window.openAudioSettings=function(){
+            $$('#audioSettingsModal .tab-btn').forEach(function(b){b.classList.remove('active');});
+            if(audioManager.speechLang==='ar-EG'&&$('langAr'))$('langAr').classList.add('active');
+            else if($('langEn'))$('langEn').classList.add('active');
+            if($('speechRateVal2'))$('speechRateVal2').textContent=audioManager.speechRate;
+            if($('speechRateSlider2'))$('speechRateSlider2').value=audioManager.speechRate;
+            $('audioSettingsModal').classList.add('show');
+        };
+        window.closeAudioSettings=function(){
+            $('audioSettingsModal').classList.remove('show');
+        };
+        window.setSpeechLang=function(lang,btn){
+            audioManager.speechLang=lang;
+            localStorage.setItem('speech_lang_'+rid,lang);
+            $$('#audioSettingsModal .tab-btn').forEach(function(b){b.classList.remove('active');});
+            if(btn)btn.classList.add('active');
+            if('speechSynthesis' in window){
+                var voices=speechSynthesis.getVoices();
+                audioManager.speechVoice=voices.find(function(v){return v.lang===lang;})
+                    ||voices.find(function(v){return v.lang.startsWith(lang.split('-')[0]);})
+                    ||null;
+            }
+            toast('🌍 Language: '+lang);
+            setTimeout(function(){
+                audioManager.speakText(lang==='ar-EG'?'طلب جديد':'New Order');
+            },300);
+        };
+        window.setSpeechRate=function(val){
+            audioManager.speechRate=parseFloat(val);
+            localStorage.setItem('speech_rate_'+rid,val);
+            if($('speechRateVal'))$('speechRateVal').textContent=val;
+            if($('speechRateVal2'))$('speechRateVal2').textContent=val;
+            audioManager.speakText('Test');
+        };
+        window.testVoice=function(){
+            var message=audioManager.speechLang==='ar-EG'?
+                'طلب جديد! ترابيزة 5':
+                'New Order! Table 5';
+            audioManager.speakText(message);
+        };
+        window.testCustomText=function(){
+            var text=$('testVoiceText').value.trim();
+            if(text){
+                audioManager.speakText(text);
+            }else{
+                toast('اكتب نص للتجربة');
+            }
+        };
         
         var connectionManager={
             status:'offline',
@@ -889,7 +914,7 @@
             if(role==='super_admin'||role==='admin'){
                 html+='<div class="bn-item" data-p="tables" onclick="nav(\'tables\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg></div><span class="bn-label">Tables</span></div>';
                 html+='<div class="bn-item" data-p="menu" onclick="nav(\'menu\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><span class="bn-label">Menu</span></div>';
-                html+='<div class="bn-item" data-p="rules" onclick="nav(\'rules\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span class="bn-label">Security</span></div>';
+                html+='<div class="bn-item" data-p="settings" onclick="nav(\'settings\')"><div class="bn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><span class="bn-label">Settings</span></div>';
             }
             bnav.innerHTML=html;
         }
@@ -897,7 +922,19 @@
         function buildDashboard(){
             var container=$('dashboardContent');if(!container)return;var role=currentUser.role;
             if(role==='kitchen'){
-                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">👨‍🍳</div><div class="st-v" id="kitchenPreparingCount">0</div><div class="st-l">Preparing</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="kitchenReadyCount">0</div><div class="st-l">Ready</div></div></div><div class="sec"><span class="sec-t">👨‍🍳 Orders in Kitchen</span></div><div class="olist" id="kitchenPreparingList"></div><div class="sec"><span class="sec-t">✅ Ready Orders</span></div><div class="olist" id="kitchenReadyList"></div></div>';
+                container.innerHTML='<div class="page active" id="p-dashboard">'
+                +'<div style="display:flex;justify-content:flex-end;margin-bottom:0.5rem">'
+                +'<button class="btn btn-o btn-sm" onclick="openAudioSettings()" style="display:flex;align-items:center;gap:0.4rem">🗣️ Voice Settings</button>'
+                +'</div>'
+                +'<div class="stats">'
+                +'<div class="stat"><div class="st-i">👨‍🍳</div><div class="st-v" id="kitchenPreparingCount">0</div><div class="st-l">Preparing</div></div>'
+                +'<div class="stat"><div class="st-i">✅</div><div class="st-v" id="kitchenReadyCount">0</div><div class="st-l">Ready</div></div>'
+                +'</div>'
+                +'<div class="sec"><span class="sec-t">👨‍🍳 Orders in Kitchen</span></div>'
+                +'<div class="olist" id="kitchenPreparingList"></div>'
+                +'<div class="sec"><span class="sec-t">✅ Ready Orders</span></div>'
+                +'<div class="olist" id="kitchenReadyList"></div>'
+                +'</div>';
                 updateKitchenDashboard();
             }
             else if(role==='order_taker'){
@@ -909,7 +946,7 @@
                 updateCashierDashboard();
             }
             else{
-                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem"></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-g btn-sm" onclick="connectFB()">🔗 Connect</button><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔊 Kitchen Alert Settings</div><div style="margin-bottom:0.8rem"><label class="fd-l">Alert Voice Mode</label><div class="tab-switcher"><button class="tab-btn'+(audioManager.voiceMode==='both'?' active':'')+'" onclick="setVoiceMode(\'both\',event)">🔔 Sound + Voice</button><button class="tab-btn'+(audioManager.voiceMode==='speech'?' active':'')+'" onclick="setVoiceMode(\'speech\',event)">🗣️ Voice Only</button><button class="tab-btn'+(audioManager.voiceMode==='sound'?' active':'')+'" onclick="setVoiceMode(\'sound\',event)">🔊 Sound Only</button></div></div><div style="margin-bottom:0.8rem"><label class="fd-l">Voice Speed: <span id="speechRateVal">'+audioManager.speechRate+'</span>x</label><input type="range" min="0.5" max="1.5" step="0.1" value="'+audioManager.speechRate+'" style="width:100%;accent-color:var(--gold)" onchange="setSpeechRate(this.value)"></div><div style="margin-bottom:0.8rem;padding:0.8rem;background:var(--surface2);border-radius:12px"><div style="font-size:0.7rem;font-weight:700;margin-bottom:0.5rem">🎵 Custom "New Order" Sound</div><div style="font-size:0.6rem;color:var(--text3);margin-bottom:0.5rem">Upload MP3/WAV file to play instead of the default bell</div><div style="display:flex;gap:0.5rem;flex-wrap:wrap"><button class="btn btn-o btn-sm" onclick="document.getElementById(\'customSoundFile\').click()">📁 Upload Sound</button><button class="btn btn-o btn-sm" onclick="audioManager.playCustomSound()">▶️ Test</button>'+(audioManager.customSoundData?'<button class="btn btn-o btn-sm" style="border-color:var(--red);color:var(--red)" onclick="removeCustomSound()">🗑️ Remove</button>':'')+'</div><input type="file" id="customSoundFile" accept="audio/*" style="display:none" onchange="handleCustomSoundUpload(event)"><div style="margin-top:0.5rem;font-size:0.6rem;color:'+(audioManager.customSoundData?'var(--green)':'var(--text3)')+'" id="customSoundStatus">'+(audioManager.customSoundData?'✅ Custom sound loaded':'❌ No custom sound (will use default bell + voice)')+'</div></div><button class="btn btn-g btn-block" onclick="audioManager.test()">🔊 Test Kitchen Alert</button><div style="margin-top:0.8rem;padding:0.8rem;background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:10px;font-size:0.6rem;color:var(--text2);line-height:1.5">💡 <strong>Tip for kitchen tablet:</strong> Install this app on the home screen and keep the screen on. The app will stay active in background and alert you for every new order.</div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Security Rules</div><p style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">View and configure Firebase security rules</p><button class="btn btn-g btn-block" onclick="nav(\'rules\')">View Security Rules</button></div></div><div class="page" id="p-rules"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Firebase Security Rules</div><div style="background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:12px;padding:0.8rem;margin-bottom:1rem"><div style="font-size:0.7rem;font-weight:700;color:var(--blue);margin-bottom:0.3rem">📌 How to apply these rules:</div><ol style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>Go to <strong>Firebase Console</strong></li><li>Select your project</li><li>Go to <strong>Realtime Database</strong> → <strong>Rules</strong> tab</li><li>Click <strong>"Copy Rules"</strong> button below</li><li>Paste and click <strong>Publish</strong></li></ol></div><button class="btn btn-g btn-block" onclick="copyRules()" style="margin-bottom:1rem">📋 Copy Rules to Clipboard</button><div class="rules-preview" id="rulesContent"></div><div style="margin-top:1rem;padding:1rem;background:rgba(248,113,113,0.1);border:1px solid var(--red);border-radius:12px"><div style="font-size:0.7rem;font-weight:700;color:var(--red);margin-bottom:0.3rem">⚠️ Important Notes:</div><ul style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>These rules require Firebase <strong>Authentication</strong> to be enabled</li><li>Users must have a valid <code>role</code> field</li><li>Orders cannot be deleted (for audit trail)</li><li>Each role has specific write permissions</li></ul></div></div></div>';
+                container.innerHTML='<div class="page active" id="p-dashboard"><div class="stats"><div class="stat"><div class="st-i">📋</div><div class="st-v" id="st1">0</div><div class="st-l">Total Orders</div></div><div class="stat"><div class="st-i">⏳</div><div class="st-v" id="st2">0</div><div class="st-l">Pending</div></div><div class="stat"><div class="st-i">✅</div><div class="st-v" id="st3">0</div><div class="st-l">Completed</div></div><div class="stat"><div class="st-i">💰</div><div class="st-v" id="st4">0</div><div class="st-l">Revenue</div></div></div><div class="sec"><span class="sec-t">Active Tables</span></div><div class="tgrid" id="activeTables"></div><div class="sec"><span class="sec-t">Recent Orders</span></div><div class="olist" id="recentOrders"></div></div><div class="page" id="p-orders"><div class="frow" id="ofilt"><div class="fchip on" data-f="all" onclick="fO(\'all\',this)">All</div><div class="fchip" data-f="pending" onclick="fO(\'pending\',this)">Pending</div><div class="fchip" data-f="preparing" onclick="fO(\'preparing\',this)">Preparing</div><div class="fchip" data-f="ready" onclick="fO(\'ready\',this)">Ready</div><div class="fchip" data-f="served" onclick="fO(\'served\',this)">Served</div><div class="fchip" data-f="completed" onclick="fO(\'completed\',this)">Completed</div></div><div class="olist" id="allOrders"></div></div><div class="page" id="p-reports"><div id="reportsContent"></div></div><div class="page" id="p-tables"><div class="sec"><span class="sec-t">All Tables</span><button class="btn btn-g" onclick="addT()">+ Add Table</button></div><div class="tgrid" id="allTables"></div></div><div class="page" id="p-menu"><div class="sec"><span class="sec-t">Menu Items</span><button class="btn btn-g" onclick="openI()">+ Add Item</button></div><div class="frow" id="mfilt"></div><div class="mgrid" id="menuGrid"></div></div><div class="page" id="p-qr"><div class="sec"><span class="sec-t">QR Codes</span><button class="btn btn-g" onclick="genQ()">Generate All</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem" id="qrGrid"></div></div><div class="page" id="p-settings"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔥 Firebase Configuration</div><p style="font-size:0.7rem;color:var(--text2);margin-bottom:0.5rem">Config loaded from external file</p><textarea class="fd-i" id="fbConfigText" rows="5" style="font-family:monospace;font-size:0.6rem;width:100%;margin-bottom:0.8rem" readonly></textarea><div style="display:flex;gap:0.5rem"><button class="btn btn-o btn-sm" onclick="testFB()">🧪 Test Connection</button></div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🏪 Restaurant Information</div><div class="fg"><div class="fd"><label class="fd-l">Name</label><input class="fd-i" id="s1"></div><div class="fd"><label class="fd-l">Phone</label><input class="fd-i" id="s2"></div><div class="fd w"><label class="fd-l">Description</label><input class="fd-i" id="s3"></div><div class="fd"><label class="fd-l">Cuisine</label><select class="fd-s" id="s4"><option>International</option><option>Italian</option><option>Egyptian</option><option>Seafood</option></select></div><div class="fd"><label class="fd-l">Area</label><input class="fd-i" id="s5"></div><div class="fd w"><label class="fd-l">Restaurant Image URL</label><input class="fd-i" id="s6"></div><div class="fd w"><label class="fd-l">Logo URL</label><input class="fd-i" id="s7"></div></div><button class="btn btn-g btn-block" onclick="saveS()" style="margin-top:0.8rem">💾 Save Restaurant Info</button></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">📂 Category Management</div><div id="categoriesListInSettings"></div><button class="btn btn-g btn-block" onclick="openCategoryManager()">+ Add New Category</button></div>'+(role==='super_admin'?'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">👥 User Management</div><div id="usersListInSettings"></div><button class="btn btn-g btn-block" onclick="showCreateUser()">+ Add New User</button></div>':'')+'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🗣️ Kitchen Voice Settings</div><div style="margin-bottom:0.8rem"><label class="fd-l">🌍 Voice Language</label><div class="tab-switcher"><button class="tab-btn'+(audioManager.speechLang==='en-US'?' active':'')+'" onclick="setSpeechLang(\'en-US\',this)">🇺🇸 English</button><button class="tab-btn'+(audioManager.speechLang==='ar-EG'?' active':'')+'" onclick="setSpeechLang(\'ar-EG\',this)">🇪🇬 عربي</button></div></div><div style="margin-bottom:0.8rem"><label class="fd-l">⚡ Voice Speed: <span id="speechRateVal">'+audioManager.speechRate+'</span>x</label><input type="range" min="0.5" max="1.5" step="0.1" value="'+audioManager.speechRate+'" style="width:100%;accent-color:var(--gold)" onchange="setSpeechRate(this.value)"></div><button class="btn btn-g btn-block" onclick="testVoice()">🗣️ Test Voice</button><div style="margin-top:0.8rem;padding:0.8rem;background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:10px;font-size:0.6rem;color:var(--text2);line-height:1.5">💡 المتصفح بينطق "New Order! Table X" بصوت بشري تلقائياً عند وصول أي طلب جديد للمطبخ.</div></div><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;margin-bottom:1rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Security Rules</div><p style="font-size:0.7rem;color:var(--text2);margin-bottom:0.8rem">View and configure Firebase security rules</p><button class="btn btn-g btn-block" onclick="nav(\'rules\')">View Security Rules</button></div></div><div class="page" id="p-rules"><div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem"><div style="font-size:0.8rem;font-weight:700;color:var(--gold);margin-bottom:0.8rem">🔒 Firebase Security Rules</div><div style="background:rgba(96,165,250,0.1);border:1px solid var(--blue);border-radius:12px;padding:0.8rem;margin-bottom:1rem"><div style="font-size:0.7rem;font-weight:700;color:var(--blue);margin-bottom:0.3rem">📌 How to apply these rules:</div><ol style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>Go to <strong>Firebase Console</strong></li><li>Select your project</li><li>Go to <strong>Realtime Database</strong> → <strong>Rules</strong> tab</li><li>Click <strong>"Copy Rules"</strong> button below</li><li>Paste and click <strong>Publish</strong></li></ol></div><button class="btn btn-g btn-block" onclick="copyRules()" style="margin-bottom:1rem">📋 Copy Rules to Clipboard</button><div class="rules-preview" id="rulesContent"></div><div style="margin-top:1rem;padding:1rem;background:rgba(248,113,113,0.1);border:1px solid var(--red);border-radius:12px"><div style="font-size:0.7rem;font-weight:700;color:var(--red);margin-bottom:0.3rem">⚠️ Important Notes:</div><ul style="font-size:0.65rem;color:var(--text2);padding-left:1.2rem;line-height:1.6"><li>These rules require Firebase <strong>Authentication</strong> to be enabled</li><li>Users must have a valid <code>role</code> field</li><li>Orders cannot be deleted (for audit trail)</li><li>Each role has specific write permissions</li></ul></div></div></div>';
                 dash();settPg();renderRulesPage();
             }
         }
@@ -979,7 +1016,6 @@
             if($('st2'))$('st2').textContent=pe;
             if($('st3'))$('st3').textContent=co;
             if($('st4'))$('st4').textContent=rv.toFixed(0);
-            if($('np'))$('np').textContent=pe;
             if($('bnOrders')){
                 if(pe>0){$('bnOrders').style.display='flex';$('bnOrders').textContent=pe;}
                 else{$('bnOrders').style.display='none';}
@@ -1387,7 +1423,7 @@
         function handleImageUpload(event){var file=event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){uploadedImageData=e.target.result;var p=$('imgPreview');if(p){p.innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">';}if($('iimgData'))$('iimgData').value=e.target.result;};reader.readAsDataURL(file);}
         function qrPg(){var g=$('qrGrid');if(g){g.innerHTML='';T.forEach(function(t){var url='https://www.discover-sharm.com/app/store.html?restaurant='+R.id+'&table='+t.id;var c=document.createElement('div');c.style.cssText='background:#fff;border-radius:16px;padding:0.8rem;text-align:center;color:#000';c.innerHTML='<div style="font-weight:700;font-size:0.7rem;margin-bottom:0.3rem">Table '+t.id+'</div><div id="q'+t.id+'"></div>';g.appendChild(c);new QRCode(document.getElementById('q'+t.id),{text:url,width:90,height:90,colorDark:'#000',colorLight:'#fff'});});}}
         function genQ(){qrPg();}
-        function settPg(){if($('s1'))$('s1').value=R.name||'';if($('s2'))$('s2').value=R.phone||'';if($('s3'))$('s3').value=R.desc||'';if($('s4'))$('s4').value=R.cuisine||'';if($('s5'))$('s5').value=R.area||'';if($('s6'))$('s6').value=R.image||'';if($('s7'))$('s7').value=R.logo||'';if(firebaseConfig&&$('fbConfigText'))$('fbConfigText').value=JSON.stringify(firebaseConfig,null,2);updateUsersListInSettings();updateCategoriesListInSettings();}
+        function settPg(){if($('s1'))$('s1').value=R.name||'';if($('s2'))$('s2').value=R.phone||'';if($('s3'))$('s3').value=R.desc||'';if($('s4'))$('s4').value=R.cuisine||'';if($('s5'))$('s5').value=R.area||'';if($('s6'))$('s6').value=R.image||'';if($('s7'))$('s7').value=R.logo||'';if($('fbConfigText'))$('fbConfigText').value=firebaseConfig?JSON.stringify(firebaseConfig,null,2):'Config loaded from external file';updateUsersListInSettings();updateCategoriesListInSettings();}
         function saveS(){R.name=$('s1')?$('s1').value:'';R.phone=$('s2')?$('s2').value:'';R.desc=$('s3')?$('s3').value:'';R.cuisine=$('s4')?$('s4').value:'';R.area=$('s5')?$('s5').value:'';R.image=$('s6')?$('s6').value:'';R.logo=$('s7')?$('s7').value:'';localStorage.setItem('restaurant_'+rid,JSON.stringify(R));var sn=$('sname');if(sn)sn.textContent=R.name;var hn=$('hn');if(hn)hn.textContent=R.name;saveFB('info',R);toast('Settings saved');}
         function updateCategoryFilters(){var mfilt=$('mfilt');if(mfilt){var allChip='<div class="fchip on" data-f="all" onclick="fM(\'all\',this)">All</div>';var categoryChips=categories.map(function(cat){return '<div class="fchip" data-f="'+cat.id+'" onclick="fM(\''+cat.id+'\',this)">'+cat.emoji+' '+cat.name+'</div>';}).join('');mfilt.innerHTML=allChip+categoryChips;}var ict=$('ict');if(ict){ict.innerHTML=categories.map(function(cat){return '<option value="'+cat.id+'">'+cat.emoji+' '+cat.name+'</option>';}).join('');}}
         function updateUsersListInSettings(){var container=$('usersListInSettings');if(!container)return;container.innerHTML=users.map(function(u){var roleColor=u.role==='super_admin'?'var(--gold)':u.role==='admin'?'var(--blue)':u.role==='cashier'?'var(--green)':u.role==='kitchen'?'var(--orange)':'var(--red)';var roleIcon=u.role==='super_admin'?'👑':u.role==='admin'?'🛡️':u.role==='cashier'?'💰':u.role==='kitchen'?'👨‍🍳':'📝';return '<div class="user-card"><div class="user-avatar">'+u.name.charAt(0).toUpperCase()+'</div><div class="user-info"><div class="user-name">'+roleIcon+' '+u.name+'</div><div class="user-username">@'+u.username+'</div><div class="user-role-badge" style="background:'+roleColor+'20;color:'+roleColor+'">'+u.role.replace('_',' ').toUpperCase()+'</div></div>'+(currentUser.role==='super_admin'&&u.role!=='super_admin'?'<button class="user-delete-btn" onclick="deleteUser('+u.id+')">Delete</button>':'')+'</div>';}).join('');}
@@ -1407,8 +1443,7 @@
         function openProfile(){if(currentUser){$('profileAvatar').textContent=currentUser.name.charAt(0).toUpperCase();$('profileName').textContent=currentUser.name;$('profileUsername').textContent='@'+currentUser.username;$('profileRole').textContent=currentUser.role.replace('_',' ').toUpperCase();$('currentPass').value='';$('newPass').value='';$('confirmNewPass').value='';$('profileModal').classList.add('show');}}
         function closeProfile(){$('profileModal').classList.remove('show');}
         function changePassword(){var currentPass=$('currentPass').value;var newPass=$('newPass').value;var confirmNewPass=$('confirmNewPass').value;if(!currentPass||!newPass||!confirmNewPass){toast('Please fill all fields');return;}if(currentUser.password!==currentPass){toast('Current password is incorrect');return;}if(newPass.length<6){toast('New password must be at least 6 characters');return;}if(newPass!==confirmNewPass){toast('Passwords do not match');return;}var userIndex=users.findIndex(function(u){return u.id===currentUser.id;});if(userIndex!==-1){users[userIndex].password=newPass;currentUser.password=newPass;saveData();localStorage.setItem('current_user_'+rid,JSON.stringify(currentUser));toast('Password changed successfully');closeProfile();}}
-        function connectFB(){var text=$('fbConfigText').value.trim();if(!text){toast('Paste config');return;}try{firebaseConfig=JSON.parse(text);localStorage.setItem('fb_config_'+rid,text);initFirebase();toast('Connecting...');}catch(e){toast('Invalid JSON');}}
-        function testFB(){if(!db){toast('Connect first');return;}db.ref('test').set({ok:true}).then(function(){toast('Connected!');}).catch(function(){toast('Error');});}
+        function testFB(){if(!db){toast('No connection');return;}db.ref('test').set({ok:true}).then(function(){toast('Connected!');}).catch(function(){toast('Error');});}
         function openNewOrder(){newOrderTable=null;newOrderItems={};newOrderFilter='all';$('stepSelectTable').style.display='block';$('stepSelectItems').style.display='none';$('newOrderFooter').style.display='none';var grid=$('tableSelectGrid');if(grid){grid.innerHTML=T.map(function(t){var isActive=tPen(t.id)>0;return'<div class="tcard'+(isActive?' on':'')+'" onclick="selectTableForOrder('+t.id+')"><div class="tcard-num">'+t.id+'</div><div class="tcard-name">Table '+t.id+'</div><div class="tcard-seats">'+t.seats+' seats</div>'+(isActive?'<div class="tcard-badge">'+tPen(t.id)+' orders</div>':'<div class="tcard-badge" style="background:rgba(74,222,128,0.2);color:var(--green)">Available</div>')+'</div>';}).join('');}$('newOrderModal').classList.add('show');}
         function selectTableForOrder(tableId){newOrderTable=tableId;$('stepSelectTable').style.display='none';$('stepSelectItems').style.display='block';$('selectedTableNum').textContent=tableId;var filters=$('newOrderFilters');if(filters){var allChip='<div class="fchip on" data-f="all" onclick="filterNewOrder(\'all\',this)">All</div>';var catChips=categories.map(function(cat){return '<div class="fchip" data-f="'+cat.id+'" onclick="filterNewOrder(\''+cat.id+'\',this)">'+cat.emoji+' '+cat.name+'</div>';}).join('');filters.innerHTML=allChip+catChips;}buildNewOrderMenu();updateNewOrderFooter();}
         function filterNewOrder(f,b){newOrderFilter=f;$$('#newOrderFilters .fchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');buildNewOrderMenu();}
@@ -1498,51 +1533,10 @@
         }
         window.copyRules=copyRules;
 
-        window.setVoiceMode=function(mode,event){
-            audioManager.voiceMode=mode;
-            localStorage.setItem('voice_mode_'+rid,mode);
-            if(event&&event.target){
-                $$('.tab-switcher .tab-btn').forEach(function(b){b.classList.remove('active');});
-                event.target.classList.add('active');
-            }
-            toast('Voice mode: '+mode);
-        };
-
-        window.setSpeechRate=function(val){
-            audioManager.speechRate=parseFloat(val);
-            localStorage.setItem('speech_rate_'+rid,val);
-            if($('speechRateVal'))$('speechRateVal').textContent=val;
-            audioManager.speakText('New Order');
-        };
-
-        window.handleCustomSoundUpload=function(event){
-            var file=event.target.files[0];
-            if(!file)return;
-            if(file.size>5*1024*1024){
-                toast('❌ File too large (max 5MB)');
-                return;
-            }
-            audioManager.uploadCustomSound(file);
-            setTimeout(function(){
-                if($('customSoundStatus')){
-                    $('customSoundStatus').textContent='✅ Custom sound loaded';
-                    $('customSoundStatus').style.color='var(--green)';
-                }
-            },500);
-        };
-
-        window.removeCustomSound=function(){
-            audioManager.removeCustomSound();
-            if($('customSoundStatus')){
-                $('customSoundStatus').textContent='❌ No custom sound (will use default bell + voice)';
-                $('customSoundStatus').style.color='var(--text3)';
-            }
-        };
-
         window.nav=nav;window.showT=showT;window.showO=showO;window.updO=updO;window.fO=fO;window.fM=fM;
         window.openI=openI;window.editI=editI;window.delI=delI;window.saveI=saveI;
         window.closeIM=closeIM;window.closeTM=closeTM;window.closeOM=closeOM;window.chS=chS;window.compA=compA;window.addT=addT;
-        window.connectFB=connectFB;window.testFB=testFB;window.saveS=saveS;window.genQ=genQ;
+        window.testFB=testFB;window.saveS=saveS;window.genQ=genQ;
         window.handleImageUpload=handleImageUpload;window.toggleTableTax=toggleTableTax;
         window.login=login;window.logout=logout;window.createSuperAdmin=createSuperAdmin;
         window.showCreateUser=showCreateUser;window.closeUserModal=closeUserModal;window.createUser=createUser;window.deleteUser=deleteUser;
@@ -1596,8 +1590,7 @@
                         ordersCache[snap.key]=order;
                         if(isNewOrder&&wasNotInCache&&currentUser){
                             if(currentUser.role==='kitchen'){
-                                var tableName=order.tid||'?';
-                                audioManager.playAlert('new_order',{orderId:snap.key,tableName:tableName});
+                                audioManager.playAlert('new_order',{orderId:snap.key,tableName:order.tid||'?'});
                                 showNewOrderAlert(snap.key,order.tid);
                             }
                         }
