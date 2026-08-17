@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Space+Grotesk:wght@300;400;500;600;700&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Deep Red Sea night base + warm ivory + coral/amber accent (derived from the brand's coastal fine-dining identity) */
   --bg:#0a1418;--bg2:#0f1e24;--bg3:#152a32;--bg4:#1e3a44;
   --ink:#f4efe4;--ink2:#aebfbd;--ink3:#728583;--ink4:#455654;
   --acc:#ff6a45;--acc2:#ffa24a;--gold:#e6bd73;
@@ -336,7 +335,7 @@ body.ar .hero-nav.next{right:auto;left:8px}
    ══════════════════════════════════════════════════════════ */
 @media(min-width:1024px){
   html,body{overflow-x:auto}
-  .shell{max-width:none;margin:0 0 0 264px;padding:44px 60px;box-shadow:none}
+  .shell{max-width:none;margin:0 0 0 264px;padding:44px 60px;box-shadow:none;position:relative;z-index:2}
   body.ar .shell{margin:0 264px 0 0}
 
   /* SIDEBAR */
@@ -373,36 +372,147 @@ body.ar .hero-nav.next{right:auto;left:8px}
   .greeting-small::before{width:44px}
   .greeting-big{font-family:var(--serif);font-weight:300;font-size:clamp(2.4rem,4vw,3.8rem);line-height:1;letter-spacing:-.02em}
 
-  /* HERO — CIRCULAR ORBIT */
-  .hero-single{padding:20px 0 80px;position:relative}
-  .hero-stage{display:grid;grid-template-columns:1fr 1.2fr;gap:60px;align-items:center;height:600px;position:relative}
+  /* HERO — يأخذ ارتفاع الشاشة */
+  .hero-single{
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 0;
+    position: relative;
+  }
+  
+  .hero-stage{
+    min-height: 75vh;
+    height: 75vh;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+  }
+  
   body.ar .hero-stage{grid-template-columns:1.2fr 1fr}
-  .hero-product{position:relative;inset:auto;display:contents;opacity:1;pointer-events:auto;transform:none}
-  .hero-product.on,.hero-product.prev{opacity:1;transform:none}
-  .hero-info{order:1;text-align:left;padding:0;max-width:none}
-  body.ar .hero-info{order:2;text-align:right}
+  
+  /* إصلاح مشكلة العناصر غير المرئية */
+  .hero-product:not(.on) {
+    pointer-events: none !important;
+    visibility: hidden;
+    opacity: 0;
+  }
+  
+  .hero-product.on {
+    pointer-events: auto;
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .hero-info{
+    text-align:left;
+    padding:0;
+    max-width:500px;
+    z-index:2;
+  }
+  
+  body.ar .hero-info{text-align:right}
+  
   .hero-info .hero-cat{font-size:.66rem;letter-spacing:.24em;padding:8px 18px;margin-bottom:22px}
   .hero-info .hero-name{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,3.8vw,3.6rem);line-height:1.04;letter-spacing:-.015em;margin-bottom:18px}
   .hero-info .hero-desc{font-size:1rem;line-height:1.8;margin:0 0 26px;max-width:100%;-webkit-line-clamp:4}
   .hero-info .hero-price{font-size:2.3rem;margin:0 0 30px}
   .hero-info .hero-add{padding:16px 34px;font-size:.78rem;letter-spacing:.14em}
   .hero-info .hero-add:hover{filter:brightness(1.08);transform:translateY(-3px);box-shadow:0 16px 36px rgba(255,106,69,.42)}
-  .hero-right{order:2;position:relative;height:560px;display:flex;align-items:center;justify-content:center}
-  body.ar .hero-right{order:1}
-  .hero-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;transition:opacity .5s}
-  .hero-center .hero-prod-img,.hero-center .hero-prod-emoji{max-height:420px;max-width:420px;width:auto;height:auto;animation:floatMain 4.5s ease-in-out infinite}
+  
+  .hero-right{
+    height: 100%;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .hero-center {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  .hero-center .hero-prod-img,
+  .hero-center .hero-prod-emoji {
+    max-height: 65vh;
+    max-width: 65vh;
+    object-fit: contain;
+    animation: floatMain 4.5s ease-in-out infinite;
+  }
+  
   .hero-center .hero-prod-emoji{font-size:15rem}
+  
   @keyframes floatMain{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.02)}}
-  .hero-orbit{position:absolute;inset:0;animation:slowOrbit 60s linear infinite;pointer-events:none}
+  
+  .hero-orbit {
+    position: absolute;
+    inset: 0;
+    animation: slowOrbit 60s linear infinite;
+    pointer-events: none;
+  }
+  
   @keyframes slowOrbit{to{transform:rotate(360deg)}}
-  .orbit-item{position:absolute;top:50%;left:50%;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;background:var(--bg2);border:2px solid var(--line);padding:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .3s var(--ease),border-color .3s,box-shadow .3s;transform:rotate(var(--angle)) translateX(220px);pointer-events:auto;overflow:hidden}
-  .orbit-item-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;animation:counterOrbit 60s linear infinite}
+  
+  .orbit-item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    margin: -40px 0 0 -40px;
+    border-radius: 50%;
+    background: var(--bg2);
+    border: 2px solid var(--line);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .3s var(--ease), border-color .3s, box-shadow .3s;
+    transform: rotate(var(--angle)) translateX(240px);
+    pointer-events: auto;
+    overflow: hidden;
+    z-index: 3;
+  }
+  
+  .orbit-item-inner{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    animation:counterOrbit 60s linear infinite;
+  }
+  
   @keyframes counterOrbit{to{transform:rotate(-360deg)}}
+  
   .orbit-item img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
   .orbit-item .orbit-emoji{font-size:2.2rem;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
-  .orbit-item:hover{transform:rotate(var(--angle)) translateX(220px) scale(1.18);border-color:var(--acc);box-shadow:0 0 24px rgba(255,106,69,.5)}
+  .orbit-item:hover{transform:rotate(var(--angle)) translateX(240px) scale(1.18);border-color:var(--acc);box-shadow:0 0 24px rgba(255,106,69,.5)}
   .orbit-item.active{border-color:var(--acc);background:rgba(255,106,69,.14);box-shadow:0 0 20px rgba(255,106,69,.4)}
-  .hero-dots{position:absolute;bottom:0;left:50%;transform:translateX(-50%);flex-direction:row;gap:8px;padding:0}
+  
+  .hero-dots{
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 8px;
+    padding: 0;
+    z-index: 4;
+  }
+  
   .hero-dot{width:8px;height:8px}
   .hero-dot.on{width:28px}
 
@@ -530,6 +640,10 @@ body.ar .hero-nav.next{right:auto;left:8px}
 
 @media(min-width:1440px){
   .shell{padding:44px 100px}
+  .hero-stage{min-height:70vh;height:70vh;gap:80px}
+  .orbit-item{width:90px;height:90px;margin:-45px 0 0 -45px;transform:rotate(var(--angle)) translateX(280px)}
+  .orbit-item:hover{transform:rotate(var(--angle)) translateX(280px) scale(1.18)}
+  .hero-center .hero-prod-img,.hero-center .hero-prod-emoji{max-height:60vh;max-width:60vh}
   .trend-scroll{grid-template-columns:repeat(5,1fr)}
   .menu-grid{grid-template-columns:repeat(5,1fr)}
 }
@@ -847,7 +961,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const sym={EGP:'EGP',USD:'$',EUR:'€'};
 
-/* Sample data so the app renders when the live Firebase config is unavailable (e.g. in preview) */
+/* Sample data for demo mode */
 const DEMO={
   info:{name:'LUXE',cuisine:'Red Sea Fine Dining',rewardsEnabled:true},
   categories:[
@@ -1010,6 +1124,7 @@ function renderHero(){
       </div>`;
     }).join('');
     let activeImg=active.image?`<img class="hero-prod-img" src="${esc(active.image)}" alt="${esc(active.name)}">`:`<div class="hero-prod-emoji">${active.emoji||'🍽️'}</div>`;
+    
     stage.innerHTML=`
       <div class="hero-info">
         <span class="hero-cat">${esc(catName||'Premium')}</span>
@@ -1023,12 +1138,13 @@ function renderHero(){
         <div class="hero-orbit">${orbitHtml}</div>
       </div>
     `;
+    
     if(dots)dots.innerHTML=feat.map((_,i)=>`<div class="hero-dot ${i===heroIdx?'on':''}" onclick="heroGo(${i})"></div>`).join('');
-  }else{
+  } else {
     stage.innerHTML=feat.map((p,i)=>{
       let catName='';if(categories.length){let c=categories.find(x=>x.id===p.cat);if(c)catName=c.name}
       let inCart=cart.find(c=>c.id===p.id);
-      return `<div class="hero-product ${i===heroIdx?'on':''} ${i===heroPrevIdx&&i!==heroIdx?'prev':''}" data-i="${i}">
+      return `<div class="hero-product ${i===heroIdx?'on':''}" data-i="${i}">
         <div class="hero-img-wrap">
           ${p.image?`<img class="hero-prod-img" src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">`:`<div class="hero-prod-emoji">${p.emoji||'🍽️'}</div>`}
         </div>
@@ -1041,9 +1157,12 @@ function renderHero(){
         </div>
       </div>`;
     }).join('');
+    
     if(dots)dots.innerHTML=feat.map((_,i)=>`<div class="hero-dot ${i===heroIdx?'on':''}" onclick="heroGo(${i})"></div>`).join('');
   }
-  setupHeroSwipe();startHeroAuto();
+  
+  setupHeroSwipe();
+  startHeroAuto();
 }
 function updateHeroVisual(){
   if(isDesktop){
