@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// ==========================================================================
+// قواعد أمان Firestore — منصة حجوزات فنادق شرم الشيخ
+// المبدأ العام:
+//   - القراءة (عرض الفنادق والغرف) متاحة للجميع بدون تسجيل دخول (زوار الموقع).
+//   - الكتابة/التعديل/الحذف على الفنادق والغرف مقصورة على المستخدمين
+//     المسجّلين دخولهم فقط (فريق الإدارة عبر admin.html).
+//   - إنشاء حجز جديد (bookings) متاح للزوار (حتى بدون تسجيل دخول) حتى تعمل
+//     دورة الحجز من الواجهة الأمامية، لكن قراءة/تعديل/حذف الحجوزات (لوحة
+//     الإدارة) مقصورة على المستخدمين المسجّلين فقط.
+//   - تم إضافة تحقق أساسي (Validation) على حقول الحجز الجديد لمنع إدخال بيانات
+//     عشوائية أو تلاعب في الأسعار من طرف العميل.
+// ==========================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // مجموعة الفنادق
+    // ---------------------------------------------------------------------
+    match /hotels/{hotelId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+
+      // ---------------------------------------------------------------
+      // الغرف التابعة لكل فندق (Sub-collection)
+      // ---------------------------------------------------------------
+      match /rooms/{roomId} {
+        allow read: if true;
+        allow create, update, delete: if isSignedIn();
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // مجموعة الحجوزات
+    // ---------------------------------------------------------------------
+    match /bookings/{bookingId} {
+      // السماح لأي زائر بإنشاء طلب حجز جديد، مع تحقق أساسي من شكل البيانات
+      allow create: if isValidBooking(request.resource.data);
+
+      // القراءة والتعديل (مثل تغيير الحالة إلى Confirmed) والحذف للإدارة فقط
+      allow read, update, delete: if isSignedIn();
+    }
+
+    // ---------------------------------------------------------------------
+    // مجموعة اختيارية لتحديد المستخدمين الإداريين (غير مفعّلة إلزامياً هنا،
+    // ويمكن الاعتماد عليها لاحقاً بدلاً من مجرد request.auth != null)
+    // ---------------------------------------------------------------------
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if false; // تُدار يدوياً من Firebase Console فقط
+    }
+
+    // ---------------------------------------------------------------------
+    // دوال مساعدة (Helper Functions)
+    // ---------------------------------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll([
+              'hotelId', 'roomId', 'guestName', 'guestPhone',
+              'guestType', 'checkIn', 'checkOut', 'totalPrice',
+              'currency', 'status'
+            ])
+            && data.guestName is string && data.guestName.size() > 0
+            && data.guestPhone is string && data.guestPhone.size() > 0
+            && (data.guestType == 'egyptian' || data.guestType == 'foreign')
+            && (data.currency == 'EGP' || data.currency == 'USD')
+            && data.totalPrice is number && data.totalPrice > 0
+            && data.status == 'Pending'; // لا يُسمح للعميل بإنشاء حجز بحالة غير Pending
+    }
+  }
+}

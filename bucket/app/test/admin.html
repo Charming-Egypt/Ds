@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لوحة الإدارة | شرم بوكينج</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --color-deep:#0A3D4A; --color-lagoon:#1B9AAA; --color-coral:#FF6F5E;
+    --color-sand:#FBF3E7; --color-sand-dark:#F0E1C4;
+  }
+  body{ font-family:'Almarai', sans-serif; background:var(--color-sand); color:var(--color-deep); }
+  .font-heading{ font-family:'Cairo', sans-serif; }
+  .form-label{ display:block; font-size:.8rem; font-weight:700; margin-bottom:.3rem; }
+  .form-input, .filter-select{ width:100%; border:1px solid #E2D9C6; border-radius:.6rem; padding:.55rem .8rem; font-family:inherit; background:#fff; outline:none; }
+  .form-input:focus, .filter-select:focus{ border-color:var(--color-lagoon); }
+  .card{ background:#fff; border-radius:1rem; padding:1.5rem; box-shadow:0 4px 18px -8px rgba(10,61,74,.15); }
+  .btn-primary{ background:var(--color-coral); color:#fff; font-weight:800; border-radius:.7rem; padding:.7rem 1.2rem; transition:opacity .2s; }
+  .btn-primary:hover{ opacity:.9; }
+  table{ border-collapse:collapse; width:100%; }
+  th{ text-align:right; font-size:.75rem; color:#94a3b8; padding-bottom:.5rem; }
+</style>
+</head>
+<body>
+
+<!-- ============================= شاشة تسجيل الدخول ============================= -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+  <div class="card w-full max-w-sm">
+    <h1 class="font-heading text-xl font-black text-center mb-1">لوحة إدارة شرم بوكينج</h1>
+    <p class="text-center text-sm text-slate-400 mb-6">سجّل الدخول للوصول إلى بيانات الفنادق والحجوزات</p>
+    <form id="loginForm" class="space-y-3">
+      <div>
+        <label class="form-label">البريد الإلكتروني</label>
+        <input required type="email" name="email" class="form-input" placeholder="admin@example.com" />
+      </div>
+      <div>
+        <label class="form-label">كلمة المرور</label>
+        <input required type="password" name="password" class="form-input" />
+      </div>
+      <p id="loginError" class="hidden text-red-500 text-sm"></p>
+      <button type="submit" class="btn-primary w-full">تسجيل الدخول</button>
+    </form>
+    <p class="text-xs text-slate-400 mt-4 text-center">
+      يتم إنشاء حسابات المسؤولين من تبويب Authentication داخل Firebase Console.
+    </p>
+  </div>
+</div>
+
+<!-- ============================= لوحة التحكم ============================= -->
+<div id="dashboard" class="hidden">
+  <header class="bg-[var(--color-deep)] text-white">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+      <span class="font-heading text-xl font-black">لوحة إدارة <span class="text-[var(--color-coral)]">شرم بوكينج</span></span>
+      <div class="flex items-center gap-4 text-sm">
+        <span id="adminEmailLabel" class="text-white/70"></span>
+        <a href="index.html" class="text-white/70 hover:text-white">عرض الموقع</a>
+        <button id="logoutBtn" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-bold">تسجيل الخروج</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-5 py-8 space-y-8">
+
+    <!-- إضافة فندق جديد -->
+    <section class="card">
+      <h2 class="font-heading text-lg font-extrabold mb-4">➕ إضافة فندق جديد</h2>
+      <form id="addHotelForm" class="grid sm:grid-cols-3 gap-4">
+        <div class="sm:col-span-2">
+          <label class="form-label">اسم الفندق (بالعربية)</label>
+          <input required type="text" name="name" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">الاسم بالإنجليزية (اختياري)</label>
+          <input type="text" name="nameEn" class="form-input" />
+        </div>
+
+        <div>
+          <label class="form-label">المنطقة</label>
+          <select id="hotelAreaSelect" name="area" class="filter-select"></select>
+        </div>
+        <div>
+          <label class="form-label">نوع الشاطئ</label>
+          <select id="hotelBeachSelect" name="beachType" class="filter-select"></select>
+        </div>
+        <div>
+          <label class="form-label">نظام الإقامة</label>
+          <select id="hotelInclusionSelect" name="inclusionType" class="filter-select"></select>
+        </div>
+
+        <div class="flex items-center gap-2 pt-6">
+          <input id="heatedPool" type="checkbox" name="heatedPool" class="w-4 h-4 accent-[var(--color-coral)]" />
+          <label for="heatedPool" class="text-sm font-bold">حمام سباحة مدفأ شتاءً</label>
+        </div>
+        <div class="flex items-center gap-2 pt-6">
+          <input id="aquaPark" type="checkbox" name="aquaPark" class="w-4 h-4 accent-[var(--color-coral)]" />
+          <label for="aquaPark" class="text-sm font-bold">ألعاب مائية (Aqua Park)</label>
+        </div>
+        <div class="flex items-center gap-2 pt-6">
+          <input id="active" type="checkbox" name="active" checked class="w-4 h-4 accent-[var(--color-coral)]" />
+          <label for="active" class="text-sm font-bold">مفعّل ويظهر على الموقع</label>
+        </div>
+
+        <div class="sm:col-span-3">
+          <label class="form-label">رابط الصورة الرئيسية</label>
+          <input type="url" name="mainImage" class="form-input" placeholder="https://..." />
+        </div>
+        <div class="sm:col-span-3">
+          <label class="form-label">روابط صور إضافية (افصل بينها بفاصلة ,)</label>
+          <input type="text" name="images" class="form-input" placeholder="https://img1.jpg, https://img2.jpg" />
+        </div>
+
+        <div>
+          <label class="form-label">التقييم (من 5)</label>
+          <input type="number" step="0.1" min="0" max="5" name="rating" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">عدد التقييمات</label>
+          <input type="number" min="0" name="reviewsCount" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">المرافق (افصل بينها بفاصلة ,)</label>
+          <input type="text" name="amenities" class="form-input" placeholder="سبا, غطس, نادي أطفال" />
+        </div>
+
+        <div class="sm:col-span-3">
+          <label class="form-label">الوصف</label>
+          <textarea name="description" rows="3" class="form-input"></textarea>
+        </div>
+
+        <div class="sm:col-span-3 flex items-center gap-3">
+          <button type="submit" class="btn-primary">حفظ الفندق</button>
+          <p id="addHotelMsg" class="hidden text-sm"></p>
+        </div>
+      </form>
+    </section>
+
+    <!-- قائمة الفنادق -->
+    <section class="card">
+      <h2 class="font-heading text-lg font-extrabold mb-4">📋 الفنادق المضافة</h2>
+      <table>
+        <thead><tr><th>الاسم</th><th>المنطقة</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="hotelsTableBody"></tbody>
+      </table>
+    </section>
+
+    <!-- إضافة غرف وأسعار -->
+    <section class="card">
+      <h2 class="font-heading text-lg font-extrabold mb-4">🛏️ إدارة الغرف والأسعار</h2>
+      <div class="mb-4">
+        <label class="form-label">اختر الفندق</label>
+        <select id="roomHotelSelect" class="filter-select max-w-sm"></select>
+      </div>
+      <form id="addRoomForm" class="grid sm:grid-cols-3 gap-4">
+        <div>
+          <label class="form-label">نوع الغرفة</label>
+          <input required type="text" name="roomType" class="form-input" placeholder="غرفة ديلوكس بإطلالة على البحر" />
+        </div>
+        <div>
+          <label class="form-label">السعر للمصريين (ج.م / الليلة)</label>
+          <input required type="number" min="0" name="priceEgyptianEGP" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">السعر للأجانب ($ / الليلة)</label>
+          <input required type="number" min="0" name="priceForeignUSD" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">نظام الوجبات</label>
+          <input type="text" name="mealPlan" class="form-input" placeholder="Comprehensive All-Inclusive" />
+        </div>
+        <div>
+          <label class="form-label">أقصى عدد أفراد</label>
+          <input type="number" min="1" name="maxOccupancy" value="2" class="form-input" />
+        </div>
+        <div>
+          <label class="form-label">عدد الغرف المتاحة</label>
+          <input type="number" min="0" name="availableRooms" value="1" class="form-input" />
+        </div>
+        <div class="flex items-center gap-2 pt-6">
+          <input id="roomAvailable" type="checkbox" name="available" checked class="w-4 h-4 accent-[var(--color-coral)]" />
+          <label for="roomAvailable" class="text-sm font-bold">متاحة للحجز حالياً</label>
+        </div>
+        <div class="sm:col-span-3 flex items-center gap-3">
+          <button type="submit" class="btn-primary">إضافة الغرفة</button>
+          <p id="addRoomMsg" class="hidden text-sm"></p>
+        </div>
+      </form>
+      <div id="roomsListWrap"></div>
+    </section>
+
+    <!-- الحجوزات الواردة -->
+    <section class="card">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-heading text-lg font-extrabold">📥 الحجوزات الواردة</h2>
+        <button id="refreshBookingsBtn" type="button" class="text-sm font-bold text-[var(--color-lagoon)] hover:underline">تحديث</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>الرقم المرجعي</th><th>الفندق</th><th>النزيل</th><th>التواريخ</th><th>الإجمالي</th><th>الحالة</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="bookingsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
