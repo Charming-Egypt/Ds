@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معالجة الدفع - Discover Sharm</title>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .loader {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #7c3aed;
+            border-top: 4px solid #fbbf24;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <h2>جاري معالجة الدفع...</h2>
+        <p>من فضلك انتظر لحظة</p>
+    </div>
+
+    <script>
+        // استقبال نتيجة الدفع من Kashier
+        window.addEventListener('message', function(event) {
+            if (event.origin !== 'https://checkout.kashier.io') return;
+            
+            if (event.data && event.data.event === 'kashier.paymentSuccess') {
+                // إرسال النتيجة للصفحة الرئيسية
+                window.parent.postMessage({
+                    event: 'kashier.paymentSuccess',
+                    transactionId: event.data.transactionId,
+                    orderId: event.data.orderId
+                }, '*');
+            }
+            
+            if (event.data && event.data.event === 'kashier.paymentFailure') {
+                window.parent.postMessage({
+                    event: 'kashier.paymentFailure'
+                }, '*');
+            }
+        });
+
+        // لو في redirect مباشر
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('paymentStatus');
+        const orderId = urlParams.get('orderId');
+        
+        if (paymentStatus === 'SUCCESS') {
+            window.parent.postMessage({
+                event: 'kashier.paymentSuccess',
+                orderId: orderId
+            }, '*');
+        } else if (paymentStatus === 'FAILED') {
+            window.parent.postMessage({
+                event: 'kashier.paymentFailure'
+            }, '*');
+        }
+    </script>
+</body>
+</html>
