@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Discover Sharm — Luxury Travel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        ink: {
+                            950: '#0c0918',
+                            900: '#15101f',
+                            800: '#1f1830',
+                            700: '#2b2140',
+                            600: '#382a54',
+                        },
+                        violet: {
+                            50: '#f3f0fd',
+                            400: '#8b5cf6',
+                            500: '#7c3aed',
+                            600: '#6d28d9',
+                            700: '#5b21b6',
+                        },
+                        gold: {
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        },
+                        mist: {
+                            50: '#f8f7fc',
+                            100: '#f1eef9',
+                            200: '#e8e3f4',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f8f7fc;
+            color: #1a1428;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .font-display { font-family: 'Playfair Display', serif; }
+
+        /* ====== الخلفية الداكنة (تظهر فقط خلف العناصر الداكنة) ====== */
+        .dark-scene {
+            position: relative;
+            background: linear-gradient(160deg, #171029 0%, #100c1c 55%, #0c0918 100%);
+            overflow: hidden;
+        }
+        .dark-scene .stars-container { position: absolute; inset: 0; z-index: 1; opacity: .6; pointer-events: none; }
+        .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+        @keyframes twinkle { 0%,100%{opacity:.2;transform:scale(1)} 50%{opacity:1;transform:scale(1.8)} }
+        .ambient-orb { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 1; opacity: .35; mix-blend-mode: screen; }
+        .orb-1 { width: 420px; height: 420px; background: radial-gradient(circle, rgba(124,58,237,.8) 0%, transparent 70%); top: -120px; right: -120px; }
+        .orb-2 { width: 380px; height: 380px; background: radial-gradient(circle, rgba(251,191,36,.5) 0%, transparent 70%); bottom: -100px; left: -100px; }
+
+        /* ====== نظام الصفحات ====== */
+        .page { display: none; min-height: 100vh; position: relative; z-index: 10; }
+        .page.active { display: block; animation: pageEnter .45s cubic-bezier(.16,1,.3,1) forwards; }
+        @keyframes pageEnter { from{opacity:0; transform: translateX(14px)} to{opacity:1; transform: translateX(0)} }
+
+        /* ====== الهيرو ====== */
+        .hero-section { position: relative; min-height: 62vh; background: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,9,24,.25) 0%, rgba(12,9,24,.55) 45%, rgba(12,9,24,.92) 85%, #f8f7fc 100%); }
+        .hero-content { position: relative; z-index: 10; }
+
+        .header-transparent { background: rgba(255,255,255,.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.15); }
+        .header-light { background: #fff; border-bottom: 1px solid #efeaf7; }
+
+        /* ====== بطاقات بيضاء (النمط الأساسي في التصميم) ====== */
+        .card { background: #fff; border: 1px solid #efeaf7; border-radius: 20px; box-shadow: 0 10px 30px -12px rgba(45,23,90,.10); transition: all .3s ease; }
+        .card:hover { box-shadow: 0 16px 40px -14px rgba(45,23,90,.18); }
+        .card-strong { background: #fff; border-radius: 24px; box-shadow: 0 20px 55px -18px rgba(45,23,90,.25); }
+
+        .search-card { background: #fff; border-radius: 26px; box-shadow: 0 25px 60px -18px rgba(20,10,45,.35); border: 1px solid #f1eef9; }
+        .field-box { background: #f8f7fc; border: 1px solid #eee9f8; border-radius: 16px; }
+
+        /* ====== شريط التنقل السفلي ====== */
+        .bottom-nav {
+            position: fixed; bottom: 1.1rem; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 430px; z-index: 50; border-radius: 22px; padding: .6rem .9rem;
+            background: #171029; box-shadow: 0 12px 40px rgba(20,10,45,.35);
+        }
+
+        /* ====== أزرار ====== */
+        .btn-gold {
+            background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 45%, #f59e0b 100%);
+            box-shadow: 0 10px 30px -8px rgba(245,158,11,.5), inset 0 1px 0 rgba(255,255,255,.3);
+            border: none; cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1);
+        }
+        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 15px 35px -8px rgba(245,158,11,.6); }
+
+        .btn-violet {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 55%, #6d28d9 100%);
+            box-shadow: 0 10px 30px -8px rgba(124,58,237,.45);
+            border: none; cursor: pointer; color: #fff; transition: all .3s cubic-bezier(.16,1,.3,1);
+        }
+        .btn-violet:hover { transform: translateY(-1px); box-shadow: 0 15px 35px -8px rgba(124,58,237,.6); }
+        .btn-violet:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        .btn-outline-violet { background: #fff; border: 1.5px solid #6d28d9; color: #6d28d9; }
+
+        /* ====== بطاقة الفندق ====== */
+        .hotel-card { background: #fff; border: 1px solid #f1eef9; border-radius: 20px; overflow: hidden; transition: all .35s cubic-bezier(.16,1,.3,1); box-shadow: 0 8px 24px -14px rgba(45,23,90,.15); }
+        .hotel-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -16px rgba(45,23,90,.25); }
+
+        .shimmer-text {
+            background: linear-gradient(90deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%);
+            background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+        .confetti { position: fixed; pointer-events: none; z-index: 9999; animation: confettiFall 3s ease-out forwards; }
+        @keyframes confettiFall { 0%{transform: translateY(-100vh) rotate(0deg); opacity:1} 100%{transform: translateY(100vh) rotate(720deg); opacity:0} }
+
+        .toast { animation: toastIn .4s cubic-bezier(.16,1,.3,1); }
+        @keyframes toastIn { from{transform: translateY(-100%) scale(.9); opacity:0} to{transform: translateY(0) scale(1); opacity:1} }
+
+        .ripple { position: relative; overflow: hidden; }
+        .ripple::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at center, rgba(255,255,255,.35), transparent 70%); transform: scale(0); opacity:0; transition: transform .6s, opacity .6s; }
+        .ripple:active::after { transform: scale(2); opacity:1; transition: 0s; }
+
+        .promo-banner { background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #6d28d9 100%); position: relative; overflow: hidden; }
+        .promo-banner::before { content:''; position:absolute; top:-50%; right:-20%; width:300px; height:300px; background: radial-gradient(circle, rgba(251,191,36,.3) 0%, transparent 70%); border-radius:50%; }
+
+        .filter-chip { transition: all .3s cubic-bezier(.16,1,.3,1); border: 1px solid #eee9f8; background: #fff; color: #4b4560; cursor: pointer; }
+        .filter-chip.active { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-color: transparent; color: #fff; box-shadow: 0 6px 18px -6px rgba(124,58,237,.5); }
+
+        .star-filled { color: #f59e0b; }
+        .star-empty { color: #e6e1f2; }
+
+        .badge-bestseller { background: linear-gradient(135deg, #171029, #2b2140); color: #fbbf24; }
+        .rating-pill { background: rgba(12,9,24,.65); backdrop-filter: blur(6px); }
+
+        .onboarding-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); transition: all .4s cubic-bezier(.16,1,.3,1); }
+        .onboarding-dot.active { width: 26px; border-radius: 4px; background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+
+        .nav-item { transition: all .3s cubic-bezier(.16,1,.3,1); position: relative; cursor: pointer; color: rgba(255,255,255,.45); }
+        .nav-item.active { color: #fbbf24; }
+
+        .horizontal-scroll { display:flex; gap:.75rem; overflow-x:auto; padding:.5rem .25rem .75rem; scrollbar-width:none; -ms-overflow-style:none; }
+        .horizontal-scroll::-webkit-scrollbar { display:none; }
+
+        .section-title { font-size: 1.35rem; font-weight: 700; font-family: 'Playfair Display', serif; color:#171029; margin-bottom:.3rem; }
+        .section-subtitle { color: #a855f7; font-size:.62rem; font-weight:700; letter-spacing:.25em; margin-bottom:.3rem; }
+
+        /* ====== مؤشر خطوات الحجز ====== */
+        .step-indicator { display:flex; align-items:center; justify-content:center; gap:0; }
+        .step-circle { width: 34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; transition: all .3s; }
+        .step-line { width: 46px; height: 2px; flex-shrink:0; }
+        .step-label { font-size:.62rem; margin-top:.4rem; text-align:center; letter-spacing:.02em; }
+
+        /* مودال الضيوف */
+        .guests-modal { position: fixed; inset: 0; z-index: 100; display:flex; align-items:center; justify-content:center; background: rgba(15,10,25,.55); backdrop-filter: blur(6px); }
+        .guests-modal-content { background: #fff; border-radius: 24px; padding: 1.5rem; width: 90%; max-width: 400px; box-shadow: 0 30px 70px -20px rgba(20,10,45,.4); }
+        .counter-btn { width:38px; height:38px; border-radius:12px; background:#f1eef9; border:1px solid #e8e3f4; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .3s; font-size:1.1rem; color:#171029; }
+        .counter-btn:hover { background:#e8e0fb; border-color:#c8b6f0; }
+        .counter-btn:active { transform: scale(.9); }
+
+        @media (max-width:480px){ .section-title{font-size:1.15rem} .bottom-nav{bottom:.7rem; padding:.5rem .7rem} }
+    </style>
+</head>
+<body>
+    <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] space-y-2 pointer-events-none w-[90%] max-w-md"></div>
+
+    <!-- مودال تحديد عدد الأفراد -->
+    <div id="guestsModal" class="guests-modal hidden">
+        <div class="guests-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display text-xl font-bold text-ink-900">Guests & Rooms</h3>
+                <button onclick="closeGuestsModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center text-ink-900">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <div><p class="font-semibold text-sm text-ink-900">Adults</p><p class="text-xs text-gray-400">Age 13+</p></div>
+                    <div class="flex items-center gap-3">
+                        <button class="counter-btn" onclick="adjustGuestCount('adults', -1)">-</button>
+                        <span id="adultsCount" class="text-xl font-bold w-8 text-center text-ink-900">2</span>
+                        <button class="counter-btn" onclick="adjustGuestCount('adults', 1)">+</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div><p class="font-semibold text-sm text-ink-900">Children</p><p class="text-xs text-gray-400">Age 2-12</p></div>
+                    <div class="flex items-center gap-3">
+                        <button class="counter-btn" onclick="adjustGuestCount('children', -1)">-</button>
+                        <span id="childrenCount" class="text-xl font-bold w-8 text-center text-ink-900">0</span>
+                        <button class="counter-btn" onclick="adjustGuestCount('children', 1)">+</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div><p class="font-semibold text-sm text-ink-900">Infants</p><p class="text-xs text-gray-400">Under 2</p></div>
+                    <div class="flex items-center gap-3">
+                        <button class="counter-btn" onclick="adjustGuestCount('infants', -1)">-</button>
+                        <span id="infantsCount" class="text-xl font-bold w-8 text-center text-ink-900">0</span>
+                        <button class="counter-btn" onclick="adjustGuestCount('infants', 1)">+</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between border-t border-mist-200 pt-4">
+                    <div><p class="font-semibold text-sm text-ink-900">Rooms</p><p class="text-xs text-gray-400">Max 5 rooms</p></div>
+                    <div class="flex items-center gap-3">
+                        <button class="counter-btn" onclick="adjustGuestCount('rooms', -1)">-</button>
+                        <span id="roomsCount" class="text-xl font-bold w-8 text-center text-ink-900">1</span>
+                        <button class="counter-btn" onclick="adjustGuestCount('rooms', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="applyGuests()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6">Apply</button>
+        </div>
+    </div>
+
+    <!-- ==================== شاشة الترحيب ==================== -->
+    <div id="onboardingPage" class="fixed inset-0 z-[90] flex items-center justify-center dark-scene">
+        <div class="stars-container" id="onboardStars"></div>
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="relative w-full max-w-md h-screen overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="w-full h-full object-cover scale-110 opacity-40" id="onboardImg" alt="Sharm El Sheikh">
+                <div class="absolute inset-0 bg-gradient-to-b from-ink-950/40 via-ink-950/60 to-ink-950"></div>
+            </div>
+            <div class="relative h-full flex flex-col items-center justify-between py-14 px-8 text-white">
+                <div class="text-center mt-14">
+                    <div class="w-20 h-20 mx-auto mb-6 relative">
+                        <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-20 animate-ping"></div>
+                        <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50">
+                            <i class="fa-solid fa-compass text-3xl text-ink-900"></i>
+                        </div>
+                    </div>
+                    <h1 class="font-display text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+                        <span class="shimmer-text">DISCOVER</span><span class="text-white"> SHARM</span>
+                    </h1>
+                    <div class="w-14 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent mx-auto mb-3"></div>
+                    <h2 class="font-display text-xl md:text-2xl font-bold mb-2 leading-tight">Stay Better.<br>Travel <span class="italic text-gold-400">Brighter.</span></h2>
+                    <p class="text-white/60 text-sm max-w-xs mx-auto leading-relaxed">Find and book the perfect hotel for your next unforgettable stay in Sharm El Sheikh.</p>
+                </div>
+                <div class="w-full space-y-3 mb-8">
+                    <button onclick="app.goHome()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 flex items-center justify-center gap-2 text-base ripple">Get Started <i class="fa-solid fa-arrow-left"></i></button>
+                    <button onclick="app.goHome()" class="w-full py-4 rounded-2xl font-semibold text-white border border-white/20 hover:bg-white/5 transition">Skip</button>
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <div class="onboarding-dot active"></div><div class="onboarding-dot"></div><div class="onboarding-dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== التطبيق الرئيسي ==================== -->
+    <div id="mainApp" class="hidden relative z-10">
+        <!-- الصفحة الرئيسية -->
+        <div id="homePage" class="page active">
+            <div class="hero-section dark-scene">
+                <div class="stars-container"></div>
+                <div class="hero-overlay"></div>
+                <div class="hero-content relative z-10 pb-24 text-white">
+                    <div class="px-5 pt-6 pb-4">
+                        <div class="flex items-center justify-between header-transparent rounded-2xl p-2.5">
+                            <div class="flex items-center gap-2">
+                                <button class="w-11 h-11 rounded-xl flex items-center justify-center hover:bg-white/10 transition text-white/85"><i class="fa-solid fa-bars"></i></button>
+                                <button class="flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-white/10 transition">
+                                    <div class="w-2 h-2 bg-gold-400 rounded-full animate-pulse"></div>
+                                    <span class="text-sm font-medium">Sharm El Sheikh</span>
+                                    <i class="fa-solid fa-chevron-down text-xs text-white/60"></i>
+                                </button>
+                            </div>
+                            <button onclick="nav.go('notifications')" class="w-11 h-11 rounded-xl flex items-center justify-center relative hover:bg-white/10 transition text-white/85">
+                                <i class="fa-regular fa-bell"></i><span class="absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="px-6 pt-6 pb-4">
+                        <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2">— PREMIUM STAYS</p>
+                        <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight">Find Your<br><span class="italic text-gold-400">Perfect Stay</span></h1>
+                        <p class="text-white/75 text-base">Luxury stays. Best prices. Unforgettable moments.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نموذج البحث الأبيض فوق الهيرو -->
+            <div class="relative z-20 px-5 -mt-16">
+                <div class="search-card rounded-[26px] p-5 space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="field-box p-3">
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-regular fa-calendar text-violet-600 text-xs"></i></div>
+                                <span class="text-[10px] text-gray-400 tracking-wider font-semibold">CHECK-IN</span>
+                            </div>
+                            <input type="date" id="checkinDate" class="w-full bg-transparent text-sm font-semibold outline-none text-ink-900">
+                        </div>
+                        <div class="field-box p-3">
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-regular fa-calendar-check text-violet-600 text-xs"></i></div>
+                                <span class="text-[10px] text-gray-400 tracking-wider font-semibold">CHECK-OUT</span>
+                            </div>
+                            <input type="date" id="checkoutDate" class="w-full bg-transparent text-sm font-semibold outline-none text-ink-900">
+                        </div>
+                    </div>
+                    <div class="field-box p-3 flex items-center justify-between cursor-pointer" onclick="openGuestsModal()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid fa-user-group text-violet-600"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 tracking-wider font-semibold">GUESTS & ROOMS</p>
+                                <p class="text-sm font-semibold text-ink-900" id="guestsDisplay">2 Adults, 1 Room</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-gray-300"></i>
+                    </div>
+                    <button onclick="nav.go('hotels')" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> Search Hotels</button>
+                </div>
+            </div>
+
+            <div class="relative z-20 pt-8">
+                <div class="mb-8">
+                    <div class="px-5 flex items-center justify-between mb-4">
+                        <div><p class="section-subtitle">— EXPLORE</p><h3 class="section-title">Popular Destinations</h3></div>
+                        <button class="text-violet-600 text-sm font-medium flex items-center gap-1">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
+                    </div>
+                    <div class="horizontal-scroll px-5">
+                        <div onclick="search.filterDestination('Ras Mohammed')" class="flex-shrink-0 w-36 h-44 cursor-pointer group rounded-2xl relative overflow-hidden shadow-lg">
+                            <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+                            <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ 4.9</span></div>
+                            <div class="absolute bottom-3 right-3 left-3 text-white">
+                                <p class="font-display font-bold text-base">Ras Mohammed</p>
+                                <p class="text-[10px] text-white/70 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gold-400 text-[8px]"></i>Egypt</p>
+                            </div>
+                        </div>
+                        <div onclick="search.filterDestination('Naama Bay')" class="flex-shrink-0 w-36 h-44 cursor-pointer group rounded-2xl relative overflow-hidden shadow-lg">
+                            <img src="https://images.unsplash.com/photo-1582967788606-a171f1080ca8?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+                            <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ 4.8</span></div>
+                            <div class="absolute bottom-3 right-3 left-3 text-white">
+                                <p class="font-display font-bold text-base">Naama Bay</p>
+                                <p class="text-[10px] text-white/70 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gold-400 text-[8px]"></i>Egypt</p>
+                            </div>
+                        </div>
+                        <div onclick="search.filterDestination('Sharks Bay')" class="flex-shrink-0 w-36 h-44 cursor-pointer group rounded-2xl relative overflow-hidden shadow-lg">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+                            <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ 4.7</span></div>
+                            <div class="absolute bottom-3 right-3 left-3 text-white">
+                                <p class="font-display font-bold text-base">Sharks Bay</p>
+                                <p class="text-[10px] text-white/70 flex items-center gap-1"><i class="fa-solid fa-location-dot text-gold-400 text-[8px]"></i>Egypt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-5 mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div><p class="section-subtitle">— CURATED</p><h3 class="section-title">Featured Hotels</h3></div>
+                        <button onclick="nav.go('hotels')" class="text-violet-600 text-sm font-medium flex items-center gap-1">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
+                    </div>
+                    <div class="horizontal-scroll !flex-col !overflow-visible !p-0" id="featuredHotelsFilters"></div>
+                    <div id="featuredHotels" class="space-y-4"></div>
+                </div>
+
+                <div class="px-5 pb-28">
+                    <div class="promo-banner rounded-[26px] p-6 flex items-center justify-between relative overflow-hidden">
+                        <div class="relative z-10 flex-1 text-white">
+                            <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-3 border border-white/20"><i class="fa-solid fa-gift text-gold-400 ml-1"></i>LIMITED OFFER</div>
+                            <p class="font-display text-2xl font-bold mb-1">Get <span class="text-gold-400">20% OFF</span></p>
+                            <p class="text-sm text-white/80 mb-4">on your first booking</p>
+                            <button onclick="nav.go('hotels')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm ripple">Book Now</button>
+                        </div>
+                        <div class="relative z-10 text-6xl opacity-40"><i class="fa-solid fa-suitcase-rolling text-gold-400"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الفنادق -->
+        <div id="hotelsPage" class="page">
+            <div class="min-h-screen">
+                <div class="px-5 pt-6 pb-4 header-light">
+                    <div class="flex items-center justify-between mb-5">
+                        <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center text-ink-900"><i class="fa-solid fa-arrow-right"></i></button>
+                        <div class="text-center"><p class="section-subtitle">— COLLECTION</p><h1 class="text-lg font-bold font-display text-ink-900">Featured Hotels</h1></div>
+                        <button class="text-violet-600 text-sm font-medium">View All</button>
+                    </div>
+                    <div class="relative mb-4">
+                        <div class="field-box rounded-2xl flex items-center px-4 py-3">
+                            <i class="fa-solid fa-magnifying-glass text-violet-500 ml-3"></i>
+                            <input type="text" id="hotelSearch" placeholder="Search hotels..." oninput="search.handle(this.value)" class="flex-1 bg-transparent text-sm outline-none placeholder-gray-400 text-ink-900">
+                        </div>
+                    </div>
+                    <div class="horizontal-scroll !px-0">
+                        <button onclick="search.filterCategory('all')" class="filter-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-hotel"></i> All</button>
+                        <button onclick="search.filterCategory('luxury')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-crown text-gold-500"></i> Luxury</button>
+                        <button onclick="search.filterCategory('budget')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-wallet text-cyan-500"></i> Budget</button>
+                        <button onclick="search.filterCategory('business')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-briefcase text-violet-500"></i> Business</button>
+                    </div>
+                </div>
+                <div class="px-5 pt-4 space-y-4 pb-28" id="hotelsList"></div>
+            </div>
+        </div>
+
+        <!-- صفحة الحجوزات -->
+        <div id="bookingsPage" class="page">
+            <div class="min-h-screen">
+                <div class="px-5 pt-6 pb-4">
+                    <div class="text-center mb-6"><p class="section-subtitle">— RESERVATIONS</p><h1 class="text-2xl font-bold font-display text-ink-900">My Bookings</h1></div>
+                    <div class="flex gap-2 field-box p-1.5 rounded-2xl">
+                        <button onclick="bookings.switchTab('upcoming')" id="tabUpcoming" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg">Upcoming</button>
+                        <button onclick="bookings.switchTab('history')" id="tabHistory" class="flex-1 py-3 rounded-xl text-gray-400 text-sm font-medium">Past</button>
+                    </div>
+                </div>
+                <div class="px-5 py-4 space-y-3 pb-28" id="bookingsList"></div>
+                <div id="emptyBookings" class="hidden text-center py-20 px-6">
+                    <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-ticket text-4xl text-violet-300"></i></div>
+                    <p class="font-display text-xl font-bold mb-2 text-ink-900">No bookings yet</p>
+                    <p class="text-gray-400 text-sm mb-6">Start your luxury journey</p>
+                    <button onclick="nav.go('hotels')" class="btn-gold px-8 py-3 rounded-2xl text-ink-900 font-bold text-sm ripple">Browse Hotels</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة المفضلة -->
+        <div id="favoritesPage" class="page">
+            <div class="min-h-screen">
+                <div class="px-5 pt-6 pb-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center text-ink-900"><i class="fa-solid fa-arrow-right"></i></button>
+                        <div><p class="section-subtitle">— SAVED</p><h1 class="text-xl font-bold font-display text-ink-900">Favorites</h1></div>
+                    </div>
+                </div>
+                <div class="px-5 space-y-4 pb-28" id="favoritesList"></div>
+                <div id="emptyFavorites" class="hidden text-center py-20 px-6">
+                    <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-regular fa-heart text-4xl text-violet-300"></i></div>
+                    <p class="font-display text-xl font-bold mb-2 text-ink-900">No favorites yet</p>
+                    <p class="text-gray-400 text-sm">Save hotels you love</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الملف الشخصي -->
+        <div id="profilePage" class="page">
+            <div class="min-h-screen pb-28">
+                <div class="relative dark-scene h-48 overflow-hidden">
+                    <div class="stars-container"></div>
+                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90')] bg-cover bg-center opacity-25"></div>
+                </div>
+                <div class="relative -mt-20 flex flex-col items-center">
+                    <div class="w-32 h-32 rounded-full p-1.5 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 shadow-2xl relative">
+                        <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden border-4 border-white">
+                            <span class="font-display text-5xl font-bold text-violet-600">A</span>
+                        </div>
+                        <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                    </div>
+                    <h2 class="font-display text-2xl font-bold text-ink-900 mt-4">Ahmed Mohamed</h2>
+                    <p class="text-gray-400 text-sm">ahmed@example.com</p>
+                    <div class="mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> Gold Member</div>
+                </div>
+                <div class="px-5 mt-8">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display">12</p><p class="text-[10px] text-gray-400 mt-1">Bookings</p></div>
+                        <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display">5</p><p class="text-[10px] text-gray-400 mt-1">Favorites</p></div>
+                        <div class="card rounded-2xl p-4 text-center"><p class="text-2xl font-bold text-violet-600 font-display">8</p><p class="text-[10px] text-gray-400 mt-1">Reviews</p></div>
+                    </div>
+                </div>
+                <div class="px-5 mt-6 space-y-3">
+                    <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-mist-50 transition" onclick="nav.go('bookings')">
+                        <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-600"><i class="fa-solid fa-ticket"></i></div>
+                        <span class="flex-1 font-medium text-ink-900">My Bookings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs"></i>
+                    </div>
+                    <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-mist-50 transition" onclick="nav.go('favorites')">
+                        <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500"><i class="fa-solid fa-heart"></i></div>
+                        <span class="flex-1 font-medium text-ink-900">Favorites</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs"></i>
+                    </div>
+                    <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-mist-50 transition" onclick="nav.go('settings')">
+                        <div class="w-12 h-12 bg-mist-100 rounded-2xl flex items-center justify-center text-gray-500"><i class="fa-solid fa-gear"></i></div>
+                        <span class="flex-1 font-medium text-ink-900">Settings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs"></i>
+                    </div>
+                    <button onclick="auth.logout()" class="w-full card rounded-2xl p-4 flex items-center gap-4 text-red-500 mt-6 hover:bg-red-50 transition">
+                        <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-right-from-bracket"></i></div>
+                        <span class="flex-1 font-medium text-right">Logout</span>
+                    </button>
+                </div>
+                <div class="text-center mt-8 pt-6 border-t border-mist-200">
+                    <p class="font-display text-sm text-violet-600 italic">Discover Sharm</p>
+                    <p class="text-[9px] tracking-widest text-gray-300 mt-1">LUXURY TRAVEL · EST. 2024</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الإعدادات -->
+        <div id="settingsPage" class="page">
+            <div class="min-h-screen pb-28">
+                <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+                    <button onclick="nav.go('profile')" class="w-11 h-11 field-box rounded-xl flex items-center justify-center text-ink-900"><i class="fa-solid fa-arrow-right"></i></button>
+                    <div><p class="section-subtitle">— PREFERENCES</p><h1 class="text-xl font-bold font-display text-ink-900">Settings</h1></div>
+                </div>
+                <div class="px-5 py-6 space-y-4">
+                    <div class="card rounded-2xl p-4 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gold-400/15 rounded-xl flex items-center justify-center"><i class="fa-solid fa-coins text-gold-500"></i></div>
+                                <span class="text-sm font-medium text-ink-900">Currency</span>
+                            </div>
+                            <select onchange="settings.changeCurrency(this.value)" id="currencySelect" class="field-box rounded-xl px-3 py-2 text-sm outline-none text-ink-900">
+                                <option value="USD">USD ($)</option>
+                                <option value="EGP">EGP (ج.م)</option>
+                                <option value="EUR">EUR (€)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الإشعارات -->
+        <div id="notificationsPage" class="page">
+            <div class="min-h-screen pb-28">
+                <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
+                    <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center text-ink-900"><i class="fa-solid fa-arrow-right"></i></button>
+                    <div><p class="section-subtitle">— UPDATES</p><h1 class="text-xl font-bold font-display text-ink-900">Notifications</h1></div>
+                </div>
+                <div class="px-5 py-6 space-y-3" id="notificationsList"></div>
+            </div>
+        </div>
+
+        <!-- شريط التنقل السفلي -->
+        <nav class="bottom-nav">
+            <div class="flex items-center justify-around">
+                <button onclick="nav.go('home')" data-page="home" class="nav-item active flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-medium">Home</span></button>
+                <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium">Bookings</span></button>
+                <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium">Favorites</span></button>
+                <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-user text-xl"></i><span class="text-[10px] font-medium">Profile</span></button>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // ==================== البيانات ====================
+        const DATA = {
+            hotels: [
+                { id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view',
+                    fullDescription: 'Experience unparalleled luxury at Discover Grand Hotel. Featuring stunning Red Sea views, world-class amenities, and exceptional service that defines the essence of Sharm El Sheikh hospitality.',
+                    price: 120, rating: 5, reviews: 234, location: '123 Naama Bay, Sharm El Sheikh',
+                    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90',
+                    images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90'],
+                    amenities: ['Free WiFi', 'Breakfast', 'Pool', 'Spa', 'Gym', 'Parking'], bestseller: true,
+                    rooms: [
+                        { type: 'Deluxe Sea View', price: 120, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80' },
+                        { type: 'Premium Suite', price: 220, size: '65m²', beds: '1 King Bed', guests: 3, image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80' }
+                    ]
+                },
+                { id: 'h2', name: 'Discover Deluxe Suites', category: 'luxury', description: 'Elegant suites with panoramic views',
+                    fullDescription: 'Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.',
+                    price: 150, rating: 5, reviews: 189, location: '456 Sharks Bay, Sharm El Sheikh',
+                    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=90',
+                    images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=90'],
+                    amenities: ['Free WiFi', 'Breakfast', 'Gym', 'Beach Access', 'Concierge'], bestseller: false,
+                    rooms: [ { type: 'Junior Suite', price: 150, size: '45m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80' } ]
+                },
+                { id: 'h3', name: 'Discover Business Hotel', category: 'business', description: 'Modern hotel for business travelers',
+                    fullDescription: 'Designed for the modern business traveler, Discover Business Hotel offers state-of-the-art meeting facilities, high-speed internet, and comfortable accommodations in the heart of Sharm.',
+                    price: 110, rating: 4, reviews: 156, location: '789 Hadaba, Sharm El Sheikh',
+                    image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=90',
+                    images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=90'],
+                    amenities: ['Free WiFi', 'Breakfast', 'Parking', 'Business Center', 'Meeting Rooms'], bestseller: false,
+                    rooms: [ { type: 'Business Room', price: 110, size: '28m²', beds: '1 Queen Bed', guests: 2, image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=400&q=80' } ]
+                },
+                { id: 'h4', name: 'Discover Budget Inn', category: 'budget', description: 'Comfortable stay at great prices',
+                    fullDescription: 'Discover Budget Inn provides clean, comfortable accommodations at affordable prices. Perfect for travelers who want to explore Sharm El Sheikh without breaking the bank.',
+                    price: 45, rating: 4, reviews: 98, location: '321 Old Market, Sharm El Sheikh',
+                    image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=90',
+                    images: ['https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=90'],
+                    amenities: ['Free WiFi', 'Breakfast', 'Pool', '24/7 Reception'], bestseller: false,
+                    rooms: [ { type: 'Standard Room', price: 45, size: '22m²', beds: '2 Twin Beds', guests: 2, image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=400&q=80' } ]
+                }
+            ]
+        };
+
+        // ==================== الحالة ====================
+        const state = {
+            bookings: JSON.parse(localStorage.getItem('ds_bookings') || '[]'),
+            favorites: JSON.parse(localStorage.getItem('ds_favorites') || '[]'),
+            currency: localStorage.getItem('ds_currency') || 'USD',
+            currentFilter: 'all', searchQuery: '', currentHotel: null, currentRoom: null,
+            currentBookingTab: 'upcoming',
+            guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
+            pageHistory: ['home'],
+            bookingDraft: {}
+        };
+
+        const CURRENCIES = { USD: { rate: 1, symbol: '$' }, EGP: { rate: 48.5, symbol: 'ج.م' }, EUR: { rate: 0.92, symbol: '€' } };
+
+        // ==================== أدوات مساعدة ====================
+        const utils = {
+            formatPrice(usd) { const c = CURRENCIES[state.currency]; return `${c.symbol}${Math.round(usd * c.rate).toLocaleString()}`; },
+            save() { localStorage.setItem('ds_bookings', JSON.stringify(state.bookings)); localStorage.setItem('ds_favorites', JSON.stringify(state.favorites)); localStorage.setItem('ds_currency', state.currency); },
+            generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
+            toast(msg, type = 'success') {
+                const colors = { success: 'bg-gradient-to-r from-green-600 to-emerald-600', error: 'bg-gradient-to-r from-red-600 to-rose-600', info: 'bg-gradient-to-r from-violet-600 to-violet-700' };
+                const icons = { success: 'fa-check', error: 'fa-xmark', info: 'fa-info' };
+                const t = document.createElement('div');
+                t.className = `${colors[type]} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 toast pointer-events-auto`;
+                t.innerHTML = `<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0"><i class="fa-solid ${icons[type]} text-sm"></i></div><span class="text-sm font-medium flex-1">${msg}</span>`;
+                document.getElementById('toastContainer').appendChild(t);
+                setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-20px) scale(0.95)'; setTimeout(() => t.remove(), 400); }, 3000);
+            },
+            confetti() {
+                const colors = ['#fbbf24', '#fcd34d', '#7c3aed', '#6d28d9', '#a855f7', '#ffffff'];
+                for (let i = 0; i < 60; i++) {
+                    const c = document.createElement('div'); c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + '%'; c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.width = (Math.random() * 8 + 4) + 'px'; c.style.height = (Math.random() * 8 + 4) + 'px';
+                    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    c.style.animationDelay = Math.random() * 0.5 + 's'; c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 4500);
+                }
+            },
+            renderStars(rating) {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) stars += i <= rating ? '<i class="fa-solid fa-star star-filled text-[10px]"></i>' : '<i class="fa-solid fa-star star-empty text-[10px]"></i>';
+                return stars;
+            },
+            createStars(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+                for (let i = 0; i < 50; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%'; star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDelay = Math.random() * 3 + 's'; star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    container.appendChild(star);
+                }
+            },
+            stepIndicator(current) {
+                // current: 1 = Select Room, 2 = Guest Details, 3 = Payment
+                const steps = [ { n: 1, label: 'Select Room' }, { n: 2, label: 'Guest Details' }, { n: 3, label: 'Payment' } ];
+                return `<div class="flex items-start justify-center">` + steps.map((s, idx) => {
+                    const done = s.n < current, activeStep = s.n === current;
+                    const circleClass = done ? 'bg-gold-400 text-ink-900' : activeStep ? 'bg-white text-violet-700 ring-2 ring-white' : 'bg-white/15 text-white/60';
+                    const labelClass = activeStep || done ? 'text-white font-semibold' : 'text-white/50';
+                    const inner = done ? '<i class="fa-solid fa-check"></i>' : s.n;
+                    let html = `<div class="flex flex-col items-center"><div class="step-circle ${circleClass}">${inner}</div><span class="step-label ${labelClass}">${s.label}</span></div>`;
+                    if (idx < steps.length - 1) html += `<div class="step-line ${s.n < current ? 'bg-gold-400' : 'bg-white/20'} mt-4"></div>`;
+                    return html;
+                }).join('') + `</div>`;
+            }
+        };
+
+        // ==================== نظام تحديد الأفراد ====================
+        function openGuestsModal() {
+            document.getElementById('guestsModal').classList.remove('hidden');
+            document.getElementById('adultsCount').textContent = state.guests.adults;
+            document.getElementById('childrenCount').textContent = state.guests.children;
+            document.getElementById('infantsCount').textContent = state.guests.infants;
+            document.getElementById('roomsCount').textContent = state.guests.rooms;
+        }
+        function closeGuestsModal() { document.getElementById('guestsModal').classList.add('hidden'); }
+        function adjustGuestCount(type, delta) {
+            const limits = { adults: {min:1,max:10}, children:{min:0,max:6}, infants:{min:0,max:4}, rooms:{min:1,max:5} };
+            const newValue = state.guests[type] + delta;
+            if (newValue >= limits[type].min && newValue <= limits[type].max) state.guests[type] = newValue;
+            const displayMap = { adults:'adultsCount', children:'childrenCount', infants:'infantsCount', rooms:'roomsCount' };
+            document.getElementById(displayMap[type]).textContent = state.guests[type];
+        }
+        function applyGuests() {
+            const displayText = `${state.guests.adults} Adults${state.guests.children>0?`, ${state.guests.children} Children`:''}${state.guests.infants>0?`, ${state.guests.infants} Infants`:''}, ${state.guests.rooms} Room${state.guests.rooms>1?'s':''}`;
+            const disp = document.getElementById('guestsDisplay'); if (disp) disp.textContent = displayText;
+            const bdisp = document.getElementById('bookingGuestsDisplay'); if (bdisp) bdisp.textContent = displayText;
+            closeGuestsModal();
+            utils.toast('Guests updated', 'info');
+        }
+
+        // ==================== التنقل ====================
+        const nav = {
+            go(page) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                const target = document.getElementById(page + 'Page');
+                if (target) target.classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    const isActive = btn.dataset.page === page;
+                    btn.classList.toggle('active', isActive);
+                    const icon = btn.querySelector('i');
+                    if (isActive && icon.classList.contains('fa-regular')) icon.classList.replace('fa-regular','fa-solid');
+                    if (!isActive && icon.classList.contains('fa-solid') && !icon.classList.contains('fa-house')) icon.classList.replace('fa-solid','fa-regular');
+                });
+                state.pageHistory.push(page);
+                window.scrollTo(0, 0);
+                if (page === 'hotels') hotels.render();
+                if (page === 'bookings') bookings.render();
+                if (page === 'favorites') favorites.render();
+                if (page === 'notifications') notifications.render();
+            },
+            goBack() { state.pageHistory.pop(); this.go(state.pageHistory[state.pageHistory.length - 1] || 'home'); }
+        };
+
+        // ==================== التطبيق ====================
+        const app = {
+            goHome() {
+                const onboarding = document.getElementById('onboardingPage');
+                onboarding.style.opacity = '0'; onboarding.style.transition = 'opacity 0.6s ease';
+                setTimeout(() => {
+                    onboarding.style.display = 'none';
+                    document.getElementById('mainApp').classList.remove('hidden');
+                    ui.renderFeaturedHotels(); ui.setDates(); utils.createStars('');
+                }, 600);
+            }
+        };
+
+        // ==================== واجهة المستخدم ====================
+        const ui = {
+            renderFeaturedHotels() {
+                const featured = DATA.hotels.slice(0, 2);
+                document.getElementById('featuredHotels').innerHTML = featured.map(h => this.renderHotelCard(h)).join('');
+            },
+            renderHotelCard(h) {
+                const isFav = state.favorites.includes(h.id);
+                return `
+                    <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
+                        <div class="flex">
+                            <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
+                                <img src="${h.image}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                                ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
+                                <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                    <i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 p-3 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-start justify-between mb-1">
+                                        <h3 class="font-display font-bold text-sm md:text-base line-clamp-1 text-ink-900">${h.name}</h3>
+                                        <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base ${isFav?'text-red-500':'text-gray-300'} hover:text-red-500 transition flex-shrink-0 ml-1">
+                                            <i class="fa-${isFav?'solid':'regular'} fa-heart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}<span class="text-[9px] text-gray-400 mr-1">(${h.reviews})</span></div>
+                                    <p class="text-[10px] text-gray-400 mb-1.5 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${h.location.split(',')[0]}</p>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1 text-[8px] text-gray-500">
+                                        ${h.amenities.slice(0,2).map(a => `<span class="bg-mist-100 px-1.5 py-0.5 rounded">${a}</span>`).join('')}
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="text-base md:text-lg font-bold text-violet-600 font-display">${utils.formatPrice(h.price)}</p>
+                                        <p class="text-[8px] text-gray-400">/ Night</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            },
+            setDates() {
+                const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+                const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 3);
+                document.getElementById('checkinDate').value = tomorrow.toISOString().split('T')[0];
+                document.getElementById('checkoutDate').value = dayAfter.toISOString().split('T')[0];
+            }
+        };
+
+        // ==================== صفحة الفندق ====================
+        function showHotelPage(hotelId) {
+            const h = DATA.hotels.find(x => x.id === hotelId);
+            if (!h) return;
+            state.currentHotel = h;
+            const hotelPage = document.createElement('div');
+            hotelPage.id = 'hotelDetailPage';
+            hotelPage.className = 'page';
+            hotelPage.innerHTML = `
+                <div class="min-h-screen bg-white">
+                    <div class="relative h-80">
+                        <img src="${h.images[0]}" class="w-full h-full object-cover" id="hotelMainImg">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
+                        <button onclick="closeHotelPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900"><i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="favorites.toggle('${h.id}'); updateHotelFav('${h.id}')" class="absolute top-4 left-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg">
+                            <i id="hotelFavIcon" class="fa-${state.favorites.includes(h.id)?'solid text-red-500':'regular text-ink-900'} fa-heart"></i>
+                        </button>
+                        ${h.bestseller ? '<div class="absolute top-4 left-1/2 -translate-x-1/2 badge-bestseller px-3 py-1 rounded-full text-[10px] font-black">BEST SELLER</div>' : ''}
+                        <div class="absolute bottom-4 left-4 bg-black/55 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">1 / ${h.images.length}</div>
+                    </div>
+                    <div class="relative -mt-6 bg-white rounded-t-[28px] p-5 space-y-6 pb-32">
+                        <div>
+                            <p class="text-violet-500 text-[10px] tracking-widest mb-1 font-semibold">— ${h.category.toUpperCase()} HOTEL</p>
+                            <h2 class="font-display text-2xl font-bold mb-1 leading-tight text-ink-900">${h.name}</h2>
+                            <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(h.rating)}<span class="text-gray-400 text-xs">${h.rating.toFixed(1)} (${h.reviews} reviews)</span></div>
+                            <p class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${h.location}</p>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            ${h.amenities.slice(0,6).map(a => `
+                                <div class="field-box rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center">
+                                    <i class="fa-solid ${amenityIcon(a)} text-violet-600"></i>
+                                    <span class="text-[9px] text-gray-500 leading-tight">${a}</span>
+                                </div>`).join('')}
+                        </div>
+
+                        <div>
+                            <p class="text-violet-500 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
+                            <h3 class="font-display text-lg font-bold mb-2 text-ink-900">About this hotel</h3>
+                            <p class="text-sm text-gray-500 leading-relaxed">${h.fullDescription} <span class="text-violet-600 font-semibold cursor-pointer">Read More</span></p>
+                        </div>
+
+                        <div>
+                            <p class="text-violet-500 text-[10px] tracking-widest mb-1 font-semibold">— ROOMS</p>
+                            <h3 class="font-display text-lg font-bold mb-3 text-ink-900">Room Options</h3>
+                            <div class="space-y-3">
+                                ${h.rooms.map((r, i) => `
+                                    <div class="card rounded-2xl p-3 flex gap-3">
+                                        <img src="${r.image}" class="w-24 h-24 rounded-xl object-cover flex-shrink-0">
+                                        <div class="flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <h4 class="font-display font-bold text-sm mb-1 text-ink-900">${r.type}</h4>
+                                                <div class="flex items-center gap-2 text-[10px] text-gray-400 mb-1">
+                                                    <span class="flex items-center gap-1"><i class="fa-solid fa-user-group"></i>${r.guests}</span>
+                                                    <span class="flex items-center gap-1"><i class="fa-solid fa-ruler-combined"></i>${r.size}</span>
+                                                </div>
+                                                <p class="text-[10px] text-gray-400 flex items-center gap-1"><i class="fa-solid fa-bed"></i>${r.beds}</p>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <p class="font-display font-bold text-violet-600 text-lg">${utils.formatPrice(r.price)}<span class="text-[10px] text-gray-400 font-normal"> /Night</span></p>
+                                                <button onclick="startBooking('${h.id}', ${i})" class="btn-violet px-4 py-2 rounded-xl text-xs font-semibold">Select</button>
+                                            </div>
+                                        </div>
+                                    </div>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="card rounded-2xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div><p class="text-violet-500 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold text-ink-900">Guest Reviews</h3></div>
+                                <div class="text-center"><p class="text-3xl font-bold text-violet-600 font-display">${h.rating}.0</p><p class="text-[10px] text-gray-400">${h.reviews} reviews</p></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="field-box rounded-xl p-3">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 bg-violet-50 rounded-full flex items-center justify-center text-xs font-bold text-violet-600">M</div>
+                                        <div><p class="text-xs font-semibold text-ink-900">Mohamed A.</p><div class="flex">${utils.renderStars(5)}</div></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Amazing hotel with stunning views! The staff was incredibly helpful and the rooms were spotless.</p>
+                                </div>
+                                <div class="field-box rounded-xl p-3">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 bg-gold-400/15 rounded-full flex items-center justify-center text-xs font-bold text-gold-600">S</div>
+                                        <div><p class="text-xs font-semibold text-ink-900">Sarah K.</p><div class="flex">${utils.renderStars(5)}</div></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500">Perfect location, beautiful beach, and excellent food. Highly recommended!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-mist-200 p-4 flex items-center justify-between z-10">
+                        <div>
+                            <p class="text-[9px] text-gray-400 tracking-wider mb-0.5 font-semibold">STARTING FROM</p>
+                            <p class="text-xl font-bold text-violet-600 font-display">${utils.formatPrice(h.price)}<span class="text-xs text-gray-400 font-normal"> / Night</span></p>
+                        </div>
+                        <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+                    </div>
+                </div>`;
+            document.getElementById('mainApp').appendChild(hotelPage);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            hotelPage.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function amenityIcon(a) {
+            const map = { 'Free WiFi':'fa-wifi', 'Breakfast':'fa-mug-saucer', 'Pool':'fa-water-ladder', 'Spa':'fa-spa', 'Gym':'fa-dumbbell', 'Beach Access':'fa-umbrella-beach', 'Parking':'fa-square-parking', 'Business Center':'fa-briefcase', 'Meeting Rooms':'fa-users-rectangle', 'Concierge':'fa-bell-concierge', '24/7 Reception':'fa-clock' };
+            return map[a] || 'fa-check';
+        }
+
+        function updateHotelFav(hotelId) {
+            const icon = document.getElementById('hotelFavIcon');
+            if (icon) icon.className = state.favorites.includes(hotelId) ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart text-ink-900';
+            ui.renderFeaturedHotels(); hotels.render(); favorites.render();
+        }
+
+        function closeHotelPage() {
+            const p = document.getElementById('hotelDetailPage'); if (p) p.remove();
+            nav.go('hotels');
+        }
+
+        // ==================== تدفق الحجز بثلاث خطوات ====================
+        function startBooking(hotelId, roomIndex) {
+            const h = DATA.hotels.find(x => x.id === hotelId);
+            const r = h.rooms[roomIndex] || h.rooms[0];
+            state.currentHotel = h; state.currentRoom = r;
+            state.bookingDraft = { name: 'Ahmed Mohamed', email: '', phone: '', requests: '', payment: 'card' };
+            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+            const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 3);
+            state.bookingDraft.checkin = tomorrow.toISOString().split('T')[0];
+            state.bookingDraft.checkout = dayAfter.toISOString().split('T')[0];
+            renderBookingStep(2);
+        }
+
+        function bookingSummaryCard(h, r) {
+            return `
+                <div class="card rounded-2xl p-3 flex gap-3 mb-5">
+                    <img src="${h.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+                    <div class="flex-1">
+                        <h3 class="font-display font-bold text-sm mb-0.5 text-ink-900">${h.name}</h3>
+                        <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}</div>
+                        <p class="text-[10px] text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${h.location.split(',')[0]}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between card rounded-2xl p-3 mb-5 text-xs">
+                    <div class="flex items-center gap-2"><i class="fa-regular fa-calendar text-violet-500"></i><div><p class="text-gray-400 text-[9px]">CHECK-IN</p><p class="font-semibold text-ink-900">${r._checkin || state.bookingDraft.checkin}</p></div></div>
+                    <div class="w-px h-8 bg-mist-200"></div>
+                    <div class="flex items-center gap-2"><i class="fa-regular fa-calendar-check text-violet-500"></i><div><p class="text-gray-400 text-[9px]">CHECK-OUT</p><p class="font-semibold text-ink-900">${r._checkout || state.bookingDraft.checkout}</p></div></div>
+                    <button onclick="renderBookingStep(2)" class="text-violet-600 text-xs font-semibold">Change</button>
+                </div>`;
+        }
+
+        function renderBookingStep(step) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            let existing = document.getElementById('bookingFlowPage');
+            if (existing) existing.remove();
+            existing = document.getElementById('hotelDetailPage');
+            if (existing) existing.remove();
+
+            const h = state.currentHotel, r = state.currentRoom;
+            const nights = Math.max(1, Math.round((new Date(state.bookingDraft.checkout) - new Date(state.bookingDraft.checkin)) / 86400000));
+            const roomTotal = r.price * state.guests.rooms * nights;
+            const taxes = Math.round(roomTotal * 0.1);
+            const total = roomTotal + taxes;
+
+            const page = document.createElement('div');
+            page.id = 'bookingFlowPage';
+            page.className = 'page';
+
+            let bodyHtml = '';
+
+            if (step === 2) {
+                bodyHtml = `
+                    <div class="p-5">
+                        ${bookingSummaryCard(h, r)}
+                        <h3 class="font-display text-lg font-bold text-ink-900 mb-3">Guest Information</h3>
+                        <form onsubmit="submitGuestDetails(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">FULL NAME</label>
+                                <input type="text" id="bkName" required value="${state.bookingDraft.name}" class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">EMAIL ADDRESS</label>
+                                <input type="email" id="bkEmail" required placeholder="you@example.com" value="${state.bookingDraft.email}" class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">PHONE NUMBER</label>
+                                <input type="tel" id="bkPhone" required placeholder="+20 1xx xxx xxxx" value="${state.bookingDraft.phone}" class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">CHECK-IN</label>
+                                    <input type="date" id="bkCheckin" required value="${state.bookingDraft.checkin}" class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">CHECK-OUT</label>
+                                    <input type="date" id="bkCheckout" required value="${state.bookingDraft.checkout}" class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">
+                                </div>
+                            </div>
+                            <div class="field-box rounded-2xl p-3 flex items-center justify-between cursor-pointer" onclick="openGuestsModal()">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid fa-user-group text-violet-600"></i></div>
+                                    <div><p class="text-[10px] text-gray-400 tracking-wider font-semibold">GUESTS & ROOMS</p><p class="text-sm font-semibold text-ink-900" id="bookingGuestsDisplay">${state.guests.adults} Adults, ${state.guests.rooms} Room${state.guests.rooms>1?'s':''}</p></div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down text-gray-300"></i>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-600 font-semibold mb-1.5">SPECIAL REQUESTS (OPTIONAL)</label>
+                                <textarea id="bkRequests" rows="2" placeholder="e.g. Late check-in, high floor, etc." class="w-full field-box rounded-xl px-3 py-2.5 text-sm text-ink-900">${state.bookingDraft.requests}</textarea>
+                            </div>
+                            <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 mt-2 ripple">Continue <i class="fa-solid fa-arrow-left"></i></button>
+                        </form>
+                    </div>`;
+            } else if (step === 3) {
+                const methods = [
+                    { id: 'card', label: 'Credit / Debit Card', icon: 'fa-credit-card', extra: '<i class="fa-brands fa-cc-visa text-lg text-violet-600"></i><i class="fa-brands fa-cc-mastercard text-lg text-gold-500"></i><i class="fa-brands fa-cc-amex text-lg text-sky-500"></i>' },
+                    { id: 'paypal', label: 'PayPal', icon: 'fa-brands fa-paypal', extra: '' },
+                    { id: 'applepay', label: 'Apple Pay', icon: 'fa-brands fa-apple-pay', extra: '' },
+                    { id: 'googlepay', label: 'Google Pay', icon: 'fa-brands fa-google-pay', extra: '' }
+                ];
+                bodyHtml = `
+                    <div class="p-5">
+                        <h3 class="font-display text-lg font-bold text-ink-900 mb-3">Payment Methods</h3>
+                        <div class="space-y-3 mb-5">
+                            ${methods.map(m => `
+                                <label class="card rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer ${state.bookingDraft.payment===m.id ? 'border-violet-500 ring-1 ring-violet-200' : ''}">
+                                    <input type="radio" name="paymethod" value="${m.id}" ${state.bookingDraft.payment===m.id?'checked':''} onchange="state.bookingDraft.payment='${m.id}'; renderBookingStep(3)" class="w-4 h-4 accent-violet-600">
+                                    <i class="fa-solid ${m.icon.startsWith('fa-brands')?'':''} ${m.icon} text-violet-600 text-lg w-6 text-center"></i>
+                                    <span class="flex-1 text-sm font-semibold text-ink-900">${m.label}</span>
+                                    <span class="flex items-center gap-1.5">${m.extra}</span>
+                                </label>`).join('')}
+                        </div>
+                        <div class="card rounded-2xl p-4 space-y-2 mb-6">
+                            <div class="flex justify-between text-sm text-gray-500"><span>${r.type} (${nights} Night${nights>1?'s':''})</span><span class="text-ink-900 font-medium">${utils.formatPrice(roomTotal)}</span></div>
+                            <div class="flex justify-between text-sm text-gray-500"><span>Taxes & Fees</span><span class="text-ink-900 font-medium">${utils.formatPrice(taxes)}</span></div>
+                            <div class="border-t border-mist-200 pt-2 flex justify-between"><span class="font-bold text-ink-900">Total Amount</span><span class="font-bold text-violet-600 text-lg font-display">${utils.formatPrice(total)}</span></div>
+                        </div>
+                        <p class="text-center text-[11px] text-gray-400 flex items-center justify-center gap-1.5 mb-4"><i class="fa-solid fa-shield-halved text-violet-500"></i>Your payment is secure and encrypted</p>
+                        <button onclick="confirmBooking(${roomTotal}, ${taxes}, ${total}, ${nights})" class="btn-violet w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 ripple"><i class="fa-solid fa-lock"></i> Pay Now</button>
+                        <button onclick="renderBookingStep(2)" class="w-full text-center text-violet-600 text-sm font-semibold mt-4">Back to Previous</button>
+                    </div>`;
+            }
+
+            page.innerHTML = `
+                <div class="min-h-screen bg-mist-50 pb-10">
+                    <div class="dark-scene px-5 pt-6 pb-6 relative overflow-hidden">
+                        <div class="stars-container"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-3 mb-5">
+                                <button onclick="${step===2 ? 'closeBookingFlow()' : 'renderBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
+                                <h1 class="text-lg font-bold font-display text-white">${step===2?'Booking Details':'Payment'}</h1>
+                            </div>
+                            ${utils.stepIndicator(step)}
+                        </div>
+                    </div>
+                    ${bodyHtml}
+                </div>`;
+            document.getElementById('mainApp').appendChild(page);
+            page.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function closeBookingFlow() {
+            const p = document.getElementById('bookingFlowPage'); if (p) p.remove();
+            showHotelPage(state.currentHotel.id);
+        }
+
+        function submitGuestDetails(e) {
+            e.preventDefault();
+            state.bookingDraft.name = document.getElementById('bkName').value;
+            state.bookingDraft.email = document.getElementById('bkEmail').value;
+            state.bookingDraft.phone = document.getElementById('bkPhone').value;
+            state.bookingDraft.checkin = document.getElementById('bkCheckin').value;
+            state.bookingDraft.checkout = document.getElementById('bkCheckout').value;
+            state.bookingDraft.requests = document.getElementById('bkRequests').value;
+            renderBookingStep(3);
+        }
+
+        function confirmBooking(roomTotal, taxes, total, nights) {
+            const h = state.currentHotel, r = state.currentRoom;
+            const guests = state.guests.adults + state.guests.children;
+            const b = {
+                id: utils.generateId(), hotelId: h.id, hotelName: h.name, image: h.image,
+                name: state.bookingDraft.name, phone: state.bookingDraft.phone,
+                checkin: state.bookingDraft.checkin, checkout: state.bookingDraft.checkout,
+                guests, rooms: state.guests.rooms, roomType: r.type, nights,
+                priceUsd: total, priceFormatted: utils.formatPrice(total), status: 'upcoming', createdAt: new Date().toISOString()
+            };
+            state.bookings.unshift(b);
+            utils.save();
+            renderBookingConfirmation(b);
+        }
+
+        function renderBookingConfirmation(b) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const old = document.getElementById('bookingFlowPage'); if (old) old.remove();
+            const page = document.createElement('div');
+            page.id = 'bookingConfirmPage';
+            page.className = 'page';
+            page.innerHTML = `
+                <div class="min-h-screen dark-scene relative overflow-hidden pb-10">
+                    <div class="stars-container" id="confirmStars"></div>
+                    <div class="ambient-orb orb-1"></div>
+                    <div class="relative z-10 px-5 pt-6">
+                        <div class="flex items-center justify-between mb-8">
+                            <button onclick="finishBooking()" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
+                            <h1 class="text-white font-bold text-base">Booking Confirmed</h1>
+                            <div class="w-10 h-10 bg-gold-400 rounded-xl flex items-center justify-center text-ink-900"><i class="fa-solid fa-check"></i></div>
+                        </div>
+                        <div class="text-center mb-8">
+                            <div class="w-24 h-24 mx-auto mb-5 relative">
+                                <div class="absolute inset-0 bg-gold-400/20 rounded-full animate-ping"></div>
+                                <div class="relative w-full h-full rounded-full bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-2xl">
+                                    <i class="fa-solid fa-check text-4xl text-white"></i>
+                                </div>
+                            </div>
+                            <h2 class="font-display text-2xl font-bold text-white mb-1">Your Booking<br>is <span class="text-gold-400">Confirmed!</span></h2>
+                            <p class="text-white/60 text-sm max-w-xs mx-auto">Thank you! Your reservation has been successfully completed.</p>
+                        </div>
+                    </div>
+                    <div class="relative z-10 bg-white rounded-t-[28px] mt-4 p-5">
+                        <div class="card rounded-2xl p-3 flex gap-3 mb-4">
+                            <img src="${b.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+                            <div class="flex-1">
+                                <h3 class="font-display font-bold text-sm mb-0.5 text-ink-900">${b.hotelName}</h3>
+                                <div class="flex items-center gap-1 mb-1">${utils.renderStars(state.currentHotel.rating)}</div>
+                                <p class="text-[10px] text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${state.currentHotel.location.split(',')[0]}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm mb-4">
+                            <div class="flex justify-between"><span class="text-gray-400 flex items-center gap-2"><i class="fa-regular fa-calendar text-violet-500"></i>Check-in</span><span class="font-semibold text-ink-900">${b.checkin}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 flex items-center gap-2"><i class="fa-regular fa-calendar-check text-violet-500"></i>Check-out</span><span class="font-semibold text-ink-900">${b.checkout}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 flex items-center gap-2"><i class="fa-solid fa-user-group text-violet-500"></i>Guests</span><span class="font-semibold text-ink-900">${b.guests} Guests, ${b.rooms} Room${b.rooms>1?'s':''}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400 flex items-center gap-2"><i class="fa-solid fa-bed text-violet-500"></i>Room Type</span><span class="font-semibold text-ink-900">${b.roomType}</span></div>
+                        </div>
+                        <div class="border-t border-mist-200 pt-3 flex justify-between mb-4">
+                            <span class="font-bold text-ink-900">Total Paid</span><span class="font-bold text-violet-600 text-lg font-display">${b.priceFormatted}</span>
+                        </div>
+                        <div class="field-box rounded-xl p-3 flex items-center justify-between mb-5">
+                            <span class="text-xs text-gray-400">Booking ID</span>
+                            <span class="text-xs font-bold text-ink-900 flex items-center gap-2">${b.id} <i class="fa-regular fa-copy text-violet-500 cursor-pointer" onclick="navigator.clipboard && navigator.clipboard.writeText('${b.id}'); utils.toast('Booking ID copied','info')"></i></span>
+                        </div>
+                        <button onclick="finishBooking('bookings')" class="btn-violet w-full py-4 rounded-2xl font-bold mb-3">View My Booking</button>
+                        <button onclick="finishBooking('home')" class="btn-outline-violet w-full py-4 rounded-2xl font-bold">Back to Home</button>
+                    </div>
+                </div>`;
+            document.getElementById('mainApp').appendChild(page);
+            page.classList.add('active');
+            window.scrollTo(0, 0);
+            utils.createStars('confirmStars');
+            utils.confetti();
+        }
+
+        function finishBooking(target) {
+            const p = document.getElementById('bookingConfirmPage'); if (p) p.remove();
+            const hp = document.getElementById('hotelDetailPage'); if (hp) hp.remove();
+            nav.go(target || 'home');
+        }
+
+        // ==================== الفنادق ====================
+        const hotels = {
+            render() {
+                const list = document.getElementById('hotelsList');
+                if (!list) return;
+                let filtered = DATA.hotels;
+                if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
+                if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
+                if (filtered.length === 0) {
+                    list.innerHTML = `<div class="text-center py-16"><div class="w-20 h-20 mx-auto mb-3 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-hotel text-2xl text-violet-300"></i></div><p class="font-display text-lg font-bold mb-1 text-ink-900">No hotels found</p><p class="text-gray-400 text-sm">Try different filters</p></div>`;
+                    return;
+                }
+                list.innerHTML = filtered.map(h => ui.renderHotelCard(h)).join('');
+            }
+        };
+
+        // ==================== الحجوزات ====================
+        const bookings = {
+            switchTab(tab) {
+                state.currentBookingTab = tab;
+                const up = document.getElementById('tabUpcoming'); const hist = document.getElementById('tabHistory');
+                if (tab === 'upcoming') { up.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg'; hist.className = 'flex-1 py-3 rounded-xl text-gray-400 text-sm font-medium'; }
+                else { hist.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg'; up.className = 'flex-1 py-3 rounded-xl text-gray-400 text-sm font-medium'; }
+                this.render();
+            },
+            render() {
+                const list = document.getElementById('bookingsList'); const empty = document.getElementById('emptyBookings');
+                if (!list) return;
+                const isUp = state.currentBookingTab === 'upcoming';
+                const filtered = state.bookings.filter(b => isUp ? new Date(b.checkin) >= new Date() : new Date(b.checkin) < new Date());
+                if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+                empty.classList.add('hidden');
+                list.innerHTML = filtered.map(b => `
+                    <div class="hotel-card rounded-xl p-3 flex gap-3 cursor-pointer">
+                        <img src="${b.image}" class="w-20 h-20 rounded-lg object-cover flex-shrink-0">
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-display font-bold text-sm mb-0.5 line-clamp-1 text-ink-900">${b.hotelName}</h3>
+                                <p class="text-[10px] text-gray-400 mb-1 flex items-center gap-1"><i class="fa-regular fa-calendar text-violet-500 text-[8px]"></i>${b.checkin}</p>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="inline-block ${isUp?'bg-green-50 text-green-600 border border-green-200':'bg-mist-100 text-gray-400 border border-mist-200'} px-2 py-0.5 rounded text-[9px] font-bold tracking-wider">${isUp?'UPCOMING':'PAST'}</span>
+                                <p class="font-display font-bold text-violet-600 text-sm">${b.priceFormatted}</p>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            }
+        };
+
+        // ==================== المفضلة ====================
+        const favorites = {
+            toggle(id) {
+                const idx = state.favorites.indexOf(id);
+                if (idx > -1) { state.favorites.splice(idx, 1); utils.toast('Removed from favorites', 'info'); }
+                else { state.favorites.push(id); utils.toast('Added to favorites ❤️'); }
+                utils.save(); ui.renderFeaturedHotels(); hotels.render(); this.render();
+            },
+            render() {
+                const list = document.getElementById('favoritesList'); const empty = document.getElementById('emptyFavorites');
+                if (!list) return;
+                const favs = DATA.hotels.filter(h => state.favorites.includes(h.id));
+                if (favs.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+                empty.classList.add('hidden');
+                list.innerHTML = favs.map(h => ui.renderHotelCard(h)).join('');
+            }
+        };
+
+        // ==================== البحث ====================
+        const search = {
+            handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
+            filterCategory(cat) {
+                state.currentFilter = cat;
+                document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`)));
+                hotels.render();
+            },
+            filterDestination(dest) { nav.go('hotels'); utils.toast(`Showing ${dest} hotels`, 'info'); }
+        };
+
+        // ==================== الإشعارات ====================
+        const notifications = {
+            render() {
+                const list = document.getElementById('notificationsList');
+                const notifs = [
+                    { title: 'Welcome to Discover Sharm!', msg: 'Enjoy the best luxury experiences in Sharm El Sheikh', icon: 'fa-hand-wave', color: 'bg-gold-400/15 text-gold-600', time: 'Just now' },
+                    { title: 'Exclusive Offer 🔥', msg: 'Get 20% OFF on your first booking - Limited time', icon: 'fa-fire', color: 'bg-red-50 text-red-500', time: '1 hour ago' },
+                    { title: 'New Hotel Added', msg: 'Discover Grand Hotel is now available for booking', icon: 'fa-hotel', color: 'bg-violet-50 text-violet-600', time: '1 day ago' },
+                    { title: 'Gold Membership ⭐', msg: 'Congratulations! You are now a Gold Member', icon: 'fa-crown', color: 'bg-gold-400/15 text-gold-600', time: '3 days ago' }
+                ];
+                list.innerHTML = notifs.map(n => `
+                    <div class="card rounded-xl p-3.5 flex items-start gap-3">
+                        <div class="w-10 h-10 ${n.color} rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid ${n.icon}"></i></div>
+                        <div class="flex-1"><h3 class="font-semibold text-sm mb-0.5 text-ink-900">${n.title}</h3><p class="text-xs text-gray-400 mb-1 leading-relaxed">${n.msg}</p><p class="text-[9px] text-gray-300">${n.time}</p></div>
+                        <div class="w-1.5 h-1.5 bg-gold-400 rounded-full flex-shrink-0 mt-1.5"></div>
+                    </div>`).join('');
+            }
+        };
+
+        // ==================== الإعدادات ====================
+        const settings = { changeCurrency(c) { state.currency = c; utils.save(); ui.renderFeaturedHotels(); hotels.render(); bookings.render(); favorites.render(); utils.toast('Currency updated', 'info'); } };
+
+        // ==================== المصادقة ====================
+        const auth = { logout() { if (!confirm('Are you sure?')) return; localStorage.clear(); location.reload(); } };
+
+        // ==================== التهيئة ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            utils.createStars('onboardStars');
+            const onboardImg = document.getElementById('onboardImg');
+            if (onboardImg) {
+                window.addEventListener('mousemove', (e) => {
+                    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                    onboardImg.style.transform = `scale(1.1) translate(${x}px, ${y}px)`;
+                });
+            }
+            setTimeout(() => { if (document.getElementById('onboardingPage').style.display !== 'none') app.goHome(); }, 6000);
+        });
+    </script>
+</body>
+</html>
