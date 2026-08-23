@@ -808,11 +808,12 @@
     // Until hashEndpoint is set, card/InstaPay payments run in a clearly-labeled Demo Mode so
     // the whole booking flow still works end-to-end for testing.
     const KASHIER_CONFIG = {
-        merchantId: 'MID-33260-3',
-        mode: 'live',          // 'test' or 'live'
-        currency: 'EGP',
-        hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/'       
-    };
+    merchantId: 'MID-33260-3',
+    mode: 'live',
+    currency: 'EGP',
+    hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash',  // ✅ صح
+    merchantRedirect: 'https://www.discover-sharm.com/payment-callback'  // ✅ أضف ده
+};
 
     function initFirebase() {
         try {
