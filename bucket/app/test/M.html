@@ -1323,21 +1323,84 @@
             this.openLiveIframe({ amount, orderId, method, onSuccess, onCancel });
         },
         async openLiveIframe({ amount, orderId, method, onSuccess, onCancel }) {
-            try {
-                const resp = await fetch(KASHIER_CONFIG.hashEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId, amount, currency: KASHIER_CONFIG.currency }) });
-                const data = await resp.json();
-                const paymentMethods = method === 'instapay' ? 'wallet' : 'card';
-                const url = `https://checkout.kashier.io/?merchantId=${KASHIER_CONFIG.merchantId}&orderId=${orderId}&amount=${amount}&currency=${KASHIER_CONFIG.currency}&hash=${data.hash}&mode=${KASHIER_CONFIG.mode}&paymentMethods=${paymentMethods}`;
-                this.showModal(`<iframe src="${url}" style="width:100%; height:520px; border:0;"></iframe>`, onCancel);
-                const listener = (ev) => {
-                    if (ev.data && ev.data.event === 'kashier.paymentSuccess') { window.removeEventListener('message', listener); this.closeModal(); onSuccess({ status: 'paid', transactionRef: ev.data.transactionId || orderId }); }
-                    if (ev.data && ev.data.event === 'kashier.paymentFailure') { window.removeEventListener('message', listener); utils.toast('Payment failed — please try again', 'error'); }
-                };
-                window.addEventListener('message', listener);
-            } catch (err) {
-                utils.toast('Could not reach the payment server. Check KASHIER_CONFIG.hashEndpoint.', 'error');
+    try {
+        // طلب الهاش من الـ Worker
+        const resp = await fetch(KASHIER_CONFIG.hashEndpoint, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ 
+                orderId, 
+                amount, 
+                currency: KASHIER_CONFIG.currency 
+            }) 
+        });
+        
+        const data = await resp.json();
+        
+        if (!data.success || !data.hash) {
+            utils.toast('Payment server error: ' + (data.error || 'No hash returned'), 'error');
+            return;
+        }
+
+        // تحديد طريقة الدفع
+        const paymentMethods = method === 'instapay' ? 'wallet' : 'card';
+        
+        // بناء URL مع كل الـ params المطلوبة
+        const kashierUrl = new URL('https://checkout.kashier.io/');
+        kashierUrl.searchParams.append('merchantId', KASHIER_CONFIG.merchantId);
+        kashierUrl.searchParams.append('orderId', orderId);
+        kashierUrl.searchParams.append('amount', amount);
+        kashierUrl.searchParams.append('currency', KASHIER_CONFIG.currency);
+        kashierUrl.searchParams.append('hash', data.hash);
+        kashierUrl.searchParams.append('mode', KASHIER_CONFIG.mode);
+        kashierUrl.searchParams.append('paymentMethods', paymentMethods);
+        kashierUrl.searchParams.append('merchantRedirect', KASHIER_CONFIG.merchantRedirect || 'https://www.discover-sharm.com');
+        kashierUrl.searchParams.append('display', 'en'); // اللغة العربية
+        kashierUrl.searchParams.append('allowedMethods', 'card,wallet');
+        
+        // فتح الـ iframe
+        this.showModal(`
+            <iframe 
+                src="${kashierUrl.toString()}" 
+                style="width:100%; height:600px; border:0; border-radius:16px;"
+                allow="payment"
+                title="Kashier Payment"
+            ></iframe>
+        `, onCancel);
+        
+        // الاستماع لرسائل الـ postMessage من Kashier
+        const listener = (ev) => {
+            // التحقق من مصدر الرسالة
+            if (ev.origin !== 'https://checkout.kashier.io') return;
+            
+            if (ev.data && ev.data.event === 'kashier.paymentSuccess') {
+                window.removeEventListener('message', listener);
+                this.closeModal();
+                onSuccess({ 
+                    status: 'paid', 
+                    transactionRef: ev.data.transactionId || ev.data.orderId || orderId 
+                });
             }
-        },
+            
+            if (ev.data && ev.data.event === 'kashier.paymentFailure') {
+                window.removeEventListener('message', listener);
+                utils.toast('Payment failed — please try again', 'error');
+            }
+            
+            if (ev.data && ev.data.event === 'kashier.paymentCancel') {
+                window.removeEventListener('message', listener);
+                this.closeModal();
+                if (onCancel) onCancel();
+            }
+        };
+        
+        window.addEventListener('message', listener);
+        
+    } catch (err) {
+        console.error('Kashier error:', err);
+        utils.toast('Could not reach the payment server. Check KASHIER_CONFIG.hashEndpoint.', 'error');
+    }
+},
         openDemoModal({ amount, orderId, method, onSuccess, onCancel }) {
             const methodLabel = method === 'instapay' ? 'InstaPay / E-Wallet' : 'Credit / Debit Card';
             const body = `
