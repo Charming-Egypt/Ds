@@ -1,0 +1,27 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyAO6vyXm4lKoEmzfD8guXKZV8MLRTllFk4",
+    "authDomain": "ds-new-ddb34.firebaseapp.com",
+    "projectId": "ds-new-ddb34",
+    "storageBucket": "ds-new-ddb34.firebasestorage.app",
+    "messagingSenderId": "553596553877",
+    "appId": "1:553596553877:web:7889950e5e39e56096a99c",
+    "measurementId": "G-QEQQH4SLML",
+    "databaseURL": "https://ds-new-ddb34-default-rtdb.europe-west1.firebasedatabase.app/"
+  },
+  "kashier": {
+    "merchantId": "MID-33260-3",
+    "mode": "live",
+    "currency": "EGP",
+    "hashEndpoint": "https://discover-sharm-hash.gm-093.workers.dev/hash",
+    "merchantRedirectPath": "?kashier_callback=1"
+  },
+  "app": {
+    "siteName": "Discover Sharm",
+    "brandColorPrimary": "#f97316",
+    "brandColorPrimaryDark": "#c2410c",
+    "defaultCurrency": "EGP",
+    "displayCurrencies": ["EGP", "USD", "EUR", "GBP", "SAR", "RUB"],
+    "supportedLanguages": ["en", "ar", "ru", "de", "it", "tr"]
+  }
+}

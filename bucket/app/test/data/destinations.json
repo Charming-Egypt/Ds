@@ -1,0 +1,152 @@
+[
+  {
+    "id": "d1",
+    "name": { "en": "Ras Mohammed", "ar": "رأس محمد", "ru": "Рас-Мохаммед", "de": "Ras Mohammed", "it": "Ras Mohammed", "tr": "Ras Muhammed" },
+    "tagline": { "en": "Egypt's first national park", "ar": "أول محمية طبيعية في مصر", "ru": "Первый национальный парк Египта", "de": "Ägyptens erster Nationalpark", "it": "Il primo parco nazionale d'Egitto", "tr": "Mısır'ın ilk milli parkı" },
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "A protected national park where the desert meets some of the world's best coral reefs.",
+      "ar": "محمية طبيعية تلتقي فيها الصحراء بأجمل الشعاب المرجانية في العالم.",
+      "ru": "Заповедный национальный парк, где пустыня встречается с одними из лучших коралловых рифов мира.",
+      "de": "Ein geschützter Nationalpark, in dem die Wüste auf einige der besten Korallenriffe der Welt trifft.",
+      "it": "Un parco nazionale protetto dove il deserto incontra alcune delle migliori barriere coralline del mondo.",
+      "tr": "Çölün, dünyanın en iyi mercan resiflerinden bazılarıyla buluştuğu korunan bir milli park."
+    },
+    "fullDescription": {
+      "en": "Established in 1983, Ras Mohammed National Park sits at the southern tip of the Sinai Peninsula, where the Gulf of Aqaba meets the Gulf of Suez. Its sheer reef walls, mangrove channels and Yolanda Wreck make it one of the most celebrated dive and snorkel destinations on the planet, while onshore the fossilized coral cliffs and desert wadis are equally striking. Most visitors arrive by boat or organized tour from Sharm El Sheikh, spending a full day snorkeling over technicolor coral gardens before a beachside lunch.",
+      "ar": "تأسست محمية رأس محمد عام ١٩٨٣ عند الطرف الجنوبي لشبه جزيرة سيناء، حيث يلتقي خليج العقبة بخليج السويس. تجعلها جدران الشعاب الحادة وقنوات المانجروف وحطام يولاندا واحدة من أشهر وجهات الغوص والسنوركل في العالم، بينما تتميز الأجزاء البرية بمنحدرات المرجان المتحجر والأودية الصحراوية. يصل معظم الزوار بالقارب أو ضمن رحلة منظمة من شرم الشيخ لقضاء يوم كامل في السنوركل فوق حدائق مرجانية ملونة قبل غداء على الشاطئ.",
+      "ru": "Основанный в 1983 году, национальный парк Рас-Мохаммед расположен на южной оконечности Синайского полуострова, где залив Акаба встречается с Суэцким заливом. Отвесные рифовые стены, мангровые каналы и затонувший корабль Yolanda делают его одним из самых знаменитых мест для дайвинга и снорклинга в мире.",
+      "de": "Der 1983 gegründete Ras-Mohammed-Nationalpark liegt an der Südspitze der Sinai-Halbinsel, wo der Golf von Akaba auf den Golf von Suez trifft. Seine steilen Riffwände, Mangrovenkanäle und das Yolanda-Wrack machen ihn zu einem der gefeiertsten Tauch- und Schnorchelziele der Welt.",
+      "it": "Istituito nel 1983, il Parco Nazionale di Ras Mohammed si trova all'estremità meridionale della penisola del Sinai, dove il Golfo di Aqaba incontra il Golfo di Suez. Le sue pareti di barriera a strapiombo, i canali di mangrovie e il relitto Yolanda ne fanno una delle mete di immersione più celebri al mondo.",
+      "tr": "1983'te kurulan Ras Muhammed Milli Parkı, Akabe Körfezi'nin Süveyş Körfezi ile buluştuğu Sina Yarımadası'nın güney ucunda yer alır. Dik resif duvarları, mangrov kanalları ve Yolanda Batığı, onu dünyanın en ünlü dalış ve şnorkel noktalarından biri yapar."
+    },
+    "location": { "en": "South Sinai, ~25km from Sharm El Sheikh", "ar": "جنوب سيناء، على بعد ٢٥ كم من شرم الشيخ", "ru": "Южный Синай, ~25 км от Шарм-эль-Шейха", "de": "Süd-Sinai, ~25 km von Sharm El Sheikh", "it": "Sinai del Sud, ~25 km da Sharm El Sheikh", "tr": "Güney Sina, Sharm El Sheikh'e ~25km" }
+  },
+  {
+    "id": "d2",
+    "name": { "en": "Naama Bay", "ar": "خليج نعمة", "ru": "Наама Бэй", "de": "Naama Bay", "it": "Naama Bay", "tr": "Naama Bay" },
+    "tagline": { "en": "The heart of Sharm's nightlife", "ar": "قلب الحياة الليلية في شرم", "ru": "Сердце ночной жизни Шарма", "de": "Das Herz von Sharms Nachtleben", "it": "Il cuore della vita notturna di Sharm", "tr": "Sharm'ın gece hayatının kalbi" },
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1582967788606-a171f1080ca8?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "A palm-lined promenade of resorts, restaurants and shops right on the Red Sea.",
+      "ar": "ممشى مليء بالنخيل يضم منتجعات ومطاعم ومحلات مطلة مباشرة على البحر الأحمر.",
+      "ru": "Пальмовая набережная с курортами, ресторанами и магазинами прямо на Красном море.",
+      "de": "Eine palmengesäumte Promenade mit Resorts, Restaurants und Geschäften direkt am Roten Meer.",
+      "it": "Una passeggiata fiancheggiata da palme con resort, ristoranti e negozi proprio sul Mar Rosso.",
+      "tr": "Kızıldeniz'in hemen kıyısında, palmiye ağaçlarıyla çevrili tesisler, restoranlar ve mağazalarla dolu bir yürüyüş yolu."
+    },
+    "fullDescription": {
+      "en": "Naama Bay is Sharm El Sheikh's original tourist hub — a curved bay lined with five-star resorts, dive centers, open-air restaurants and a buzzing evening market. By day it's a calm swimming and snorkeling beach; by night the promenade fills with live music, shisha cafes and street performers. It's also the easiest jumping-off point for boat trips to Tiran Island and the nearby reefs.",
+      "ar": "خليج نعمة هو المركز السياحي الأصلي لشرم الشيخ — خليج منحني تصطف على شواطئه منتجعات خمس نجوم ومراكز غوص ومطاعم مفتوحة وسوق مسائي نابض بالحياة. نهارًا هو شاطئ هادئ للسباحة والسنوركل، وليلًا يمتلئ الممشى بالموسيقى الحية ومقاهي الشيشة وفناني الشوارع.",
+      "ru": "Наама Бэй — исторический туристический центр Шарм-эль-Шейха: изогнутая бухта с пятизвездочными курортами, дайв-центрами, ресторанами под открытым небом и оживленным вечерним рынком.",
+      "de": "Naama Bay ist das ursprüngliche touristische Zentrum von Sharm El Sheikh — eine geschwungene Bucht mit Fünf-Sterne-Resorts, Tauchzentren, Restaurants im Freien und einem belebten Abendmarkt.",
+      "it": "Naama Bay è il polo turistico originario di Sharm El Sheikh: una baia curva costeggiata da resort a cinque stelle, centri diving, ristoranti all'aperto e un vivace mercato serale.",
+      "tr": "Naama Bay, Sharm El Sheikh'in özgün turizm merkezidir — beş yıldızlı tesisler, dalış merkezleri, açık hava restoranları ve canlı bir akşam pazarıyla çevrili kıvrımlı bir koy."
+    },
+    "location": { "en": "Central Sharm El Sheikh", "ar": "وسط شرم الشيخ", "ru": "Центр Шарм-эль-Шейха", "de": "Zentrum von Sharm El Sheikh", "it": "Centro di Sharm El Sheikh", "tr": "Sharm El Sheikh Merkez" }
+  },
+  {
+    "id": "d3",
+    "name": { "en": "Sharks Bay", "ar": "خليج القرش", "ru": "Шаркс Бэй", "de": "Sharks Bay", "it": "Sharks Bay", "tr": "Sharks Bay" },
+    "tagline": { "en": "A quieter reef, right off the shore", "ar": "شعاب مرجانية هادئة على بُعد خطوات من الشاطئ", "ru": "Спокойный риф прямо у берега", "de": "Ein ruhigeres Riff direkt vor der Küste", "it": "Una barriera più tranquilla, proprio al largo della costa", "tr": "Kıyıdan hemen ötede sakin bir resif" },
+    "rating": 4.7,
+    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "A relaxed stretch of coast known for easy shore diving and calm, family-friendly water.",
+      "ar": "شريط ساحلي هادئ يشتهر بسهولة الغوص من الشاطئ ومياهه الهادئة المناسبة للعائلات.",
+      "ru": "Спокойный участок побережья, известный лёгким берегoвым дайвингом и тихой, семейной водой.",
+      "de": "Ein entspannter Küstenabschnitt, bekannt für einfaches Shore-Diving und ruhiges, familienfreundliches Wasser.",
+      "it": "Un tratto di costa rilassato, noto per le facili immersioni da riva e le acque calme, ideali per le famiglie.",
+      "tr": "Kolay kıyı dalışı ve sakin, aile dostu suyuyla bilinen huzurlu bir sahil şeridi."
+    },
+    "fullDescription": {
+      "en": "North of Naama Bay, Sharks Bay is popular with divers who want to walk straight off the beach into a healthy reef, no boat required. The bay is more low-key than the main tourist strip, with a handful of relaxed hotels and dive centers rather than nightlife — a good pick for a slower-paced stay close to the water.",
+      "ar": "شمال خليج نعمة، يحظى خليج القرش بشعبية بين الغواصين الراغبين في النزول مباشرة من الشاطئ إلى شعاب مرجانية سليمة دون الحاجة لقارب. الخليج أهدأ من الشريط السياحي الرئيسي، بعدد قليل من الفنادق الهادئة ومراكز الغوص بدلاً من الحياة الليلية.",
+      "ru": "К северу от Наама Бэй, Шаркс Бэй популярен среди дайверов, которые хотят зайти в здоровый риф прямо с пляжа, без лодки. Залив более спокойный, чем главная туристическая полоса.",
+      "de": "Nördlich von Naama Bay ist Sharks Bay bei Tauchern beliebt, die direkt vom Strand aus in ein gesundes Riff gehen möchten, ohne Boot. Die Bucht ist ruhiger als der touristische Hauptstreifen.",
+      "it": "A nord di Naama Bay, Sharks Bay è popolare tra i sub che vogliono entrare direttamente dalla spiaggia in una barriera corallina sana, senza bisogno di barca. La baia è più tranquilla della fascia turistica principale.",
+      "tr": "Naama Bay'in kuzeyinde yer alan Sharks Bay, tekne gerektirmeden doğrudan sahilden sağlıklı bir resife girmek isteyen dalgıçlar arasında popülerdir. Koy, ana turizm şeridinden daha sakindir."
+    },
+    "location": { "en": "North of Naama Bay", "ar": "شمال خليج نعمة", "ru": "К северу от Наама Бэй", "de": "Nördlich von Naama Bay", "it": "A nord di Naama Bay", "tr": "Naama Bay'in kuzeyi" }
+  },
+  {
+    "id": "d4",
+    "name": { "en": "Sahaba Mosque", "ar": "مسجد الصحابة", "ru": "Мечеть Сахаба", "de": "Sahaba-Moschee", "it": "Moschea Sahaba", "tr": "Sahaba Camii" },
+    "tagline": { "en": "Sharm's landmark mosque, open to visitors", "ar": "المسجد الأيقوني في شرم الشيخ، مفتوح للزوار", "ru": "Знаковая мечеть Шарма, открытая для посетителей", "de": "Sharms Wahrzeichen-Moschee, offen für Besucher", "it": "La moschea simbolo di Sharm, aperta ai visitatori", "tr": "Ziyaretçilere açık, Sharm'ın simge camisi" },
+    "rating": 4.9,
+    "image": "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1591604442920-4a3ff5f5f4e7?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "An elegant Ottoman-Fatimid style mosque overlooking the marina, one of the largest in the region.",
+      "ar": "مسجد أنيق بطراز عثماني فاطمي يطل على المارينا، ومن أكبر المساجد في المنطقة.",
+      "ru": "Элегантная мечеть в османско-фатимидском стиле с видом на марину, одна из крупнейших в регионе.",
+      "de": "Eine elegante Moschee im osmanisch-fatimidischen Stil mit Blick auf die Marina, eine der größten der Region.",
+      "it": "Un'elegante moschea in stile ottomano-fatimide affacciata sulla marina, una delle più grandi della regione.",
+      "tr": "Marinaya bakan zarif Osmanlı-Fatımi tarzında, bölgenin en büyük camilerinden biri."
+    },
+    "fullDescription": {
+      "en": "Built in 2017 overlooking Sharm's marina, Al-Sahaba Mosque blends Fatimid and Ottoman architectural styles with soaring minarets, hand-painted domes and intricate stonework. It's one of the largest mosques in South Sinai and a genuine architectural landmark, not just a place of worship — many visitors stop by in the early evening to see it lit up against the water. Modest dress is appreciated, and visitors are welcome outside of prayer times.",
+      "ar": "بُني مسجد الصحابة عام ٢٠١٧ مطلًا على مارينا شرم الشيخ، ويمزج بين الطراز الفاطمي والعثماني بمآذنه الشاهقة وقبابه المرسومة يدويًا ونقوشه الحجرية الدقيقة. يُعد من أكبر المساجد في جنوب سيناء ومعلمًا معماريًا حقيقيًا وليس مجرد مكان للعبادة — يزوره كثيرون في المساء لمشاهدته مضاءً فوق الماء. يُفضّل الزي المحتشم، والزوار مرحّب بهم خارج أوقات الصلاة.",
+      "ru": "Построенная в 2017 году с видом на марину Шарма, мечеть Аль-Сахаба сочетает фатимидский и османский архитектурные стили с высокими минаретами и расписными куполами. Это одна из крупнейших мечетей Южного Синая.",
+      "de": "Die 2017 mit Blick auf Sharms Marina erbaute Al-Sahaba-Moschee vereint fatimidische und osmanische Architekturstile mit hoch aufragenden Minaretten und handbemalten Kuppeln. Sie ist eine der größten Moscheen im Süd-Sinai.",
+      "it": "Costruita nel 2017 con vista sulla marina di Sharm, la Moschea Al-Sahaba fonde stili architettonici fatimidi e ottomani con minareti slanciati e cupole dipinte a mano. È una delle moschee più grandi del Sinai del Sud.",
+      "tr": "2017'de Sharm marinasına bakan konumda inşa edilen Al-Sahaba Camii, yükselen minareleri ve elle boyanmış kubbeleriyle Fatımi ve Osmanlı mimari tarzlarını harmanlar. Güney Sina'nın en büyük camilerinden biridir."
+    },
+    "location": { "en": "Sharm Old Market / Marina area", "ar": "منطقة السوق القديم / المارينا بشرم الشيخ", "ru": "Район Старого рынка / марины Шарма", "de": "Sharm Old Market / Marina-Gebiet", "it": "Zona Vecchio Mercato / Marina di Sharm", "tr": "Sharm Eski Çarşı / Marina bölgesi" }
+  },
+  {
+    "id": "d5",
+    "name": { "en": "SOHO Square", "ar": "سوهو سكوير", "ru": "SOHO Square", "de": "SOHO Square", "it": "SOHO Square", "tr": "SOHO Square" },
+    "tagline": { "en": "Fountains, shows and nightlife", "ar": "نوافير وعروض وحياة ليلية", "ru": "Фонтаны, шоу и ночная жизнь", "de": "Springbrunnen, Shows und Nachtleben", "it": "Fontane, spettacoli e vita notturna", "tr": "Fıskiyeler, gösteriler ve gece hayatı" },
+    "rating": 4.6,
+    "image": "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "An entertainment plaza with a musical fountain, ice rink, bowling and lakeside restaurants.",
+      "ar": "ساحة ترفيهية بها نافورة راقصة وحلبة تزلج وبولينج ومطاعم مطلة على البحيرة.",
+      "ru": "Развлекательная площадь с музыкальным фонтаном, катком, боулингом и ресторанами у озера.",
+      "de": "Ein Unterhaltungsplatz mit einem Musikbrunnen, einer Eisbahn, Bowling und Restaurants am See.",
+      "it": "Una piazza dell'intrattenimento con fontana musicale, pista di pattinaggio, bowling e ristoranti sul lago.",
+      "tr": "Müzikli fıskiye, buz pisti, bowling ve göl kenarı restoranlarıyla bir eğlence meydanı."
+    },
+    "fullDescription": {
+      "en": "SOHO Square is Sharm's most theatrical night out: a lakeside plaza built around a choreographed musical fountain show, ringed by restaurants, cafes, an ice-skating rink, bowling alley and boutique shops. Shows run several times each evening, drawing a lively crowd of families and couples. It's a good stop after dinner for a stroll, live entertainment and people-watching.",
+      "ar": "سوهو سكوير هي أكثر أمسيات شرم الشيخ حيوية: ساحة على بحيرة تتمحور حول عرض نافورة موسيقية مصممة بعناية، تحيط بها مطاعم ومقاهي وحلبة تزلج على الجليد وصالة بولينج ومحلات بوتيك. تُقام العروض عدة مرات كل مساء وتجذب حشدًا من العائلات والأزواج.",
+      "ru": "SOHO Square — самый зрелищный вечерний отдых Шарма: площадь у озера с хореографическим музыкальным фонтаном, окружённая ресторанами, кафе, катком, боулингом и бутиками.",
+      "de": "SOHO Square ist Sharms theatralischster Abend: ein Platz am See mit einer choreografierten Musikbrunnenshow, umgeben von Restaurants, Cafés, einer Eisbahn, Bowlingbahn und Boutiquen.",
+      "it": "SOHO Square è la serata più scenografica di Sharm: una piazza sul lago costruita attorno a uno spettacolo di fontane musicali coreografate, circondata da ristoranti, caffè, pista di pattinaggio, bowling e boutique.",
+      "tr": "SOHO Square, Sharm'ın en gösterişli akşam eğlencesidir: koreografik müzikli fıskiye gösterisi etrafında kurulu, restoranlar, kafeler, buz pateni pisti, bowling salonu ve butik mağazalarla çevrili bir göl meydanı."
+    },
+    "location": { "en": "Nabq area, Sharm El Sheikh", "ar": "منطقة نبق، شرم الشيخ", "ru": "Район Набк, Шарм-эль-Шейх", "de": "Nabq-Gebiet, Sharm El Sheikh", "it": "Zona Nabq, Sharm El Sheikh", "tr": "Nabq bölgesi, Sharm El Sheikh" }
+  },
+  {
+    "id": "d6",
+    "name": { "en": "Old Market (Souk)", "ar": "السوق القديم", "ru": "Старый рынок (Сук)", "de": "Alter Markt (Souk)", "it": "Vecchio Mercato (Souk)", "tr": "Eski Çarşı (Sûk)" },
+    "tagline": { "en": "Spices, souvenirs and street life", "ar": "توابل وهدايا تذكارية وحياة شعبية", "ru": "Специи, сувениры и уличная жизнь", "de": "Gewürze, Souvenirs und Straßenleben", "it": "Spezie, souvenir e vita di strada", "tr": "Baharatlar, hediyelikler ve sokak hayatı" },
+    "rating": 4.5,
+    "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80",
+    "images": ["https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85", "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=85"],
+    "description": {
+      "en": "Sharm's original bazaar — narrow lanes of spice stalls, jewelry and hand-blown perfume bottles.",
+      "ar": "البازار الأصلي لشرم الشيخ — أزقة ضيقة من محلات التوابل والمجوهرات وزجاجات العطور المنفوخة يدويًا.",
+      "ru": "Изначальный базар Шарма — узкие улочки с лавками специй, украшений и флаконов для духов ручной работы.",
+      "de": "Sharms ursprünglicher Basar — enge Gassen mit Gewürzständen, Schmuck und handgeblasenen Parfümflaschen.",
+      "it": "Il bazar originario di Sharm — vicoli stretti di bancarelle di spezie, gioielli e boccette di profumo soffiate a mano.",
+      "tr": "Sharm'ın özgün pazarı — baharat tezgahları, mücevherler ve elde üflenmiş parfüm şişeleriyle dolu dar sokaklar."
+    },
+    "fullDescription": {
+      "en": "Long before the resort strip existed, the Old Market was Sharm's town center, and it still feels that way today — a maze of covered lanes selling spices, shisha pipes, jewelry, leather and hand-blown glass perfume bottles, with cafes serving fresh juice and karkade (hibiscus tea) between the stalls. Evenings are liveliest, when the lanes fill with shoppers and the smell of grilled kofta drifts from the surrounding restaurants. Bargaining is expected and part of the fun.",
+      "ar": "قبل وجود الشريط السياحي، كان السوق القديم مركز مدينة شرم الشيخ، ولا يزال يحمل هذا الطابع اليوم — متاهة من الأزقة المغطاة تبيع التوابل والشيشة والمجوهرات والجلود وزجاجات العطور المنفوخة يدويًا، مع مقاهي تقدم العصير الطازج والكركديه بين المحلات. المساء هو الأكثر حيوية.",
+      "ru": "Задолго до появления курортной полосы Старый рынок был центром города Шарм, и до сих пор ощущается так — лабиринт крытых улочек с лавками специй, кальянов, украшений и стеклянных флаконов для духов ручной работы.",
+      "de": "Lange bevor der Resortstreifen existierte, war der Alte Markt Sharms Stadtzentrum, und das fühlt sich noch heute so an — ein Labyrinth überdachter Gassen mit Gewürzen, Wasserpfeifen, Schmuck, Leder und handgeblasenen Parfümflaschen.",
+      "it": "Molto prima che esistesse la fascia dei resort, il Vecchio Mercato era il centro cittadino di Sharm, e si respira ancora quell'atmosfera oggi — un labirinto di vicoli coperti che vendono spezie, narghilè, gioielli, pelletteria e boccette di profumo soffiate a mano.",
+      "tr": "Tesis şeridi var olmadan çok önce, Eski Çarşı Sharm'ın şehir merkeziydi ve bugün hâlâ öyle hissettiriyor — baharat, nargile, mücevher, deri ve elde üflenmiş parfüm şişeleri satan kapalı sokaklardan oluşan bir labirent."
+    },
+    "location": { "en": "Sharm El Sheikh town center", "ar": "وسط مدينة شرم الشيخ", "ru": "Центр города Шарм-эль-Шейх", "de": "Stadtzentrum von Sharm El Sheikh", "it": "Centro città di Sharm El Sheikh", "tr": "Sharm El Sheikh şehir merkezi" }
+  }
+]
