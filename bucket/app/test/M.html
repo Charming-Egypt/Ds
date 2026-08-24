@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="en" dir="ltr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -156,7 +156,7 @@
         .gallery-dot.active { width:18px; border-radius:4px; background: #fbbf24; }
 
         #sideDrawer { position: fixed; top:0; right:0; height:100%; width: 80%; max-width: 300px; background: #100c1c; z-index: 95; transform: translateX(100%); transition: transform .35s cubic-bezier(.16,1,.3,1); box-shadow: -10px 0 40px rgba(0,0,0,.4); }
-        html[dir="rtl"] #sideDrawer.open { transform: translateX(0); }
+        html[dir="rtl"] #sideDrawer.open, html[dir="ltr"] #sideDrawer.open { transform: translateX(0); }
         #sideDrawerOverlay { position: fixed; inset:0; background: rgba(0,0,0,.5); z-index: 90; opacity:0; pointer-events:none; transition: opacity .3s; }
         #sideDrawerOverlay.open { opacity:1; pointer-events:auto; }
         .drawer-link { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; border-radius:14px; color: rgba(255,255,255,.7); transition: all .2s; cursor:pointer; }
@@ -240,9 +240,21 @@
                     <div class="flex-1 h-px bg-white/10"></div><span class="text-white/30 text-[10px] font-semibold" data-i18n="orDivider">OR</span><div class="flex-1 h-px bg-white/10"></div>
                 </div>
                 <form onsubmit="auth.submit(event)" class="space-y-4">
-                    <div id="authNameWrap" class="hidden">
-                        <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="fullNameLabel">FULL NAME</label>
-                        <input type="text" id="authName" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;">
+                    <div id="authNameWrap" class="hidden space-y-4">
+                        <div>
+                            <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="fullNameLabel">FULL NAME</label>
+                            <input type="text" id="authName" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;">
+                        </div>
+                        <div class="grid grid-cols-[110px_1fr] gap-2">
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="countryCode">COUNTRY CODE</label>
+                                <select id="authCountryCode" class="input-field w-full px-2 py-2.5 text-sm text-white" style="background:#1f1830;"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="phoneNumber">PHONE NUMBER</label>
+                                <input type="tel" id="authPhone" placeholder="1xx xxx xxxx" class="input-field w-full px-3 py-2.5 text-sm text-white" style="background:#1f1830;">
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="email">EMAIL ADDRESS</label>
@@ -260,7 +272,6 @@
                 </p>
                 <button onclick="auth.continueAsGuest()" class="w-full mt-4 py-3 rounded-2xl text-white/60 text-xs font-medium border border-white/10" data-i18n="continueAsGuest">Continue as Guest</button>
             </div>
-            <p id="authFirebaseNote" class="text-center text-white/30 text-[10px] mt-6 leading-relaxed hidden">Firebase isn't connected yet — fill in <code>firebaseConfig</code> in index.html to enable real accounts. Running in Guest / Local mode for now.</p>
         </div>
     </div>
 
@@ -364,12 +375,13 @@
                 </div>
                 <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl" style="background:rgba(255,255,255,.04)">
+            <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:rgba(255,255,255,.04)" onclick="nav.go('profile'); sidebar.close()">
                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center font-display font-bold text-ink-900 overflow-hidden" id="drawerAvatar">A</div>
-                <div class="min-w-0">
+                <div class="min-w-0 flex-1">
                     <p class="text-white text-sm font-semibold truncate" id="drawerName">Guest</p>
-                    <p class="text-white/40 text-[11px] truncate" id="drawerEmail">Local mode</p>
+                    <p class="text-white/40 text-[11px] truncate" id="drawerEmail"></p>
                 </div>
+                <i class="fa-solid fa-chevron-left text-white/30 text-xs"></i>
             </div>
             <div class="space-y-1 flex-1 overflow-y-auto">
                 <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center"></i><span data-i18n="navHome">Home</span></div>
@@ -378,7 +390,6 @@
                 <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
                 <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
                 <div class="drawer-link" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
-                <div class="drawer-link" onclick="nav.go('profile'); sidebar.close()"><i class="fa-regular fa-user w-5 text-center"></i><span data-i18n="navProfile">Profile</span></div>
                 <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
             </div>
             <div class="pt-4 border-t border-white/10 space-y-4">
@@ -386,9 +397,11 @@
                     <span class="text-white/60 text-xs font-semibold" data-i18n="darkMode">Dark Mode</span>
                     <div class="theme-switch" id="themeSwitchDrawer" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#171029"></i></div></div>
                 </div>
-                <div class="flex items-center gap-2 lang-toggle field-box p-1 rounded-xl" style="background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08)">
-                    <button onclick="I18N.set('en')" id="langBtnEn">EN</button>
-                    <button onclick="I18N.set('ar')" id="langBtnAr">AR</button>
+                <div class="flex items-center justify-between">
+                    <span class="text-white/60 text-xs font-semibold" data-i18n="language">Language</span>
+                    <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-xs outline-none" style="background:#1f1830; color:#fff; border:1px solid rgba(255,255,255,.1)">
+                        <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
+                    </select>
                 </div>
                 <button onclick="auth.logout()" class="w-full py-3 rounded-2xl text-red-400 text-sm font-semibold border border-red-400/20 flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket"></i><span data-i18n="logout">Logout</span></button>
             </div>
@@ -439,7 +452,7 @@
                                 <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
                                 <img src="assets/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm">
                             </div>
-                            <button onclick="nav.go('notifications')" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+                            <button onclick="nav.go('notifications')" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
                         </div>
                     </div>
                     <div class="px-6 pt-6 pb-4">
@@ -455,7 +468,6 @@
                     <div class="flex gap-1 field-box p-1 rounded-2xl">
                         <button onclick="search.switchTab('hotels')" id="searchTabHotels" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-hotel"></i> <span data-i18n="navHotels">Hotels</span></button>
                         <button onclick="search.switchTab('excursions')" id="searchTabExcursions" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-umbrella-beach"></i> <span data-i18n="navExcursions">Excursions</span></button>
-                        <button onclick="search.switchTab('transfers')" id="searchTabTransfers" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-shuttle-van"></i> <span data-i18n="navTransfers">Transfers</span></button>
                     </div>
 
                     <div id="hotelSearchForm" class="space-y-4">
@@ -497,10 +509,6 @@
                         <button onclick="search.applyExcursionSearch()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchExcursions">Search Excursions</span></button>
                     </div>
 
-                    <div id="transferSearchForm" class="space-y-4 hidden">
-                        <p class="text-sm leading-relaxed" style="color:var(--text-secondary)" data-i18n="transferIntro">Reliable, air-conditioned rides between Sharm El Sheikh International Airport and your hotel.</p>
-                        <button onclick="nav.go('transfers')" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-shuttle-van"></i> <span data-i18n="viewTransfers">View Transfer Options</span></button>
-                    </div>
                 </div>
             </div>
 
@@ -688,7 +696,7 @@
                         <div class="avatar-edit-btn" onclick="document.getElementById('avatarFileInput').click()"><i class="fa-solid fa-camera"></i></div>
                     </div>
                     <h2 class="font-display text-2xl font-bold mt-4" style="color:var(--text-primary)" id="profileName">Guest</h2>
-                    <p class="text-sm" style="color:var(--text-secondary)" id="profileEmail">Local mode</p>
+                    <p class="text-sm" style="color:var(--text-secondary)" id="profileEmail"></p>
                     <div class="mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> <span data-i18n="goldMember">Gold Member</span></div>
                 </div>
                 <div class="px-5 mt-8">
@@ -734,22 +742,19 @@
                     <div class="card rounded-2xl p-4 space-y-5">
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-3"><div class="w-10 h-10 bg-gold-400/15 rounded-xl flex items-center justify-center"><i class="fa-solid fa-coins text-gold-500"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="currency">Currency</span></div>
-                            <select onchange="settings.changeCurrency(this.value)" id="currencySelect" class="rounded-xl px-3 py-2 text-sm outline-none"><option value="USD">USD ($)</option><option value="EGP">EGP (ج.م)</option><option value="EUR">EUR (€)</option></select>
+                            <select onchange="settings.changeCurrency(this.value)" id="currencySelect" class="rounded-xl px-3 py-2 text-sm outline-none"><option value="EGP">EGP (ج.م)</option></select>
                         </div>
+                        <p id="currencyAvailabilityNote" class="text-[11px] hidden" style="color:var(--text-secondary)" data-i18n="currencyEgpOnly">Showing EGP — live rates unavailable</p>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-3"><div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid fa-globe text-violet-600"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="language">Language</span></div>
-                            <div class="flex items-center gap-2 lang-toggle field-box p-1 rounded-xl" style="width:110px"><button onclick="I18N.set('en')" id="langBtnEn2" class="lang-btn-neutral">EN</button><button onclick="I18N.set('ar')" id="langBtnAr2" class="lang-btn-neutral">AR</button></div>
+                            <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-sm outline-none" style="background:var(--bg-field); color:var(--text-primary); border:1px solid var(--border-field)">
+                                <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
+                            </select>
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--bg-field)"><i class="fa-solid fa-moon text-violet-500"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="darkMode">Dark Mode</span></div>
                             <div class="theme-switch" id="themeSwitchSettings" onclick="THEME.toggle()"><div class="knob"><i class="fa-solid fa-moon" style="font-size:9px;color:#171029"></i></div></div>
                         </div>
-                    </div>
-                    <div class="card rounded-2xl p-4">
-                        <p class="text-xs leading-relaxed" style="color:var(--text-secondary)" id="fbStatusNote">Checking Firebase connection…</p>
-                    </div>
-                    <div class="card rounded-2xl p-4">
-                        <p class="text-xs leading-relaxed" style="color:var(--text-secondary)" id="kashierStatusNote">Checking payment gateway connection…</p>
                     </div>
                 </div>
             </div>
@@ -760,7 +765,8 @@
             <div class="min-h-screen pb-28">
                 <div class="px-5 pt-6 pb-4 flex items-center gap-3 header-light">
                     <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
-                    <div><p class="section-subtitle" data-i18n="updatesEyebrow">— UPDATES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="notifications">Notifications</h1></div>
+                    <div class="flex-1"><p class="section-subtitle" data-i18n="updatesEyebrow">— UPDATES</p><h1 class="text-xl font-bold font-display" style="color:var(--text-primary)" data-i18n="notifications">Notifications</h1></div>
+                    <button onclick="notifications.markAllRead()" class="text-[11px] font-semibold text-violet-500" data-i18n="markAllRead">Mark all as read</button>
                 </div>
                 <div class="px-5 py-6 space-y-3" id="notificationsList"></div>
             </div>
@@ -769,9 +775,9 @@
         <nav class="bottom-nav">
             <div class="flex items-center justify-around">
                 <button onclick="nav.go('home')" data-page="home" class="nav-item active flex flex-col items-center gap-1"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-medium" data-i18n="navHome">Home</span></button>
+                <button onclick="nav.go('hotels')" data-page="hotels" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-hotel text-xl"></i><span class="text-[10px] font-medium" data-i18n="navHotels">Hotels</span></button>
                 <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings">Bookings</span></button>
                 <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites">Favorites</span></button>
-                <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-user text-xl"></i><span class="text-[10px] font-medium" data-i18n="navProfile">Profile</span></button>
             </div>
         </nav>
     </div>
@@ -805,7 +811,7 @@
     // browser JS. Deploy a tiny backend endpoint (e.g. a Firebase Cloud Function) that takes
     // {orderId, amount, currency} and returns {hash}, then put its URL below. See the
     // commented example function further down (search "KASHIER HASH — SERVER-SIDE EXAMPLE").
-    // Until hashEndpoint is set, card/InstaPay payments run in a clearly-labeled Demo Mode so
+    // Card/InstaPay payments go through the live Kashier hashEndpoint below. Cash on Arrival always works.
     // the whole booking flow still works end-to-end for testing.
     const KASHIER_CONFIG = {
     merchantId: 'MID-33260-3',
@@ -828,34 +834,36 @@
                 fbAuth.onAuthStateChanged(handleAuthChange);
             } else {
                 fbEnabled = false;
-                CATALOG.hotels = DEFAULT_CATALOG.hotels; CATALOG.excursions = DEFAULT_CATALOG.excursions; CATALOG.transfers = DEFAULT_CATALOG.transfers;
+                loadCatalogJson().then(refreshCatalogUI);
                 setTimeout(() => handleAuthChange(null), 300);
             }
         } catch (err) {
-            console.warn('Firebase init failed — running in Guest/Local mode.', err);
+            console.warn('Firebase init failed.', err);
             fbEnabled = false;
-            CATALOG.hotels = DEFAULT_CATALOG.hotels; CATALOG.excursions = DEFAULT_CATALOG.excursions; CATALOG.transfers = DEFAULT_CATALOG.transfers;
+            loadCatalogJson().then(refreshCatalogUI);
             setTimeout(() => handleAuthChange(null), 300);
         }
     }
 
     function handleAuthChange(user) {
         currentUser = user;
-        updateFirebaseStatusNote();
         userDataRefs.forEach(r => r.ref.off('value', r.cb));
         userDataRefs = [];
 
         if (fbEnabled && user) {
             bindUserData(user.uid);
             updateDrawerUser(user.displayName || (user.email || '').split('@')[0], user.email, user.photoURL);
+            notifications.bindUser();
             afterSplash(() => nav.showApp());
         } else if (fbEnabled && !user) {
-            updateDrawerUser('Guest', 'Not signed in', null);
+            updateDrawerUser('Guest', '', null);
+            notifications.bindUser();
             afterSplash(() => nav.showAuth());
         } else {
             state.bookings = JSON.parse(localStorage.getItem('ds_bookings') || '[]');
             state.favorites = JSON.parse(localStorage.getItem('ds_favorites') || '[]');
-            updateDrawerUser('Guest', 'Local mode', localStorage.getItem('ds_avatar'));
+            updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
+            notifications.bindUser();
             afterSplash(() => nav.showApp());
         }
     }
@@ -895,17 +903,20 @@
     function arrayToKeyedObject(arr) { const o = {}; arr.forEach(item => { const copy = Object.assign({}, item); delete copy.id; o[item.id] = copy; }); return o; }
 
     function bindCatalog() {
-        ['hotels', 'excursions', 'transfers'].forEach(kind => {
-            const ref = fbDB.ref('catalog/' + kind);
-            ref.once('value').then(snap => {
-                if (!snap.exists()) {
-                    ref.set(arrayToKeyedObject(DEFAULT_CATALOG[kind])).catch(e => console.warn('Seeding catalog/' + kind + ' failed (check Realtime Database rules).', e));
-                }
-            });
-            ref.on('value', snap => {
-                const arr = objToArray(snap.val());
-                CATALOG[kind] = arr.length ? arr : DEFAULT_CATALOG[kind];
-                refreshCatalogUI();
+        loadCatalogJson().then(() => {
+            refreshCatalogUI();
+            ['hotels', 'excursions', 'transfers'].forEach(kind => {
+                const ref = fbDB.ref('catalog/' + kind);
+                ref.once('value').then(snap => {
+                    if (!snap.exists()) {
+                        ref.set(arrayToKeyedObject(CATALOG_RAW[kind])).catch(e => console.warn('Seeding catalog/' + kind + ' failed (check Realtime Database rules).', e));
+                    }
+                });
+                ref.on('value', snap => {
+                    const arr = objToArray(snap.val());
+                    if (arr.length) { CATALOG_RAW[kind] = arr; localizeCatalog(I18N.get()); }
+                    refreshCatalogUI();
+                });
             });
         });
     }
@@ -915,23 +926,6 @@
         excursionsUi.renderFeatured(); excursionsUi.render();
         transfersUi.render();
         favorites.render();
-    }
-
-    function updateFirebaseStatusNote() {
-        const el = document.getElementById('fbStatusNote');
-        if (el) {
-            el.innerHTML = fbEnabled
-                ? '<i class="fa-solid fa-circle-check text-green-500"></i> Connected to Firebase Realtime Database. Hotels, excursions & transfers load live from your database; bookings, favorites and reviews sync to your account.'
-                : '<i class="fa-solid fa-triangle-exclamation text-gold-500"></i> Firebase isn\'t connected yet. Fill in <code>firebaseConfig</code> near the top of the script to enable real accounts, Google sign-in &amp; cloud sync. Running in Guest / Local mode for now — everything still works and saves to this device.';
-        }
-        const kEl = document.getElementById('kashierStatusNote');
-        if (kEl) {
-            kEl.innerHTML = KASHIER_CONFIG.hashEndpoint
-                ? '<i class="fa-solid fa-circle-check text-green-500"></i> Kashier payment gateway connected (' + KASHIER_CONFIG.mode + ' mode).'
-                : '<i class="fa-solid fa-triangle-exclamation text-gold-500"></i> Kashier isn\'t fully wired up yet — card &amp; InstaPay payments run in Demo Mode. Set <code>KASHIER_CONFIG.merchantId</code> and <code>KASHIER_CONFIG.hashEndpoint</code> (a small server endpoint that signs each payment) to go live. Cash on Arrival works immediately, no setup needed.';
-        }
-        const authNote = document.getElementById('authFirebaseNote');
-        if (authNote) authNote.classList.toggle('hidden', fbEnabled);
     }
 
     function updateDrawerUser(name, email, photoURL) {
@@ -961,86 +955,79 @@
         }
     };
 
-    // ==================== DEFAULT / SEED CATALOG DATA ====================
-    // Used to seed Firebase on first run (catalog/hotels, catalog/excursions, catalog/transfers)
-    // and as the fallback dataset whenever Firebase isn't connected (Guest / Local mode).
-    const DEFAULT_CATALOG = {
-        hotels: [
-            { id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view',
-                fullDescription: 'Experience unparalleled luxury at Discover Grand Hotel. Featuring stunning Red Sea views, world-class amenities, and exceptional service that defines the essence of Sharm El Sheikh hospitality.',
-                price: 120, rating: 5, reviews: 234, location: '123 Naama Bay, Sharm El Sheikh',
-                image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90',
-                images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90'],
-                amenities: ['Free WiFi', 'Breakfast', 'Pool', 'Spa', 'Gym', 'Parking'], bestseller: true,
-                rooms: [
-                    { type: 'Deluxe Sea View', price: 120, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80', description: 'A bright, airy room with floor-to-ceiling windows framing the Red Sea. Soft linens, a marble bathroom, and a private balcony make this the hotel\'s signature room.' },
-                    { type: 'Premium Suite', price: 220, size: '65m²', beds: '1 King Bed', guests: 3, image: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80', description: 'A spacious two-area suite with a separate lounge, walk-in closet, and panoramic sea-facing terrace — ideal for longer stays.' }
-                ]
-            },
-            { id: 'h2', name: 'Discover Deluxe Suites', category: 'luxury', description: 'Elegant suites with panoramic views',
-                fullDescription: 'Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.',
-                price: 150, rating: 5, reviews: 189, location: '456 Sharks Bay, Sharm El Sheikh',
-                image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=90',
-                images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=90'],
-                amenities: ['Free WiFi', 'Breakfast', 'Gym', 'Beach Access', 'Concierge'], bestseller: false,
-                rooms: [ { type: 'Junior Suite', price: 150, size: '45m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80', description: 'An elegant junior suite with a private balcony, sitting area, and rain shower — quiet, comfortable and close to the beach path.' } ]
-            },
-            { id: 'h3', name: 'Discover Business Hotel', category: 'business', description: 'Modern hotel for business travelers',
-                fullDescription: 'Designed for the modern business traveler, Discover Business Hotel offers state-of-the-art meeting facilities, high-speed internet, and comfortable accommodations in the heart of Sharm.',
-                price: 110, rating: 4, reviews: 156, location: '789 Hadaba, Sharm El Sheikh',
-                image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=90',
-                images: ['https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=90'],
-                amenities: ['Free WiFi', 'Breakfast', 'Parking', 'Business Center', 'Meeting Rooms'], bestseller: false,
-                rooms: [ { type: 'Business Room', price: 110, size: '28m²', beds: '1 Queen Bed', guests: 2, image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=400&q=80', description: 'A functional, quiet room with an ergonomic desk, fast WiFi, and blackout curtains — built for a good night before an early meeting.' } ]
-            },
-            { id: 'h4', name: 'Discover Budget Inn', category: 'budget', description: 'Comfortable stay at great prices',
-                fullDescription: 'Discover Budget Inn provides clean, comfortable accommodations at affordable prices. Perfect for travelers who want to explore Sharm El Sheikh without breaking the bank.',
-                price: 45, rating: 4, reviews: 98, location: '321 Old Market, Sharm El Sheikh',
-                image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=90',
-                images: ['https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=90','https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=90'],
-                amenities: ['Free WiFi', 'Breakfast', 'Pool', '24/7 Reception'], bestseller: false,
-                rooms: [ { type: 'Standard Room', price: 45, size: '22m²', beds: '2 Twin Beds', guests: 2, image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=400&q=80', description: 'A clean, no-frills room with everything you need for a short, affordable stay near the Old Market.' } ]
-            }
-        ],
-        excursions: [
-            { id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 35, rating: 4.8, reviews: 312, duration: 'Full Day (8h)',
-                image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-                images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80','https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=800&q=80'],
-                description: 'Snorkel the coral reefs of Ras Mohammed National Park, one of the world\'s top dive sites.',
-                fullDescription: 'Spend a full day exploring the coral gardens and dramatic reef walls of Ras Mohammed National Park. Includes full snorkeling gear, a marine-life briefing, and a beachside lunch. Suitable for beginners and experienced snorkelers alike.',
-                includes: ['Hotel pickup & drop-off', 'Snorkeling equipment', 'Lunch & soft drinks', 'National park entry fees', 'English-speaking guide'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' },
-            { id: 'e2', title: 'White Desert Safari & BBQ Dinner', category: 'Desert Safari', price: 42, rating: 4.7, reviews: 268, duration: 'Evening (5h)',
-                image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80',
-                images: ['https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80','https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?auto=format&fit=crop&w=800&q=80'],
-                description: 'Quad biking, camel rides and a Bedouin BBQ dinner under the stars.',
-                fullDescription: 'Ride a quad bike across the golden dunes, meet a local Bedouin family for tea, take a short camel ride, and finish with a traditional BBQ dinner and stargazing in the open desert.',
-                includes: ['Hotel pickup & drop-off', 'Quad bike (shared)', 'Camel ride', 'BBQ dinner', 'Tea with Bedouins'], meetingPoint: 'Hotel lobby pickup, 3:30 PM' },
-            { id: 'e3', title: 'Tiran Island Boat Trip', category: 'Boat Trip', price: 30, rating: 4.6, reviews: 190, duration: 'Full Day (7h)',
-                image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80',
-                images: ['https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80','https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=800&q=80'],
-                description: 'Sail to Tiran Island for snorkeling stops, sunbathing and a fish lunch on board.',
-                fullDescription: 'A relaxed day cruising the Straits of Tiran by boat, with two snorkeling stops over pristine reefs, free time to swim and sunbathe on deck, and a freshly grilled fish lunch served on board.',
-                includes: ['Hotel pickup & drop-off', 'Snorkeling stops', 'Lunch on board', 'Soft drinks'], meetingPoint: 'Marina pickup, 8:00 AM' },
-            { id: 'e4', title: 'Old Market & Old Town Tour', category: 'City Tour', price: 18, rating: 4.4, reviews: 121, duration: 'Evening (3h)',
-                image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80',
-                images: ['https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80','https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=800&q=80'],
-                description: 'Stroll the lively Old Market for spices, souvenirs and local street food.',
-                fullDescription: 'A guided evening walk through Sharm\'s Old Market — narrow lanes of spice shops, jewelry stalls, and cafes serving fresh juice and shisha. Great for souvenirs and a taste of local life.',
-                includes: ['Hotel pickup & drop-off', 'Local guide', 'Welcome juice'], meetingPoint: 'Hotel lobby pickup, 6:00 PM' }
-        ],
-        transfers: [
-            { id: 't1', vehicleType: 'Sedan', capacity: 3, price: 20, image: 'https://images.unsplash.com/photo-1549927681-0b673b8243ee?auto=format&fit=crop&w=800&q=80', description: 'Comfortable private sedan — ideal for couples or solo travelers.', features: ['Air-conditioned', 'Meet & greet at arrivals', 'Free waiting time', 'Bottled water'] },
-            { id: 't2', vehicleType: 'Van', capacity: 8, price: 35, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Spacious van, perfect for families or small groups with luggage.', features: ['Air-conditioned', 'Meet & greet at arrivals', 'Extra luggage space', 'Free waiting time'] },
-            { id: 't3', vehicleType: 'Bus', capacity: 16, price: 60, image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80', description: 'Large group transport with a professional driver.', features: ['Air-conditioned', 'Meet & greet at arrivals', 'Group luggage space', 'Free waiting time'] },
-            { id: 't4', vehicleType: 'Limousine', capacity: 3, price: 55, image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=800&q=80', description: 'A premium, chauffeur-driven ride for a special arrival.', features: ['Air-conditioned', 'Meet & greet at arrivals', 'Complimentary refreshments', 'Free waiting time'] }
-        ]
+    // ==================== CATALOG DATA (loaded from separate JSON files, one per type) ====================
+    // Each catalog item's text fields are localized objects: { en, ar, ru, de, it, tr }.
+    // localizeItem() flattens them to plain strings in the currently selected language (falling back to
+    // English if a translation is missing) so the rest of the app can keep using simple fields like h.name.
+    const CATALOG_RAW = { hotels: [], excursions: [], transfers: [] };
+    const MULTILANG_FIELDS = ['name', 'title', 'description', 'fullDescription', 'location', 'vehicleType', 'duration'];
+    const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features'];
+    const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
+
+    function localizeValue(val, lang) {
+        if (val && typeof val === 'object' && !Array.isArray(val) && (val.en || val[lang])) return val[lang] || val.en;
+        return val;
+    }
+    function localizeItem(raw, lang) {
+        const out = Object.assign({}, raw);
+        MULTILANG_FIELDS.forEach(f => { if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang); });
+        MULTILANG_ARRAY_FIELDS.forEach(f => { if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang); });
+        MULTILANG_OBJECT_MAP_FIELDS.forEach(f => { if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang); });
+        if (Array.isArray(raw.rooms)) {
+            out.rooms = raw.rooms.map(r => Object.assign({}, r, {
+                type: localizeValue(r.type, lang),
+                beds: localizeValue(r.beds, lang),
+                description: localizeValue(r.description, lang)
+            }));
+        }
+        return out;
+    }
+    function localizeCatalog(lang) {
+        CATALOG.hotels = CATALOG_RAW.hotels.map(h => localizeItem(h, lang));
+        CATALOG.excursions = CATALOG_RAW.excursions.map(x => localizeItem(x, lang));
+        CATALOG.transfers = CATALOG_RAW.transfers.map(t => localizeItem(t, lang));
+    }
+    function onLanguageChanged(lang) {
+        if (CATALOG_RAW.hotels.length || CATALOG_RAW.excursions.length || CATALOG_RAW.transfers.length) {
+            localizeCatalog(lang);
+            refreshCatalogUI();
+        }
+    }
+
+    // Minimal emergency fallback used only if data/*.json cannot be fetched at all (e.g. offline
+    // first load with no cache) — kept in English only, just enough so the app never shows a blank
+    // catalog. The real, multi-language catalog always comes from data/hotels.json, data/excursions.json
+    // and data/transfers.json.
+    const EMERGENCY_FALLBACK_CATALOG = {
+        hotels: [{ id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view', fullDescription: 'Luxury 5-star hotel with sea view.', price: 3800, rating: 5, reviews: 234, location: 'Naama Bay, Sharm El Sheikh', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90', images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90'], amenities: ['Free WiFi', 'Breakfast', 'Pool'], bestseller: true, rooms: [{ type: 'Deluxe Sea View', price: 3800, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80', description: 'A bright room with sea views.' }] }],
+        excursions: [{ id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 1150, rating: 4.8, reviews: 312, duration: 'Full Day (8h)', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80', images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'], description: 'Snorkel the coral reefs of Ras Mohammed National Park.', fullDescription: 'Snorkel the coral reefs of Ras Mohammed National Park.', includes: ['Hotel pickup & drop-off', 'Snorkeling equipment'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' }],
+        transfers: [{ id: 't1', vehicleType: 'Tourist H1', capacity: 7, price: 950, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off.', features: ['Tourist-class Hyundai H1', 'Air-conditioned', 'Meet & greet at arrivals'] }]
     };
+
+    async function loadCatalogJson() {
+        try {
+            const [hotelsRes, excursionsRes, transfersRes] = await Promise.all([
+                fetch('data/hotels.json'), fetch('data/excursions.json'), fetch('data/transfers.json')
+            ]);
+            CATALOG_RAW.hotels = await hotelsRes.json();
+            CATALOG_RAW.excursions = await excursionsRes.json();
+            CATALOG_RAW.transfers = await transfersRes.json();
+        } catch (err) {
+            console.warn('Could not load data/*.json catalog files — using minimal built-in fallback.', err);
+            CATALOG_RAW.hotels = EMERGENCY_FALLBACK_CATALOG.hotels;
+            CATALOG_RAW.excursions = EMERGENCY_FALLBACK_CATALOG.excursions;
+            CATALOG_RAW.transfers = EMERGENCY_FALLBACK_CATALOG.transfers;
+        }
+        localizeCatalog(I18N.get());
+    }
+
+
 
     // ==================== STATE ====================
     const state = {
         bookings: JSON.parse(localStorage.getItem('ds_bookings') || '[]'),
         favorites: JSON.parse(localStorage.getItem('ds_favorites') || '[]'),
-        currency: localStorage.getItem('ds_currency') || 'USD',
+        currency: localStorage.getItem('ds_display_currency') || 'EGP',
         currentFilter: 'all', currentExcursionFilter: 'all', searchQuery: '', currentHotel: null, currentRoom: null,
         currentExcursion: null, currentTransfer: null,
         currentBookingTab: 'upcoming', activeSearchTab: 'hotels',
@@ -1049,7 +1036,51 @@
         bookingDraft: {}
     };
 
-    const CURRENCIES = { USD: { rate: 1, symbol: '$' }, EGP: { rate: 48.5, symbol: 'ج.م' }, EUR: { rate: 0.92, symbol: '€' } };
+    // ==================== CURRENCY (EGP base — every price in the catalog & every charge is EGP) ====================
+    // Display-only conversion uses a free, keyless exchange-rate API with EGP as the base currency.
+    // There is NO hardcoded/fallback exchange rate: if the API is unreachable, the app simply
+    // shows and charges EGP everywhere — it never guesses a rate.
+    const CURRENCY_SYMBOLS = { EGP: 'ج.م', USD: '$', EUR: '€', GBP: '£', SAR: 'ر.س', RUB: '₽' };
+    const DISPLAY_CURRENCIES = ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB'];
+    const CurrencyAPI = {
+        rates: null,          // { USD: 0.021, EUR: 0.019, ... } — units of X per 1 EGP
+        available: false,
+        lastFetch: 0,
+        async init() {
+            try {
+                const cached = JSON.parse(localStorage.getItem('ds_fx_cache') || 'null');
+                if (cached && cached.rates && (Date.now() - cached.ts) < 6 * 60 * 60 * 1000) {
+                    this.rates = cached.rates; this.available = true; this.applyAvailability(); return;
+                }
+                const res = await fetch('https://open.er-api.com/v6/latest/EGP');
+                const data = await res.json();
+                if (data && data.result === 'success' && data.rates) {
+                    this.rates = data.rates; this.available = true; this.lastFetch = Date.now();
+                    localStorage.setItem('ds_fx_cache', JSON.stringify({ rates: data.rates, ts: Date.now() }));
+                } else { this.available = false; }
+            } catch (err) {
+                console.warn('Currency API unavailable — showing EGP only.', err);
+                this.available = false;
+            }
+            this.applyAvailability();
+        },
+        applyAvailability() {
+            if (!this.available) state.currency = 'EGP';
+            const sel = document.getElementById('currencySelect');
+            if (sel) {
+                sel.innerHTML = (this.available ? DISPLAY_CURRENCIES : ['EGP']).map(c => `<option value="${c}">${c} (${CURRENCY_SYMBOLS[c]})</option>`).join('');
+                sel.value = state.currency;
+                sel.disabled = !this.available;
+            }
+            const note = document.getElementById('currencyAvailabilityNote');
+            if (note) note.classList.toggle('hidden', this.available);
+        },
+        // Convert an EGP amount to the currently selected display currency (display only — never used for charging).
+        toDisplay(egpAmount) {
+            if (!this.available || state.currency === 'EGP' || !this.rates || !this.rates[state.currency]) return egpAmount;
+            return egpAmount * this.rates[state.currency];
+        }
+    };
 
     // ==================== THEME ====================
     const THEME = {
@@ -1063,94 +1094,153 @@
         init() { this.set(this.get()); }
     };
 
-    // ==================== I18N ====================
+    // ==================== I18N (EN / AR / RU / DE / IT / TR) ====================
+    const SUPPORTED_LANGS = ['en','ar','ru','de','it','tr'];
+    const LANG_LABELS = { en: 'English', ar: 'العربية', ru: 'Русский', de: 'Deutsch', it: 'Italiano', tr: 'Türkçe' };
     const I18N_DICT = {
-        tagline: { en: 'LUXURY TRAVEL', ar: 'سفر فاخر' },
-        welcomeBack: { en: 'Welcome Back', ar: 'أهلاً بعودتك' },
-        authSubtitle: { en: 'Sign in to manage your bookings', ar: 'سجّل الدخول لإدارة حجوزاتك' },
-        continueGoogle: { en: 'Continue with Google', ar: 'المتابعة عبر جوجل' },
-        orDivider: { en: 'OR', ar: 'أو' },
-        fullNameLabel: { en: 'FULL NAME', ar: 'الاسم بالكامل' },
-        email: { en: 'EMAIL ADDRESS', ar: 'البريد الإلكتروني' },
-        password: { en: 'PASSWORD', ar: 'كلمة المرور' },
-        loginBtn: { en: 'Log In', ar: 'تسجيل الدخول' },
-        signupBtn: { en: 'Sign Up', ar: 'إنشاء حساب' },
-        noAccount: { en: "Don't have an account?", ar: 'ليس لديك حساب؟' },
-        continueAsGuest: { en: 'Continue as Guest', ar: 'المتابعة كضيف' },
-        guestsRooms: { en: 'GUESTS & ROOMS', ar: 'الضيوف والغرف' },
-        adults: { en: 'Adults', ar: 'بالغين' }, children: { en: 'Children', ar: 'أطفال' }, infants: { en: 'Infants', ar: 'رضّع' }, rooms: { en: 'Rooms', ar: 'غرف' },
-        apply: { en: 'Apply', ar: 'تطبيق' }, close: { en: 'Close', ar: 'إغلاق' },
-        navHome: { en: 'Home', ar: 'الرئيسية' }, navHotels: { en: 'Hotels', ar: 'فنادق' },
-        navExcursions: { en: 'Excursions', ar: 'الرحلات السياحية' }, navTransfers: { en: 'Airport Transfers', ar: 'ترانسفير المطار' },
-        navBookings: { en: 'Bookings', ar: 'الحجوزات' }, navFavorites: { en: 'Favorites', ar: 'المفضلة' }, navProfile: { en: 'Profile', ar: 'الملف الشخصي' },
-        settingsTitle: { en: 'Settings', ar: 'الإعدادات' }, darkMode: { en: 'Dark Mode', ar: 'الوضع الداكن' }, logout: { en: 'Logout', ar: 'تسجيل الخروج' },
-        premiumStays: { en: '— PREMIUM STAYS', ar: '— إقامات فاخرة' },
-        heroTitle: { en: 'Find Your<br><span class="italic text-gold-400">Perfect Stay</span>', ar: 'اكتشف<br><span class="italic text-gold-400">إقامتك المثالية</span>' },
-        heroSubtitle: { en: 'Hotels. Excursions. Airport transfers.', ar: 'فنادق. رحلات سياحية. ترانسفير مطار.' },
-        checkin: { en: 'CHECK-IN', ar: 'تاريخ الوصول' }, checkout: { en: 'CHECK-OUT', ar: 'تاريخ المغادرة' },
-        searchHotels: { en: 'Search Hotels', ar: 'ابحث عن فنادق' },
-        searchExcursions: { en: 'Search Excursions', ar: 'ابحث عن رحلات' },
-        excursionDate: { en: 'EXCURSION DATE', ar: 'تاريخ الرحلة' },
-        category: { en: 'CATEGORY', ar: 'الفئة' },
-        transferIntro: { en: 'Reliable, air-conditioned rides between Sharm El Sheikh International Airport and your hotel.', ar: 'رحلات مكيّفة وموثوقة بين مطار شرم الشيخ الدولي وفندقك.' },
-        viewTransfers: { en: 'View Transfer Options', ar: 'عرض خيارات الترانسفير' },
-        exploreEyebrow: { en: '— EXPLORE', ar: '— استكشف' }, popularDestinations: { en: 'Popular Destinations', ar: 'وجهات شهيرة' },
-        curatedEyebrow: { en: '— CURATED', ar: '— مختارة بعناية' }, featuredHotels: { en: 'Featured Hotels', ar: 'فنادق مميزة' },
-        thingsToDoEyebrow: { en: '— THINGS TO DO', ar: '— أشياء تفعلها' }, featuredExcursions: { en: 'Featured Excursions', ar: 'رحلات مميزة' },
-        viewAll: { en: 'View All <i class="fa-solid fa-arrow-left text-xs"></i>', ar: 'عرض الكل <i class="fa-solid fa-arrow-left text-xs"></i>' }, viewAll2: { en: 'View All', ar: 'عرض الكل' },
-        airportTransferBadge: { en: 'AIRPORT TRANSFERS', ar: 'ترانسفير المطار' },
-        transferPromoTitle: { en: 'Land & Go', ar: 'اهبط وانطلق' },
-        transferPromoSubtitle: { en: 'Book your ride to the hotel in advance', ar: 'احجز رحلتك إلى الفندق مقدمًا' },
-        bookTransfer: { en: 'Book a Transfer', ar: 'احجز ترانسفير' },
-        limitedOffer: { en: 'LIMITED OFFER', ar: 'عرض محدود' }, getOff: { en: 'Get', ar: 'احصل على' },
-        firstBooking: { en: 'on your first booking', ar: 'على أول حجز لك' }, bookNow: { en: 'Book Now', ar: 'احجز الآن' },
-        collectionEyebrow: { en: '— COLLECTION', ar: '— مجموعة' },
-        all: { en: 'All', ar: 'الكل' }, luxury: { en: 'Luxury', ar: 'فاخر' }, budget: { en: 'Budget', ar: 'اقتصادي' }, business: { en: 'Business', ar: 'أعمال' },
-        catDiving: { en: 'Diving & Snorkeling', ar: 'غوص وسنوركل' }, catDesert: { en: 'Desert Safari', ar: 'رحلة صحراوية' }, catBoat: { en: 'Boat Trip', ar: 'رحلة بحرية' }, catCity: { en: 'City Tour', ar: 'جولة سياحية' },
-        activitiesEyebrow: { en: '— ACTIVITIES', ar: '— أنشطة' }, excursionsTitle: { en: 'Excursions', ar: 'الرحلات السياحية' },
-        rideEyebrow: { en: '— GROUND TRANSPORT', ar: '— النقل الأرضي' }, transfersTitle: { en: 'Airport Transfers', ar: 'ترانسفير المطار' },
-        transfersSubtitle: { en: 'Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.', ar: 'اختر سيارة لرحلتك بين مطار شرم الشيخ الدولي وفندقك.' },
-        reservationsEyebrow: { en: '— RESERVATIONS', ar: '— الحجوزات' }, myBookings: { en: 'My Bookings', ar: 'حجوزاتي' },
-        upcoming: { en: 'Upcoming', ar: 'القادمة' }, past: { en: 'Past', ar: 'السابقة' },
-        noBookingsYet: { en: 'No bookings yet', ar: 'لا توجد حجوزات بعد' }, startJourney: { en: 'Start your luxury journey', ar: 'ابدأ رحلتك الفاخرة' }, browseHotels: { en: 'Browse Hotels', ar: 'تصفح الفنادق' },
-        savedEyebrow: { en: '— SAVED', ar: '— محفوظة' }, favorites: { en: 'Favorites', ar: 'المفضلة' },
-        noFavoritesYet: { en: 'No favorites yet', ar: 'لا توجد عناصر مفضلة بعد' }, saveHotelsLove: { en: 'Save hotels you love', ar: 'احفظ الفنادق التي تعجبك' },
-        goldMember: { en: 'Gold Member', ar: 'عضو ذهبي' }, bookingsStat: { en: 'Bookings', ar: 'حجوزات' }, favoritesStat: { en: 'Favorites', ar: 'مفضلة' }, reviewsStat: { en: 'Reviews', ar: 'تقييمات' },
-        preferencesEyebrow: { en: '— PREFERENCES', ar: '— التفضيلات' }, currency: { en: 'Currency', ar: 'العملة' }, language: { en: 'Language', ar: 'اللغة' },
-        updatesEyebrow: { en: '— UPDATES', ar: '— التحديثات' }, notifications: { en: 'Notifications', ar: 'الإشعارات' },
-        onboardTitle: { en: 'Stay Better.<br>Travel <span class="italic text-gold-400">Brighter.</span>', ar: 'إقامة أفضل.<br>سفر <span class="italic text-gold-400">أكثر إشراقاً.</span>' },
-        onboardSubtitle: { en: 'Hotels, excursions and airport transfers for your next trip to Sharm El Sheikh — all in one place.', ar: 'فنادق ورحلات سياحية وترانسفير مطار لرحلتك القادمة إلى شرم الشيخ — كل ده في مكان واحد.' },
-        getStarted: { en: 'Get Started', ar: 'ابدأ الآن' }, skip: { en: 'Skip', ar: 'تخطي' },
-        writeReview: { en: 'Write a Review', ar: 'اكتب تقييم' },
-        reviewVerifyNote: { en: 'To keep reviews genuine, enter the Booking ID from your confirmation to verify you booked with us.', ar: 'حفاظًا على مصداقية التقييمات، أدخل رقم الحجز من تأكيدك للتحقق من أنك حجزت معنا.' },
-        bookingIdLabel: { en: 'BOOKING ID', ar: 'رقم الحجز' },
-        yourRating: { en: 'YOUR RATING', ar: 'تقييمك' }, yourName: { en: 'YOUR NAME', ar: 'اسمك' }, yourReview: { en: 'YOUR REVIEW', ar: 'رأيك' },
-        submitReview: { en: 'Submit Review', ar: 'إرسال التقييم' },
-        creditDebitCard: { en: 'Credit / Debit Card', ar: 'بطاقة ائتمان / خصم' },
-        instapayWallet: { en: 'InstaPay / E-Wallet', ar: 'إنستاباي / محفظة إلكترونية' },
-        cashOnArrival: { en: 'Cash on Arrival', ar: 'الدفع نقدًا عند الوصول' }
+        tagline: { en: 'LUXURY TRAVEL', ar: 'سفر فاخر', ru: 'РОСКОШНЫЕ ПУТЕШЕСТВИЯ', de: 'LUXUSREISEN', it: 'VIAGGI DI LUSSO', tr: 'LÜKS SEYAHAT' },
+        welcomeBack: { en: 'Welcome Back', ar: 'أهلاً بعودتك', ru: 'С возвращением', de: 'Willkommen zurück', it: 'Bentornato', tr: 'Tekrar Hoş Geldiniz' },
+        authSubtitle: { en: 'Sign in to manage your bookings', ar: 'سجّل الدخول لإدارة حجوزاتك', ru: 'Войдите, чтобы управлять бронированиями', de: 'Melde dich an, um deine Buchungen zu verwalten', it: 'Accedi per gestire le tue prenotazioni', tr: 'Rezervasyonlarınızı yönetmek için giriş yapın' },
+        continueGoogle: { en: 'Continue with Google', ar: 'المتابعة عبر جوجل', ru: 'Продолжить через Google', de: 'Mit Google fortfahren', it: 'Continua con Google', tr: 'Google ile Devam Et' },
+        orDivider: { en: 'OR', ar: 'أو', ru: 'ИЛИ', de: 'ODER', it: 'OPPURE', tr: 'VEYA' },
+        fullNameLabel: { en: 'FULL NAME', ar: 'الاسم بالكامل', ru: 'ПОЛНОЕ ИМЯ', de: 'VOLLSTÄNDIGER NAME', it: 'NOME COMPLETO', tr: 'AD SOYAD' },
+        email: { en: 'EMAIL ADDRESS', ar: 'البريد الإلكتروني', ru: 'ЭЛЕКТРОННАЯ ПОЧТА', de: 'E-MAIL-ADRESSE', it: 'INDIRIZZO EMAIL', tr: 'E-POSTA ADRESİ' },
+        password: { en: 'PASSWORD', ar: 'كلمة المرور', ru: 'ПАРОЛЬ', de: 'PASSWORT', it: 'PASSWORD', tr: 'ŞİFRE' },
+        loginBtn: { en: 'Log In', ar: 'تسجيل الدخول', ru: 'Войти', de: 'Anmelden', it: 'Accedi', tr: 'Giriş Yap' },
+        signupBtn: { en: 'Sign Up', ar: 'إنشاء حساب', ru: 'Регистрация', de: 'Registrieren', it: 'Registrati', tr: 'Kayıt Ol' },
+        noAccount: { en: "Don't have an account?", ar: 'ليس لديك حساب؟', ru: 'Нет аккаунта?', de: 'Noch kein Konto?', it: 'Non hai un account?', tr: 'Hesabınız yok mu?' },
+        continueAsGuest: { en: 'Continue as Guest', ar: 'المتابعة كضيف', ru: 'Продолжить как гость', de: 'Als Gast fortfahren', it: 'Continua come ospite', tr: 'Misafir Olarak Devam Et' },
+        countryCode: { en: 'COUNTRY CODE', ar: 'كود الدولة', ru: 'КОД СТРАНЫ', de: 'LÄNDERVORWAHL', it: 'PREFISSO', tr: 'ÜLKE KODU' },
+        phoneNumber: { en: 'PHONE NUMBER', ar: 'رقم الهاتف', ru: 'НОМЕР ТЕЛЕФОНА', de: 'TELEFONNUMMER', it: 'NUMERO DI TELEFONO', tr: 'TELEFON NUMARASI' },
+        guestsRooms: { en: 'GUESTS & ROOMS', ar: 'الضيوف والغرف', ru: 'ГОСТИ И НОМЕРА', de: 'GÄSTE & ZIMMER', it: 'OSPITI E CAMERE', tr: 'MİSAFİR VE ODA' },
+        adults: { en: 'Adults', ar: 'بالغين', ru: 'Взрослые', de: 'Erwachsene', it: 'Adulti', tr: 'Yetişkin' },
+        children: { en: 'Children', ar: 'أطفال', ru: 'Дети', de: 'Kinder', it: 'Bambini', tr: 'Çocuk' },
+        infants: { en: 'Infants', ar: 'رضّع', ru: 'Младенцы', de: 'Kleinkinder', it: 'Neonati', tr: 'Bebek' },
+        rooms: { en: 'Rooms', ar: 'غرف', ru: 'Номера', de: 'Zimmer', it: 'Camere', tr: 'Oda' },
+        apply: { en: 'Apply', ar: 'تطبيق', ru: 'Применить', de: 'Übernehmen', it: 'Applica', tr: 'Uygula' },
+        close: { en: 'Close', ar: 'إغلاق', ru: 'Закрыть', de: 'Schließen', it: 'Chiudi', tr: 'Kapat' },
+        navHome: { en: 'Home', ar: 'الرئيسية', ru: 'Главная', de: 'Start', it: 'Home', tr: 'Ana Sayfa' },
+        navHotels: { en: 'Hotels', ar: 'فنادق', ru: 'Отели', de: 'Hotels', it: 'Hotel', tr: 'Oteller' },
+        navExcursions: { en: 'Excursions', ar: 'الرحلات السياحية', ru: 'Экскурсии', de: 'Ausflüge', it: 'Escursioni', tr: 'Turlar' },
+        navTransfers: { en: 'Airport Transfers', ar: 'ترانسفير المطار', ru: 'Трансфер из аэропорта', de: 'Flughafentransfer', it: 'Transfer Aeroportuali', tr: 'Havalimanı Transferi' },
+        navBookings: { en: 'Bookings', ar: 'الحجوزات', ru: 'Бронирования', de: 'Buchungen', it: 'Prenotazioni', tr: 'Rezervasyonlar' },
+        navFavorites: { en: 'Favorites', ar: 'المفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
+        navProfile: { en: 'Profile', ar: 'الملف الشخصي', ru: 'Профиль', de: 'Profil', it: 'Profilo', tr: 'Profil' },
+        settingsTitle: { en: 'Settings', ar: 'الإعدادات', ru: 'Настройки', de: 'Einstellungen', it: 'Impostazioni', tr: 'Ayarlar' },
+        darkMode: { en: 'Dark Mode', ar: 'الوضع الداكن', ru: 'Тёмная тема', de: 'Dunkelmodus', it: 'Modalità scura', tr: 'Karanlık Mod' },
+        logout: { en: 'Logout', ar: 'تسجيل الخروج', ru: 'Выйти', de: 'Abmelden', it: 'Esci', tr: 'Çıkış Yap' },
+        premiumStays: { en: '— PREMIUM STAYS', ar: '— إقامات فاخرة', ru: '— ПРЕМИУМ ОТДЫХ', de: '— PREMIUM AUFENTHALTE', it: '— SOGGIORNI PREMIUM', tr: '— PREMIUM KONAKLAMA' },
+        heroTitle: { en: 'Find Your<br><span class="italic text-gold-400">Perfect Stay</span>', ar: 'اكتشف<br><span class="italic text-gold-400">إقامتك المثالية</span>', ru: 'Найдите свой<br><span class="italic text-gold-400">идеальный отдых</span>', de: 'Finde deinen<br><span class="italic text-gold-400">perfekten Aufenthalt</span>', it: 'Trova il tuo<br><span class="italic text-gold-400">soggiorno perfetto</span>', tr: 'Size Özel<br><span class="italic text-gold-400">Mükemmel Konaklamayı</span> Bulun' },
+        heroSubtitle: { en: 'Hotels. Excursions. Airport transfers.', ar: 'فنادق. رحلات سياحية. ترانسفير مطار.', ru: 'Отели. Экскурсии. Трансфер из аэропорта.', de: 'Hotels. Ausflüge. Flughafentransfer.', it: 'Hotel. Escursioni. Transfer aeroportuali.', tr: 'Oteller. Turlar. Havalimanı Transferi.' },
+        checkin: { en: 'CHECK-IN', ar: 'تاريخ الوصول', ru: 'ЗАЕЗД', de: 'ANREISE', it: 'CHECK-IN', tr: 'GİRİŞ' },
+        checkout: { en: 'CHECK-OUT', ar: 'تاريخ المغادرة', ru: 'ВЫЕЗД', de: 'ABREISE', it: 'CHECK-OUT', tr: 'ÇIKIŞ' },
+        searchHotels: { en: 'Search Hotels', ar: 'ابحث عن فنادق', ru: 'Найти отели', de: 'Hotels suchen', it: 'Cerca hotel', tr: 'Otel Ara' },
+        searchExcursions: { en: 'Search Excursions', ar: 'ابحث عن رحلات', ru: 'Найти экскурсии', de: 'Ausflüge suchen', it: 'Cerca escursioni', tr: 'Tur Ara' },
+        excursionDate: { en: 'EXCURSION DATE', ar: 'تاريخ الرحلة', ru: 'ДАТА ЭКСКУРСИИ', de: 'AUSFLUGSDATUM', it: 'DATA ESCURSIONE', tr: 'TUR TARİHİ' },
+        category: { en: 'CATEGORY', ar: 'الفئة', ru: 'КАТЕГОРИЯ', de: 'KATEGORIE', it: 'CATEGORIA', tr: 'KATEGORİ' },
+        transferIntro: { en: 'Reliable, air-conditioned tourist vehicles between Sharm El Sheikh International Airport and your hotel.', ar: 'سيارات سياحية مكيّفة وموثوقة بين مطار شرم الشيخ الدولي وفندقك.', ru: 'Надёжные трансферы на туристических автомобилях с кондиционером между аэропортом Шарм-эль-Шейха и вашим отелем.', de: 'Zuverlässige, klimatisierte Touristenfahrzeuge zwischen dem Flughafen Sharm El Sheikh und deinem Hotel.', it: 'Veicoli turistici affidabili e climatizzati tra l\'aeroporto di Sharm El Sheikh e il tuo hotel.', tr: 'Sharm El Sheikh Havalimanı ile oteliniz arasında güvenilir, klimalı turistik araçlar.' },
+        viewTransfers: { en: 'View Transfer Options', ar: 'عرض خيارات الترانسفير', ru: 'Смотреть варианты трансфера', de: 'Transferoptionen ansehen', it: 'Vedi opzioni transfer', tr: 'Transfer Seçeneklerini Gör' },
+        exploreEyebrow: { en: '— EXPLORE', ar: '— استكشف', ru: '— ИССЛЕДУЙТЕ', de: '— ENTDECKEN', it: '— ESPLORA', tr: '— KEŞFET' },
+        popularDestinations: { en: 'Popular Destinations', ar: 'وجهات شهيرة', ru: 'Популярные направления', de: 'Beliebte Ziele', it: 'Destinazioni popolari', tr: 'Popüler Bölgeler' },
+        curatedEyebrow: { en: '— CURATED', ar: '— مختارة بعناية', ru: '— ПОДБОРКА', de: '— AUSGEWÄHLT', it: '— SELEZIONATI', tr: '— SEÇKİ' },
+        featuredHotels: { en: 'Featured Hotels', ar: 'فنادق مميزة', ru: 'Рекомендуемые отели', de: 'Empfohlene Hotels', it: 'Hotel in evidenza', tr: 'Öne Çıkan Oteller' },
+        thingsToDoEyebrow: { en: '— THINGS TO DO', ar: '— أشياء تفعلها', ru: '— ЧЕМ ЗАНЯТЬСЯ', de: '— AKTIVITÄTEN', it: '— COSA FARE', tr: '— YAPILACAKLAR' },
+        featuredExcursions: { en: 'Featured Excursions', ar: 'رحلات مميزة', ru: 'Рекомендуемые экскурсии', de: 'Empfohlene Ausflüge', it: 'Escursioni in evidenza', tr: 'Öne Çıkan Turlar' },
+        viewAll: { en: 'View All <i class="fa-solid fa-arrow-left text-xs"></i>', ar: 'عرض الكل <i class="fa-solid fa-arrow-left text-xs"></i>', ru: 'Смотреть все <i class="fa-solid fa-arrow-left text-xs"></i>', de: 'Alle ansehen <i class="fa-solid fa-arrow-left text-xs"></i>', it: 'Vedi tutti <i class="fa-solid fa-arrow-left text-xs"></i>', tr: 'Tümünü Gör <i class="fa-solid fa-arrow-left text-xs"></i>' },
+        viewAll2: { en: 'View All', ar: 'عرض الكل', ru: 'Смотреть все', de: 'Alle ansehen', it: 'Vedi tutti', tr: 'Tümünü Gör' },
+        airportTransferBadge: { en: 'AIRPORT TRANSFERS', ar: 'ترانسفير المطار', ru: 'ТРАНСФЕР ИЗ АЭРОПОРТА', de: 'FLUGHAFENTRANSFER', it: 'TRANSFER AEROPORTUALI', tr: 'HAVALİMANI TRANSFERİ' },
+        transferPromoTitle: { en: 'Land & Go', ar: 'اهبط وانطلق', ru: 'Прилетел и поехал', de: 'Landen & Losfahren', it: 'Atterra e Parti', tr: 'İn ve Git' },
+        transferPromoSubtitle: { en: 'Book your ride to the hotel in advance', ar: 'احجز رحلتك إلى الفندق مقدمًا', ru: 'Забронируйте поездку до отеля заранее', de: 'Buche deine Fahrt zum Hotel im Voraus', it: 'Prenota il tuo trasferimento in hotel in anticipo', tr: 'Otelinize yolculuğunuzu önceden ayırtın' },
+        bookTransfer: { en: 'Book a Transfer', ar: 'احجز ترانسفير', ru: 'Забронировать трансфер', de: 'Transfer buchen', it: 'Prenota un transfer', tr: 'Transfer Ayırt' },
+        limitedOffer: { en: 'LIMITED OFFER', ar: 'عرض محدود', ru: 'ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ', de: 'BEGRENZTES ANGEBOT', it: 'OFFERTA LIMITATA', tr: 'SINIRLI TEKLİF' },
+        getOff: { en: 'Get', ar: 'احصل على', ru: 'Получите', de: 'Erhalte', it: 'Ottieni', tr: 'Kazanın' },
+        firstBooking: { en: 'on your first booking', ar: 'على أول حجز لك', ru: 'на первое бронирование', de: 'bei deiner ersten Buchung', it: 'sulla tua prima prenotazione', tr: 'ilk rezervasyonunuzda' },
+        bookNow: { en: 'Book Now', ar: 'احجز الآن', ru: 'Забронировать', de: 'Jetzt buchen', it: 'Prenota ora', tr: 'Şimdi Ayırt' },
+        collectionEyebrow: { en: '— COLLECTION', ar: '— مجموعة', ru: '— КОЛЛЕКЦИЯ', de: '— KOLLEKTION', it: '— COLLEZIONE', tr: '— KOLEKSİYON' },
+        all: { en: 'All', ar: 'الكل', ru: 'Все', de: 'Alle', it: 'Tutti', tr: 'Tümü' },
+        luxury: { en: 'Luxury', ar: 'فاخر', ru: 'Люкс', de: 'Luxus', it: 'Lusso', tr: 'Lüks' },
+        budget: { en: 'Budget', ar: 'اقتصادي', ru: 'Бюджет', de: 'Budget', it: 'Economico', tr: 'Ekonomik' },
+        business: { en: 'Business', ar: 'أعمال', ru: 'Бизнес', de: 'Business', it: 'Business', tr: 'İş' },
+        catDiving: { en: 'Diving & Snorkeling', ar: 'غوص وسنوركل', ru: 'Дайвинг и снорклинг', de: 'Tauchen & Schnorcheln', it: 'Immersioni e snorkeling', tr: 'Dalış ve Şnorkel' },
+        catDesert: { en: 'Desert Safari', ar: 'رحلة صحراوية', ru: 'Сафари в пустыне', de: 'Wüstensafari', it: 'Safari nel deserto', tr: 'Çöl Safarisi' },
+        catBoat: { en: 'Boat Trip', ar: 'رحلة بحرية', ru: 'Морская прогулка', de: 'Bootsausflug', it: 'Gita in barca', tr: 'Tekne Turu' },
+        catCity: { en: 'City Tour', ar: 'جولة سياحية', ru: 'Обзорная экскурсия', de: 'Stadtrundfahrt', it: 'Tour della città', tr: 'Şehir Turu' },
+        activitiesEyebrow: { en: '— ACTIVITIES', ar: '— أنشطة', ru: '— АКТИВНОСТИ', de: '— AKTIVITÄTEN', it: '— ATTIVITÀ', tr: '— AKTİVİTELER' },
+        excursionsTitle: { en: 'Excursions', ar: 'الرحلات السياحية', ru: 'Экскурсии', de: 'Ausflüge', it: 'Escursioni', tr: 'Turlar' },
+        rideEyebrow: { en: '— GROUND TRANSPORT', ar: '— النقل الأرضي', ru: '— НАЗЕМНЫЙ ТРАНСПОРТ', de: '— BODENTRANSPORT', it: '— TRASPORTO A TERRA', tr: '— KARA ULAŞIMI' },
+        transfersTitle: { en: 'Airport Transfers', ar: 'ترانسفير المطار', ru: 'Трансфер из аэропорта', de: 'Flughafentransfer', it: 'Transfer Aeroportuali', tr: 'Havalimanı Transferi' },
+        transfersSubtitle: { en: 'Tourist H1 vehicles for airport pickup or drop-off between Sharm El Sheikh International Airport (SSH) and your hotel.', ar: 'سيارات سياحية H1 لاستقبال أو توصيل المطار بين مطار شرم الشيخ الدولي (SSH) وفندقك.', ru: 'Туристические автомобили H1 для встречи или трансфера в аэропорт между аэропортом Шарм-эль-Шейха (SSH) и вашим отелем.', de: 'Touristen-H1-Fahrzeuge für Flughafenabholung oder -transfer zwischen dem Flughafen Sharm El Sheikh (SSH) und deinem Hotel.', it: 'Veicoli turistici H1 per il ritiro o il trasferimento in aeroporto tra l\'aeroporto di Sharm El Sheikh (SSH) e il tuo hotel.', tr: 'Sharm El Sheikh Havalimanı (SSH) ile oteliniz arasında karşılama veya bırakma için turistik H1 araçlar.' },
+        reservationsEyebrow: { en: '— RESERVATIONS', ar: '— الحجوزات', ru: '— БРОНИРОВАНИЯ', de: '— RESERVIERUNGEN', it: '— PRENOTAZIONI', tr: '— REZERVASYONLAR' },
+        myBookings: { en: 'My Bookings', ar: 'حجوزاتي', ru: 'Мои бронирования', de: 'Meine Buchungen', it: 'Le mie prenotazioni', tr: 'Rezervasyonlarım' },
+        upcoming: { en: 'Upcoming', ar: 'القادمة', ru: 'Предстоящие', de: 'Bevorstehend', it: 'In arrivo', tr: 'Yaklaşan' },
+        past: { en: 'Past', ar: 'السابقة', ru: 'Прошедшие', de: 'Vergangen', it: 'Passate', tr: 'Geçmiş' },
+        noBookingsYet: { en: 'No bookings yet', ar: 'لا توجد حجوزات بعد', ru: 'Пока нет бронирований', de: 'Noch keine Buchungen', it: 'Ancora nessuna prenotazione', tr: 'Henüz rezervasyon yok' },
+        startJourney: { en: 'Start your luxury journey', ar: 'ابدأ رحلتك الفاخرة', ru: 'Начните свое роскошное путешествие', de: 'Beginne deine Luxusreise', it: 'Inizia il tuo viaggio di lusso', tr: 'Lüks yolculuğunuza başlayın' },
+        browseHotels: { en: 'Browse Hotels', ar: 'تصفح الفنادق', ru: 'Смотреть отели', de: 'Hotels durchsuchen', it: 'Sfoglia hotel', tr: 'Otellere Göz At' },
+        savedEyebrow: { en: '— SAVED', ar: '— محفوظة', ru: '— СОХРАНЁННОЕ', de: '— GESPEICHERT', it: '— SALVATI', tr: '— KAYITLI' },
+        favorites: { en: 'Favorites', ar: 'المفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
+        noFavoritesYet: { en: 'No favorites yet', ar: 'لا توجد عناصر مفضلة بعد', ru: 'Пока нет избранного', de: 'Noch keine Favoriten', it: 'Ancora nessun preferito', tr: 'Henüz favori yok' },
+        saveHotelsLove: { en: 'Save hotels you love', ar: 'احفظ الفنادق التي تعجبك', ru: 'Сохраняйте понравившиеся отели', de: 'Speichere Hotels, die dir gefallen', it: 'Salva gli hotel che ami', tr: 'Beğendiğiniz otelleri kaydedin' },
+        goldMember: { en: 'Gold Member', ar: 'عضو ذهبي', ru: 'Золотой участник', de: 'Gold-Mitglied', it: 'Membro Gold', tr: 'Gold Üye' },
+        bookingsStat: { en: 'Bookings', ar: 'حجوزات', ru: 'Бронирования', de: 'Buchungen', it: 'Prenotazioni', tr: 'Rezervasyonlar' },
+        favoritesStat: { en: 'Favorites', ar: 'مفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
+        reviewsStat: { en: 'Reviews', ar: 'تقييمات', ru: 'Отзывы', de: 'Bewertungen', it: 'Recensioni', tr: 'Değerlendirmeler' },
+        preferencesEyebrow: { en: '— PREFERENCES', ar: '— التفضيلات', ru: '— НАСТРОЙКИ', de: '— EINSTELLUNGEN', it: '— PREFERENZE', tr: '— TERCİHLER' },
+        currency: { en: 'Currency', ar: 'العملة', ru: 'Валюта', de: 'Währung', it: 'Valuta', tr: 'Para Birimi' },
+        language: { en: 'Language', ar: 'اللغة', ru: 'Язык', de: 'Sprache', it: 'Lingua', tr: 'Dil' },
+        updatesEyebrow: { en: '— UPDATES', ar: '— التحديثات', ru: '— ОБНОВЛЕНИЯ', de: '— NEUIGKEITEN', it: '— AGGIORNAMENTI', tr: '— GÜNCELLEMELER' },
+        notifications: { en: 'Notifications', ar: 'الإشعارات', ru: 'Уведомления', de: 'Benachrichtigungen', it: 'Notifiche', tr: 'Bildirimler' },
+        markAllRead: { en: 'Mark all as read', ar: 'تحديد الكل كمقروء', ru: 'Отметить все как прочитанные', de: 'Alle als gelesen markieren', it: 'Segna tutte come lette', tr: 'Tümünü Okundu İşaretle' },
+        noNotificationsYet: { en: 'No notifications yet', ar: 'لا توجد إشعارات بعد', ru: 'Пока нет уведомлений', de: 'Noch keine Benachrichtigungen', it: 'Ancora nessuna notifica', tr: 'Henüz bildirim yok' },
+        onboardTitle: { en: 'Stay Better.<br>Travel <span class="italic text-gold-400">Brighter.</span>', ar: 'إقامة أفضل.<br>سفر <span class="italic text-gold-400">أكثر إشراقاً.</span>', ru: 'Отдыхайте лучше.<br>Путешествуйте <span class="italic text-gold-400">ярче.</span>', de: 'Besser wohnen.<br>Heller <span class="italic text-gold-400">reisen.</span>', it: 'Soggiorna meglio.<br>Viaggia <span class="italic text-gold-400">più luminoso.</span>', tr: 'Daha İyi Kal.<br>Daha <span class="italic text-gold-400">Parlak</span> Seyahat Et.' },
+        onboardSubtitle: { en: 'Hotels, excursions and airport transfers for your next trip to Sharm El Sheikh — all in one place.', ar: 'فنادق ورحلات سياحية وترانسفير مطار لرحلتك القادمة إلى شرم الشيخ — كل ده في مكان واحد.', ru: 'Отели, экскурсии и трансфер из аэропорта для вашей следующей поездки в Шарм-эль-Шейх — всё в одном месте.', de: 'Hotels, Ausflüge und Flughafentransfer für deine nächste Reise nach Sharm El Sheikh — alles an einem Ort.', it: 'Hotel, escursioni e transfer aeroportuali per il tuo prossimo viaggio a Sharm El Sheikh — tutto in un unico posto.', tr: 'Sharm El Sheikh\'e seyahatiniz için oteller, turlar ve havalimanı transferi — hepsi tek bir yerde.' },
+        getStarted: { en: 'Get Started', ar: 'ابدأ الآن', ru: 'Начать', de: 'Loslegen', it: 'Inizia', tr: 'Başla' },
+        skip: { en: 'Skip', ar: 'تخطي', ru: 'Пропустить', de: 'Überspringen', it: 'Salta', tr: 'Atla' },
+        writeReview: { en: 'Write a Review', ar: 'اكتب تقييم', ru: 'Написать отзыв', de: 'Bewertung schreiben', it: 'Scrivi una recensione', tr: 'Değerlendirme Yaz' },
+        reviewVerifyNote: { en: 'To keep reviews genuine, enter the Booking ID from your confirmation to verify you booked with us.', ar: 'حفاظًا على مصداقية التقييمات، أدخل رقم الحجز من تأكيدك للتحقق من أنك حجزت معنا.', ru: 'Чтобы отзывы оставались достоверными, введите номер бронирования из подтверждения.', de: 'Um echte Bewertungen zu gewährleisten, gib die Buchungs-ID aus deiner Bestätigung ein.', it: 'Per garantire recensioni autentiche, inserisci l\'ID prenotazione dalla tua conferma.', tr: 'Değerlendirmelerin gerçek olduğundan emin olmak için onayınızdaki Rezervasyon Kimliğini girin.' },
+        bookingIdLabel: { en: 'BOOKING ID', ar: 'رقم الحجز', ru: 'НОМЕР БРОНИРОВАНИЯ', de: 'BUCHUNGS-ID', it: 'ID PRENOTAZIONE', tr: 'REZERVASYON KİMLİĞİ' },
+        yourRating: { en: 'YOUR RATING', ar: 'تقييمك', ru: 'ВАША ОЦЕНКА', de: 'DEINE BEWERTUNG', it: 'LA TUA VALUTAZIONE', tr: 'PUANINIZ' },
+        yourName: { en: 'YOUR NAME', ar: 'اسمك', ru: 'ВАШЕ ИМЯ', de: 'DEIN NAME', it: 'IL TUO NOME', tr: 'ADINIZ' },
+        yourReview: { en: 'YOUR REVIEW', ar: 'رأيك', ru: 'ВАШ ОТЗЫВ', de: 'DEINE BEWERTUNG', it: 'LA TUA RECENSIONE', tr: 'DEĞERLENDİRMENİZ' },
+        submitReview: { en: 'Submit Review', ar: 'إرسال التقييم', ru: 'Отправить отзыв', de: 'Bewertung senden', it: 'Invia recensione', tr: 'Değerlendirmeyi Gönder' },
+        creditDebitCard: { en: 'Credit / Debit Card', ar: 'بطاقة ائتمان / خصم', ru: 'Кредитная / дебетовая карта', de: 'Kredit-/Debitkarte', it: 'Carta di credito/debito', tr: 'Kredi / Banka Kartı' },
+        instapayWallet: { en: 'InstaPay / E-Wallet', ar: 'إنستاباي / محفظة إلكترونية', ru: 'InstaPay / электронный кошелёк', de: 'InstaPay / E-Wallet', it: 'InstaPay / Portafoglio elettronico', tr: 'InstaPay / E-Cüzdan' },
+        cashOnArrival: { en: 'Cash on Arrival', ar: 'الدفع نقدًا عند الوصول', ru: 'Оплата наличными по прибытии', de: 'Barzahlung bei Ankunft', it: 'Pagamento in contanti all\'arrivo', tr: 'Varışta Nakit Ödeme' },
+        airportPickup: { en: 'Airport Pickup', ar: 'استقبال من المطار', ru: 'Встреча в аэропорту', de: 'Flughafenabholung', it: 'Ritiro in aeroporto', tr: 'Havalimanı Karşılama' },
+        airportDropoff: { en: 'Airport Drop-off', ar: 'توصيل إلى المطار', ru: 'Трансфер в аэропорт', de: 'Transfer zum Flughafen', it: 'Trasferimento in aeroporto', tr: 'Havalimanına Bırakma' },
+        currencyEgpOnly: { en: 'Showing EGP — live rates unavailable', ar: 'يتم العرض بالجنيه المصري — تعذّر جلب أسعار الصرف حاليًا', ru: 'Показано в EGP — курсы недоступны', de: 'Zeige EGP — Kurse nicht verfügbar', it: 'Mostra EGP — tassi non disponibili', tr: 'EGP gösteriliyor — kurlar şu anda mevcut değil' }
     };
 
     const I18N = {
         get() { return localStorage.getItem('ds_lang') || 'en'; },
         set(lang) {
+            if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
             localStorage.setItem('ds_lang', lang);
+            document.documentElement.setAttribute('lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 const entry = I18N_DICT[key];
-                if (entry && entry[lang]) { if (el.tagName === 'OPTION') el.textContent = entry[lang]; else el.innerHTML = entry[lang]; }
+                const val = entry && (entry[lang] || entry.en);
+                if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
             });
-            document.querySelectorAll('#langBtnEn,#langBtnAr,#langBtnEn2,#langBtnAr2').forEach(b => b.classList.remove('active'));
-            const idA = lang === 'en' ? ['langBtnEn','langBtnEn2'] : ['langBtnAr','langBtnAr2'];
-            idA.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('active'); });
+            document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
+            if (typeof onLanguageChanged === 'function') onLanguageChanged(lang);
         },
         init() { this.set(this.get()); }
     };
 
     // ==================== UTILS ====================
     const utils = {
-        formatPrice(usd) { const c = CURRENCIES[state.currency]; return `${c.symbol}${Math.round(usd * c.rate).toLocaleString()}`; },
-        save() { localStorage.setItem('ds_bookings', JSON.stringify(state.bookings)); localStorage.setItem('ds_favorites', JSON.stringify(state.favorites)); localStorage.setItem('ds_currency', state.currency); },
+        // `egp` is always the true price in Egyptian Pounds (the base currency, stored as such in the catalog).
+        // This only changes what is DISPLAYED — the amount actually charged at checkout is always the raw EGP value.
+        formatPrice(egp) {
+            const displayAmount = CurrencyAPI.toDisplay(egp);
+            const symbol = CURRENCY_SYMBOLS[state.currency] || CURRENCY_SYMBOLS.EGP;
+            const decimals = state.currency === 'EGP' ? 0 : 2;
+            return `${symbol}${displayAmount.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
+        },
+        save() { localStorage.setItem('ds_bookings', JSON.stringify(state.bookings)); localStorage.setItem('ds_favorites', JSON.stringify(state.favorites)); },
         generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
         toast(msg, type = 'success') {
             const colors = { success: 'bg-gradient-to-r from-green-600 to-emerald-600', error: 'bg-gradient-to-r from-red-600 to-rose-600', info: 'bg-gradient-to-r from-violet-600 to-violet-700' };
@@ -1317,9 +1407,12 @@
     // (Field names/format above follow Kashier's iframe/hosted-payment hashing scheme —
     // double-check against the current Kashier API docs before going live.)
     const kashier = {
+        // `amount` here is always the true EGP total (subtotal + taxes computed from the EGP catalog
+        // price) — it is NEVER the display-currency amount, even if the user has USD/EUR/etc. selected
+        // for browsing. Kashier is always charged in EGP (KASHIER_CONFIG.currency).
         pay({ amount, orderId, method, onSuccess, onCancel }) {
             if (method === 'cash') { onSuccess({ status: 'pending_cash', transactionRef: 'CASH-' + orderId }); return; }
-            if (!KASHIER_CONFIG.hashEndpoint) { this.openDemoModal({ amount, orderId, method, onSuccess, onCancel }); return; }
+            if (!KASHIER_CONFIG.hashEndpoint) { utils.toast('Payment gateway is not configured — please choose Cash on Arrival or try again later.', 'error'); if (onCancel) onCancel(); return; }
             this.openLiveIframe({ amount, orderId, method, onSuccess, onCancel });
         },
         async openLiveIframe({ amount, orderId, method, onSuccess, onCancel }) {
@@ -1401,33 +1494,6 @@
         utils.toast('Could not reach the payment server. Check KASHIER_CONFIG.hashEndpoint.', 'error');
     }
 },
-        openDemoModal({ amount, orderId, method, onSuccess, onCancel }) {
-            const methodLabel = method === 'instapay' ? 'InstaPay / E-Wallet' : 'Credit / Debit Card';
-            const body = `
-                <div class="kashier-header">
-                    <div class="flex items-center gap-2 text-white"><i class="fa-solid fa-shield-halved text-gold-400"></i><span class="font-bold text-sm">Kashier — Demo Mode</span></div>
-                    <button id="kashierDemoCloseBtn" class="text-white/60"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="p-6 text-center">
-                    <p class="text-xs mb-4 leading-relaxed" style="color:var(--text-secondary)">This is a sandbox simulation — no real charge happens. Connect <code>KASHIER_CONFIG.hashEndpoint</code> to accept real ${methodLabel} payments through Kashier.</p>
-                    <div class="field-box rounded-2xl p-4 mb-5">
-                        <p class="text-[10px] tracking-wider font-semibold mb-1" style="color:var(--text-secondary)">AMOUNT DUE</p>
-                        <p class="font-display font-bold text-2xl text-violet-500">${utils.formatPrice(amount)}</p>
-                        <p class="text-[10px] mt-1" style="color:var(--text-secondary)">Order ${orderId} · ${methodLabel}</p>
-                    </div>
-                    <button id="kashierDemoPayBtn" class="btn-violet w-full py-3.5 rounded-2xl font-bold mb-2">Simulate Successful Payment</button>
-                    <button id="kashierDemoCancelBtn" class="w-full py-3 text-sm font-semibold text-red-500">Cancel</button>
-                </div>`;
-            this.showModal(body, onCancel);
-            document.getElementById('kashierDemoPayBtn').onclick = () => {
-                document.getElementById('kashierDemoPayBtn').textContent = 'Processing…';
-                document.getElementById('kashierDemoPayBtn').disabled = true;
-                setTimeout(() => { this.closeModal(); onSuccess({ status: 'paid_demo', transactionRef: 'DEMO-' + orderId }); }, 900);
-            };
-            const cancelHandler = () => { this.closeModal(); if (onCancel) onCancel(); };
-            document.getElementById('kashierDemoCloseBtn').onclick = cancelHandler;
-            document.getElementById('kashierDemoCancelBtn').onclick = cancelHandler;
-        },
         showModal(innerHtml, onCancel) {
             let modal = document.getElementById('kashierModal');
             if (!modal) {
@@ -1949,6 +2015,8 @@
         saveGlobalBooking(b);
         if (fbEnabled && currentUser) { fbDB.ref('users/' + currentUser.uid + '/bookings/' + b.id).set(b); }
         else { state.bookings.unshift(b); utils.save(); }
+        const label = b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : (b.vehicleType + ' Transfer');
+        notifications.push({ titleKey: 'bookingConfirmedTitle', title: 'Booking Confirmed', msg: label, icon: 'fa-circle-check', color: 'bg-green-50 text-green-600' });
     }
 
     function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
@@ -2396,8 +2464,8 @@
                     <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Transfer Details</h3>
                     <form onsubmit="submitTransferDetails(event)" class="space-y-4">
                         <div class="field-box p-1 rounded-2xl flex gap-1">
-                            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport → Hotel</button>
-                            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Hotel → Airport</button>
+                            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold" data-i18n="airportPickup">Airport Pickup</button>
+                            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold" data-i18n="airportDropoff">Airport Drop-off</button>
                         </div>
                         <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">FULL NAME</label><input type="text" id="tkName" required value="${state.bookingDraft.name}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
                         <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">EMAIL ADDRESS</label><input type="email" id="tkEmail" required placeholder="you@example.com" value="${state.bookingDraft.email}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
@@ -2447,6 +2515,7 @@
         document.getElementById('mainApp').appendChild(page);
         page.classList.add('active');
         window.scrollTo(0, 0);
+        I18N.set(I18N.get());
         if (step === 2) setTransferDirection(state.bookingDraft.direction);
     }
     function setTransferDirection(dir) {
@@ -2591,27 +2660,121 @@
         }
     };
 
-    // ==================== NOTIFICATIONS ====================
+    // ==================== NOTIFICATIONS (real, persisted per user/device) ====================
     const notifications = {
+        list: JSON.parse(localStorage.getItem('ds_notifications') || '[]'),
+        _fbRef: null,
+        bindUser() {
+            if (fbEnabled && currentUser) {
+                this._fbRef = fbDB.ref('users/' + currentUser.uid + '/notifications');
+                this._fbRef.on('value', snap => {
+                    const val = snap.val() || {};
+                    this.list = Object.keys(val).map(k => Object.assign({ id: k }, val[k])).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+                    this.render(); this.updateBadge();
+                });
+            } else {
+                this.list = JSON.parse(localStorage.getItem('ds_notifications') || '[]');
+                if (!this.list.length) this.push({ title: 'Welcome to Discover Sharm!', msg: 'Hotels, excursions and airport transfers — all in one place', icon: 'fa-hand-wave', color: 'bg-gold-400/15 text-gold-600' });
+                this.render(); this.updateBadge();
+            }
+        },
+        push(n) {
+            const item = Object.assign({ id: utils.generateId(), read: false, createdAt: new Date().toISOString() }, n);
+            if (fbEnabled && currentUser) {
+                fbDB.ref('users/' + currentUser.uid + '/notifications/' + item.id).set(item);
+            } else {
+                this.list.unshift(item);
+                localStorage.setItem('ds_notifications', JSON.stringify(this.list));
+                this.render(); this.updateBadge();
+            }
+        },
+        markAllRead() {
+            this.list.forEach(n => n.read = true);
+            if (fbEnabled && currentUser) {
+                const updates = {}; this.list.forEach(n => { updates[n.id + '/read'] = true; });
+                fbDB.ref('users/' + currentUser.uid + '/notifications').update(updates);
+            } else {
+                localStorage.setItem('ds_notifications', JSON.stringify(this.list));
+            }
+            this.render(); this.updateBadge();
+        },
+        markRead(id) {
+            const n = this.list.find(x => x.id === id); if (!n || n.read) return;
+            n.read = true;
+            if (fbEnabled && currentUser) fbDB.ref('users/' + currentUser.uid + '/notifications/' + id + '/read').set(true);
+            else localStorage.setItem('ds_notifications', JSON.stringify(this.list));
+            this.updateBadge();
+        },
+        timeAgo(iso) {
+            const diffMs = Date.now() - new Date(iso).getTime();
+            const mins = Math.floor(diffMs / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return mins + 'm ago';
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + 'h ago';
+            return Math.floor(hrs / 24) + 'd ago';
+        },
+        updateBadge() {
+            const unread = this.list.filter(n => !n.read).length;
+            document.querySelectorAll('.notif-badge').forEach(b => b.classList.toggle('hidden', unread === 0));
+        },
         render() {
             const list = document.getElementById('notificationsList');
-            const notifs = [
-                { title: 'Welcome to Discover Sharm!', msg: 'Hotels, excursions and airport transfers — all in one place', icon: 'fa-hand-wave', color: 'bg-gold-400/15 text-gold-600', time: 'Just now' },
-                { title: 'Exclusive Offer 🔥', msg: 'Get 20% OFF on your first booking - Limited time', icon: 'fa-fire', color: 'bg-red-50 text-red-500', time: '1 hour ago' },
-                { title: 'New Excursion Added 🐠', msg: 'Ras Mohammed Snorkeling Trip is now open for booking', icon: 'fa-umbrella-beach', color: 'bg-violet-50 text-violet-600', time: '1 day ago' },
-                { title: 'Gold Membership ⭐', msg: 'Congratulations! You are now a Gold Member', icon: 'fa-crown', color: 'bg-gold-400/15 text-gold-600', time: '3 days ago' }
-            ];
-            list.innerHTML = notifs.map(n => `
-                <div class="card rounded-xl p-3.5 flex items-start gap-3">
-                    <div class="w-10 h-10 ${n.color} rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid ${n.icon}"></i></div>
-                    <div class="flex-1"><h3 class="font-semibold text-sm mb-0.5" style="color:var(--text-primary)">${n.title}</h3><p class="text-xs mb-1 leading-relaxed" style="color:var(--text-secondary)">${n.msg}</p><p class="text-[9px] text-gray-400">${n.time}</p></div>
-                    <div class="w-1.5 h-1.5 bg-gold-400 rounded-full flex-shrink-0 mt-1.5"></div>
+            if (!list) return;
+            if (!this.list.length) {
+                list.innerHTML = `<p class="text-center text-sm py-10" style="color:var(--text-secondary)" data-i18n="noNotificationsYet">No notifications yet</p>`;
+                I18N.set(I18N.get());
+                return;
+            }
+            list.innerHTML = this.list.map(n => `
+                <div class="card rounded-xl p-3.5 flex items-start gap-3" onclick="notifications.markRead('${n.id}')">
+                    <div class="w-10 h-10 ${n.color || 'bg-violet-50 text-violet-600'} rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid ${n.icon || 'fa-bell'}"></i></div>
+                    <div class="flex-1"><h3 class="font-semibold text-sm mb-0.5" style="color:var(--text-primary)">${n.title}</h3><p class="text-xs mb-1 leading-relaxed" style="color:var(--text-secondary)">${n.msg}</p><p class="text-[9px] text-gray-400">${this.timeAgo(n.createdAt)}</p></div>
+                    ${!n.read ? '<div class="w-1.5 h-1.5 bg-gold-400 rounded-full flex-shrink-0 mt-1.5"></div>' : ''}
                 </div>`).join('');
         }
     };
 
     // ==================== SETTINGS ====================
-    const settings = { changeCurrency(c) { state.currency = c; utils.save(); ui.renderFeaturedHotels(); hotels.render(); bookings.render(); favorites.render(); excursionsUi.renderFeatured(); excursionsUi.render(); transfersUi.render(); utils.toast('Currency updated', 'info'); } };
+    const settings = {
+        changeCurrency(c) {
+            if (!CurrencyAPI.available) c = 'EGP';
+            state.currency = c;
+            localStorage.setItem('ds_display_currency', c);
+            ui.renderFeaturedHotels(); hotels.render(); bookings.render(); favorites.render(); excursionsUi.renderFeatured(); excursionsUi.render(); transfersUi.render();
+            utils.toast('Currency updated', 'info');
+        }
+    };
+
+    // ==================== COUNTRY CODES (for signup phone number) ====================
+    const COUNTRY_CODES = [
+        { code: 'EG', dial: '+20', name: 'Egypt' }, { code: 'SA', dial: '+966', name: 'Saudi Arabia' },
+        { code: 'AE', dial: '+971', name: 'UAE' }, { code: 'KW', dial: '+965', name: 'Kuwait' },
+        { code: 'QA', dial: '+974', name: 'Qatar' }, { code: 'BH', dial: '+973', name: 'Bahrain' },
+        { code: 'OM', dial: '+968', name: 'Oman' }, { code: 'JO', dial: '+962', name: 'Jordan' },
+        { code: 'GB', dial: '+44', name: 'United Kingdom' }, { code: 'US', dial: '+1', name: 'United States' },
+        { code: 'DE', dial: '+49', name: 'Germany' }, { code: 'FR', dial: '+33', name: 'France' },
+        { code: 'IT', dial: '+39', name: 'Italy' }, { code: 'ES', dial: '+34', name: 'Spain' },
+        { code: 'RU', dial: '+7', name: 'Russia' }, { code: 'UA', dial: '+380', name: 'Ukraine' },
+        { code: 'PL', dial: '+48', name: 'Poland' }, { code: 'NL', dial: '+31', name: 'Netherlands' },
+        { code: 'BE', dial: '+32', name: 'Belgium' }, { code: 'CH', dial: '+41', name: 'Switzerland' },
+        { code: 'AT', dial: '+43', name: 'Austria' }, { code: 'SE', dial: '+46', name: 'Sweden' },
+        { code: 'NO', dial: '+47', name: 'Norway' }, { code: 'DK', dial: '+45', name: 'Denmark' },
+        { code: 'FI', dial: '+358', name: 'Finland' }, { code: 'TR', dial: '+90', name: 'Turkey' },
+        { code: 'GR', dial: '+30', name: 'Greece' }, { code: 'CZ', dial: '+420', name: 'Czech Republic' },
+        { code: 'RO', dial: '+40', name: 'Romania' }, { code: 'HU', dial: '+36', name: 'Hungary' },
+        { code: 'IE', dial: '+353', name: 'Ireland' }, { code: 'PT', dial: '+351', name: 'Portugal' },
+        { code: 'IN', dial: '+91', name: 'India' }, { code: 'CN', dial: '+86', name: 'China' },
+        { code: 'CA', dial: '+1', name: 'Canada' }, { code: 'AU', dial: '+61', name: 'Australia' },
+        { code: 'ZA', dial: '+27', name: 'South Africa' }, { code: 'BR', dial: '+55', name: 'Brazil' },
+        { code: 'KZ', dial: '+7', name: 'Kazakhstan' }, { code: 'IL', dial: '+972', name: 'Israel' }
+    ];
+    function populateCountryCodeSelect() {
+        const sel = document.getElementById('authCountryCode');
+        if (!sel || sel.options.length) return;
+        sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.dial}">${c.dial} ${c.code}</option>`).join('');
+        sel.value = '+20';
+    }
 
     // ==================== AUTH ====================
     const auth = {
@@ -2629,13 +2792,16 @@
             const email = document.getElementById('authEmail').value;
             const pass = document.getElementById('authPassword').value;
             const name = document.getElementById('authName') ? document.getElementById('authName').value : '';
-            if (!fbEnabled) { utils.toast("Firebase not connected — continuing in guest mode", 'info'); return nav.showApp(); }
+            const countryCode = document.getElementById('authCountryCode') ? document.getElementById('authCountryCode').value : '';
+            const phone = document.getElementById('authPhone') ? document.getElementById('authPhone').value.trim() : '';
+            if (this.mode === 'signup' && !phone) { utils.toast('Please enter your phone number', 'error'); return; }
+            if (!fbEnabled) { utils.toast("Sign-in is temporarily unavailable — continuing as guest", 'info'); return nav.showApp(); }
             const btn = document.getElementById('authSubmitBtn'); const original = btn.textContent; btn.textContent = 'Please wait…'; btn.disabled = true;
             try {
                 if (this.mode === 'signup') {
                     const cred = await fbAuth.createUserWithEmailAndPassword(email, pass);
                     await cred.user.updateProfile({ displayName: name });
-                    await fbDB.ref('users/' + cred.user.uid + '/profile').set({ name, email });
+                    await fbDB.ref('users/' + cred.user.uid + '/profile').set({ name, email, countryCode, phone, fullPhone: countryCode + ' ' + phone });
                     utils.toast('Account created!', 'success');
                 } else {
                     await fbAuth.signInWithEmailAndPassword(email, pass);
@@ -2671,8 +2837,9 @@
         THEME.init();
         I18N.init();
         utils.createStars('splashStars');
+        populateCountryCodeSelect();
+        CurrencyAPI.init().then(() => { ui.renderFeaturedHotels(); hotels.render(); excursionsUi.renderFeatured(); excursionsUi.render(); transfersUi.render(); bookings.render(); favorites.render(); });
         initFirebase();
-        updateFirebaseStatusNote();
     });
     </script>
 </body>
