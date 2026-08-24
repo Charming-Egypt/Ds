@@ -1,0 +1,223 @@
+[
+  {
+    "id": "h1",
+    "category": "luxury",
+    "name": { "en": "Discover Grand Hotel", "ar": "فندق ديسكفر جراند", "ru": "Discover Grand Hotel", "de": "Discover Grand Hotel", "it": "Discover Grand Hotel", "tr": "Discover Grand Hotel" },
+    "description": {
+      "en": "Luxury 5-star hotel with sea view",
+      "ar": "فندق فاخر 5 نجوم بإطلالة على البحر",
+      "ru": "Роскошный 5-звездочный отель с видом на море",
+      "de": "Luxus-5-Sterne-Hotel mit Meerblick",
+      "it": "Hotel di lusso 5 stelle con vista mare",
+      "tr": "Deniz manzaralı lüks 5 yıldızlı otel"
+    },
+    "fullDescription": {
+      "en": "Experience unparalleled luxury at Discover Grand Hotel. Featuring stunning Red Sea views, world-class amenities, and exceptional service that defines the essence of Sharm El Sheikh hospitality.",
+      "ar": "استمتع بتجربة فخامة لا مثيل لها في فندق ديسكفر جراند، بإطلالات ساحرة على البحر الأحمر ومرافق عالمية المستوى وخدمة استثنائية تجسد روح الضيافة في شرم الشيخ.",
+      "ru": "Ощутите непревзойденную роскошь в Discover Grand Hotel — потрясающий вид на Красное море, первоклассные удобства и безупречный сервис, отражающий дух гостеприимства Шарм-эль-Шейха.",
+      "de": "Erleben Sie unvergleichlichen Luxus im Discover Grand Hotel mit atemberaubendem Blick auf das Rote Meer, erstklassigen Annehmlichkeiten und außergewöhnlichem Service.",
+      "it": "Vivi un lusso senza pari al Discover Grand Hotel, con splendide vedute sul Mar Rosso, servizi di livello mondiale e un'ospitalità eccezionale, tipica di Sharm El Sheikh.",
+      "tr": "Discover Grand Hotel'de eşsiz bir lüks deneyimi yaşayın — büyüleyici Kızıldeniz manzarası, dünya standartlarında olanaklar ve Sharm El Sheikh misafirperverliğini yansıtan üstün hizmet."
+    },
+    "price": 3800,
+    "rating": 5,
+    "reviews": 234,
+    "location": { "en": "123 Naama Bay, Sharm El Sheikh", "ar": "١٢٣ خليج نعمة، شرم الشيخ", "ru": "Naama Bay 123, Шарм-эль-Шейх", "de": "Naama Bay 123, Sharm El Sheikh", "it": "Naama Bay 123, Sharm El Sheikh", "tr": "Naama Bay 123, Sharm El Sheikh" },
+    "image": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90",
+    "images": [
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90",
+      "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90"
+    ],
+    "amenities": {
+      "en": ["Free WiFi", "Breakfast", "Pool", "Spa", "Gym", "Parking"],
+      "ar": ["واي فاي مجاني", "إفطار", "مسبح", "سبا", "صالة رياضية", "موقف سيارات"],
+      "ru": ["Бесплатный Wi-Fi", "Завтрак", "Бассейн", "Спа", "Тренажерный зал", "Парковка"],
+      "de": ["Kostenloses WLAN", "Frühstück", "Pool", "Spa", "Fitnessstudio", "Parkplatz"],
+      "it": ["WiFi gratuito", "Colazione", "Piscina", "Spa", "Palestra", "Parcheggio"],
+      "tr": ["Ücretsiz WiFi", "Kahvaltı", "Havuz", "Spa", "Spor Salonu", "Otopark"]
+    },
+    "bestseller": true,
+    "rooms": [
+      {
+        "type": { "en": "Deluxe Sea View", "ar": "ديلوكس بإطلالة على البحر", "ru": "Делюкс с видом на море", "de": "Deluxe Meerblick", "it": "Deluxe Vista Mare", "tr": "Deniz Manzaralı Delüks" },
+        "price": 3800, "size": "35m²", "beds": { "en": "1 King Bed", "ar": "سرير كينج واحد", "ru": "1 кровать king-size", "de": "1 Kingsize-Bett", "it": "1 letto king", "tr": "1 King Yatak" }, "guests": 2,
+        "image": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A bright, airy room with floor-to-ceiling windows framing the Red Sea. Soft linens, a marble bathroom, and a private balcony make this the hotel's signature room.",
+          "ar": "غرفة مشرقة وواسعة بنوافذ ممتدة من الأرض إلى السقف تطل على البحر الأحمر، مع مفروشات ناعمة وحمام رخامي وشرفة خاصة.",
+          "ru": "Светлый просторный номер с панорамными окнами и видом на Красное море, мраморной ванной комнатой и собственным балконом.",
+          "de": "Ein helles, luftiges Zimmer mit bodentiefen Fenstern zum Roten Meer, weicher Bettwäsche, Marmorbad und privatem Balkon.",
+          "it": "Camera luminosa con finestre a tutta altezza sul Mar Rosso, biancheria morbida, bagno in marmo e balcone privato.",
+          "tr": "Kızıldeniz manzaralı yerden tavana pencereleri, yumuşak nevresimleri, mermer banyosu ve özel balkonuyla otelin amiral gemisi odası."
+        }
+      },
+      {
+        "type": { "en": "Premium Suite", "ar": "جناح بريميوم", "ru": "Премиум люкс", "de": "Premium-Suite", "it": "Suite Premium", "tr": "Premium Suit" },
+        "price": 6900, "size": "65m²", "beds": { "en": "1 King Bed", "ar": "سرير كينج واحد", "ru": "1 кровать king-size", "de": "1 Kingsize-Bett", "it": "1 letto king", "tr": "1 King Yatak" }, "guests": 3,
+        "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A spacious two-area suite with a separate lounge, walk-in closet, and panoramic sea-facing terrace — ideal for longer stays.",
+          "ar": "جناح فسيح بمنطقتين مع صالة منفصلة وخزانة ملابس وتراس بانورامي مطل على البحر — مثالي للإقامات الطويلة.",
+          "ru": "Просторный люкс из двух зон с отдельной гостиной, гардеробной и панорамной террасой с видом на море.",
+          "de": "Eine geräumige Zwei-Zonen-Suite mit separater Lounge, begehbarem Kleiderschrank und Panoramaterrasse zum Meer.",
+          "it": "Ampia suite a due zone con salotto separato, cabina armadio e terrazza panoramica sul mare.",
+          "tr": "Ayrı oturma alanı, giyinme odası ve denize bakan panoramik teraslı geniş iki bölümlü suit."
+        }
+      }
+    ]
+  },
+  {
+    "id": "h2",
+    "category": "luxury",
+    "name": { "en": "Discover Deluxe Suites", "ar": "ديسكفر ديلوكس سويتس", "ru": "Discover Deluxe Suites", "de": "Discover Deluxe Suites", "it": "Discover Deluxe Suites", "tr": "Discover Deluxe Suites" },
+    "description": {
+      "en": "Elegant suites with panoramic views",
+      "ar": "أجنحة أنيقة بإطلالات بانورامية",
+      "ru": "Элегантные люксы с панорамным видом",
+      "de": "Elegante Suiten mit Panoramablick",
+      "it": "Eleganti suite con vista panoramica",
+      "tr": "Panoramik manzaralı zarif suitler"
+    },
+    "fullDescription": {
+      "en": "Discover Deluxe Suites offers an intimate luxury experience with spacious suites, private balconies overlooking the Red Sea, and personalized service for the discerning traveler.",
+      "ar": "يقدم ديسكفر ديلوكس سويتس تجربة فخامة حميمية بأجنحة واسعة وشرفات خاصة تطل على البحر الأحمر وخدمة شخصية للمسافر المميز.",
+      "ru": "Discover Deluxe Suites предлагает изысканный отдых в просторных люксах с личными балконами с видом на Красное море.",
+      "de": "Discover Deluxe Suites bietet ein intimes Luxuserlebnis mit geräumigen Suiten und privaten Balkonen zum Roten Meer.",
+      "it": "Discover Deluxe Suites offre un'esperienza di lusso intima con ampie suite e balconi privati affacciati sul Mar Rosso.",
+      "tr": "Discover Deluxe Suites, geniş suitleri ve Kızıldeniz'e bakan özel balkonlarıyla samimi bir lüks deneyimi sunar."
+    },
+    "price": 4750,
+    "rating": 5,
+    "reviews": 189,
+    "location": { "en": "456 Sharks Bay, Sharm El Sheikh", "ar": "٤٥٦ خليج القرش، شرم الشيخ", "ru": "Sharks Bay 456, Шарм-эль-Шейх", "de": "Sharks Bay 456, Sharm El Sheikh", "it": "Sharks Bay 456, Sharm El Sheikh", "tr": "Sharks Bay 456, Sharm El Sheikh" },
+    "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=90",
+    "images": ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=90", "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=90"],
+    "amenities": {
+      "en": ["Free WiFi", "Breakfast", "Gym", "Beach Access", "Concierge"],
+      "ar": ["واي فاي مجاني", "إفطار", "صالة رياضية", "وصول مباشر للشاطئ", "خدمة كونسيرج"],
+      "ru": ["Бесплатный Wi-Fi", "Завтрак", "Тренажерный зал", "Выход на пляж", "Консьерж"],
+      "de": ["Kostenloses WLAN", "Frühstück", "Fitnessstudio", "Strandzugang", "Concierge"],
+      "it": ["WiFi gratuito", "Colazione", "Palestra", "Accesso alla spiaggia", "Concierge"],
+      "tr": ["Ücretsiz WiFi", "Kahvaltı", "Spor Salonu", "Plaj Erişimi", "Concierge"]
+    },
+    "bestseller": false,
+    "rooms": [
+      {
+        "type": { "en": "Junior Suite", "ar": "جناح جونيور", "ru": "Джуниор люкс", "de": "Junior-Suite", "it": "Junior Suite", "tr": "Junior Suit" },
+        "price": 4750, "size": "45m²", "beds": { "en": "1 King Bed", "ar": "سرير كينج واحد", "ru": "1 кровать king-size", "de": "1 Kingsize-Bett", "it": "1 letto king", "tr": "1 King Yatak" }, "guests": 2,
+        "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "An elegant junior suite with a private balcony, sitting area, and rain shower — quiet, comfortable and close to the beach path.",
+          "ar": "جناح جونيور أنيق بشرفة خاصة ومنطقة جلوس ودُش مطري — هادئ ومريح وقريب من ممر الشاطئ.",
+          "ru": "Элегантный джуниор-люкс с личным балконом, зоной отдыха и тропическим душем.",
+          "de": "Eine elegante Junior-Suite mit privatem Balkon, Sitzbereich und Regendusche.",
+          "it": "Un'elegante junior suite con balcone privato, area salotto e doccia a pioggia.",
+          "tr": "Özel balkonu, oturma alanı ve yağmurlama duşuyla şık bir junior suit."
+        }
+      }
+    ]
+  },
+  {
+    "id": "h3",
+    "category": "business",
+    "name": { "en": "Discover Business Hotel", "ar": "فندق ديسكفر بزنس", "ru": "Discover Business Hotel", "de": "Discover Business Hotel", "it": "Discover Business Hotel", "tr": "Discover Business Hotel" },
+    "description": {
+      "en": "Modern hotel for business travelers",
+      "ar": "فندق عصري لرجال الأعمال",
+      "ru": "Современный отель для деловых путешественников",
+      "de": "Modernes Hotel für Geschäftsreisende",
+      "it": "Hotel moderno per viaggiatori d'affari",
+      "tr": "İş seyahati yapanlar için modern otel"
+    },
+    "fullDescription": {
+      "en": "Designed for the modern business traveler, Discover Business Hotel offers state-of-the-art meeting facilities, high-speed internet, and comfortable accommodations in the heart of Sharm.",
+      "ar": "مصمم لرجل الأعمال العصري، يقدم فندق ديسكفر بزنس قاعات اجتماعات متطورة وإنترنت فائق السرعة وإقامة مريحة في قلب شرم الشيخ.",
+      "ru": "Discover Business Hotel создан для современного делового путешественника: современные конференц-залы, скоростной интернет и комфортное размещение в центре Шарма.",
+      "de": "Für den modernen Geschäftsreisenden konzipiert, bietet das Discover Business Hotel moderne Tagungsräume, schnelles Internet und komfortable Zimmer im Herzen von Sharm.",
+      "it": "Pensato per il viaggiatore d'affari moderno, il Discover Business Hotel offre sale riunioni all'avanguardia, internet ad alta velocità e sistemazioni confortevoli nel cuore di Sharm.",
+      "tr": "Modern iş seyahatçisi için tasarlanan Discover Business Hotel, Sharm'ın kalbinde son teknoloji toplantı olanakları, hızlı internet ve konforlu konaklama sunar."
+    },
+    "price": 3600,
+    "rating": 4,
+    "reviews": 156,
+    "location": { "en": "789 Hadaba, Sharm El Sheikh", "ar": "٧٨٩ الهضبة، شرم الشيخ", "ru": "Hadaba 789, Шарм-эль-Шейх", "de": "Hadaba 789, Sharm El Sheikh", "it": "Hadaba 789, Sharm El Sheikh", "tr": "Hadaba 789, Sharm El Sheikh" },
+    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=90",
+    "images": ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=90", "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=90"],
+    "amenities": {
+      "en": ["Free WiFi", "Breakfast", "Parking", "Business Center", "Meeting Rooms"],
+      "ar": ["واي فاي مجاني", "إفطار", "موقف سيارات", "مركز أعمال", "قاعات اجتماعات"],
+      "ru": ["Бесплатный Wi-Fi", "Завтрак", "Парковка", "Бизнес-центр", "Конференц-залы"],
+      "de": ["Kostenloses WLAN", "Frühstück", "Parkplatz", "Business-Center", "Konferenzräume"],
+      "it": ["WiFi gratuito", "Colazione", "Parcheggio", "Business Center", "Sale riunioni"],
+      "tr": ["Ücretsiz WiFi", "Kahvaltı", "Otopark", "İş Merkezi", "Toplantı Odaları"]
+    },
+    "bestseller": false,
+    "rooms": [
+      {
+        "type": { "en": "Business Room", "ar": "غرفة بزنس", "ru": "Бизнес-номер", "de": "Business-Zimmer", "it": "Camera Business", "tr": "Business Oda" },
+        "price": 3600, "size": "28m²", "beds": { "en": "1 Queen Bed", "ar": "سرير كوين واحد", "ru": "1 кровать queen-size", "de": "1 Queensize-Bett", "it": "1 letto queen", "tr": "1 Queen Yatak" }, "guests": 2,
+        "image": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A functional, quiet room with an ergonomic desk, fast WiFi, and blackout curtains — built for a good night before an early meeting.",
+          "ar": "غرفة هادئة وعملية بمكتب مريح وواي فاي سريع وستائر معتمة — مثالية لليلة هادئة قبل اجتماع مبكر.",
+          "ru": "Функциональный тихий номер с эргономичным столом, быстрым Wi-Fi и плотными шторами.",
+          "de": "Ein funktionales, ruhiges Zimmer mit ergonomischem Schreibtisch, schnellem WLAN und Verdunkelungsvorhängen.",
+          "it": "Camera funzionale e silenziosa con scrivania ergonomica, WiFi veloce e tende oscuranti.",
+          "tr": "Ergonomik masası, hızlı WiFi'ı ve karartma perdeleriyle işlevsel, sessiz bir oda."
+        }
+      }
+    ]
+  },
+  {
+    "id": "h4",
+    "category": "budget",
+    "name": { "en": "Discover Budget Inn", "ar": "ديسكفر بدجيت إن", "ru": "Discover Budget Inn", "de": "Discover Budget Inn", "it": "Discover Budget Inn", "tr": "Discover Budget Inn" },
+    "description": {
+      "en": "Comfortable stay at great prices",
+      "ar": "إقامة مريحة بأسعار رائعة",
+      "ru": "Комфортное проживание по отличным ценам",
+      "de": "Komfortabler Aufenthalt zu tollen Preisen",
+      "it": "Soggiorno confortevole a prezzi ottimi",
+      "tr": "Uygun fiyata konforlu konaklama"
+    },
+    "fullDescription": {
+      "en": "Discover Budget Inn provides clean, comfortable accommodations at affordable prices. Perfect for travelers who want to explore Sharm El Sheikh without breaking the bank.",
+      "ar": "يوفر ديسكفر بدجيت إن إقامة نظيفة ومريحة بأسعار مناسبة، مثالي للمسافرين الراغبين في استكشاف شرم الشيخ دون تكاليف باهظة.",
+      "ru": "Discover Budget Inn предлагает чистое и удобное проживание по доступным ценам — идеально для путешественников с ограниченным бюджетом.",
+      "de": "Discover Budget Inn bietet saubere, komfortable Unterkünfte zu erschwinglichen Preisen.",
+      "it": "Discover Budget Inn offre sistemazioni pulite e confortevoli a prezzi accessibili.",
+      "tr": "Discover Budget Inn, uygun fiyatlarla temiz ve konforlu konaklama sunar."
+    },
+    "price": 1450,
+    "rating": 4,
+    "reviews": 98,
+    "location": { "en": "321 Old Market, Sharm El Sheikh", "ar": "٣٢١ السوق القديم، شرم الشيخ", "ru": "Old Market 321, Шарм-эль-Шейх", "de": "Old Market 321, Sharm El Sheikh", "it": "Old Market 321, Sharm El Sheikh", "tr": "Old Market 321, Sharm El Sheikh" },
+    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=90",
+    "images": ["https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=90", "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=90"],
+    "amenities": {
+      "en": ["Free WiFi", "Breakfast", "Pool", "24/7 Reception"],
+      "ar": ["واي فاي مجاني", "إفطار", "مسبح", "استقبال ٢٤ ساعة"],
+      "ru": ["Бесплатный Wi-Fi", "Завтрак", "Бассейн", "Круглосуточная стойка регистрации"],
+      "de": ["Kostenloses WLAN", "Frühstück", "Pool", "24-Stunden-Rezeption"],
+      "it": ["WiFi gratuito", "Colazione", "Piscina", "Reception 24 ore"],
+      "tr": ["Ücretsiz WiFi", "Kahvaltı", "Havuz", "7/24 Resepsiyon"]
+    },
+    "bestseller": false,
+    "rooms": [
+      {
+        "type": { "en": "Standard Room", "ar": "غرفة قياسية", "ru": "Стандартный номер", "de": "Standardzimmer", "it": "Camera Standard", "tr": "Standart Oda" },
+        "price": 1450, "size": "22m²", "beds": { "en": "2 Twin Beds", "ar": "سريرين مفردين", "ru": "2 отдельные кровати", "de": "2 Einzelbetten", "it": "2 letti singoli", "tr": "2 Tek Kişilik Yatak" }, "guests": 2,
+        "image": "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=400&q=80",
+        "description": {
+          "en": "A clean, no-frills room with everything you need for a short, affordable stay near the Old Market.",
+          "ar": "غرفة نظيفة وبسيطة بها كل ما تحتاجه لإقامة قصيرة واقتصادية بالقرب من السوق القديم.",
+          "ru": "Чистый простой номер со всем необходимым для короткого недорогого проживания рядом со Старым рынком.",
+          "de": "Ein sauberes, schlichtes Zimmer mit allem Nötigen für einen kurzen, günstigen Aufenthalt.",
+          "it": "Una camera pulita ed essenziale con tutto il necessario per un soggiorno breve ed economico.",
+          "tr": "Old Market'e yakın, kısa ve uygun fiyatlı bir konaklama için ihtiyacınız olan her şeye sahip temiz, sade bir oda."
+        }
+      }
+    ]
+  }
+]
