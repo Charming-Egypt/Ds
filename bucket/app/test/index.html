@@ -125,6 +125,15 @@
         .destination-card { flex-shrink: 0; width: 144px; height: 176px; cursor: pointer; border-radius: 18px; position: relative; overflow: hidden; box-shadow: 0 8px 20px -6px rgba(0,0,0,.25); }
         .restaurant-card { flex-shrink: 0; width: 210px; border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-field); box-shadow: 0 6px 18px -8px rgba(0,0,0,.15); }
         .article-card { border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-field); display:flex; gap: 12px; padding: 10px; }
+        /* Sticky price/CTA bars on hotel & excursion detail pages sit at the very bottom of the
+           screen — hide the floating bottom-nav while either page is active so the two don't overlap. */
+        body:has(#hotelDetailPage.active) .bottom-nav,
+        body:has(#excursionDetailPage.active) .bottom-nav { display: none; }
+        /* .restaurant-card has a fixed width for horizontal-scroll rows; inside the 2-column grid on
+           the full Restaurants page it needs to fill its grid cell instead, or cards misalign. */
+        #restaurantsFullList .restaurant-card { width: 100%; }
+        .skeleton-shimmer { background: linear-gradient(90deg, var(--bg-field) 25%, rgba(150,150,170,.18) 37%, var(--bg-field) 63%); background-size: 400% 100%; animation: skeletonShimmer 1.4s ease infinite; }
+        @keyframes skeletonShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
         .promo-banner::before { content:''; position:absolute; top:-50%; right:-20%; width:300px; height:300px; background: radial-gradient(circle, rgba(251,191,36,.3) 0%, transparent 70%); border-radius:50%; }
 
         .filter-chip { transition: all .3s cubic-bezier(.16,1,.3,1); border: 1px solid var(--border-field); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; }
@@ -135,9 +144,6 @@
 
         .badge-bestseller { background: linear-gradient(135deg, #171029, #2b2140); color: #fbbf24; }
         .rating-pill { background: rgba(12,9,24,.65); backdrop-filter: blur(6px); }
-
-        .onboarding-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.25); transition: all .4s cubic-bezier(.16,1,.3,1); }
-        .onboarding-dot.active { width: 26px; border-radius: 4px; background: linear-gradient(90deg, #fbbf24, #f59e0b); }
 
         .nav-item { transition: all .3s cubic-bezier(.16,1,.3,1); position: relative; cursor: pointer; color: rgba(255,255,255,.45); }
         .nav-item.active { color: #f97316; }
@@ -222,8 +228,8 @@
         <div class="relative z-10 flex flex-col items-center">
             <div class="w-24 h-24 relative mb-6">
                 <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-25 animate-ping"></div>
-                <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50">
-                    <i class="fa-solid fa-compass text-4xl text-ink-900"></i>
+                <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50 overflow-hidden">
+                    <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm">
                 </div>
             </div>
             <h1 class="font-display text-2xl font-bold text-white tracking-tight"><span class="shimmer-text">DISCOVER</span> SHARM</h1>
@@ -419,36 +425,6 @@
                     </select>
                 </div>
                 <button onclick="auth.logout()" class="w-full py-3 rounded-2xl text-red-400 text-sm font-semibold border border-red-400/20 flex items-center justify-center gap-2"><i class="fa-solid fa-right-from-bracket"></i><span data-i18n="logout">Logout</span></button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== ONBOARDING ==================== -->
-    <div id="onboardingPage" class="fixed inset-0 z-[90] hidden items-center justify-center dark-scene">
-        <div class="stars-container" id="onboardStars"></div>
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-        <div class="relative w-full max-w-md h-screen overflow-hidden">
-            <div class="absolute inset-0">
-                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="w-full h-full object-cover scale-110 opacity-40" id="onboardImg" alt="Sharm El Sheikh">
-                <div class="absolute inset-0 bg-gradient-to-b from-ink-950/40 via-ink-950/60 to-ink-950"></div>
-            </div>
-            <div class="relative h-full flex flex-col items-center justify-between py-14 px-8 text-white">
-                <div class="text-center mt-14">
-                    <div class="w-20 h-20 mx-auto mb-6 relative">
-                        <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-20 animate-ping"></div>
-                        <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50"><i class="fa-solid fa-compass text-3xl text-ink-900"></i></div>
-                    </div>
-                    <h1 class="font-display text-3xl md:text-4xl font-bold mb-2 tracking-tight"><span class="shimmer-text">DISCOVER</span><span class="text-white"> SHARM</span></h1>
-                    <div class="w-14 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent mx-auto mb-3"></div>
-                    <h2 class="font-display text-xl md:text-2xl font-bold mb-2 leading-tight" data-i18n="onboardTitle">Stay Better.<br>Travel <span class="italic text-gold-400">Brighter.</span></h2>
-                    <p class="text-white/60 text-sm max-w-xs mx-auto leading-relaxed" data-i18n="onboardSubtitle">Hotels, excursions and airport transfers for your next trip to Sharm El Sheikh — all in one place.</p>
-                </div>
-                <div class="w-full space-y-3 mb-8">
-                    <button onclick="app.finishOnboarding()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 flex items-center justify-center gap-2 text-base ripple"><span data-i18n="getStarted">Get Started</span> <i class="fa-solid fa-arrow-left"></i></button>
-                    <button onclick="app.finishOnboarding()" class="w-full py-4 rounded-2xl font-semibold text-white border border-white/20 hover:bg-white/5 transition" data-i18n="skip">Skip</button>
-                </div>
-                <div class="flex gap-2 mb-4"><div class="onboarding-dot active"></div><div class="onboarding-dot"></div><div class="onboarding-dot"></div></div>
             </div>
         </div>
     </div>
@@ -819,7 +795,7 @@
                 <button onclick="nav.go('hotels')" data-page="hotels" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-hotel text-xl"></i><span class="text-[10px] font-medium" data-i18n="navHotels">Hotels</span></button>
                 <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings">Bookings</span></button>
                 <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="rounded-full object-cover"></span>
+                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
                 </button>
                 <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites">Favorites</span></button>
                 <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1">
@@ -832,7 +808,9 @@
     <script>
     // Note: window.FALLBACK_LOGO (gold compass emblem) is defined in the small inline
     // script right after <body> above, so it's ready before any <img> can 404.
-    // Drop your own PNG at data/logo.png (same folder as this file) to replace the logo.
+    // Drop your own PNGs in the data/ folder to replace the logos:
+    //   data/logo.png       — small square mark (splash screen, side drawer, bottom-nav home button)
+    //   data/long-logo.png  — wide header logo (home page top bar)
 
     // ==================== APP CONFIG (loaded from data/configs.json) ====================
     // Firebase project settings, Kashier merchant settings, and app-level defaults all live in
@@ -1037,8 +1015,6 @@
     const authScreen = {
         show() {
             hideSplash();
-            document.getElementById('onboardingPage').classList.add('hidden');
-            document.getElementById('onboardingPage').style.display = 'none';
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('authPage').classList.remove('hidden');
         }
@@ -1050,7 +1026,7 @@
     // English if a translation is missing) so the rest of the app can keep using simple fields like h.name.
     const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
     const MULTILANG_FIELDS = ['name', 'title', 'description', 'fullDescription', 'location', 'vehicleType', 'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content', 'openHours'];
-    const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features'];
+    const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring'];
     const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
 
     function localizeValue(val, lang) {
@@ -1079,6 +1055,15 @@
                     description: localizeValue(it.description, lang),
                     price: it.price
                 }))
+            }));
+        }
+        // Excursion trip itinerary: array of { time, title, description } — also a nested structure,
+        // localized explicitly for the same reason as the restaurant menu above.
+        if (Array.isArray(raw.itinerary)) {
+            out.itinerary = raw.itinerary.map(step => ({
+                time: step.time,
+                title: localizeValue(step.title, lang),
+                description: localizeValue(step.description, lang)
             }));
         }
         return out;
@@ -1293,10 +1278,6 @@
         notifications: { en: 'Notifications', ar: 'الإشعارات', ru: 'Уведомления', de: 'Benachrichtigungen', it: 'Notifiche', tr: 'Bildirimler' },
         markAllRead: { en: 'Mark all as read', ar: 'تحديد الكل كمقروء', ru: 'Отметить все как прочитанные', de: 'Alle als gelesen markieren', it: 'Segna tutte come lette', tr: 'Tümünü Okundu İşaretle' },
         noNotificationsYet: { en: 'No notifications yet', ar: 'لا توجد إشعارات بعد', ru: 'Пока нет уведомлений', de: 'Noch keine Benachrichtigungen', it: 'Ancora nessuna notifica', tr: 'Henüz bildirim yok' },
-        onboardTitle: { en: 'Stay Better.<br>Travel <span class="italic text-gold-400">Brighter.</span>', ar: 'إقامة أفضل.<br>سفر <span class="italic text-gold-400">أكثر إشراقاً.</span>', ru: 'Отдыхайте лучше.<br>Путешествуйте <span class="italic text-gold-400">ярче.</span>', de: 'Besser wohnen.<br>Heller <span class="italic text-gold-400">reisen.</span>', it: 'Soggiorna meglio.<br>Viaggia <span class="italic text-gold-400">più luminoso.</span>', tr: 'Daha İyi Kal.<br>Daha <span class="italic text-gold-400">Parlak</span> Seyahat Et.' },
-        onboardSubtitle: { en: 'Hotels, excursions and airport transfers for your next trip to Sharm El Sheikh — all in one place.', ar: 'فنادق ورحلات سياحية وترانسفير مطار لرحلتك القادمة إلى شرم الشيخ — كل ده في مكان واحد.', ru: 'Отели, экскурсии и трансфер из аэропорта для вашей следующей поездки в Шарм-эль-Шейх — всё в одном месте.', de: 'Hotels, Ausflüge und Flughafentransfer für deine nächste Reise nach Sharm El Sheikh — alles an einem Ort.', it: 'Hotel, escursioni e transfer aeroportuali per il tuo prossimo viaggio a Sharm El Sheikh — tutto in un unico posto.', tr: 'Sharm El Sheikh\'e seyahatiniz için oteller, turlar ve havalimanı transferi — hepsi tek bir yerde.' },
-        getStarted: { en: 'Get Started', ar: 'ابدأ الآن', ru: 'Начать', de: 'Loslegen', it: 'Inizia', tr: 'Başla' },
-        skip: { en: 'Skip', ar: 'تخطي', ru: 'Пропустить', de: 'Überspringen', it: 'Salta', tr: 'Atla' },
         writeReview: { en: 'Write a Review', ar: 'اكتب تقييم', ru: 'Написать отзыв', de: 'Bewertung schreiben', it: 'Scrivi una recensione', tr: 'Değerlendirme Yaz' },
         reviewVerifyNote: { en: 'To keep reviews genuine, enter the Booking ID from your confirmation to verify you booked with us.', ar: 'حفاظًا على مصداقية التقييمات، أدخل رقم الحجز من تأكيدك للتحقق من أنك حجزت معنا.', ru: 'Чтобы отзывы оставались достоверными, введите номер бронирования из подтверждения.', de: 'Um echte Bewertungen zu gewährleisten, gib die Buchungs-ID aus deiner Bestätigung ein.', it: 'Per garantire recensioni autentiche, inserisci l\'ID prenotazione dalla tua conferma.', tr: 'Değerlendirmelerin gerçek olduğundan emin olmak için onayınızdaki Rezervasyon Kimliğini girin.' },
         bookingIdLabel: { en: 'BOOKING ID', ar: 'رقم الحجز', ru: 'НОМЕР БРОНИРОВАНИЯ', de: 'BUCHUNGS-ID', it: 'ID PRENOTAZIONE', tr: 'REZERVASYON KİMLİĞİ' },
@@ -1322,7 +1303,19 @@
         navRestaurants: { en: 'Restaurants & Cafes', ar: 'المطاعم والمقاهي', ru: 'Рестораны и кафе', de: 'Restaurants & Cafés', it: 'Ristoranti e Caffè', tr: 'Restoranlar ve Kafeler' },
         readMore: { en: 'Read More', ar: 'اقرأ المزيد', ru: 'Читать далее', de: 'Weiterlesen', it: 'Leggi di più', tr: 'Devamını Oku' },
         theMenu: { en: 'The Menu', ar: 'قائمة الطعام', ru: 'Меню', de: 'Die Speisekarte', it: 'Il Menu', tr: 'Menü' },
-        aboutPlace: { en: 'About', ar: 'عن المكان', ru: 'О месте', de: 'Über', it: 'Informazioni', tr: 'Hakkında' }
+        aboutPlace: { en: 'About', ar: 'عن المكان', ru: 'О месте', de: 'Über', it: 'Informazioni', tr: 'Hakkında' },
+        excSectionAbout: { en: '— ABOUT', ar: '— نبذة', ru: '— О ПОЕЗДКЕ', de: '— ÜBER DIESEN AUSFLUG', it: '— INFORMAZIONI', tr: '— HAKKINDA' },
+        excSectionOverview: { en: 'Overview', ar: 'نظرة عامة', ru: 'Обзор', de: 'Überblick', it: 'Panoramica', tr: 'Genel Bakış' },
+        excSectionIncluded: { en: '— INCLUDED', ar: '— يشمل', ru: '— ВКЛЮЧЕНО', de: '— INKLUSIVE', it: '— INCLUSO', tr: '— DAHİL' },
+        excWhatsIncluded: { en: "What's Included", ar: 'ما يشمله السعر', ru: 'Что включено', de: 'Was ist inbegriffen', it: 'Cosa è incluso', tr: 'Nelerin Dahil Olduğu' },
+        excSectionNotIncluded: { en: '— NOT INCLUDED', ar: '— لا يشمل', ru: '— НЕ ВКЛЮЧЕНО', de: '— NICHT INBEGRIFFEN', it: '— NON INCLUSO', tr: '— DAHİL DEĞİL' },
+        excWhatsNotIncluded: { en: "What's Not Included", ar: 'ما لا يشمله السعر', ru: 'Что не включено', de: 'Was ist nicht inbegriffen', it: 'Cosa non è incluso', tr: 'Nelerin Dahil Olmadığı' },
+        excSectionBring: { en: '— GOOD TO KNOW', ar: '— يجب معرفته', ru: '— ПОЛЕЗНО ЗНАТЬ', de: '— GUT ZU WISSEN', it: '— DA SAPERE', tr: '— BİLMEKTE FAYDA VAR' },
+        excWhatToBring: { en: 'What to Bring', ar: 'ماذا تحضر معك', ru: 'Что взять с собой', de: 'Was mitzubringen ist', it: 'Cosa portare', tr: 'Yanınıza Alacaklarınız' },
+        excSectionItinerary: { en: '— SCHEDULE', ar: '— الجدول الزمني', ru: '— РАСПИСАНИЕ', de: '— ZEITPLAN', it: '— PROGRAMMA', tr: '— PROGRAM' },
+        excTripItinerary: { en: 'Trip Itinerary', ar: 'برنامج الرحلة', ru: 'Программа поездки', de: 'Reiseverlauf', it: 'Itinerario del viaggio', tr: 'Gezi Programı' },
+        sectionReviewsEyebrow: { en: '— REVIEWS', ar: '— التقييمات', ru: '— ОТЗЫВЫ', de: '— BEWERTUNGEN', it: '— RECENSIONI', tr: '— DEĞERLENDİRMELER' },
+        guestReviewsTitle: { en: 'Guest Reviews', ar: 'تقييمات الضيوف', ru: 'Отзывы гостей', de: 'Gästebewertungen', it: 'Recensioni degli ospiti', tr: 'Misafir Değerlendirmeleri' }
     };
 
     const I18N = {
@@ -1891,30 +1884,17 @@
         showApp() {
             hideSplash();
             document.getElementById('authPage').classList.add('hidden');
-            const seenOnboarding = localStorage.getItem('ds_onboarded');
-            if (!seenOnboarding) {
-                const ob = document.getElementById('onboardingPage');
-                ob.style.display = 'flex'; ob.classList.remove('hidden');
-                utils.createStars('onboardStars');
-            } else {
-                app.enterMainApp();
-            }
+            app.enterMainApp();
         }
     };
 
     // ==================== APP ====================
     const app = {
-        finishOnboarding() { localStorage.setItem('ds_onboarded', '1'); this.enterMainApp(); },
         enterMainApp() {
-            const onboarding = document.getElementById('onboardingPage');
-            onboarding.style.opacity = '0'; onboarding.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-                onboarding.style.display = 'none';
-                document.getElementById('mainApp').classList.remove('hidden');
-                ui.renderFeaturedHotels(); excursionsUi.renderFeatured(); transfersUi.render(); ui.setDefaultDates(); ui.updateProfileStats();
-                const curSel = document.getElementById('currencySelect'); if (curSel) curSel.value = state.currency;
-                if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage.getItem('ds_avatar')); }
-            }, 400);
+            document.getElementById('mainApp').classList.remove('hidden');
+            ui.renderFeaturedHotels(); excursionsUi.renderFeatured(); transfersUi.render(); ui.setDefaultDates(); ui.updateProfileStats();
+            const curSel = document.getElementById('currencySelect'); if (curSel) curSel.value = state.currency;
+            if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage.getItem('ds_avatar')); }
         }
     };
 
@@ -2025,7 +2005,7 @@
                     </div>
                     <div class="card rounded-2xl p-4">
                         <div class="flex items-center justify-between mb-3">
-                            <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold" style="color:var(--text-primary)">Guest Reviews</h3></div>
+                            <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="sectionReviewsEyebrow">— REVIEWS</p><h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="guestReviewsTitle">Guest Reviews</h3></div>
                             <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="hotelReviewsSummary">${Number(h.rating).toFixed(1)}</p><p class="text-[10px]" style="color:var(--text-secondary)"><span id="hotelReviewsSummaryCount">${h.reviews||0}</span> reviews</p></div>
                         </div>
                         <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> <span data-i18n="writeReview">Write a Review</span></button>
@@ -2042,6 +2022,7 @@
         hotelPage.classList.add('active');
         window.scrollTo(0, 0);
         reviews.renderList('hotel', h.id, 'hotelReviewsList', 'hotelReviewsSummary');
+        I18N.set(I18N.get());
     }
 
     function onGalleryScroll(el) {
@@ -2446,18 +2427,49 @@
                         <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500"></i>${x.duration} <span class="mx-1">·</span> <i class="fa-solid fa-location-dot text-violet-500"></i>${x.meetingPoint||''}</p>
                     </div>
                     <div>
-                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
-                        <h3 class="font-display text-lg font-bold mb-2" style="color:var(--text-primary)">Overview</h3>
+                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionAbout">— ABOUT</p>
+                        <h3 class="font-display text-lg font-bold mb-2" style="color:var(--text-primary)" data-i18n="excSectionOverview">Overview</h3>
                         <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${x.fullDescription || x.description}</p>
                     </div>
                     <div>
-                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— INCLUDED</p>
-                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">What's Included</h3>
+                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionIncluded">— INCLUDED</p>
+                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatsIncluded">What's Included</h3>
                         <div class="grid grid-cols-1 gap-2">${(x.includes||[]).map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
                     </div>
+                    ${(x.excludes||[]).length ? `
+                    <div>
+                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionNotIncluded">— NOT INCLUDED</p>
+                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatsNotIncluded">What's Not Included</h3>
+                        <div class="grid grid-cols-1 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
+                    </div>` : ''}
+                    ${(x.whatToBring||[]).length ? `
+                    <div>
+                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionBring">— GOOD TO KNOW</p>
+                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatToBring">What to Bring</h3>
+                        <div class="grid grid-cols-1 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
+                    </div>` : ''}
+                    ${(x.itinerary||[]).length ? `
+                    <div>
+                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionItinerary">— SCHEDULE</p>
+                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excTripItinerary">Trip Itinerary</h3>
+                        <div class="space-y-0">
+                            ${x.itinerary.map((step, i) => `
+                                <div class="flex gap-3">
+                                    <div class="flex flex-col items-center flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full bg-violet-500/15 text-violet-500 text-[11px] font-bold flex items-center justify-center">${i+1}</div>
+                                        ${i < x.itinerary.length - 1 ? '<div class="w-px flex-1 bg-violet-400/20 my-1"></div>' : ''}
+                                    </div>
+                                    <div class="pb-4 flex-1">
+                                        <p class="text-[10px] font-bold text-violet-500 mb-0.5">${step.time || ''}</p>
+                                        <p class="text-sm font-semibold mb-0.5" style="color:var(--text-primary)">${step.title || ''}</p>
+                                        <p class="text-xs leading-relaxed" style="color:var(--text-secondary)">${step.description || ''}</p>
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                    </div>` : ''}
                     <div class="card rounded-2xl p-4">
                         <div class="flex items-center justify-between mb-3">
-                            <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold" style="color:var(--text-primary)">Guest Reviews</h3></div>
+                            <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="sectionReviewsEyebrow">— REVIEWS</p><h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="guestReviewsTitle">Guest Reviews</h3></div>
                             <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="excursionReviewsSummary">${Number(x.rating).toFixed(1)}</p><p class="text-[10px]" style="color:var(--text-secondary)"><span id="excursionReviewsSummaryCount">${x.reviews||0}</span> reviews</p></div>
                         </div>
                         <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> <span data-i18n="writeReview">Write a Review</span></button>
@@ -2474,6 +2486,7 @@
         page.classList.add('active');
         window.scrollTo(0, 0);
         reviews.renderList('excursion', x.id, 'excursionReviewsList', 'excursionReviewsSummary');
+        I18N.set(I18N.get());
     }
     function onExcursionGalleryScroll(el) {
         const idx = Math.round(el.scrollLeft / el.clientWidth);
@@ -3191,6 +3204,31 @@
         }
     };
 
+    // ==================== LOADING SKELETONS ====================
+    // Fills every catalog-driven container with animated placeholder blocks the instant the page
+    // loads, before data/*.json has been fetched. Each real render function later overwrites this
+    // same container's innerHTML with actual cards, so the skeleton simply disappears once ready —
+    // no extra loading-state bookkeeping needed.
+    const skeleton = {
+        block(h) { return `<div class="skeleton-shimmer" style="height:${h}px;border-radius:16px;"></div>`; },
+        row(count, w, h) { return Array.from({ length: count }).map(() => `<div class="skeleton-shimmer flex-shrink-0" style="width:${w}px;height:${h}px;border-radius:16px;"></div>`).join(''); },
+        stack(count, h) { return Array.from({ length: count }).map(() => this.block(h)).join(''); },
+        grid(count, h) { return `<div class="grid grid-cols-2 gap-3">${Array.from({ length: count }).map(() => this.block(h)).join('')}</div>`; },
+        fillAll() {
+            const fill = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+            fill('destinationsRow', this.row(4, 144, 176));
+            fill('featuredHotels', this.stack(2, 190));
+            fill('featuredExcursions', this.row(3, 220, 250));
+            fill('restaurantsRow', this.row(3, 210, 190));
+            fill('reviewsRow', this.row(3, 260, 150));
+            fill('articlesRow', this.stack(3, 96));
+            fill('hotelsList', this.stack(4, 190));
+            fill('excursionsList', this.stack(4, 170));
+            fill('transfersList', this.stack(2, 210));
+            fill('restaurantsFullList', this.grid(4, 190));
+        }
+    };
+
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', async () => {
         if (handlePaymentCallbackIfPresent()) return;
@@ -3199,6 +3237,7 @@
         utils.createStars('splashStars');
         populateCountryCodeSelect();
         search.switchTab('hotels');
+        skeleton.fillAll();
         await loadAppConfig();
         CurrencyAPI.init().then(() => { refreshCatalogUI(); bookings.render(); });
         initFirebase();
