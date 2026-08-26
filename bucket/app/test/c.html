@@ -13,7 +13,7 @@
     <!-- الهيدر -->
     <header class="mb-8 text-center">
       <h1 class="text-3xl font-bold text-gray-800 mb-2">عقارات Okgini</h1>
-      <p class="text-gray-500 text-sm">أداة جلب البيانات المباشرة عبر API</p>
+      <p class="text-gray-500 text-sm">أداة جلب البيانات المباشرة عبر API (متوافق مع GitHub Pages)</p>
     </header>
 
     <!-- شريط التحكم والبحث -->
@@ -55,21 +55,32 @@
       const errorMsg = document.getElementById('errorMessage');
       const container = document.getElementById('dataContainer');
 
-      // إعطاء حالة التحميل المبدئية
       loader.classList.remove('hidden');
       errorMsg.classList.add('hidden');
       container.innerHTML = '';
 
-      // استبدل سطر apiUrl المكتوب سابقاً بهذا السطر:
-const apiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.okgini.com/api/guest/properties?category=${category}`)}`;
+      const targetApi = `https://api.okgini.com/api/guest/properties?category=${encodeURIComponent(category)}`;
+      
+      // روابط البروكسي لتخطي حظر CORS على GitHub Pages
+      const primaryProxy = `https://corsproxy.io/?${encodeURIComponent(targetApi)}`;
+      const fallbackProxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetApi)}`;
+
+      async function fetchData(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return await res.json();
+      }
 
       try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`خطأ في الاستجابة: ${response.status}`);
-        
-        const resData = await response.json();
-        
-        // استخراج مصفوفة البيانات بحسب شكل الاستجابة (سواء كانت مصفوفة مباشرة أو كائن محتوي على data)
+        let resData;
+        try {
+          // المحاولة باستخدام البروكسي الأول
+          resData = await fetchData(primaryProxy);
+        } catch (e) {
+          // التبديل للبروكسي الاحتياطي في حال تعثر الأول
+          resData = await fetchData(fallbackProxy);
+        }
+
         const items = Array.isArray(resData) ? resData : (resData.data || resData.properties || []);
 
         if (items.length === 0) {
@@ -77,7 +88,6 @@ const apiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https:/
           return;
         }
 
-        // بناء بطاقات البيانات
         items.forEach(item => {
           const card = document.createElement('div');
           card.className = "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition duration-200 flex flex-col";
@@ -106,14 +116,14 @@ const apiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https:/
         });
 
       } catch (err) {
-        errorMsg.innerText = "تعذر جلب البيانات. إذا كان المتصفح يمنع الطلب، جرب فتح الملف من خلال خادم محلي (مثل Live Server).";
+        errorMsg.innerText = "تعذر جلب البيانات. يرجى التأكد من اتصال الإنترنت أو محاولة تنشيط الصفحة.";
         errorMsg.classList.remove('hidden');
       } finally {
         loader.classList.add('hidden');
       }
     }
 
-    // جلب البيانات تلقائياً عند تحميل الصفحة
+    // جلب البيانات عند التحميل الأول
     document.addEventListener('DOMContentLoaded', loadData);
   </script>
 </body>
