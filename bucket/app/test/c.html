@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مستعرض بيانات Okgini API</title>
+  <!-- مكتبة Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8 font-sans">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- الهيدر -->
+    <header class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">عقارات Okgini</h1>
+      <p class="text-gray-500 text-sm">أداة جلب البيانات المباشرة عبر API</p>
+    </header>
+
+    <!-- شريط التحكم والبحث -->
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <label for="category" class="font-medium text-gray-700 text-sm whitespace-nowrap">التصنيف (category):</label>
+        <input 
+          type="text" 
+          id="category" 
+          value="general" 
+          class="border border-gray-300 rounded-xl px-3 py-2 text-sm w-full sm:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+      </div>
+      <button 
+        onclick="loadData()" 
+        class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-medium py-2 px-6 rounded-xl transition duration-200 text-sm shadow-sm"
+      >
+        جلب البيانات
+      </button>
+    </div>
+
+    <!-- مؤشر التحميل -->
+    <div id="loader" class="hidden text-center py-16">
+      <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
+      <p class="text-gray-500 text-sm mt-3">جاري جلب البيانات من السيرفر...</p>
+    </div>
+
+    <!-- رسالة الخطأ -->
+    <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-center text-sm"></div>
+
+    <!-- حاوية عرض العناصر -->
+    <div id="dataContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </div>
+
+  <script>
+    async function loadData() {
+      const category = document.getElementById('category').value;
+      const loader = document.getElementById('loader');
+      const errorMsg = document.getElementById('errorMessage');
+      const container = document.getElementById('dataContainer');
+
+      // إعطاء حالة التحميل المبدئية
+      loader.classList.remove('hidden');
+      errorMsg.classList.add('hidden');
+      container.innerHTML = '';
+
+      // استبدل سطر apiUrl المكتوب سابقاً بهذا السطر:
+const apiUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.okgini.com/api/guest/properties?category=${category}`)}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error(`خطأ في الاستجابة: ${response.status}`);
+        
+        const resData = await response.json();
+        
+        // استخراج مصفوفة البيانات بحسب شكل الاستجابة (سواء كانت مصفوفة مباشرة أو كائن محتوي على data)
+        const items = Array.isArray(resData) ? resData : (resData.data || resData.properties || []);
+
+        if (items.length === 0) {
+          container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-12">لا توجد عناصر متاحة لعرضها.</div>`;
+          return;
+        }
+
+        // بناء بطاقات البيانات
+        items.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition duration-200 flex flex-col";
+          
+          const title = item.name || item.title || 'بدون عنوان';
+          const image = item.image || item.cover || item.photo || 'https://via.placeholder.com/400x250?text=No+Image';
+          const description = item.description || item.address || '';
+          const id = item.id || item._id || '-';
+
+          card.innerHTML = `
+            <div class="h-48 bg-gray-100 overflow-hidden relative">
+              <img src="${image}" alt="${title}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
+            </div>
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="text-base font-bold text-gray-800 mb-2 line-clamp-1">${title}</h3>
+                <p class="text-xs text-gray-500 line-clamp-3 mb-4 leading-relaxed">${description}</p>
+              </div>
+              <div class="border-t border-gray-100 pt-3 flex justify-between items-center text-xs text-gray-400">
+                <span>المُعرّف: ${id}</span>
+                <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-md font-medium">${category}</span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        errorMsg.innerText = "تعذر جلب البيانات. إذا كان المتصفح يمنع الطلب، جرب فتح الملف من خلال خادم محلي (مثل Live Server).";
+        errorMsg.classList.remove('hidden');
+      } finally {
+        loader.classList.add('hidden');
+      }
+    }
+
+    // جلب البيانات تلقائياً عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
