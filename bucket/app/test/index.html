@@ -40,11 +40,17 @@
             --bg-body: #f8f7fc; --bg-card: #ffffff; --border-card: #efeaf7;
             --text-primary: #171029; --text-secondary: #8a8399;
             --bg-field: #f8f7fc; --border-field: #eee9f8; --header-light-bg: #ffffff;
+            --chrome-bg: #ffffff; --chrome-text: #171029; --chrome-text-muted: rgba(23,16,41,.5);
+            --chrome-text-faint: rgba(23,16,41,.32); --chrome-shadow: 0 12px 34px rgba(23,16,41,.14);
+            --chrome-border: rgba(23,16,41,.08); --chrome-field-bg: rgba(23,16,41,.05);
         }
         html[data-theme="dark"] {
             --bg-body: #0c0918; --bg-card: #171029; --border-card: #2b2140;
             --text-primary: #f1eef9; --text-secondary: #9d94b8;
             --bg-field: #1f1830; --border-field: #382a54; --header-light-bg: #15101f;
+            --chrome-bg: #171029; --chrome-text: #ffffff; --chrome-text-muted: rgba(255,255,255,.62);
+            --chrome-text-faint: rgba(255,255,255,.3); --chrome-shadow: 0 12px 40px rgba(20,10,45,.4);
+            --chrome-border: rgba(255,255,255,.08); --chrome-field-bg: rgba(255,255,255,.04);
         }
         * { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-body); color: var(--text-primary); overflow-x: hidden; min-height: 100vh; position: relative; transition: background .3s ease, color .3s ease; }
@@ -71,6 +77,7 @@
         .header-floating { display:flex; align-items:center; justify-content:space-between; }
         .header-floating .icon-btn { filter: drop-shadow(0 2px 6px rgba(0,0,0,.55)); }
         .site-logo { height: 34px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,.55)); }
+        .sticky-header-logo { height: 24px; width: auto; }
 
         .header-light { background: var(--header-light-bg); border-bottom: 1px solid var(--border-card); }
 
@@ -90,9 +97,11 @@
 
         .date-field { border: 1.5px solid var(--border-field); background: var(--bg-field); border-radius: 14px; cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 1.1rem; left: 50%; transform: translateX(-50%); width: 92%; max-width: 430px; z-index: 50; border-radius: 26px; padding: .55rem .7rem; background: #171029; box-shadow: 0 12px 40px rgba(20,10,45,.4); }
-        .sticky-home-header { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%) translateY(-14px); width: 92%; max-width: 430px; z-index: 55; border-radius: 22px; padding: .6rem .9rem; background: #171029; box-shadow: 0 12px 40px rgba(20,10,45,.4); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1), visibility .35s; }
+        .bottom-nav { position: fixed; bottom: 1.1rem; left: 50%; transform: translateX(-50%); width: 92%; max-width: 430px; z-index: 50; border-radius: 26px; padding: .55rem .7rem; background: var(--chrome-bg); box-shadow: var(--chrome-shadow); transition: background .3s ease, box-shadow .3s ease; }
+        .sticky-home-header { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%) translateY(-14px); width: 92%; max-width: 430px; z-index: 55; border-radius: 22px; padding: .6rem .9rem; background: var(--chrome-bg); box-shadow: var(--chrome-shadow); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1), visibility .35s, background .3s ease; }
         .sticky-home-header.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .bottom-nav [class*="text-white"], .sticky-home-header [class*="text-white"] { color: var(--chrome-text) !important; }
+        .bottom-nav [class*="text-white/"], .sticky-home-header [class*="text-white/"] { color: var(--chrome-text-muted) !important; }
 
         .btn-gold { background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 45%, #f59e0b 100%); box-shadow: 0 10px 30px -8px rgba(245,158,11,.5), inset 0 1px 0 rgba(255,255,255,.3); border: none; cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); }
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 15px 35px -8px rgba(245,158,11,.6); }
@@ -140,6 +149,17 @@
         /* .restaurant-card has a fixed width for horizontal-scroll rows; inside the 2-column grid on
            the full Restaurants page it needs to fill its grid cell instead, or cards misalign. */
         #restaurantsFullList .restaurant-card { width: 100%; }
+        /* Restaurant/cafe detail page — fine-dining menu treatment */
+        .lux-cuisine-badge { background: rgba(249,115,22,.18); border: 1px solid rgba(253,186,116,.5); color: #fdba74; font-size: 10px; font-weight: 700; letter-spacing: .05em; padding: 3px 10px; border-radius: 99px; text-transform: uppercase; }
+        .lux-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 22px; }
+        .lux-divider::before, .lux-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border-field) 50%, transparent); }
+        .lux-divider .lux-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; flex-shrink: 0; }
+        .menu-category-title { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; font-size: 16px; letter-spacing: .02em; color: #ea580c; text-align: center; margin-bottom: 16px; }
+        .menu-item-row { display: flex; align-items: baseline; gap: 8px; }
+        .menu-item-name { font-weight: 600; font-size: 14px; color: var(--text-primary); white-space: nowrap; }
+        .menu-item-leader { flex: 1; border-bottom: 1.5px dotted var(--border-field); margin-bottom: 4px; min-width: 12px; }
+        .menu-item-price { font-weight: 700; font-size: 14px; color: #ea580c; white-space: nowrap; flex-shrink: 0; }
+        .menu-item-desc { font-size: 11.5px; font-style: italic; color: var(--text-secondary); line-height: 1.6; margin: 3px 0 16px; }
         .skeleton-shimmer { background: linear-gradient(90deg, var(--bg-field) 25%, rgba(150,150,170,.18) 37%, var(--bg-field) 63%); background-size: 400% 100%; animation: skeletonShimmer 1.4s ease infinite; }
         @keyframes skeletonShimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
         .promo-banner::before { content:''; position:absolute; top:-50%; right:-20%; width:300px; height:300px; background: radial-gradient(circle, rgba(251,191,36,.3) 0%, transparent 70%); border-radius:50%; }
@@ -153,7 +173,7 @@
         .badge-bestseller { background: linear-gradient(135deg, #171029, #2b2140); color: #fbbf24; }
         .rating-pill { background: rgba(12,9,24,.65); backdrop-filter: blur(6px); }
 
-        .nav-item { transition: all .3s cubic-bezier(.16,1,.3,1); position: relative; cursor: pointer; color: rgba(255,255,255,.45); }
+        .nav-item { transition: all .3s cubic-bezier(.16,1,.3,1); position: relative; cursor: pointer; color: var(--chrome-text-muted); }
         .nav-item.active { color: #f97316; }
         .nav-item-home { width: 58px; height: 58px; margin-top: -30px; border-radius: 50%; cursor: pointer; background: linear-gradient(150deg,#fdba74,#f97316 55%,#c2410c); box-shadow: 0 10px 26px -4px rgba(249,115,22,.65), 0 0 0 5px #171029; transition: transform .25s cubic-bezier(.16,1,.3,1); }
         .nav-item-home:active { transform: scale(.93); }
@@ -183,13 +203,18 @@
         .gallery-dot { width:6px; height:6px; border-radius:50%; background: rgba(255,255,255,.4); transition: all .3s; }
         .gallery-dot.active { width:18px; border-radius:4px; background: #fbbf24; }
 
-        #sideDrawer { position: fixed; top:0; height:100%; width: 80%; max-width: 300px; background: #100c1c; z-index: 95; transition: transform .35s cubic-bezier(.16,1,.3,1); }
-        html[dir="rtl"] #sideDrawer { right: 0; transform: translateX(100%); box-shadow: -10px 0 40px rgba(0,0,0,.4); }
-        html[dir="ltr"] #sideDrawer { left: 0; transform: translateX(-100%); box-shadow: 10px 0 40px rgba(0,0,0,.4); }
+        #sideDrawer { position: fixed; top:0; height:100%; width: 80%; max-width: 300px; background: var(--chrome-bg); z-index: 95; transition: transform .35s cubic-bezier(.16,1,.3,1), background .3s ease; color: var(--chrome-text); }
+        html[dir="rtl"] #sideDrawer { right: 0; transform: translateX(100%); box-shadow: -10px 0 40px rgba(0,0,0,.25); }
+        html[dir="ltr"] #sideDrawer { left: 0; transform: translateX(-100%); box-shadow: 10px 0 40px rgba(0,0,0,.25); }
         html[dir="rtl"] #sideDrawer.open, html[dir="ltr"] #sideDrawer.open { transform: translateX(0); }
+        #sideDrawer [class*="text-white"] { color: var(--chrome-text) !important; }
+        #sideDrawer [class*="text-white/"] { color: var(--chrome-text-muted) !important; }
+        #sideDrawer [class*="bg-white"] { background-color: var(--chrome-field-bg) !important; }
+        #sideDrawer [class*="border-white"] { border-color: var(--chrome-border) !important; }
+        #sideDrawer .drawer-link:hover, #sideDrawer .drawer-link.active-link { background: var(--chrome-field-bg); }
         #sideDrawerOverlay { position: fixed; inset:0; background: rgba(0,0,0,.5); z-index: 90; opacity:0; pointer-events:none; transition: opacity .3s; }
         #sideDrawerOverlay.open { opacity:1; pointer-events:auto; }
-        .drawer-link { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; border-radius:14px; color: rgba(255,255,255,.7); transition: all .2s; cursor:pointer; }
+        .drawer-link { display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; border-radius:14px; color: var(--chrome-text-muted); transition: all .2s; cursor:pointer; }
         .drawer-link:hover, .drawer-link.active { background: rgba(139,92,246,.15); color:#fff; }
         .theme-switch { width:52px; height:28px; border-radius:99px; background:#2b2140; position:relative; cursor:pointer; border:1px solid rgba(255,255,255,.1); }
         .theme-switch .knob { position:absolute; top:2px; right:2px; width:22px; height:22px; border-radius:50%; background: linear-gradient(135deg,#fcd34d,#f59e0b); transition: all .3s; display:flex; align-items:center; justify-content:center; font-size:10px; }
@@ -349,7 +374,7 @@
     </div>
 
     <!-- Room preview modal -->
-    <div id="roomPreviewModal" class="modal-overlay hidden">
+    <div id="roomPreviewModal" class="modal-overlay hidden" onclick="if (event.target === this) closeRoomPreview()">
         <div class="modal-content" style="max-width:380px; padding:0; overflow:hidden;">
             <div id="roomPreviewContent"></div>
         </div>
@@ -409,7 +434,7 @@
                 </div>
                 <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:rgba(255,255,255,.04)" onclick="nav.go('profile'); sidebar.close()">
+            <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:var(--chrome-field-bg)" onclick="nav.go('profile'); sidebar.close()">
                 <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center font-display font-bold text-ink-900 overflow-hidden" id="drawerAvatar">A</div>
                 <div class="min-w-0 flex-1">
                     <p class="text-white text-sm font-semibold truncate" id="drawerName">Guest</p>
@@ -434,7 +459,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-white/60 text-xs font-semibold" data-i18n="language">Language</span>
-                    <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-xs outline-none" style="background:#1f1830; color:#fff; border:1px solid rgba(255,255,255,.1)">
+                    <select onchange="I18N.set(this.value)" class="lang-select rounded-xl px-3 py-2 text-xs outline-none" style="background:var(--chrome-field-bg); color:var(--chrome-text); border:1px solid var(--chrome-border)">
                         <option value="en">English</option><option value="ar">العربية</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="tr">Türkçe</option>
                     </select>
                 </div>
@@ -448,7 +473,7 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-7 h-7 rounded-full object-cover" alt="Discover Sharm">
+                <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm">
             </div>
             <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
         </div>
@@ -480,7 +505,7 @@
                 </div>
             </div>
 
-            <div class="relative z-20 px-5 -mt-[8.5rem]">
+            <div class="relative z-20 px-5 -mt-16">
                 <div class="search-card rounded-[26px] p-5 space-y-4">
                     <div class="flex gap-1 field-box p-1 rounded-2xl">
                         <button onclick="search.switchTab('hotels')" id="searchTabHotels" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-hotel"></i> <span data-i18n="navHotels">Hotels</span></button>
@@ -821,7 +846,7 @@
                 <button onclick="nav.go('hotels')" data-page="hotels" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-hotel text-xl"></i><span class="text-[10px] font-medium" data-i18n="navHotels">Hotels</span></button>
                 <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings">Bookings</span></button>
                 <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="rounded-full object-cover"></span>
+                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
                 </button>
                 <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites">Favorites</span></button>
                 <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1">
@@ -1197,148 +1222,44 @@
         init() { this.set(this.get()); }
     };
 
-    // ==================== I18N (EN / AR / RU / DE / IT / TR) ====================
-    const SUPPORTED_LANGS = ['en','ar','ru','de','it','tr'];
-    const LANG_LABELS = { en: 'English', ar: 'العربية', ru: 'Русский', de: 'Deutsch', it: 'Italiano', tr: 'Türkçe' };
-    const I18N_DICT = {
-        tagline: { en: 'LUXURY TRAVEL', ar: 'سفر فاخر', ru: 'РОСКОШНЫЕ ПУТЕШЕСТВИЯ', de: 'LUXUSREISEN', it: 'VIAGGI DI LUSSO', tr: 'LÜKS SEYAHAT' },
-        welcomeBack: { en: 'Welcome Back', ar: 'أهلاً بعودتك', ru: 'С возвращением', de: 'Willkommen zurück', it: 'Bentornato', tr: 'Tekrar Hoş Geldiniz' },
-        authSubtitle: { en: 'Sign in to manage your bookings', ar: 'سجّل الدخول لإدارة حجوزاتك', ru: 'Войдите, чтобы управлять бронированиями', de: 'Melde dich an, um deine Buchungen zu verwalten', it: 'Accedi per gestire le tue prenotazioni', tr: 'Rezervasyonlarınızı yönetmek için giriş yapın' },
-        continueGoogle: { en: 'Continue with Google', ar: 'المتابعة عبر جوجل', ru: 'Продолжить через Google', de: 'Mit Google fortfahren', it: 'Continua con Google', tr: 'Google ile Devam Et' },
-        orDivider: { en: 'OR', ar: 'أو', ru: 'ИЛИ', de: 'ODER', it: 'OPPURE', tr: 'VEYA' },
-        fullNameLabel: { en: 'FULL NAME', ar: 'الاسم بالكامل', ru: 'ПОЛНОЕ ИМЯ', de: 'VOLLSTÄNDIGER NAME', it: 'NOME COMPLETO', tr: 'AD SOYAD' },
-        email: { en: 'EMAIL ADDRESS', ar: 'البريد الإلكتروني', ru: 'ЭЛЕКТРОННАЯ ПОЧТА', de: 'E-MAIL-ADRESSE', it: 'INDIRIZZO EMAIL', tr: 'E-POSTA ADRESİ' },
-        password: { en: 'PASSWORD', ar: 'كلمة المرور', ru: 'ПАРОЛЬ', de: 'PASSWORT', it: 'PASSWORD', tr: 'ŞİFRE' },
-        loginBtn: { en: 'Log In', ar: 'تسجيل الدخول', ru: 'Войти', de: 'Anmelden', it: 'Accedi', tr: 'Giriş Yap' },
-        signupBtn: { en: 'Sign Up', ar: 'إنشاء حساب', ru: 'Регистрация', de: 'Registrieren', it: 'Registrati', tr: 'Kayıt Ol' },
-        noAccount: { en: "Don't have an account?", ar: 'ليس لديك حساب؟', ru: 'Нет аккаунта?', de: 'Noch kein Konto?', it: 'Non hai un account?', tr: 'Hesabınız yok mu?' },
-        continueAsGuest: { en: 'Continue as Guest', ar: 'المتابعة كضيف', ru: 'Продолжить как гость', de: 'Als Gast fortfahren', it: 'Continua come ospite', tr: 'Misafir Olarak Devam Et' },
-        countryCode: { en: 'COUNTRY CODE', ar: 'كود الدولة', ru: 'КОД СТРАНЫ', de: 'LÄNDERVORWAHL', it: 'PREFISSO', tr: 'ÜLKE KODU' },
-        phoneNumber: { en: 'PHONE NUMBER', ar: 'رقم الهاتف', ru: 'НОМЕР ТЕЛЕФОНА', de: 'TELEFONNUMMER', it: 'NUMERO DI TELEFONO', tr: 'TELEFON NUMARASI' },
-        guestsRooms: { en: 'GUESTS & ROOMS', ar: 'الضيوف والغرف', ru: 'ГОСТИ И НОМЕРА', de: 'GÄSTE & ZIMMER', it: 'OSPITI E CAMERE', tr: 'MİSAFİR VE ODA' },
-        adults: { en: 'Adults', ar: 'بالغين', ru: 'Взрослые', de: 'Erwachsene', it: 'Adulti', tr: 'Yetişkin' },
-        children: { en: 'Children', ar: 'أطفال', ru: 'Дети', de: 'Kinder', it: 'Bambini', tr: 'Çocuk' },
-        infants: { en: 'Infants', ar: 'رضّع', ru: 'Младенцы', de: 'Kleinkinder', it: 'Neonati', tr: 'Bebek' },
-        rooms: { en: 'Rooms', ar: 'غرف', ru: 'Номера', de: 'Zimmer', it: 'Camere', tr: 'Oda' },
-        apply: { en: 'Apply', ar: 'تطبيق', ru: 'Применить', de: 'Übernehmen', it: 'Applica', tr: 'Uygula' },
-        close: { en: 'Close', ar: 'إغلاق', ru: 'Закрыть', de: 'Schließen', it: 'Chiudi', tr: 'Kapat' },
-        navHome: { en: 'Home', ar: 'الرئيسية', ru: 'Главная', de: 'Start', it: 'Home', tr: 'Ana Sayfa' },
-        navHotels: { en: 'Hotels', ar: 'فنادق', ru: 'Отели', de: 'Hotels', it: 'Hotel', tr: 'Oteller' },
-        navExcursions: { en: 'Excursions', ar: 'الرحلات السياحية', ru: 'Экскурсии', de: 'Ausflüge', it: 'Escursioni', tr: 'Turlar' },
-        navTransfers: { en: 'Airport Transfers', ar: 'ترانسفير المطار', ru: 'Трансфер из аэропорта', de: 'Flughafentransfer', it: 'Transfer Aeroportuali', tr: 'Havalimanı Transferi' },
-        navBookings: { en: 'Bookings', ar: 'الحجوزات', ru: 'Бронирования', de: 'Buchungen', it: 'Prenotazioni', tr: 'Rezervasyonlar' },
-        navFavorites: { en: 'Favorites', ar: 'المفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
-        navProfile: { en: 'Profile', ar: 'الملف الشخصي', ru: 'Профиль', de: 'Profil', it: 'Profilo', tr: 'Profil' },
-        settingsTitle: { en: 'Settings', ar: 'الإعدادات', ru: 'Настройки', de: 'Einstellungen', it: 'Impostazioni', tr: 'Ayarlar' },
-        darkMode: { en: 'Dark Mode', ar: 'الوضع الداكن', ru: 'Тёмная тема', de: 'Dunkelmodus', it: 'Modalità scura', tr: 'Karanlık Mod' },
-        logout: { en: 'Logout', ar: 'تسجيل الخروج', ru: 'Выйти', de: 'Abmelden', it: 'Esci', tr: 'Çıkış Yap' },
-        premiumStays: { en: '— PREMIUM STAYS', ar: '— إقامات فاخرة', ru: '— ПРЕМИУМ ОТДЫХ', de: '— PREMIUM AUFENTHALTE', it: '— SOGGIORNI PREMIUM', tr: '— PREMIUM KONAKLAMA' },
-        heroTitle: { en: 'Find Your<br><span class="italic text-gold-400">Perfect Stay</span>', ar: 'اكتشف<br><span class="italic text-gold-400">إقامتك المثالية</span>', ru: 'Найдите свой<br><span class="italic text-gold-400">идеальный отдых</span>', de: 'Finde deinen<br><span class="italic text-gold-400">perfekten Aufenthalt</span>', it: 'Trova il tuo<br><span class="italic text-gold-400">soggiorno perfetto</span>', tr: 'Size Özel<br><span class="italic text-gold-400">Mükemmel Konaklamayı</span> Bulun' },
-        heroSubtitle: { en: 'Hotels. Excursions. Airport transfers.', ar: 'فنادق. رحلات سياحية. ترانسفير مطار.', ru: 'Отели. Экскурсии. Трансфер из аэропорта.', de: 'Hotels. Ausflüge. Flughafentransfer.', it: 'Hotel. Escursioni. Transfer aeroportuali.', tr: 'Oteller. Turlar. Havalimanı Transferi.' },
-        checkin: { en: 'CHECK-IN', ar: 'تاريخ الوصول', ru: 'ЗАЕЗД', de: 'ANREISE', it: 'CHECK-IN', tr: 'GİRİŞ' },
-        checkout: { en: 'CHECK-OUT', ar: 'تاريخ المغادرة', ru: 'ВЫЕЗД', de: 'ABREISE', it: 'CHECK-OUT', tr: 'ÇIKIŞ' },
-        searchHotels: { en: 'Search Hotels', ar: 'ابحث عن فنادق', ru: 'Найти отели', de: 'Hotels suchen', it: 'Cerca hotel', tr: 'Otel Ara' },
-        searchExcursions: { en: 'Search Excursions', ar: 'ابحث عن رحلات', ru: 'Найти экскурсии', de: 'Ausflüge suchen', it: 'Cerca escursioni', tr: 'Tur Ara' },
-        excursionDate: { en: 'EXCURSION DATE', ar: 'تاريخ الرحلة', ru: 'ДАТА ЭКСКУРСИИ', de: 'AUSFLUGSDATUM', it: 'DATA ESCURSIONE', tr: 'TUR TARİHİ' },
-        category: { en: 'CATEGORY', ar: 'الفئة', ru: 'КАТЕГОРИЯ', de: 'KATEGORIE', it: 'CATEGORIA', tr: 'KATEGORİ' },
-        transferIntro: { en: 'Reliable, air-conditioned tourist vehicles between Sharm El Sheikh International Airport and your hotel.', ar: 'سيارات سياحية مكيّفة وموثوقة بين مطار شرم الشيخ الدولي وفندقك.', ru: 'Надёжные трансферы на туристических автомобилях с кондиционером между аэропортом Шарм-эль-Шейха и вашим отелем.', de: 'Zuverlässige, klimatisierte Touristenfahrzeuge zwischen dem Flughafen Sharm El Sheikh und deinem Hotel.', it: 'Veicoli turistici affidabili e climatizzati tra l\'aeroporto di Sharm El Sheikh e il tuo hotel.', tr: 'Sharm El Sheikh Havalimanı ile oteliniz arasında güvenilir, klimalı turistik araçlar.' },
-        viewTransfers: { en: 'View Transfer Options', ar: 'عرض خيارات الترانسفير', ru: 'Смотреть варианты трансфера', de: 'Transferoptionen ansehen', it: 'Vedi opzioni transfer', tr: 'Transfer Seçeneklerini Gör' },
-        exploreEyebrow: { en: '— EXPLORE', ar: '— استكشف', ru: '— ИССЛЕДУЙТЕ', de: '— ENTDECKEN', it: '— ESPLORA', tr: '— KEŞFET' },
-        popularDestinations: { en: 'Popular Destinations', ar: 'وجهات شهيرة', ru: 'Популярные направления', de: 'Beliebte Ziele', it: 'Destinazioni popolari', tr: 'Popüler Bölgeler' },
-        curatedEyebrow: { en: '— CURATED', ar: '— مختارة بعناية', ru: '— ПОДБОРКА', de: '— AUSGEWÄHLT', it: '— SELEZIONATI', tr: '— SEÇKİ' },
-        featuredHotels: { en: 'Featured Hotels', ar: 'فنادق مميزة', ru: 'Рекомендуемые отели', de: 'Empfohlene Hotels', it: 'Hotel in evidenza', tr: 'Öne Çıkan Oteller' },
-        thingsToDoEyebrow: { en: '— THINGS TO DO', ar: '— أشياء تفعلها', ru: '— ЧЕМ ЗАНЯТЬСЯ', de: '— AKTIVITÄTEN', it: '— COSA FARE', tr: '— YAPILACAKLAR' },
-        featuredExcursions: { en: 'Featured Excursions', ar: 'رحلات مميزة', ru: 'Рекомендуемые экскурсии', de: 'Empfohlene Ausflüge', it: 'Escursioni in evidenza', tr: 'Öne Çıkan Turlar' },
-        viewAll: { en: 'View All <i class="fa-solid fa-arrow-left text-xs"></i>', ar: 'عرض الكل <i class="fa-solid fa-arrow-left text-xs"></i>', ru: 'Смотреть все <i class="fa-solid fa-arrow-left text-xs"></i>', de: 'Alle ansehen <i class="fa-solid fa-arrow-left text-xs"></i>', it: 'Vedi tutti <i class="fa-solid fa-arrow-left text-xs"></i>', tr: 'Tümünü Gör <i class="fa-solid fa-arrow-left text-xs"></i>' },
-        viewAll2: { en: 'View All', ar: 'عرض الكل', ru: 'Смотреть все', de: 'Alle ansehen', it: 'Vedi tutti', tr: 'Tümünü Gör' },
-        airportTransferBadge: { en: 'AIRPORT TRANSFERS', ar: 'ترانسفير المطار', ru: 'ТРАНСФЕР ИЗ АЭРОПОРТА', de: 'FLUGHAFENTRANSFER', it: 'TRANSFER AEROPORTUALI', tr: 'HAVALİMANI TRANSFERİ' },
-        transferPromoTitle: { en: 'Land & Go', ar: 'اهبط وانطلق', ru: 'Прилетел и поехал', de: 'Landen & Losfahren', it: 'Atterra e Parti', tr: 'İn ve Git' },
-        transferPromoSubtitle: { en: 'Book your ride to the hotel in advance', ar: 'احجز رحلتك إلى الفندق مقدمًا', ru: 'Забронируйте поездку до отеля заранее', de: 'Buche deine Fahrt zum Hotel im Voraus', it: 'Prenota il tuo trasferimento in hotel in anticipo', tr: 'Otelinize yolculuğunuzu önceden ayırtın' },
-        bookTransfer: { en: 'Book a Transfer', ar: 'احجز ترانسفير', ru: 'Забронировать трансфер', de: 'Transfer buchen', it: 'Prenota un transfer', tr: 'Transfer Ayırt' },
-        limitedOffer: { en: 'LIMITED OFFER', ar: 'عرض محدود', ru: 'ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ', de: 'BEGRENZTES ANGEBOT', it: 'OFFERTA LIMITATA', tr: 'SINIRLI TEKLİF' },
-        getOff: { en: 'Get', ar: 'احصل على', ru: 'Получите', de: 'Erhalte', it: 'Ottieni', tr: 'Kazanın' },
-        firstBooking: { en: 'on your first booking', ar: 'على أول حجز لك', ru: 'на первое бронирование', de: 'bei deiner ersten Buchung', it: 'sulla tua prima prenotazione', tr: 'ilk rezervasyonunuzda' },
-        bookNow: { en: 'Book Now', ar: 'احجز الآن', ru: 'Забронировать', de: 'Jetzt buchen', it: 'Prenota ora', tr: 'Şimdi Ayırt' },
-        collectionEyebrow: { en: '— COLLECTION', ar: '— مجموعة', ru: '— КОЛЛЕКЦИЯ', de: '— KOLLEKTION', it: '— COLLEZIONE', tr: '— KOLEKSİYON' },
-        all: { en: 'All', ar: 'الكل', ru: 'Все', de: 'Alle', it: 'Tutti', tr: 'Tümü' },
-        luxury: { en: 'Luxury', ar: 'فاخر', ru: 'Люкс', de: 'Luxus', it: 'Lusso', tr: 'Lüks' },
-        budget: { en: 'Budget', ar: 'اقتصادي', ru: 'Бюджет', de: 'Budget', it: 'Economico', tr: 'Ekonomik' },
-        business: { en: 'Business', ar: 'أعمال', ru: 'Бизнес', de: 'Business', it: 'Business', tr: 'İş' },
-        catDiving: { en: 'Diving & Snorkeling', ar: 'غوص وسنوركل', ru: 'Дайвинг и снорклинг', de: 'Tauchen & Schnorcheln', it: 'Immersioni e snorkeling', tr: 'Dalış ve Şnorkel' },
-        catDesert: { en: 'Desert Safari', ar: 'رحلة صحراوية', ru: 'Сафари в пустыне', de: 'Wüstensafari', it: 'Safari nel deserto', tr: 'Çöl Safarisi' },
-        catBoat: { en: 'Boat Trip', ar: 'رحلة بحرية', ru: 'Морская прогулка', de: 'Bootsausflug', it: 'Gita in barca', tr: 'Tekne Turu' },
-        catCity: { en: 'City Tour', ar: 'جولة سياحية', ru: 'Обзорная экскурсия', de: 'Stadtrundfahrt', it: 'Tour della città', tr: 'Şehir Turu' },
-        activitiesEyebrow: { en: '— ACTIVITIES', ar: '— أنشطة', ru: '— АКТИВНОСТИ', de: '— AKTIVITÄTEN', it: '— ATTIVITÀ', tr: '— AKTİVİTELER' },
-        excursionsTitle: { en: 'Excursions', ar: 'الرحلات السياحية', ru: 'Экскурсии', de: 'Ausflüge', it: 'Escursioni', tr: 'Turlar' },
-        rideEyebrow: { en: '— GROUND TRANSPORT', ar: '— النقل الأرضي', ru: '— НАЗЕМНЫЙ ТРАНСПОРТ', de: '— BODENTRANSPORT', it: '— TRASPORTO A TERRA', tr: '— KARA ULAŞIMI' },
-        transfersTitle: { en: 'Airport Transfers', ar: 'ترانسفير المطار', ru: 'Трансфер из аэропорта', de: 'Flughafentransfer', it: 'Transfer Aeroportuali', tr: 'Havalimanı Transferi' },
-        transfersSubtitle: { en: 'Tourist H1 vehicles for airport pickup or drop-off between Sharm El Sheikh International Airport (SSH) and your hotel.', ar: 'سيارات سياحية H1 لاستقبال أو توصيل المطار بين مطار شرم الشيخ الدولي (SSH) وفندقك.', ru: 'Туристические автомобили H1 для встречи или трансфера в аэропорт между аэропортом Шарм-эль-Шейха (SSH) и вашим отелем.', de: 'Touristen-H1-Fahrzeuge für Flughafenabholung oder -transfer zwischen dem Flughafen Sharm El Sheikh (SSH) und deinem Hotel.', it: 'Veicoli turistici H1 per il ritiro o il trasferimento in aeroporto tra l\'aeroporto di Sharm El Sheikh (SSH) e il tuo hotel.', tr: 'Sharm El Sheikh Havalimanı (SSH) ile oteliniz arasında karşılama veya bırakma için turistik H1 araçlar.' },
-        reservationsEyebrow: { en: '— RESERVATIONS', ar: '— الحجوزات', ru: '— БРОНИРОВАНИЯ', de: '— RESERVIERUNGEN', it: '— PRENOTAZIONI', tr: '— REZERVASYONLAR' },
-        myBookings: { en: 'My Bookings', ar: 'حجوزاتي', ru: 'Мои бронирования', de: 'Meine Buchungen', it: 'Le mie prenotazioni', tr: 'Rezervasyonlarım' },
-        upcoming: { en: 'Upcoming', ar: 'القادمة', ru: 'Предстоящие', de: 'Bevorstehend', it: 'In arrivo', tr: 'Yaklaşan' },
-        past: { en: 'Past', ar: 'السابقة', ru: 'Прошедшие', de: 'Vergangen', it: 'Passate', tr: 'Geçmiş' },
-        noBookingsYet: { en: 'No bookings yet', ar: 'لا توجد حجوزات بعد', ru: 'Пока нет бронирований', de: 'Noch keine Buchungen', it: 'Ancora nessuna prenotazione', tr: 'Henüz rezervasyon yok' },
-        startJourney: { en: 'Start your luxury journey', ar: 'ابدأ رحلتك الفاخرة', ru: 'Начните свое роскошное путешествие', de: 'Beginne deine Luxusreise', it: 'Inizia il tuo viaggio di lusso', tr: 'Lüks yolculuğunuza başlayın' },
-        browseHotels: { en: 'Browse Hotels', ar: 'تصفح الفنادق', ru: 'Смотреть отели', de: 'Hotels durchsuchen', it: 'Sfoglia hotel', tr: 'Otellere Göz At' },
-        savedEyebrow: { en: '— SAVED', ar: '— محفوظة', ru: '— СОХРАНЁННОЕ', de: '— GESPEICHERT', it: '— SALVATI', tr: '— KAYITLI' },
-        favorites: { en: 'Favorites', ar: 'المفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
-        noFavoritesYet: { en: 'No favorites yet', ar: 'لا توجد عناصر مفضلة بعد', ru: 'Пока нет избранного', de: 'Noch keine Favoriten', it: 'Ancora nessun preferito', tr: 'Henüz favori yok' },
-        saveHotelsLove: { en: 'Save hotels you love', ar: 'احفظ الفنادق التي تعجبك', ru: 'Сохраняйте понравившиеся отели', de: 'Speichere Hotels, die dir gefallen', it: 'Salva gli hotel che ami', tr: 'Beğendiğiniz otelleri kaydedin' },
-        goldMember: { en: 'Gold Member', ar: 'عضو ذهبي', ru: 'Золотой участник', de: 'Gold-Mitglied', it: 'Membro Gold', tr: 'Gold Üye' },
-        bookingsStat: { en: 'Bookings', ar: 'حجوزات', ru: 'Бронирования', de: 'Buchungen', it: 'Prenotazioni', tr: 'Rezervasyonlar' },
-        favoritesStat: { en: 'Favorites', ar: 'مفضلة', ru: 'Избранное', de: 'Favoriten', it: 'Preferiti', tr: 'Favoriler' },
-        reviewsStat: { en: 'Reviews', ar: 'تقييمات', ru: 'Отзывы', de: 'Bewertungen', it: 'Recensioni', tr: 'Değerlendirmeler' },
-        preferencesEyebrow: { en: '— PREFERENCES', ar: '— التفضيلات', ru: '— НАСТРОЙКИ', de: '— EINSTELLUNGEN', it: '— PREFERENZE', tr: '— TERCİHLER' },
-        currency: { en: 'Currency', ar: 'العملة', ru: 'Валюта', de: 'Währung', it: 'Valuta', tr: 'Para Birimi' },
-        language: { en: 'Language', ar: 'اللغة', ru: 'Язык', de: 'Sprache', it: 'Lingua', tr: 'Dil' },
-        updatesEyebrow: { en: '— UPDATES', ar: '— التحديثات', ru: '— ОБНОВЛЕНИЯ', de: '— NEUIGKEITEN', it: '— AGGIORNAMENTI', tr: '— GÜNCELLEMELER' },
-        notifications: { en: 'Notifications', ar: 'الإشعارات', ru: 'Уведомления', de: 'Benachrichtigungen', it: 'Notifiche', tr: 'Bildirimler' },
-        markAllRead: { en: 'Mark all as read', ar: 'تحديد الكل كمقروء', ru: 'Отметить все как прочитанные', de: 'Alle als gelesen markieren', it: 'Segna tutte come lette', tr: 'Tümünü Okundu İşaretle' },
-        noNotificationsYet: { en: 'No notifications yet', ar: 'لا توجد إشعارات بعد', ru: 'Пока нет уведомлений', de: 'Noch keine Benachrichtigungen', it: 'Ancora nessuna notifica', tr: 'Henüz bildirim yok' },
-        writeReview: { en: 'Write a Review', ar: 'اكتب تقييم', ru: 'Написать отзыв', de: 'Bewertung schreiben', it: 'Scrivi una recensione', tr: 'Değerlendirme Yaz' },
-        reviewVerifyNote: { en: 'To keep reviews genuine, enter the Booking ID from your confirmation to verify you booked with us.', ar: 'حفاظًا على مصداقية التقييمات، أدخل رقم الحجز من تأكيدك للتحقق من أنك حجزت معنا.', ru: 'Чтобы отзывы оставались достоверными, введите номер бронирования из подтверждения.', de: 'Um echte Bewertungen zu gewährleisten, gib die Buchungs-ID aus deiner Bestätigung ein.', it: 'Per garantire recensioni autentiche, inserisci l\'ID prenotazione dalla tua conferma.', tr: 'Değerlendirmelerin gerçek olduğundan emin olmak için onayınızdaki Rezervasyon Kimliğini girin.' },
-        bookingIdLabel: { en: 'BOOKING ID', ar: 'رقم الحجز', ru: 'НОМЕР БРОНИРОВАНИЯ', de: 'BUCHUNGS-ID', it: 'ID PRENOTAZIONE', tr: 'REZERVASYON KİMLİĞİ' },
-        yourRating: { en: 'YOUR RATING', ar: 'تقييمك', ru: 'ВАША ОЦЕНКА', de: 'DEINE BEWERTUNG', it: 'LA TUA VALUTAZIONE', tr: 'PUANINIZ' },
-        yourName: { en: 'YOUR NAME', ar: 'اسمك', ru: 'ВАШЕ ИМЯ', de: 'DEIN NAME', it: 'IL TUO NOME', tr: 'ADINIZ' },
-        yourReview: { en: 'YOUR REVIEW', ar: 'رأيك', ru: 'ВАШ ОТЗЫВ', de: 'DEINE BEWERTUNG', it: 'LA TUA RECENSIONE', tr: 'DEĞERLENDİRMENİZ' },
-        submitReview: { en: 'Submit Review', ar: 'إرسال التقييم', ru: 'Отправить отзыв', de: 'Bewertung senden', it: 'Invia recensione', tr: 'Değerlendirmeyi Gönder' },
-        creditDebitCard: { en: 'Credit / Debit Card', ar: 'بطاقة ائتمان / خصم', ru: 'Кредитная / дебетовая карта', de: 'Kredit-/Debitkarte', it: 'Carta di credito/debito', tr: 'Kredi / Banka Kartı' },
-        instapayWallet: { en: 'InstaPay / E-Wallet', ar: 'إنستاباي / محفظة إلكترونية', ru: 'InstaPay / электронный кошелёк', de: 'InstaPay / E-Wallet', it: 'InstaPay / Portafoglio elettronico', tr: 'InstaPay / E-Cüzdan' },
-        cashOnArrival: { en: 'Cash on Arrival', ar: 'الدفع نقدًا عند الوصول', ru: 'Оплата наличными по прибытии', de: 'Barzahlung bei Ankunft', it: 'Pagamento in contanti all\'arrivo', tr: 'Varışta Nakit Ödeme' },
-        airportPickup: { en: 'Airport Pickup', ar: 'استقبال من المطار', ru: 'Встреча в аэропорту', de: 'Flughafenabholung', it: 'Ritiro in aeroporto', tr: 'Havalimanı Karşılama' },
-        airportDropoff: { en: 'Airport Drop-off', ar: 'توصيل إلى المطار', ru: 'Трансфер в аэропорт', de: 'Transfer zum Flughafen', it: 'Trasferimento in aeroporto', tr: 'Havalimanına Bırakma' },
-        currencyEgpOnly: { en: 'Showing EGP — live rates unavailable', ar: 'يتم العرض بالجنيه المصري — تعذّر جلب أسعار الصرف حاليًا', ru: 'Показано в EGP — курсы недоступны', de: 'Zeige EGP — Kurse nicht verfügbar', it: 'Mostra EGP — tassi non disponibili', tr: 'EGP gösteriliyor — kurlar şu anda mevcut değil' },
-        diningEyebrow: { en: '— EAT & DRINK', ar: '— مطاعم ومقاهي', ru: '— ЕДА И НАПИТКИ', de: '— ESSEN & TRINKEN', it: '— MANGIA E BEVI', tr: '— YEME İÇME' },
-        restaurantsTitle: { en: 'Restaurants & Cafes', ar: 'المطاعم والمقاهي', ru: 'Рестораны и кафе', de: 'Restaurants & Cafés', it: 'Ristoranti e Caffè', tr: 'Restoranlar ve Kafeler' },
-        storiesEyebrow: { en: '— GUEST STORIES', ar: '— آراء الضيوف', ru: '— ИСТОРИИ ГОСТЕЙ', de: '— GÄSTEGESCHICHTEN', it: '— STORIE DEGLI OSPITI', tr: '— MİSAFİR HİKAYELERİ' },
-        whatGuestsSay: { en: 'What Our Guests Say', ar: 'ماذا يقول ضيوفنا', ru: 'Что говорят наши гости', de: 'Was unsere Gäste sagen', it: 'Cosa dicono i nostri ospiti', tr: 'Misafirlerimiz Ne Diyor' },
-        journalEyebrow: { en: '— JOURNAL', ar: '— مقالات', ru: '— ЖУРНАЛ', de: '— JOURNAL', it: '— DIARIO', tr: '— DERGİ' },
-        articlesTitle: { en: 'Travel Guides & Tips', ar: 'أدلة ونصائح السفر', ru: 'Путеводители и советы', de: 'Reiseführer & Tipps', it: 'Guide di viaggio e consigli', tr: 'Seyahat Rehberleri ve İpuçları' },
-        paymentEyebrow: { en: '— SECURE CHECKOUT', ar: '— دفع آمن', ru: '— БЕЗОПАСНАЯ ОПЛАТА', de: '— SICHERE ZAHLUNG', it: '— PAGAMENTO SICURO', tr: '— GÜVENLİ ÖDEME' },
-        acceptedPayments: { en: 'Accepted Payment Methods', ar: 'طرق الدفع المقبولة', ru: 'Принимаемые способы оплаты', de: 'Akzeptierte Zahlungsmethoden', it: 'Metodi di pagamento accettati', tr: 'Kabul Edilen Ödeme Yöntemleri' },
-        paymentSecureNote: { en: 'All payments are processed securely in Egyptian Pounds (EGP). Pay by card, InstaPay/e-wallet, or choose Cash on Arrival.', ar: 'تتم جميع المدفوعات بأمان بالجنيه المصري. ادفع بالبطاقة أو إنستاباي/محفظة إلكترونية، أو اختر الدفع نقدًا عند الوصول.', ru: 'Все платежи обрабатываются безопасно в египетских фунтах (EGP). Платите картой, InstaPay/e-wallet или выберите оплату наличными по прибытии.', de: 'Alle Zahlungen werden sicher in ägyptischen Pfund (EGP) abgewickelt. Zahlen Sie per Karte, InstaPay/E-Wallet oder wählen Sie Barzahlung bei Ankunft.', it: 'Tutti i pagamenti vengono elaborati in modo sicuro in Sterline Egiziane (EGP). Paga con carta, InstaPay/e-wallet o scegli il pagamento in contanti quando arrivi.', tr: 'Tüm ödemeler Mısır Lirası (EGP) cinsinden güvenle işlenir. Kart, InstaPay/e-cüzdan ile ödeyin veya varışta nakit ödemeyi seçin.' },
-        navRestaurants: { en: 'Restaurants & Cafes', ar: 'المطاعم والمقاهي', ru: 'Рестораны и кафе', de: 'Restaurants & Cafés', it: 'Ristoranti e Caffè', tr: 'Restoranlar ve Kafeler' },
-        readMore: { en: 'Read More', ar: 'اقرأ المزيد', ru: 'Читать далее', de: 'Weiterlesen', it: 'Leggi di più', tr: 'Devamını Oku' },
-        theMenu: { en: 'The Menu', ar: 'قائمة الطعام', ru: 'Меню', de: 'Die Speisekarte', it: 'Il Menu', tr: 'Menü' },
-        aboutPlace: { en: 'About', ar: 'عن المكان', ru: 'О месте', de: 'Über', it: 'Informazioni', tr: 'Hakkında' },
-        excSectionAbout: { en: '— ABOUT', ar: '— نبذة', ru: '— О ПОЕЗДКЕ', de: '— ÜBER DIESEN AUSFLUG', it: '— INFORMAZIONI', tr: '— HAKKINDA' },
-        excSectionOverview: { en: 'Overview', ar: 'نظرة عامة', ru: 'Обзор', de: 'Überblick', it: 'Panoramica', tr: 'Genel Bakış' },
-        excSectionIncluded: { en: '— INCLUDED', ar: '— يشمل', ru: '— ВКЛЮЧЕНО', de: '— INKLUSIVE', it: '— INCLUSO', tr: '— DAHİL' },
-        excWhatsIncluded: { en: "What's Included", ar: 'ما يشمله السعر', ru: 'Что включено', de: 'Was ist inbegriffen', it: 'Cosa è incluso', tr: 'Nelerin Dahil Olduğu' },
-        excSectionNotIncluded: { en: '— NOT INCLUDED', ar: '— لا يشمل', ru: '— НЕ ВКЛЮЧЕНО', de: '— NICHT INBEGRIFFEN', it: '— NON INCLUSO', tr: '— DAHİL DEĞİL' },
-        excWhatsNotIncluded: { en: "What's Not Included", ar: 'ما لا يشمله السعر', ru: 'Что не включено', de: 'Was ist nicht inbegriffen', it: 'Cosa non è incluso', tr: 'Nelerin Dahil Olmadığı' },
-        excSectionBring: { en: '— GOOD TO KNOW', ar: '— يجب معرفته', ru: '— ПОЛЕЗНО ЗНАТЬ', de: '— GUT ZU WISSEN', it: '— DA SAPERE', tr: '— BİLMEKTE FAYDA VAR' },
-        excWhatToBring: { en: 'What to Bring', ar: 'ماذا تحضر معك', ru: 'Что взять с собой', de: 'Was mitzubringen ist', it: 'Cosa portare', tr: 'Yanınıza Alacaklarınız' },
-        excSectionItinerary: { en: '— SCHEDULE', ar: '— الجدول الزمني', ru: '— РАСПИСАНИЕ', de: '— ZEITPLAN', it: '— PROGRAMMA', tr: '— PROGRAM' },
-        excTripItinerary: { en: 'Trip Itinerary', ar: 'برنامج الرحلة', ru: 'Программа поездки', de: 'Reiseverlauf', it: 'Itinerario del viaggio', tr: 'Gezi Programı' },
-        sectionReviewsEyebrow: { en: '— REVIEWS', ar: '— التقييمات', ru: '— ОТЗЫВЫ', de: '— BEWERTUNGEN', it: '— RECENSIONI', tr: '— DEĞERLENDİRMELER' },
-        guestReviewsTitle: { en: 'Guest Reviews', ar: 'تقييمات الضيوف', ru: 'Отзывы гостей', de: 'Gästebewertungen', it: 'Recensioni degli ospiti', tr: 'Misafir Değerlendirmeleri' },
-        roomSelected: { en: 'Selected', ar: 'محدد', ru: 'Выбрано', de: 'Ausgewählt', it: 'Selezionata', tr: 'Seçildi' },
-        nationality: { en: 'NATIONALITY', ar: 'الجنسية', ru: 'НАЦИОНАЛЬНОСТЬ', de: 'NATIONALITÄT', it: 'NAZIONALITÀ', tr: 'UYRUK' },
-        heroExcEyebrow: { en: '— UNFORGETTABLE EXPERIENCES', ar: '— تجارب لا تُنسى', ru: '— НЕЗАБЫВАЕМЫЕ ВПЕЧАТЛЕНИЯ', de: '— UNVERGESSLICHE ERLEBNISSE', it: '— ESPERIENZE INDIMENTICABILI', tr: '— UNUTULMAZ DENEYİMLER' },
-        heroTitleExcursions: { en: 'Find Your<br><span class="italic text-gold-400">Next Adventure</span>', ar: 'اكتشف<br><span class="italic text-gold-400">مغامرتك القادمة</span>', ru: 'Найдите своё<br><span class="italic text-gold-400">следующее приключение</span>', de: 'Finde dein<br><span class="italic text-gold-400">nächstes Abenteuer</span>', it: 'Trova la tua<br><span class="italic text-gold-400">prossima avventura</span>', tr: 'Bir Sonraki<br><span class="italic text-gold-400">Maceranızı</span> Bulun' },
-        heroSubtitleExcursions: { en: 'Snorkeling reefs, desert safaris, and unforgettable days out.', ar: 'سنوركل على الشعاب، وسفاري صحراوي، وأيام لا تُنسى.', ru: 'Снорклинг на рифах, сафари в пустыне и незабываемые дни.', de: 'Schnorcheln an Riffen, Wüstensafaris und unvergessliche Tage.', it: 'Snorkeling sulle barriere, safari nel deserto e giornate indimenticabili.', tr: 'Resiflerde şnorkel, çöl safarileri ve unutulmaz günler.' }
-    };
+    // ==================== I18N (loaded from data/lang/*.json — see data/lang/manifest.json) ====================
+    // Every UI string lives in data/lang/<code>.json (one flat file per language), listed in
+    // data/lang/manifest.json. Adding a language = add one JSON file + one line in the manifest —
+    // no changes to this file needed. Editing a translation = edit that one JSON file.
+    let SUPPORTED_LANGS = ['en'];
+    let LANG_LABELS = { en: 'English' };
+    let I18N_DICT = {};
+
+    async function loadI18nDict() {
+        try {
+            const manifestRes = await fetch('data/lang/manifest.json');
+            const manifest = await manifestRes.json();
+            SUPPORTED_LANGS = manifest.languages.map(l => l.code);
+            LANG_LABELS = {};
+            manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
+            const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
+            const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
+            SUPPORTED_LANGS.forEach((code, i) => {
+                const langDict = dictJsons[i];
+                Object.keys(langDict).forEach(key => {
+                    if (!I18N_DICT[key]) I18N_DICT[key] = {};
+                    I18N_DICT[key][code] = langDict[key];
+                });
+            });
+        } catch (err) {
+            // If the translation files can't be reached, every element with data-i18n already has
+            // English text as its static HTML content (that's what ships in this file), so the app
+            // degrades to English rather than showing blank/undefined text anywhere.
+            console.warn('Could not load data/lang/*.json — falling back to built-in English text.', err);
+            SUPPORTED_LANGS = ['en'];
+            LANG_LABELS = { en: 'English' };
+        }
+        populateLanguageSelects();
+    }
+    function populateLanguageSelects() {
+        const optionsHtml = SUPPORTED_LANGS.map(code => `<option value="${code}">${LANG_LABELS[code] || code}</option>`).join('');
+        document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
+    }
 
     const I18N = {
         get() { return localStorage.getItem('ds_lang') || 'en'; },
@@ -2087,17 +2008,18 @@
         const btn = document.getElementById('hotelBookNowBtn');
         if (btn) btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`);
         document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex));
-        if (opts.closeModal) document.getElementById('roomPreviewModal').classList.add('hidden');
+        if (opts.closeModal) closeRoomPreview();
     }
 
     // ==================== ROOM PREVIEW MODAL ====================
+    function closeRoomPreview() { document.getElementById('roomPreviewModal').classList.add('hidden'); }
     function showRoomPreview(hotelId, roomIndex) {
         const h = CATALOG.hotels.find(x => x.id === hotelId);
         const r = h.rooms[roomIndex];
         document.getElementById('roomPreviewContent').innerHTML = `
             <div class="relative h-52">
                 <img src="${r.image}" class="w-full h-full object-cover">
-                <button onclick="document.getElementById('roomPreviewModal').classList.add('hidden')" class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeRoomPreview()" class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900"><i class="fa-solid fa-xmark"></i></button>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <p class="absolute bottom-3 right-3 left-3 text-white font-display font-bold text-lg">${r.type}</p>
             </div>
@@ -2755,37 +2677,44 @@
         const old = document.getElementById('restaurantDetailPage'); if (old) old.remove();
         const page = document.createElement('div'); page.id = 'restaurantDetailPage'; page.className = 'page';
         page.innerHTML = `
-            <div class="min-h-screen pb-28" style="background:var(--bg-card)">
-                <div class="relative h-64">
+            <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
+                <div class="relative h-80">
                     <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
                         ${(r.images || [r.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
                     </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
                     <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+                    <div class="absolute bottom-5 left-5 right-5 z-10 text-white">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="lux-cuisine-badge">${r.cuisine}</span>
+                            <span class="text-gold-400 text-xs font-semibold">${'$'.repeat(r.priceLevel || 2)}</span>
+                        </div>
+                        <h1 class="font-display text-3xl font-bold leading-tight mb-2" style="text-shadow:0 2px 12px rgba(0,0,0,.5)">${r.name}</h1>
+                        <div class="flex items-center gap-2 text-sm">${utils.renderStars(r.rating)}<span class="text-white/80 text-xs">${Number(r.rating).toFixed(1)} (${r.reviews || 0})</span></div>
+                    </div>
                     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="restGalleryDots">${(r.images || [r.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
                 </div>
-                <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6" style="background:var(--bg-card)">
-                    <div>
-                        <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(r.rating)}<span class="text-xs" style="color:var(--text-secondary)">${Number(r.rating).toFixed(1)} (${r.reviews || 0})</span><span class="text-xs" style="color:var(--text-secondary)">· ${'$'.repeat(r.priceLevel || 2)}</span></div>
-                        <h2 class="font-display text-2xl font-bold mb-1 leading-tight" style="color:var(--text-primary)">${r.name}</h2>
-                        <p class="text-xs flex items-center gap-1 mb-0.5" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
-                        <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500"></i>${r.openHours || ''}</p>
+                <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
+                    <div class="flex items-center justify-center gap-5 pb-5 mb-1">
+                        <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-gold-500"></i>${r.location}</p>
+                        <span class="w-1 h-1 rounded-full" style="background:var(--border-field)"></span>
+                        <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-gold-500"></i>${r.openHours || ''}</p>
                     </div>
+                    <p class="text-center text-sm leading-relaxed italic font-display" style="color:var(--text-secondary)">"${r.fullDescription || r.description}"</p>
+                    <div class="lux-divider"><span class="lux-dot"></span></div>
                     <div>
-                        <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="aboutPlace">— ABOUT</p>
-                        <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${r.fullDescription || r.description}</p>
-                    </div>
-                    <div>
-                        <p class="text-violet-400 text-[10px] tracking-widest mb-2 font-semibold" data-i18n="theMenu">— MENU</p>
+                        <p class="text-center font-display italic text-2xl mb-6" style="color:var(--text-primary)" data-i18n="theMenu">The Menu</p>
                         ${(r.menu || []).map(section => `
-                            <div class="mb-4">
-                                <h4 class="font-display font-bold text-sm mb-2" style="color:var(--text-primary)">${section.category}</h4>
-                                <div class="space-y-0.5">
+                            <div class="mb-8">
+                                <h4 class="menu-category-title">${section.category}</h4>
+                                <div>
                                     ${section.items.map(it => `
-                                        <div class="flex items-start justify-between gap-3 py-2.5 border-b" style="border-color:var(--border-field)">
-                                            <div class="flex-1"><p class="text-sm font-semibold" style="color:var(--text-primary)">${it.name}</p><p class="text-xs" style="color:var(--text-secondary)">${it.description || ''}</p></div>
-                                            <p class="text-sm font-bold text-violet-500 flex-shrink-0">${utils.formatPrice(it.price)}</p>
-                                        </div>`).join('')}
+                                        <div class="menu-item-row">
+                                            <span class="menu-item-name">${it.name}</span>
+                                            <span class="menu-item-leader"></span>
+                                            <span class="menu-item-price">${utils.formatPrice(it.price)}</span>
+                                        </div>
+                                        ${it.description ? `<p class="menu-item-desc">${it.description}</p>` : '<div class="mb-3"></div>'}`).join('')}
                                 </div>
                             </div>`).join('')}
                     </div>
@@ -3098,9 +3027,13 @@
         if (!eyebrowEl || !titleEl || !subtitleEl || !imgEl) return;
         [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '0');
         setTimeout(() => {
-            eyebrowEl.textContent = I18N_DICT[cfg.eyebrowKey][lang] || I18N_DICT[cfg.eyebrowKey].en;
-            titleEl.innerHTML = I18N_DICT[cfg.titleKey][lang] || I18N_DICT[cfg.titleKey].en;
-            subtitleEl.textContent = I18N_DICT[cfg.subtitleKey][lang] || I18N_DICT[cfg.subtitleKey].en;
+            // Guarded the same way I18N.set() guards data-i18n elements: if a translation file hasn't
+            // loaded yet, skip the update and leave whatever text is already there (the static HTML
+            // fallback) rather than throwing on an undefined lookup.
+            const eyebrowEntry = I18N_DICT[cfg.eyebrowKey], titleEntry = I18N_DICT[cfg.titleKey], subtitleEntry = I18N_DICT[cfg.subtitleKey];
+            if (eyebrowEntry) eyebrowEl.textContent = eyebrowEntry[lang] || eyebrowEntry.en;
+            if (titleEntry) titleEl.innerHTML = titleEntry[lang] || titleEntry.en;
+            if (subtitleEntry) subtitleEl.textContent = subtitleEntry[lang] || subtitleEntry.en;
             if (imgEl.src !== cfg.image) { imgEl.style.display = ''; imgEl.src = cfg.image; }
             [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '1');
         }, 220);
@@ -3331,6 +3264,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         if (handlePaymentCallbackIfPresent()) return;
         THEME.init();
+        await loadI18nDict();
         I18N.init();
         utils.createStars('splashStars');
         populateCountryCodeSelect();
