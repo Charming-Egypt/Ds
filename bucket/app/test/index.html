@@ -60,11 +60,13 @@
 
         .page { display: none; min-height: 100vh; position: relative; z-index: 10; }
         .page.active { display: block; animation: pageEnter .45s cubic-bezier(.16,1,.3,1) forwards; }
-        @keyframes pageEnter { from{opacity:0; transform: translateX(14px)} to{opacity:1; transform: translateX(0)} }
+        @keyframes pageEnter { from{opacity:0} to{opacity:1} }
 
-        .hero-section { position: relative; min-height: 58vh; background: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat; }
+        .hero-section { position: relative; min-height: 58vh; overflow: hidden; }
+        .hero-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .35s ease; }
         .hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,9,24,.2) 0%, rgba(12,9,24,.55) 45%, rgba(12,9,24,.92) 85%, var(--bg-body) 100%); }
         .hero-content { position: relative; z-index: 10; }
+        .hero-text-swap { transition: opacity .3s ease; }
 
         .header-floating { display:flex; align-items:center; justify-content:space-between; }
         .header-floating .icon-btn { filter: drop-shadow(0 2px 6px rgba(0,0,0,.55)); }
@@ -89,6 +91,8 @@
         .date-field { border: 1.5px solid var(--border-field); background: var(--bg-field); border-radius: 14px; cursor: pointer; }
 
         .bottom-nav { position: fixed; bottom: 1.1rem; left: 50%; transform: translateX(-50%); width: 92%; max-width: 430px; z-index: 50; border-radius: 26px; padding: .55rem .7rem; background: #171029; box-shadow: 0 12px 40px rgba(20,10,45,.4); }
+        .sticky-home-header { position: fixed; top: .7rem; left: 50%; transform: translateX(-50%) translateY(-14px); width: 92%; max-width: 430px; z-index: 55; border-radius: 22px; padding: .6rem .9rem; background: #171029; box-shadow: 0 12px 40px rgba(20,10,45,.4); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1), visibility .35s; }
+        .sticky-home-header.visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 
         .btn-gold { background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 45%, #f59e0b 100%); box-shadow: 0 10px 30px -8px rgba(245,158,11,.5), inset 0 1px 0 rgba(255,255,255,.3); border: none; cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); }
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 15px 35px -8px rgba(245,158,11,.6); }
@@ -125,6 +129,10 @@
         .destination-card { flex-shrink: 0; width: 144px; height: 176px; cursor: pointer; border-radius: 18px; position: relative; overflow: hidden; box-shadow: 0 8px 20px -6px rgba(0,0,0,.25); }
         .restaurant-card { flex-shrink: 0; width: 210px; border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-field); box-shadow: 0 6px 18px -8px rgba(0,0,0,.15); }
         .article-card { border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--bg-card); border: 1px solid var(--border-field); display:flex; gap: 12px; padding: 10px; }
+        .room-option-card { border: 2px solid transparent; transition: border-color .2s ease, background .2s ease; }
+        .room-option-card.room-selected { border-color: #f97316; }
+        .room-option-card .room-select-check { visibility: hidden; opacity: 0; }
+        .room-option-card.room-selected .room-select-check { visibility: visible; opacity: 1; }
         /* Sticky price/CTA bars on hotel & excursion detail pages sit at the very bottom of the
            screen — hide the floating bottom-nav while either page is active so the two don't overlap. */
         body:has(#hotelDetailPage.active) .bottom-nav,
@@ -175,7 +183,9 @@
         .gallery-dot { width:6px; height:6px; border-radius:50%; background: rgba(255,255,255,.4); transition: all .3s; }
         .gallery-dot.active { width:18px; border-radius:4px; background: #fbbf24; }
 
-        #sideDrawer { position: fixed; top:0; right:0; height:100%; width: 80%; max-width: 300px; background: #100c1c; z-index: 95; transform: translateX(100%); transition: transform .35s cubic-bezier(.16,1,.3,1); box-shadow: -10px 0 40px rgba(0,0,0,.4); }
+        #sideDrawer { position: fixed; top:0; height:100%; width: 80%; max-width: 300px; background: #100c1c; z-index: 95; transition: transform .35s cubic-bezier(.16,1,.3,1); }
+        html[dir="rtl"] #sideDrawer { right: 0; transform: translateX(100%); box-shadow: -10px 0 40px rgba(0,0,0,.4); }
+        html[dir="ltr"] #sideDrawer { left: 0; transform: translateX(-100%); box-shadow: 10px 0 40px rgba(0,0,0,.4); }
         html[dir="rtl"] #sideDrawer.open, html[dir="ltr"] #sideDrawer.open { transform: translateX(0); }
         #sideDrawerOverlay { position: fixed; inset:0; background: rgba(0,0,0,.5); z-index: 90; opacity:0; pointer-events:none; transition: opacity .3s; }
         #sideDrawerOverlay.open { opacity:1; pointer-events:auto; }
@@ -373,6 +383,10 @@
                     <input type="text" id="reviewName" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)">
                 </div>
                 <div>
+                    <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="nationality">NATIONALITY</label>
+                    <select id="reviewNationality" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></select>
+                </div>
+                <div>
                     <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
                     <textarea id="reviewComment" rows="3" required class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
                 </div>
@@ -429,11 +443,23 @@
         </div>
     </div>
 
+    <!-- Sticky header that fades in once the hero's own header scrolls out of view — styled like the bottom-nav -->
+    <div class="sticky-home-header" id="stickyHomeHeader">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
+                <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-7 h-7 rounded-full object-cover" alt="Discover Sharm">
+            </div>
+            <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
+        </div>
+    </div>
+
     <!-- ==================== MAIN APP ==================== -->
     <div id="mainApp" class="hidden relative z-10">
         <!-- HOME -->
         <div id="homePage" class="page active">
-            <div class="hero-section dark-scene">
+            <div class="hero-section dark-scene" id="heroSection">
+                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90" class="hero-bg-img" id="heroBgImage" onerror="this.style.display='none'" alt="">
                 <div class="stars-container"></div>
                 <div class="hero-overlay"></div>
                 <div class="hero-content relative z-10 pb-24 text-white">
@@ -447,9 +473,9 @@
                         </div>
                     </div>
                     <div class="px-6 pt-6 pb-4">
-                        <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2" data-i18n="premiumStays">— PREMIUM STAYS</p>
-                        <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight" data-i18n="heroTitle">Find Your<br><span class="italic text-gold-400">Perfect Stay</span></h1>
-                        <p class="text-white/75 text-base" data-i18n="heroSubtitle">Hotels. Excursions. Airport transfers.</p>
+                        <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2 hero-text-swap" id="heroEyebrowText">— PREMIUM STAYS</p>
+                        <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight hero-text-swap" id="heroTitleText">Find Your<br><span class="italic text-gold-400">Perfect Stay</span></h1>
+                        <p class="text-white/75 text-base hero-text-swap" id="heroSubtitleText">Hotels. Excursions. Airport transfers.</p>
                     </div>
                 </div>
             </div>
@@ -795,7 +821,7 @@
                 <button onclick="nav.go('hotels')" data-page="hotels" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-hotel text-xl"></i><span class="text-[10px] font-medium" data-i18n="navHotels">Hotels</span></button>
                 <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings">Bookings</span></button>
                 <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
+                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="rounded-full object-cover"></span>
                 </button>
                 <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites">Favorites</span></button>
                 <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1">
@@ -921,22 +947,12 @@
     function arrayToKeyedObject(arr) { const o = {}; arr.forEach(item => { const copy = Object.assign({}, item); delete copy.id; o[item.id] = copy; }); return o; }
 
     function bindCatalog() {
-        loadCatalogJson().then(() => {
-            refreshCatalogUI();
-            ['hotels', 'excursions', 'transfers'].forEach(kind => {
-                const ref = fbDB.ref('catalog/' + kind);
-                ref.once('value').then(snap => {
-                    if (!snap.exists()) {
-                        ref.set(arrayToKeyedObject(CATALOG_RAW[kind])).catch(e => console.warn('Seeding catalog/' + kind + ' failed (check Realtime Database rules).', e));
-                    }
-                });
-                ref.on('value', snap => {
-                    const arr = objToArray(snap.val());
-                    if (arr.length) { CATALOG_RAW[kind] = arr; localizeCatalog(I18N.get()); }
-                    refreshCatalogUI();
-                });
-            });
-        });
+        // Catalog CONTENT always comes from data/*.json — that's the single source of truth the
+        // site owner edits. We intentionally do NOT mirror it into Firebase and read it back: an
+        // early Firebase snapshot would otherwise silently keep overriding every later edit to the
+        // JSON files with stale data forever. Firebase is still used for accounts, bookings,
+        // favorites, reviews and notifications — just not catalog content.
+        loadCatalogJson().then(() => { refreshCatalogUI(); });
     }
     function refreshCatalogUI() {
         if (!document.getElementById('mainApp') || document.getElementById('mainApp').classList.contains('hidden')) return;
@@ -1082,6 +1098,7 @@
             localizeCatalog(lang);
             refreshCatalogUI();
         }
+        if (typeof applyHeroContext === 'function' && document.getElementById('heroTitleText')) applyHeroContext(state.activeSearchTab || 'hotels');
     }
 
     // Minimal emergency fallback used only if data/*.json cannot be fetched at all (e.g. offline
@@ -1089,288 +1106,7 @@
     // catalog. The real, multi-language catalog always comes from the JSON files in data/.
     const EMERGENCY_FALLBACK_CATALOG = {
         hotels: [{ id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view', fullDescription: 'Luxury 5-star hotel with sea view.', price: 3800, rating: 5, reviews: 234, location: 'Naama Bay, Sharm El Sheikh', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90', images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90'], amenities: ['Free WiFi', 'Breakfast', 'Pool'], bestseller: true, rooms: [{ type: 'Deluxe Sea View', price: 3800, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80', description: 'A bright room with sea views.' }] }],
-        excursions: [  {
-    "id": "e1",
-    "category": "Diving",
-    "title": {
-      "en": "Ras Mohammed Snorkeling Trip",
-      "ar": "رحلة سنوركل رأس محمد",
-      "ru": "Снорклинг-тур в Рас-Мохаммед",
-      "de": "Ras-Mohammed-Schnorcheltour",
-      "it": "Escursione Snorkeling a Ras Mohammed",
-      "tr": "Ras Muhammed Şnorkel Turu"
-    },
-    "price": 1150,
-    "rating": 4.8,
-    "reviews": 312,
-    "duration": {
-      "en": "Full Day (8h)",
-      "ar": "يوم كامل (٨ ساعات)",
-      "ru": "Целый день (8 ч)",
-      "de": "Ganzer Tag (8 Std.)",
-      "it": "Giornata intera (8h)",
-      "tr": "Tam Gün (8s)"
-    },
-    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
-    "images": [
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=800&q=80"
-    ],
-    "description": {
-      "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
-      "ar": "مارس السنوركل بين الشعاب المرجانية في محمية رأس محمد، أحد أفضل مواقع الغوص في العالم.",
-      "ru": "Понырять с маской у коралловых рифов национального парка Рас-Мохаммед — одного из лучших дайв-сайтов мира.",
-      "de": "Schnorcheln Sie an den Korallenriffen des Ras-Mohammed-Nationalparks, einem der besten Tauchspots der Welt.",
-      "it": "Fai snorkeling tra le barriere coralline del Parco Nazionale di Ras Mohammed, uno dei migliori siti di immersione al mondo.",
-      "tr": "Dünyanın en iyi dalış noktalarından biri olan Ras Muhammed Milli Parkı'nın mercan resiflerinde şnorkel yapın."
-    },
-    "fullDescription": {
-      "en": "Spend a full day exploring the coral gardens and dramatic reef walls of Ras Mohammed National Park. Includes full snorkeling gear, a marine-life briefing, and a beachside lunch. Suitable for beginners and experienced snorkelers alike.",
-      "ar": "اقضِ يومًا كاملاً في استكشاف حدائق المرجان وجدران الشعاب المذهلة في محمية رأس محمد. يشمل معدات سنوركل كاملة وإحاطة عن الحياة البحرية وغداء على الشاطئ.",
-      "ru": "Проведите целый день, исследуя коралловые сады и рифовые стены национального парка Рас-Мохаммед. В программе — снаряжение, инструктаж и обед на пляже.",
-      "de": "Verbringen Sie einen ganzen Tag mit der Erkundung der Korallengärten und Riffwände des Ras-Mohammed-Nationalparks. Inklusive Ausrüstung, Briefing und Strandmittagessen.",
-      "it": "Trascorri un'intera giornata esplorando i giardini di corallo e le pareti della barriera del Parco Nazionale di Ras Mohammed. Include attrezzatura, briefing e pranzo in spiaggia.",
-      "tr": "Ras Muhammed Milli Parkı'nın mercan bahçelerini ve resif duvarlarını keşfederek tam bir gün geçirin. Şnorkel ekipmanı, deniz canlıları brifingi ve sahilde öğle yemeği dahildir."
-    },
-    "includes": {
-      "en": [
-        "Hotel pickup & drop-off",
-        "Snorkeling equipment",
-        "Lunch & soft drinks",
-        "National park entry fees",
-        "English-speaking guide"
-      ],
-      "ar": [
-        "نقل من وإلى الفندق",
-        "معدات سنوركل",
-        "غداء ومشروبات غازية",
-        "رسوم دخول المحمية",
-        "مرشد يتحدث الإنجليزية"
-      ],
-      "ru": [
-        "Трансфер от/до отеля",
-        "Снаряжение для снорклинга",
-        "Обед и напитки",
-        "Входные билеты в парк",
-        "Англоговорящий гид"
-      ],
-      "de": [
-        "Hotelabholung & Rückfahrt",
-        "Schnorchelausrüstung",
-        "Mittagessen & Softdrinks",
-        "Eintritt Nationalpark",
-        "Englischsprachiger Guide"
-      ],
-      "it": [
-        "Transfer da/per l'hotel",
-        "Attrezzatura da snorkeling",
-        "Pranzo e bibite",
-        "Biglietto d'ingresso al parco",
-        "Guida in inglese"
-      ],
-      "tr": [
-        "Otelden alış-bırakış",
-        "Şnorkel ekipmanı",
-        "Öğle yemeği ve içecekler",
-        "Milli park giriş ücreti",
-        "İngilizce konuşan rehber"
-      ]
-    },
-    "meetingPoint": {
-      "en": "Hotel lobby pickup, 7:30 AM",
-      "ar": "الاستلام من لوبي الفندق، ٧:٣٠ صباحًا",
-      "ru": "Встреча в лобби отеля, 7:30",
-      "de": "Abholung Hotellobby, 7:30 Uhr",
-      "it": "Ritiro in hotel, ore 7:30",
-      "tr": "Otel lobisinden alış, 07:30"
-    },
-    "excludes": {
-      "en": [
-        "Alcoholic beverages",
-        "Underwater camera rental",
-        "Gratuities (optional)"
-      ],
-      "ar": [
-        "المشروبات الكحولية",
-        "استئجار كاميرا تحت الماء",
-        "الإكراميات (اختياري)"
-      ],
-      "ru": [
-        "Алкогольные напитки",
-        "Аренда подводной камеры",
-        "Чаевые (по желанию)"
-      ],
-      "de": [
-        "Alkoholische Getränke",
-        "Unterwasserkamera-Verleih",
-        "Trinkgelder (optional)"
-      ],
-      "it": [
-        "Bevande alcoliche",
-        "Noleggio fotocamera subacquea",
-        "Mance (facoltative)"
-      ],
-      "tr": [
-        "Alkollü içecekler",
-        "Sualtı kamerası kiralama",
-        "Bahşiş (isteğe bağlı)"
-      ]
-    },
-    "whatToBring": {
-      "en": [
-        "Swimsuit",
-        "Towel",
-        "Sunscreen",
-        "Comfortable sandals"
-      ],
-      "ar": [
-        "ملابس سباحة",
-        "منشفة",
-        "واقي شمس",
-        "صندل مريح"
-      ],
-      "ru": [
-        "Купальник",
-        "Полотенце",
-        "Солнцезащитный крем",
-        "Удобные сандалии"
-      ],
-      "de": [
-        "Badeanzug",
-        "Handtuch",
-        "Sonnencreme",
-        "Bequeme Sandalen"
-      ],
-      "it": [
-        "Costume da bagno",
-        "Asciugamano",
-        "Crema solare",
-        "Sandali comodi"
-      ],
-      "tr": [
-        "Mayo",
-        "Havlu",
-        "Güneş kremi",
-        "Rahat sandalet"
-      ]
-    },
-    "itinerary": [
-      {
-        "time": "07:30",
-        "title": {
-          "en": "Hotel Pickup",
-          "ar": "الاستلام من الفندق",
-          "ru": "Встреча в отеле",
-          "de": "Hotelabholung",
-          "it": "Ritiro in hotel",
-          "tr": "Otelden Alış"
-        },
-        "description": {
-          "en": "Our air-conditioned vehicle collects you from your hotel lobby.",
-          "ar": "سيارتنا المكيّفة تستلمك من لوبي الفندق.",
-          "ru": "Наш кондиционируемый автомобиль заберёт вас из лобби отеля.",
-          "de": "Unser klimatisiertes Fahrzeug holt Sie von der Hotellobby ab.",
-          "it": "Il nostro veicolo climatizzato ti preleva dalla hall dell'hotel.",
-          "tr": "Klimalı aracımız sizi otel lobisinden alır."
-        }
-      },
-      {
-        "time": "09:00",
-        "title": {
-          "en": "Arrival & Briefing",
-          "ar": "الوصول والإحاطة",
-          "ru": "Прибытие и инструктаж",
-          "de": "Ankunft & Briefing",
-          "it": "Arrivo e briefing",
-          "tr": "Varış ve Brifing"
-        },
-        "description": {
-          "en": "Meet your guide and get a short safety and marine-life briefing before gearing up.",
-          "ar": "قابل مرشدك واحصل على إحاطة قصيرة عن السلامة والحياة البحرية قبل ارتداء المعدات.",
-          "ru": "Познакомьтесь с гидом и пройдите короткий инструктаж по безопасности перед экипировкой.",
-          "de": "Treffen Sie Ihren Guide und erhalten Sie ein kurzes Sicherheits-Briefing vor der Ausrüstung.",
-          "it": "Incontra la tua guida e ricevi un breve briefing sulla sicurezza prima di equipaggiarti.",
-          "tr": "Rehberinizle tanışın ve ekipman kuşanmadan önce kısa bir güvenlik brifingi alın."
-        }
-      },
-      {
-        "time": "09:30",
-        "title": {
-          "en": "First Snorkeling Stop",
-          "ar": "محطة السنوركل الأولى",
-          "ru": "Первая остановка для снорклинга",
-          "de": "Erster Schnorchelstopp",
-          "it": "Prima tappa snorkeling",
-          "tr": "İlk Şnorkel Durağı"
-        },
-        "description": {
-          "en": "Explore the coral gardens at the first reef site.",
-          "ar": "استكشف حدائق المرجان في موقع الشعاب الأول.",
-          "ru": "Исследуйте коралловые сады на первом рифе.",
-          "de": "Erkunden Sie die Korallengärten am ersten Riff.",
-          "it": "Esplora i giardini di corallo nel primo sito.",
-          "tr": "İlk resif noktasındaki mercan bahçelerini keşfedin."
-        }
-      },
-      {
-        "time": "12:00",
-        "title": {
-          "en": "Lunch on the Beach",
-          "ar": "غداء على الشاطئ",
-          "ru": "Обед на пляже",
-          "de": "Mittagessen am Strand",
-          "it": "Pranzo in spiaggia",
-          "tr": "Sahilde Öğle Yemeği"
-        },
-        "description": {
-          "en": "A relaxed lunch break at a shaded beach spot inside the park.",
-          "ar": "استراحة غداء هادئة في بقعة شاطئية مظللة داخل المحمية.",
-          "ru": "Спокойный обеденный перерыв в тенистом месте на пляже парка.",
-          "de": "Eine entspannte Mittagspause an einem schattigen Strandplatz im Park.",
-          "it": "Una pausa pranzo rilassante in un punto ombreggiato della spiaggia nel parco.",
-          "tr": "Park içinde gölgeli bir sahil noktasında rahat bir öğle yemeği molası."
-        }
-      },
-      {
-        "time": "13:00",
-        "title": {
-          "en": "Second Snorkeling Stop",
-          "ar": "محطة السنوركل الثانية",
-          "ru": "Вторая остановка для снорклинга",
-          "de": "Zweiter Schnorchelstopp",
-          "it": "Seconda tappa snorkeling",
-          "tr": "İkinci Şnorkel Durağı"
-        },
-        "description": {
-          "en": "A second reef site with different marine life to explore.",
-          "ar": "موقع شعاب ثانٍ بحياة بحرية مختلفة لاستكشافها.",
-          "ru": "Второй риф с иной морской живностью для изучения.",
-          "de": "Ein zweites Riff mit anderer Meereswelt zum Erkunden.",
-          "it": "Un secondo sito con una fauna marina diversa da esplorare.",
-          "tr": "Keşfedilecek farklı deniz canlılarına sahip ikinci bir resif noktası."
-        }
-      },
-      {
-        "time": "15:30",
-        "title": {
-          "en": "Return to Hotel",
-          "ar": "العودة إلى الفندق",
-          "ru": "Возвращение в отель",
-          "de": "Rückfahrt zum Hotel",
-          "it": "Ritorno in hotel",
-          "tr": "Otele Dönüş"
-        },
-        "description": {
-          "en": "Relax on the drive back as we drop you at your hotel.",
-          "ar": "استرخِ في الطريق أثناء عودتك إلى فندقك.",
-          "ru": "Отдохните по пути назад, пока мы довезём вас до отеля.",
-          "de": "Entspannen Sie sich auf der Rückfahrt zu Ihrem Hotel.",
-          "it": "Rilassati durante il tragitto di ritorno al tuo hotel.",
-          "tr": "Sizi otelinize bırakırken dönüş yolunda rahatlayın."
-        }
-      }
-    ]
-  },],
+        excursions: [{ id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 1150, rating: 4.8, reviews: 312, duration: 'Full Day (8h)', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80', images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'], description: 'Snorkel the coral reefs of Ras Mohammed National Park.', fullDescription: 'Snorkel the coral reefs of Ras Mohammed National Park.', includes: ['Hotel pickup & drop-off', 'Snorkeling equipment'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' }],
         transfers: [{ id: 't1', vehicleType: 'Tourist H1', capacity: 7, price: 950, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off.', features: ['Tourist-class Hyundai H1', 'Air-conditioned', 'Meet & greet at arrivals'] }],
         destinations: [], restaurants: [], reviews: [], articles: []
     };
@@ -1596,7 +1332,12 @@
         excSectionItinerary: { en: '— SCHEDULE', ar: '— الجدول الزمني', ru: '— РАСПИСАНИЕ', de: '— ZEITPLAN', it: '— PROGRAMMA', tr: '— PROGRAM' },
         excTripItinerary: { en: 'Trip Itinerary', ar: 'برنامج الرحلة', ru: 'Программа поездки', de: 'Reiseverlauf', it: 'Itinerario del viaggio', tr: 'Gezi Programı' },
         sectionReviewsEyebrow: { en: '— REVIEWS', ar: '— التقييمات', ru: '— ОТЗЫВЫ', de: '— BEWERTUNGEN', it: '— RECENSIONI', tr: '— DEĞERLENDİRMELER' },
-        guestReviewsTitle: { en: 'Guest Reviews', ar: 'تقييمات الضيوف', ru: 'Отзывы гостей', de: 'Gästebewertungen', it: 'Recensioni degli ospiti', tr: 'Misafir Değerlendirmeleri' }
+        guestReviewsTitle: { en: 'Guest Reviews', ar: 'تقييمات الضيوف', ru: 'Отзывы гостей', de: 'Gästebewertungen', it: 'Recensioni degli ospiti', tr: 'Misafir Değerlendirmeleri' },
+        roomSelected: { en: 'Selected', ar: 'محدد', ru: 'Выбрано', de: 'Ausgewählt', it: 'Selezionata', tr: 'Seçildi' },
+        nationality: { en: 'NATIONALITY', ar: 'الجنسية', ru: 'НАЦИОНАЛЬНОСТЬ', de: 'NATIONALITÄT', it: 'NAZIONALITÀ', tr: 'UYRUK' },
+        heroExcEyebrow: { en: '— UNFORGETTABLE EXPERIENCES', ar: '— تجارب لا تُنسى', ru: '— НЕЗАБЫВАЕМЫЕ ВПЕЧАТЛЕНИЯ', de: '— UNVERGESSLICHE ERLEBNISSE', it: '— ESPERIENZE INDIMENTICABILI', tr: '— UNUTULMAZ DENEYİMLER' },
+        heroTitleExcursions: { en: 'Find Your<br><span class="italic text-gold-400">Next Adventure</span>', ar: 'اكتشف<br><span class="italic text-gold-400">مغامرتك القادمة</span>', ru: 'Найдите своё<br><span class="italic text-gold-400">следующее приключение</span>', de: 'Finde dein<br><span class="italic text-gold-400">nächstes Abenteuer</span>', it: 'Trova la tua<br><span class="italic text-gold-400">prossima avventura</span>', tr: 'Bir Sonraki<br><span class="italic text-gold-400">Maceranızı</span> Bulun' },
+        heroSubtitleExcursions: { en: 'Snorkeling reefs, desert safaris, and unforgettable days out.', ar: 'سنوركل على الشعاب، وسفاري صحراوي، وأيام لا تُنسى.', ru: 'Снорклинг на рифах, сафари в пустыне и незабываемые дни.', de: 'Schnorcheln an Riffen, Wüstensafaris und unvergessliche Tage.', it: 'Snorkeling sulle barriere, safari nel deserto e giornate indimenticabili.', tr: 'Resiflerde şnorkel, çöl safarileri ve unutulmaz günler.' }
     };
 
     const I18N = {
@@ -2054,8 +1795,10 @@
             this.currentTarget = { type, id };
             this.selectedStars = 0;
             document.getElementById('reviewBookingId').value = '';
-            document.getElementById('reviewName').value = '';
+            document.getElementById('reviewName').value = (fbEnabled && currentUser && currentUser.displayName) || '';
             document.getElementById('reviewComment').value = '';
+            populateNationalitySelect();
+            document.getElementById('reviewNationality').value = 'EG';
             this.paintStars(0);
             document.getElementById('reviewModal').classList.remove('hidden');
         },
@@ -2067,7 +1810,9 @@
             if (this.selectedStars === 0) { utils.toast('Please select a star rating', 'error'); return; }
             const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
             const name = document.getElementById('reviewName').value.trim();
+            const nationalityCode = document.getElementById('reviewNationality').value;
             const comment = document.getElementById('reviewComment').value.trim();
+            const photoURL = (fbEnabled && currentUser && currentUser.photoURL) || null;
             const { type, id } = this.currentTarget;
             const btn = e.target.querySelector('button[type="submit"]'); const original = btn.textContent; btn.textContent = 'Verifying…'; btn.disabled = true;
             try {
@@ -2077,7 +1822,7 @@
                 if (booking.type !== type || bookingTargetId !== id) { utils.toast('This Booking ID doesn\'t match this listing', 'error'); return; }
                 if (booking.reviewed) { utils.toast('This booking has already been reviewed', 'error'); return; }
                 const reviewId = utils.generateId();
-                const review = { bookingId, name, rating: this.selectedStars, comment, createdAt: new Date().toISOString() };
+                const review = { bookingId, name, nationalityCode, photoURL, rating: this.selectedStars, comment, createdAt: new Date().toISOString() };
                 if (fbEnabled) { await fbDB.ref('reviews/' + type + '/' + id + '/' + reviewId).set(review); }
                 else {
                     const store = JSON.parse(localStorage.getItem('ds_reviews') || '{}');
@@ -2106,7 +1851,13 @@
                     listEl.innerHTML = list.slice().reverse().map(r => `
                         <div class="field-box rounded-xl p-3">
                             <div class="flex items-center justify-between mb-1">
-                                <div class="flex items-center gap-2"><div class="w-8 h-8 bg-violet-50 rounded-full flex items-center justify-center text-xs font-bold text-violet-600">${(r.name||'?').charAt(0).toUpperCase()}</div><div><p class="text-xs font-semibold" style="color:var(--text-primary)">${r.name}</p><div class="flex">${utils.renderStars(r.rating)}</div></div></div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-violet-50 rounded-full flex items-center justify-center text-xs font-bold text-violet-600 overflow-hidden flex-shrink-0">${r.photoURL ? `<img src="${r.photoURL}" class="w-full h-full object-cover">` : (r.name||'?').charAt(0).toUpperCase()}</div>
+                                    <div>
+                                        <p class="text-xs font-semibold" style="color:var(--text-primary)">${r.name}${r.nationalityCode ? ` <span title="${countryNameFromCode(r.nationalityCode)}">${countryFlagEmoji(r.nationalityCode)}</span>` : ''}</p>
+                                        <div class="flex">${utils.renderStars(r.rating)}</div>
+                                    </div>
+                                </div>
                                 <span class="text-[9px]" style="color:var(--text-secondary)">${utils.formatDate(r.createdAt)}</span>
                             </div>
                             <p class="text-xs" style="color:var(--text-secondary)">${r.comment}</p>
@@ -2138,6 +1889,8 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(page + 'Page');
             if (target) target.classList.add('active');
+            const stickyHeader = document.getElementById('stickyHomeHeader');
+            if (stickyHeader && page !== 'home') stickyHeader.classList.remove('visible');
             document.querySelectorAll('.nav-item').forEach(btn => {
                 const isActive = btn.dataset.page === page;
                 btn.classList.toggle('active', isActive);
@@ -2264,11 +2017,11 @@
                     </div>
                     <div>
                         <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ROOMS</p>
-                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Room Options <span class="text-xs font-normal" style="color:var(--text-secondary)">— tap a room to preview</span></h3>
-                        <div class="space-y-3">
+                        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Room Options <span class="text-xs font-normal" style="color:var(--text-secondary)">— tap a room to select it</span></h3>
+                        <div class="space-y-3" id="hotelRoomsList">
                             ${(h.rooms||[]).map((r, i) => `
-                                <div class="card rounded-2xl p-3 flex gap-3 cursor-pointer" onclick="showRoomPreview('${h.id}', ${i})">
-                                    <img src="${r.image}" class="w-24 h-24 rounded-xl object-cover flex-shrink-0">
+                                <div class="card room-option-card rounded-2xl p-3 flex gap-3 cursor-pointer ${i===0?'room-selected':''}" onclick="selectRoomOnDetail('${h.id}', ${i})">
+                                    <img src="${r.image}" class="w-24 h-24 rounded-xl object-cover flex-shrink-0" onclick="event.stopPropagation(); showRoomPreview('${h.id}', ${i})">
                                     <div class="flex-1 flex flex-col justify-between">
                                         <div>
                                             <h4 class="font-display font-bold text-sm mb-1" style="color:var(--text-primary)">${r.type}</h4>
@@ -2278,7 +2031,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <p class="font-display font-bold text-violet-500 text-lg">${utils.formatPrice(r.price)}<span class="text-[10px] font-normal" style="color:var(--text-secondary)"> /Night</span></p>
-                                            <button onclick="event.stopPropagation(); startBooking('${h.id}', ${i})" class="btn-violet px-4 py-2 rounded-xl text-xs font-semibold">Select</button>
+                                            <span class="room-select-check text-[10px] font-bold text-violet-500 flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> <span data-i18n="roomSelected">Selected</span></span>
                                         </div>
                                     </div>
                                 </div>`).join('')}
@@ -2294,8 +2047,8 @@
                     </div>
                 </div>
                 <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)">
-                    <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold" style="color:var(--text-secondary)">STARTING FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)"> / Night</span></p></div>
-                    <button onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+                    <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold" style="color:var(--text-secondary)" id="hotelBottomPriceLabel">SELECTED ROOM</p><p class="text-xl font-bold text-violet-500 font-display" id="hotelBottomPriceAmount">${utils.formatPrice((h.rooms&&h.rooms[0]?h.rooms[0].price:h.price))}<span class="text-xs font-normal" style="color:var(--text-secondary)"> / Night</span></p></div>
+                    <button id="hotelBookNowBtn" onclick="startBooking('${h.id}', 0)" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
                 </div>
             </div>`;
         document.getElementById('mainApp').appendChild(hotelPage);
@@ -2321,6 +2074,22 @@
     }
     function closeHotelPage() { reviews.detachListeners(); const p = document.getElementById('hotelDetailPage'); if (p) p.remove(); nav.go('hotels'); }
 
+    // Selecting a room (tap its card, or "Select This Room" in the preview popup) updates the sticky
+    // bottom price bar live and marks that room as the one "Book Now" will actually book — it does
+    // NOT immediately jump into the booking flow, so the person can browse a few rooms first.
+    function selectRoomOnDetail(hotelId, roomIndex, opts) {
+        opts = opts || {};
+        const h = CATALOG.hotels.find(x => x.id === hotelId);
+        const r = h && h.rooms && h.rooms[roomIndex];
+        if (!r) return;
+        const priceEl = document.getElementById('hotelBottomPriceAmount');
+        if (priceEl) priceEl.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)"> / Night</span>`;
+        const btn = document.getElementById('hotelBookNowBtn');
+        if (btn) btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`);
+        document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex));
+        if (opts.closeModal) document.getElementById('roomPreviewModal').classList.add('hidden');
+    }
+
     // ==================== ROOM PREVIEW MODAL ====================
     function showRoomPreview(hotelId, roomIndex) {
         const h = CATALOG.hotels.find(x => x.id === hotelId);
@@ -2341,7 +2110,7 @@
                 <p class="text-sm leading-relaxed mb-4" style="color:var(--text-secondary)">${r.description || ''}</p>
                 <div class="flex items-center justify-between">
                     <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(r.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)"> /Night</span></p>
-                    <button onclick="document.getElementById('roomPreviewModal').classList.add('hidden'); startBooking('${h.id}', ${roomIndex})" class="btn-gold px-6 py-3 rounded-2xl font-bold text-ink-900 text-sm">Select This Room</button>
+                    <button onclick="selectRoomOnDetail('${h.id}', ${roomIndex}, { closeModal: true })" class="btn-gold px-6 py-3 rounded-2xl font-bold text-ink-900 text-sm">Select This Room</button>
                 </div>
             </div>`;
         document.getElementById('roomPreviewModal').classList.remove('hidden');
@@ -3310,8 +3079,32 @@
                 btn.style.background = t === tab ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
                 btn.style.color = t === tab ? '#fff' : 'var(--text-secondary)';
             });
+            applyHeroContext(tab);
         }
     };
+
+    // ==================== HERO CONTEXT (background photo + headline swap between Hotels/Excursions) ====================
+    const HERO_CONTEXT = {
+        hotels: { eyebrowKey: 'premiumStays', titleKey: 'heroTitle', subtitleKey: 'heroSubtitle', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90' },
+        excursions: { eyebrowKey: 'heroExcEyebrow', titleKey: 'heroTitleExcursions', subtitleKey: 'heroSubtitleExcursions', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=90' }
+    };
+    function applyHeroContext(tab) {
+        const cfg = HERO_CONTEXT[tab] || HERO_CONTEXT.hotels;
+        const lang = I18N.get();
+        const eyebrowEl = document.getElementById('heroEyebrowText');
+        const titleEl = document.getElementById('heroTitleText');
+        const subtitleEl = document.getElementById('heroSubtitleText');
+        const imgEl = document.getElementById('heroBgImage');
+        if (!eyebrowEl || !titleEl || !subtitleEl || !imgEl) return;
+        [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '0');
+        setTimeout(() => {
+            eyebrowEl.textContent = I18N_DICT[cfg.eyebrowKey][lang] || I18N_DICT[cfg.eyebrowKey].en;
+            titleEl.innerHTML = I18N_DICT[cfg.titleKey][lang] || I18N_DICT[cfg.titleKey].en;
+            subtitleEl.textContent = I18N_DICT[cfg.subtitleKey][lang] || I18N_DICT[cfg.subtitleKey].en;
+            if (imgEl.src !== cfg.image) { imgEl.style.display = ''; imgEl.src = cfg.image; }
+            [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '1');
+        }, 220);
+    }
 
     // ==================== NOTIFICATIONS (real, persisted per user/device) ====================
     const notifications = {
@@ -3428,6 +3221,20 @@
         sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.dial}">${c.dial} ${c.code}</option>`).join('');
         sel.value = '+20';
     }
+    function populateNationalitySelect() {
+        const sel = document.getElementById('reviewNationality');
+        if (!sel || sel.options.length) return;
+        sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.code}">${countryFlagEmoji(c.code)} ${c.name}</option>`).join('');
+        sel.value = 'EG';
+    }
+    function countryFlagEmoji(isoCode) {
+        if (!isoCode || isoCode.length !== 2) return '';
+        return String.fromCodePoint(...[...isoCode.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+    }
+    function countryNameFromCode(isoCode) {
+        const c = COUNTRY_CODES.find(x => x.code === isoCode);
+        return c ? c.name : isoCode;
+    }
 
     // ==================== AUTH ====================
     const auth = {
@@ -3511,12 +3318,23 @@
     };
 
     // ==================== INIT ====================
+    // Sticky header: fades in once the hero's own header has scrolled out of view, and only while
+    // the home page is actually active (so it doesn't linger visible after navigating elsewhere).
+    window.addEventListener('scroll', () => {
+        const stickyHeader = document.getElementById('stickyHomeHeader');
+        const homePage = document.getElementById('homePage');
+        if (!stickyHeader || !homePage) return;
+        const onHome = homePage.classList.contains('active');
+        stickyHeader.classList.toggle('visible', onHome && window.scrollY > 210);
+    }, { passive: true });
+
     document.addEventListener('DOMContentLoaded', async () => {
         if (handlePaymentCallbackIfPresent()) return;
         THEME.init();
         I18N.init();
         utils.createStars('splashStars');
         populateCountryCodeSelect();
+        populateNationalitySelect();
         search.switchTab('hotels');
         skeleton.fillAll();
         await loadAppConfig();
