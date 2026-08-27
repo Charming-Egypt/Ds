@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Cataract Resort & Layalina | بطاقة رحلتكم</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" onerror="this.onerror=null;this.src='https://unpkg.com/jsqr@1.4.0/dist/jsQR.js';"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
@@ -12,9 +13,9 @@
   :root{
     --night:#081C2E; --night2:#0F2A42; --gold:#D9A75B; --gold-soft:#F4E4C8;
     --coral:#FF6B4A; --coral-d:#E2502F; --sand:#FAF6EE; --ink:#171C3A;
-    --gray:#8B8D9E; --line:#ECE4D2; --teal:#2BB6AE; --teal-soft:#DFF3F1;
+    --gray:#8B8D9E; --line:#ECE4D2; --teal:#2BB6AE; --teal-soft:#DFF3F1; --nav-off:#9AA3C7;
   }
-  *{ font-family:'Tajawal', sans-serif; }
+  *{ font-family:'Tajawal', sans-serif; box-sizing:border-box; }
   .serif{ font-family:'Amiri', serif; }
   body{ -webkit-tap-highlight-color:transparent; background:var(--night); }
   .no-scrollbar::-webkit-scrollbar{ display:none; }
@@ -38,8 +39,6 @@
   .icon{ width:1em; height:1em; display:inline-block; vertical-align:-0.125em; flex-shrink:0; }
   .icon-badge{ width:2.35rem; height:2.35rem; border-radius:0.85rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.05rem; }
   .icon-badge-sm{ width:1.9rem; height:1.9rem; border-radius:0.65rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.85rem; }
-  /* perforated ticket edge */
-  .perf{ position:relative; border-top:2px dashed rgba(255,255,255,.18); }
   .perf-light{ border-top:2px dashed var(--line); }
   .notch{ position:absolute; width:22px; height:22px; background:var(--night); border-radius:999px; top:-11px; }
   .notch-light{ background:var(--sand); }
@@ -47,13 +46,33 @@
   .boat-bob{ animation:drift 1.8s ease-in-out infinite alternate; }
   .bubble{ position:absolute; bottom:-24px; border-radius:999px; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), rgba(43,182,174,.12)); border:1px solid rgba(255,255,255,.22); animation-name:bubbleRise; animation-timing-function:ease-in; animation-iteration-count:infinite; }
   @keyframes bubbleRise{ 0%{ transform:translateY(0) scale(1); opacity:.65;} 85%{ opacity:.45;} 100%{ transform:translateY(-380px) scale(1.2); opacity:0;} }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--night);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    z-index: 1000;
+    transition: transform .3s ease;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #10B981; }
+  .toast.error { background: #EF4444; }
 </style>
 </head>
 <body class="min-h-screen flex justify-center items-center sm:py-6">
 
-<div id="frame" class="w-full max-w-md bg-[var(--sand)] min-h-screen sm:min-h-[870px] sm:h-[870px] sm:rounded-[42px] shadow-2xl relative overflow-hidden flex flex-col border-slate-900 sm:border-[8px]">
+<div id="frame" class="w-full max-w-md bg-[var(--sand)] h-[100dvh] sm:h-[870px] sm:rounded-[42px] shadow-2xl relative overflow-hidden flex flex-col border-slate-900 sm:border-[8px]">
 
-  <!-- ===================== LOGIN — بوابة الصعود ===================== -->
+  <!-- ===================== LOGIN ===================== -->
   <section id="screenLogin" class="screen show flex-col h-full bg-[var(--night)] relative overflow-hidden">
     <div id="starfield" class="absolute inset-0"></div>
     <div id="bubbles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
@@ -77,15 +96,31 @@
       <p class="text-[var(--gray)] text-xs mb-5">أدخلوا كود الحجز أو امسحوا رمز البطاقة</p>
 
       <div class="flex bg-white border border-[var(--line)] rounded-2xl p-1 mb-5 text-sm font-bold">
-        <button id="tabPass" onclick="switchAuthTab('pass')" class="flex-1 py-2.5 rounded-xl transition">كود الحجز</button>
-        <button id="tabQr" onclick="switchAuthTab('qr')" class="flex-1 py-2.5 rounded-xl transition">مسح QR</button>
+        <button id="tabPass" onclick="switchAuthTab('pass')" class="flex-1 py-2.5 rounded-xl transition bg-[var(--night)] text-white shadow">كود الحجز</button>
+        <button id="tabQr" onclick="switchAuthTab('qr')" class="flex-1 py-2.5 rounded-xl transition text-slate-400">مسح QR</button>
       </div>
 
       <div id="passForm" class="space-y-3">
-        <input id="passInput" type="text" placeholder="مثال: CR2026" maxlength="20"
-          class="w-full bg-white border border-[var(--line)] rounded-2xl px-4 py-3.5 text-sm font-bold text-[var(--ink)] tracking-[3px] text-center">
+        <input id="passInput" type="text" placeholder="مثال: catk82329" maxlength="20"
+          class="w-full bg-white border border-[var(--line)] rounded-2xl px-4 py-3.5 text-sm font-bold text-[var(--ink)] tracking-[3px] text-center uppercase">
         <p id="loginError" class="hidden text-[var(--coral-d)] text-[11px] text-center font-bold">كود غير صحيح أو منتهي، حاول مرة أخرى</p>
         <button onclick="handlePasswordLogin()" class="press w-full bg-[var(--night)] text-white font-extrabold py-3.5 rounded-2xl text-sm shadow-lg">دخول إلى رحلتي</button>
+        
+        <!-- Demo Tokens -->
+        <div class="mt-3 p-3 bg-white border border-[var(--line)] rounded-xl text-xs">
+          <p class="font-bold text-[var(--ink)] mb-2">🔑 توكنات تجريبية:</p>
+          <div class="space-y-1.5">
+            <button onclick="document.getElementById('passInput').value='catk82329'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
+              <span class="font-mono font-bold text-[var(--coral)]">catk82329</span> - TETIANA BIELAIA
+            </button>
+            <button onclick="document.getElementById('passInput').value='cate89881'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
+              <span class="font-mono font-bold text-[var(--coral)]">cate89881</span> - IGOR ALEKSEEV
+            </button>
+            <button onclick="document.getElementById('passInput').value='caty90916'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
+              <span class="font-mono font-bold text-[var(--coral)]">caty90916</span> - Waled A. El Rahman
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="qrForm" class="hidden text-center space-y-3 py-1">
@@ -94,10 +129,7 @@
         <button onclick="openQrScanner()" class="press w-full bg-[var(--night)] text-white font-extrabold py-3.5 rounded-2xl text-sm">فتح الكاميرا</button>
       </div>
 
-      <div class="mt-auto pt-5">
-        <button onclick="toggleDemoBox()" class="text-[11px] text-[var(--gray)] underline w-full text-center">أكواد تجريبية للتجربة</button>
-        <div id="demoBox" class="hidden mt-3 bg-white border border-[var(--line)] rounded-2xl p-3 space-y-2.5 text-[11px]"></div>
-      </div>
+      <div class="mt-auto pt-5"></div>
     </div>
   </section>
 
@@ -131,7 +163,6 @@
   <section id="screenApp" class="screen flex-col h-full bg-[var(--sand)] relative">
     <div id="viewHome" class="flex-1 overflow-y-auto no-scrollbar pb-28">
 
-      <!-- الشريط العلوي -->
       <div class="bg-[var(--night)] relative overflow-hidden pb-9 rounded-b-[32px]">
         <div class="orb w-40 h-40 bg-[var(--gold)]/15 -top-10 -right-10"></div>
         <div class="relative z-10 px-5 pt-6 flex items-center justify-between">
@@ -145,7 +176,6 @@
         </div>
       </div>
 
-      <!-- بطاقة الصعود / الجواز الرقمي -->
       <div class="px-5 -mt-6 relative z-10">
         <div class="bg-white rounded-[26px] shadow-deep overflow-hidden relative">
           <div class="relative h-40">
@@ -158,7 +188,6 @@
             </div>
           </div>
 
-          <!-- شريط رحلة الوصول → المغادرة -->
           <div class="px-5 pt-4">
             <div class="flex justify-between text-[10px] font-bold text-[var(--gray)] mb-2">
               <span>الوصول</span><span>المغادرة</span>
@@ -172,7 +201,6 @@
             </div>
           </div>
 
-          <!-- شريحة التذكرة / رقم الغرفة -->
           <div class="perf-light mt-4 mx-0 relative flex items-center justify-between px-5 py-4">
             <div class="notch notch-light -right-3"></div>
             <div class="notch notch-light -left-3"></div>
@@ -182,7 +210,6 @@
         </div>
       </div>
 
-      <!-- محطات الرحلة -->
       <div class="px-5 mt-6">
         <div class="flex items-center justify-between mb-3">
           <h3 class="serif text-[var(--ink)] text-lg">محطات رحلتكم</h3>
@@ -192,7 +219,7 @@
       </div>
     </div>
 
-    <!-- ============ PASS VIEW (المعلومات كبطاقة موسّعة) ============ -->
+    <!-- ============ PASS VIEW ============ -->
     <div id="viewPass" class="hidden flex-1 overflow-y-auto no-scrollbar pb-28 stagger">
       <div class="bg-[var(--night)] px-5 pt-6 pb-8 rounded-b-[32px] relative overflow-hidden">
         <div class="orb w-40 h-40 bg-[var(--gold)]/15 -top-10 -left-10"></div>
@@ -203,7 +230,6 @@
       </div>
 
       <div class="px-5 -mt-4 relative z-10 space-y-4">
-        <!-- بطاقة صعود كاملة مع QR -->
         <div class="bg-white rounded-[26px] shadow-deep overflow-hidden">
           <div class="p-5">
             <div class="flex justify-between items-start">
@@ -226,12 +252,11 @@
           <div class="perf-light relative flex items-center gap-4 px-5 py-5 bg-slate-50">
             <div class="notch -right-3"></div>
             <div class="notch -left-3"></div>
-            <canvas id="passQr" class="rounded-xl border border-[var(--line)]"></canvas>
+            <canvas id="passQr" class="rounded-xl border border-[var(--line)] shrink-0"></canvas>
             <p class="text-[10px] text-[var(--gray)] leading-relaxed">أظهروا هذا الرمز عند أي نقطة خدمة داخل الفندق للتحقق السريع من إقامتكم</p>
           </div>
         </div>
 
-        <!-- تسجيل الوصول/المغادرة الرسمي -->
         <div class="bg-gradient-to-br from-[var(--night)] to-[var(--night2)] rounded-3xl p-5 text-white">
           <div class="flex items-center gap-3">
             <span class="icon-badge bg-white/10 text-[var(--gold)]">{{clock}}</span>
@@ -240,7 +265,6 @@
           <p class="text-white/45 text-[10px] leading-relaxed mt-3 pt-3 border-t border-white/10">يُرجى تسليم مفتاح الغرفة والأساور لمكتب الاستقبال عند المغادرة. للتأخير في الخروج، يُرجى التواصل مع الاستقبال حسب التوافر.</p>
         </div>
 
-        <!-- الواي فاي وخزائن الأمانات -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
           <div class="flex items-center gap-3">
             <span class="icon-badge bg-[var(--teal-soft)] text-[var(--teal)]">{{wifi}}</span>
@@ -249,7 +273,6 @@
           <p class="text-[var(--gray)] text-[10px] leading-relaxed mt-3 pt-3 border-t border-[var(--line)]">الفندق غير مسؤول عن أي مقتنيات ثمينة تُترك خارج الخزانة الآمنة.</p>
         </div>
 
-        <!-- مواعيد الوجبات -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">مواعيد الوجبات الرئيسية</h3>
           <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الإفطار</span><span class="font-extrabold text-[var(--ink)]">٧:٠٠ – ١٠:٠٠ ص</span></div>
@@ -264,7 +287,6 @@
           </div>
         </div>
 
-        <!-- البارات -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1.5">البارات ومواعيد العمل</h3>
           <div id="barsList" class="space-y-2"></div>
@@ -274,19 +296,17 @@
           </div>
         </div>
 
-        <!-- التواصل مع الاستقبال -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-3">التواصل مع الاستقبال</h3>
           <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-3.5">
             <div class="flex items-center gap-3">
-              <span class="icon-badge bg-[var(--coral-soft,#FFE8DF)] text-[var(--coral)]">{{phone}}</span>
+              <span class="icon-badge bg-[var(--gold-soft)] text-[var(--coral)]">{{phone}}</span>
               <div><p id="receptionHotelLabel" class="text-xs font-extrabold text-[var(--ink)]"></p><p class="text-[10px] text-[var(--gray)]">اتصلوا من هاتف الغرفة الداخلي</p></div>
             </div>
             <span id="receptionExt" class="text-2xl font-extrabold text-[var(--coral)]"></span>
           </div>
         </div>
 
-        <!-- تعليمات هامة -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">تعليمات هامة لإقامتكم</h3>
           <ul class="space-y-2 text-[11px] text-slate-600 leading-relaxed">
@@ -312,22 +332,22 @@
           </button>
         </div>
 
-        <button onclick="confirmLogout()" class="press w-full text-center text-[var(--coral-d)] text-xs font-bold py-2">إنهاء الرحلة وتسجيل الخروج</button>
+        <button onclick="confirmLogout()" class="press w-full text-center text-[var(--coral-d)] text-xs font-bold py-3 bg-red-50 rounded-2xl hover:bg-red-100 transition-all">إنهاء الرحلة وتسجيل الخروج</button>
       </div>
     </div>
 
-    <!-- تنقل سفلي ثابت -->
+    <!-- NAV -->
     <nav class="absolute bottom-5 left-5 right-5 z-20 bg-[var(--night)]/95 backdrop-blur-lg rounded-2xl px-6 py-3.5 flex justify-around items-center shadow-deep">
       <button id="navHome" onclick="switchAppTab('home')" class="flex flex-col items-center gap-1 text-[var(--gold)] text-lg">
         {{home}}<span class="text-[9px] font-bold">رحلتي</span>
       </button>
-      <button id="navPass" onclick="switchAppTab('pass')" class="flex flex-col items-center gap-1 text-white/40 text-lg">
+      <button id="navPass" onclick="switchAppTab('pass')" class="flex flex-col items-center gap-1 text-[var(--nav-off)] text-lg">
         {{ticket}}<span class="text-[9px] font-bold">البطاقة</span>
       </button>
     </nav>
   </section>
 
-  <!-- ===================== DETAIL — محطة الرحلة ===================== -->
+  <!-- ===================== DETAIL ===================== -->
   <section id="screenDetail" class="screen flex-col h-full absolute inset-0 z-30 bg-[var(--sand)]">
     <div class="relative h-[54%] shrink-0 overflow-hidden">
       <div id="detailTrack" class="track absolute inset-0"></div>
@@ -380,20 +400,21 @@
     <p id="qrUnsupported" class="hidden text-white text-xs text-center px-8 absolute inset-0 flex items-center justify-center bg-black">جهازك/متصفحك لا يدعم مسح QR مباشرة. الرجاء استخدام كود الحجز بدلاً من ذلك.</p>
   </div>
 
-  <div id="qrShowModal" class="hidden absolute inset-0 z-40 bg-black/70 flex items-center justify-center p-8" onclick="this.classList.add('hidden')">
-    <div class="bg-white rounded-3xl p-6 text-center" onclick="event.stopPropagation()">
-      <canvas id="qrCanvas"></canvas>
-      <p class="text-xs text-[var(--gray)] mt-3">امسحوا هذا الكود من جهاز آخر لتجربة الدخول عبر QR</p>
-      <button onclick="document.getElementById('qrShowModal').classList.add('hidden')" class="mt-3 text-xs font-bold text-[var(--coral)]">إغلاق</button>
-    </div>
-  </div>
-
 </div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
 
 <script>
 /* =========================================================================
-   أيقونات خطية (SVG)
+   COMPLETE JAVASCRIPT - With Cloudflare Worker Integration
    ========================================================================= */
+
+const API_CONFIG = {
+  baseUrl: 'https://okgini-proxy.gm-093.workers.dev',
+  timeout: 10000
+};
+
 const ICONS = {
   camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7l1.4-2.6h5.2L16 7"/><circle cx="12" cy="13.5" r="3.4"/></svg>',
   calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
@@ -418,15 +439,14 @@ const ICONS = {
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-5.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2V21h3.5a1 1 0 0 0 1-1V9.5"/></svg>',
   check:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 };
+
 function ic(name){ return ICONS[name] || ''; }
+
 function hydrateIcons(){
-  // الوسم <script> يقع خارج #frame في شجرة الصفحة، لذلك هذا الاستبدال
-  // لا يمس كود الجافاسكربت إطلاقاً مهما كان محتواه.
   const root = document.getElementById('frame');
   if(!root) return;
-  root.innerHTML = root.innerHTML.replace(/\{\{(\w+)\}\}/g, (m,name)=> ic(name));
+  root.innerHTML = root.innerHTML.replace(/\{\{(\w+)\}\}/g, (m, name) => ic(name));
 }
-hydrateIcons();
 
 function buildStarfield(id, count){
   const el = document.getElementById(id); if(!el) return;
@@ -437,7 +457,6 @@ function buildStarfield(id, count){
   }
   el.innerHTML = html;
 }
-buildStarfield('starfield', 45); buildStarfield('starfield2', 35); buildStarfield('starfield3', 35);
 
 function buildBubbles(id, count){
   const el = document.getElementById(id); if(!el) return;
@@ -448,9 +467,7 @@ function buildBubbles(id, count){
   }
   el.innerHTML = html;
 }
-buildBubbles('bubbles', 16);
 
-/* ---------------- توليد رمز QR بأمان (مع تعويض عند تعذّر تحميل المكتبة) ---------------- */
 function renderQR(canvasEl, text, size){
   if(!canvasEl) return;
   try{
@@ -463,6 +480,7 @@ function renderQR(canvasEl, text, size){
   }catch(e){}
   drawQrFallback(canvasEl, text, size);
 }
+
 function drawQrFallback(canvasEl, text, size){
   canvasEl.width = size; canvasEl.height = size;
   const ctx = canvasEl.getContext('2d');
@@ -473,9 +491,6 @@ function drawQrFallback(canvasEl, text, size){
   ctx.fillText(text, size/2, size/2);
 }
 
-/* =========================================================================
-   البيانات — استبدل validateCode()/GUEST_DB باستدعاء الـ API الحقيقي لديك
-   ========================================================================= */
 const IMG = {
   poolAerial:"https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=80&auto=format&fit=crop",
   poolLoungers:"https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=900&q=80&auto=format&fit=crop",
@@ -488,6 +503,7 @@ const IMG = {
   suite:"https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=900&q=80&auto=format&fit=crop",
   coralReef:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=80&auto=format&fit=crop"
 };
+
 function daysFromNow(n){ const d=new Date(); d.setDate(d.getDate()+n); d.setHours(0,0,0,0); return d; }
 
 const GUEST_DB = {
@@ -502,7 +518,6 @@ const GUEST_DB = {
     heroImgs:[IMG.poolLoungers, IMG.hotelArch] }
 };
 
-/* البارات الرسمية بمواعيدها كما وردت في نشرة الفندق */
 const BARS = [
   { name:"Pub Bar 222", hotel:"Cataract Resort", hours:"١٠:٠٠ ص – ٧:٠٠ م" },
   { name:"Pergola Bar", hotel:"Cataract Resort", hours:"٧:٠٠ – ١١:٠٠ م" },
@@ -537,12 +552,139 @@ const DETAILS = {
 let session = null;
 let qrStream = null;
 
-/* ---------------- Slider عام ---------------- */
+/* =========================================================================
+   CLOUDFLARE WORKER API SERVICE
+   ========================================================================= */
+
+class CloudflareApiService {
+  async validateGuestToken(token) {
+    try {
+      console.log('🔍 Fetching guest data for token:', token);
+      
+      const url = `${API_CONFIG.baseUrl}/?lid=${encodeURIComponent(token)}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      let guestData = null;
+      
+      if (Array.isArray(data)) {
+        guestData = data.find(guest => 
+          String(guest.token || '').toLowerCase() === token.toLowerCase()
+        );
+        
+        if (!guestData) {
+          guestData = data.find(guest => 
+            String(guest.token || '').toLowerCase().includes(token.toLowerCase()) ||
+            token.toLowerCase().includes(String(guest.token || '').toLowerCase())
+          );
+        }
+        
+        if (!guestData && data.length > 0) guestData = data[0];
+      } else {
+        guestData = data;
+      }
+
+      if (!guestData) throw new Error('No guest found');
+
+      return { success: true, data: this.mapOkginiGuest(guestData, token) };
+    } catch (error) {
+      console.error('❌ API error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  mapOkginiGuest(data, token) {
+    const firstName = data.firstName || '';
+    const lastName = data.name || '';
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim() || 'Guest';
+    
+    const pmsPropertyId = data.pmsPropertyId || '';
+    let hotelName = 'Cataract Resort';
+    let hotelKey = 'resort';
+    let mealPlan = 'Hard All-Inclusive';
+    let receptionExt = '4';
+    
+    if (pmsPropertyId.toLowerCase().includes('laylina')) {
+      hotelName = 'Cataract Layalina';
+      hotelKey = 'layalina';
+      mealPlan = 'Soft All-Inclusive';
+      receptionExt = '3';
+    }
+
+    const boardTypeMap = {
+      'AI': 'Hard All-Inclusive',
+      'ALLS': 'Soft All-Inclusive',
+      'HB': 'Half Board',
+      'BB': 'Bed & Breakfast',
+      'FB': 'Full Board'
+    };
+    if (data.boardType && boardTypeMap[data.boardType]) {
+      mealPlan = boardTypeMap[data.boardType];
+    }
+    
+    const checkIn = data.arrivalDate || data.checkInDate || new Date().toISOString().split('T')[0];
+    const checkOut = data.departureDate || new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+
+    const heroImgs = hotelKey === 'layalina'
+      ? [IMG.palmBeach, IMG.coralReef, IMG.beachAerial]
+      : [IMG.poolAerial, IMG.beachAerial, IMG.suite];
+
+    return {
+      id: data.id || '',
+      token: data.token || token,
+      reservationNumber: data.reservationNumber || '',
+      name: fullName,
+      hotel: hotelName,
+      hotelKey: hotelKey,
+      room: data.roomNumber || '---',
+      checkIn: new Date(checkIn),
+      checkOut: new Date(checkOut),
+      language: data.language || 'en',
+      nationality: data.nationality || '',
+      numberOfAdults: parseInt(data.numberOfAdults || '0'),
+      numberOfChildren: parseInt(data.numberOfChildren || '0'),
+      mealPlan: mealPlan,
+      receptionExt: receptionExt,
+      heroImgs: heroImgs,
+      personalPin: data.personalPin || '',
+      boardType: data.boardType || ''
+    };
+  }
+}
+
+const apiService = new CloudflareApiService();
+
+/* =========================================================================
+   FUNCTIONS
+   ========================================================================= */
+
+function showToast(message, type = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast ' + type;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
 function makeSlider(track, images, {dotsEl=null, interval=4000}={}){
   let idx = 0, timer = null, startX = null;
   track.innerHTML = images.map(src=>`<div class="slide" style="width:${100/images.length}%"><img src="${src}" class="w-full h-full object-cover"></div>`).join("");
   track.style.width = images.length*100+"%";
-  if(dotsEl) dotsEl.innerHTML = images.map((_,i)=>`<span class="w-1.5 h-1.5 rounded-full ${i===0?'bg-[var(--gold)] w-4':'bg-white/40'} transition-all"></span>`).join("");
+  if(dotsEl) dotsEl.innerHTML = images.map((_,i)=>`<span class="h-1.5 rounded-full ${i===0?'bg-[var(--gold)] w-4':'bg-white/40 w-1.5'} transition-all"></span>`).join("");
+  
   function apply(){
     track.style.transform = `translateX(${idx*(100/images.length)}%)`;
     if(dotsEl) [...dotsEl.children].forEach((d,i)=>{ d.className = `h-1.5 rounded-full transition-all ${i===idx?'bg-[var(--gold)] w-4':'bg-white/40 w-1.5'}`; });
@@ -550,22 +692,44 @@ function makeSlider(track, images, {dotsEl=null, interval=4000}={}){
   function go(i){ idx=(i+images.length)%images.length; apply(); resetTimer(); }
   function next(){ go(idx+1); }
   function resetTimer(){ if(timer) clearInterval(timer); timer=setInterval(next, interval); }
-  track.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; }, {passive:true});
-  track.addEventListener('touchend', e=>{
+  
+  track.ontouchstart = e => { startX = e.touches[0].clientX; };
+  track.ontouchend = e => {
     if(startX===null) return;
     const dx = e.changedTouches[0].clientX - startX;
     if(Math.abs(dx) > 35){ dx < 0 ? go(idx+1) : go(idx-1); }
     startX = null;
-  }, {passive:true});
+  };
+  
   apply(); resetTimer();
   return { go };
 }
 
-/* ---------------- تهيئة ---------------- */
-document.addEventListener("DOMContentLoaded", () => {
-  buildDemoBox();
+document.addEventListener("DOMContentLoaded", async () => {
+  hydrateIcons();
+  buildStarfield('starfield', 45); 
+  buildStarfield('starfield2', 35); 
+  buildStarfield('starfield3', 35);
+  buildBubbles('bubbles', 16);
+
+  // Check for URL parameters first
+  const urlParams = new URLSearchParams(window.location.search);
+  const lid = urlParams.get('lid');
+  const token = urlParams.get('token');
+  const type = urlParams.get('type');
+  
+  if (lid || token || type) {
+    const urlToken = token || lid || type;
+    console.log('🚀 Auto-login with token:', urlToken);
+    await attemptLogin(urlToken);
+    return;
+  }
+
   const saved = localStorage.getItem("cataract_session_code");
-  if (saved) attemptLogin(saved, true);
+  if (saved) {
+    console.log('📱 Restoring session:', saved);
+    await attemptLogin(saved, true);
+  }
   setInterval(checkSessionValidity, 20000);
 });
 
@@ -582,63 +746,104 @@ function switchAuthTab(tab){
     passBtn.className="flex-1 py-2.5 rounded-xl transition text-slate-400";
   }
 }
-switchAuthTab('pass');
 
-function toggleDemoBox(){ document.getElementById("demoBox").classList.toggle("hidden"); }
-function buildDemoBox(){
-  const box = document.getElementById("demoBox");
-  const rows = [
-    {code:"CR2026", label:"إقامة نشطة الآن — Cataract Resort"},
-    {code:"LY2026", label:"إقامة لم تبدأ بعد — Cataract Layalina"},
-    {code:"EXP2025", label:"إقامة منتهية — لتجربة رسالة الشكر"}
-  ];
-  box.innerHTML = rows.map(r=>`
-    <div class="flex items-center justify-between">
-      <div><strong class="text-[var(--ink)]">${r.code}</strong><span class="block text-[var(--gray)]">${r.label}</span></div>
-      <button onclick="showDemoQr('${r.code}')" class="text-[var(--coral)] font-bold text-[10px] underline">QR</button>
-    </div>`).join("");
-}
-function showDemoQr(code){
-  document.getElementById("qrShowModal").classList.remove("hidden");
-  renderQR(document.getElementById("qrCanvas"), code, 200);
+function extractCode(raw){
+  if(!raw) return "";
+  let clean = raw.trim();
+  if(clean.includes("code=")){
+    const match = clean.match(/code=([a-zA-Z0-9]+)/i);
+    if(match) return match[1].toUpperCase();
+  }
+  if(clean.includes("/")){
+    const parts = clean.split("/").filter(Boolean);
+    clean = parts[parts.length - 1];
+  }
+  if(clean.includes("?")){
+    clean = clean.split("?")[0];
+  }
+  return clean.toUpperCase();
 }
 
-/* ---------------- تسجيل الدخول ---------------- */
 function handlePasswordLogin(){
-  const val = document.getElementById("passInput").value.trim().toUpperCase();
+  const val = extractCode(document.getElementById("passInput").value);
   if(!val) return;
   attemptLogin(val);
 }
-function attemptLogin(code, silent){
+
+async function attemptLogin(code, silent) {
   const guest = GUEST_DB[code];
   const errEl = document.getElementById("loginError");
-  if(!guest){
-    if(!silent) errEl.classList.remove("hidden");
+  
+  if (!silent) {
+    const loginBtn = document.querySelector('#passForm button[onclick="handlePasswordLogin()"]');
+    if (loginBtn) {
+      loginBtn.innerHTML = '<span class="inline-block animate-spin">⏳</span> جاري التحميل...';
+      loginBtn.disabled = true;
+    }
+  }
+
+  console.log('🔑 Attempting login with:', code);
+
+  // Try Cloudflare Worker API first
+  const apiResult = await apiService.validateGuestToken(code);
+  
+  let guestData = null;
+  
+  if (apiResult.success && apiResult.data) {
+    guestData = apiResult.data;
+    console.log('✅ Guest from API:', guestData);
+    GUEST_DB[code] = guestData;
+  } else if (guest) {
+    guestData = guest;
+    console.log('⚠️ Using local fallback:', guestData);
+  }
+
+  if (!silent) {
+    const loginBtn = document.querySelector('#passForm button[onclick="handlePasswordLogin()"]');
+    if (loginBtn) {
+      loginBtn.innerHTML = 'دخول إلى رحلتي';
+      loginBtn.disabled = false;
+    }
+  }
+
+  if (!guestData) {
+    if (!silent) {
+      errEl.classList.remove("hidden");
+      showToast('كود غير صحيح', 'error');
+    }
     localStorage.removeItem("cataract_session_code");
     return;
   }
+
   const now = new Date();
-  session = {...guest, code};
-  if(now < guest.checkIn){
+  session = { ...guestData, code };
+
+  if (now < guestData.checkIn) {
     localStorage.setItem("cataract_session_code", code);
     showScreen("screenPending");
-    document.getElementById("pendingName").innerText = guest.name;
-    document.getElementById("pendingHotel").innerText = guest.hotel;
-    document.getElementById("pendingDate").innerText = guest.checkIn.toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    document.getElementById("pendingName").innerText = guestData.name;
+    document.getElementById("pendingHotel").innerText = guestData.hotel;
+    document.getElementById("pendingDate").innerText = guestData.checkIn.toLocaleDateString('ar-EG', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
     return;
   }
-  if(now > guest.checkOut){
+
+  if (now > guestData.checkOut) {
     localStorage.removeItem("cataract_session_code");
-    if(!silent) errEl.classList.remove("hidden");
-    document.getElementById("thanksName").innerText = `أهلاً ${guest.name}،`;
-    document.getElementById("thanksHotel").innerText = guest.hotel;
+    if (!silent) errEl.classList.remove("hidden");
+    document.getElementById("thanksName").innerText = `أهلاً ${guestData.name}،`;
+    document.getElementById("thanksHotel").innerText = guestData.hotel;
     showScreen("screenThanks");
     return;
   }
+
   errEl.classList.add("hidden");
   localStorage.setItem("cataract_session_code", code);
-  enterApp(guest);
+  enterApp(guestData);
+  showToast('تم تسجيل الدخول بنجاح', 'success');
 }
+
 function checkSessionValidity(){
   if(!session) return;
   const now = new Date();
@@ -646,6 +851,7 @@ function checkSessionValidity(){
   else if(now >= session.checkIn && document.getElementById("screenPending").classList.contains("show")){ enterApp(session); }
   else { updateJourney(); }
 }
+
 function triggerAutoLogout(){
   localStorage.removeItem("cataract_session_code");
   document.getElementById("thanksName").innerText = `أهلاً ${session.name}،`;
@@ -653,33 +859,51 @@ function triggerAutoLogout(){
   session = null;
   showScreen("screenThanks");
 }
-function confirmLogout(){ if(confirm("هل تريد إنهاء الرحلة وتسجيل الخروج؟")) logout(); }
-function logout(){ localStorage.removeItem("cataract_session_code"); session=null; goToLogin(); }
-function goToLogin(){ document.getElementById("passInput").value=""; showScreen("screenLogin"); }
 
-/* ---------------- الدخول للتطبيق ---------------- */
-function enterApp(guest){
+function confirmLogout(){ 
+  if(confirm("هل تريد إنهاء الرحلة وتسجيل الخروج؟")) {
+    logout();
+    showToast('تم تسجيل الخروج', 'success');
+  }
+}
+
+function logout(){ 
+  localStorage.removeItem("cataract_session_code"); 
+  session=null; 
+  goToLogin(); 
+}
+
+function goToLogin(){ 
+  document.getElementById("passInput").value=""; 
+  showScreen("screenLogin"); 
+}
+
+function enterApp(guest) {
   session = guest;
   showScreen("screenApp");
-  document.getElementById("appAvatar").innerText = guest.name.trim()[0];
+  
+  document.getElementById("appAvatar").innerText = guest.name.trim()[0] || 'G';
   document.getElementById("homeName").innerText = guest.name.split(" ")[0];
   document.getElementById("homeRoom").innerText = guest.room;
+  
   document.getElementById("infoGuestName").innerText = guest.name;
   document.getElementById("infoHotelName").innerText = guest.hotel;
   document.getElementById("infoRoom").innerText = guest.room;
-  document.getElementById("infoCheckIn").innerText = guest.checkIn.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
-  document.getElementById("infoCheckOut").innerText = guest.checkOut.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
-  document.getElementById("infoMealPlan").innerText = guest.mealPlan;
+  document.getElementById("infoCheckIn").innerText = guest.checkIn.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+  document.getElementById("infoCheckOut").innerText = guest.checkOut.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+  document.getElementById("infoMealPlan").innerText = guest.mealPlan || 'Hard All-Inclusive';
   document.getElementById("receptionHotelLabel").innerText = `استقبال ${guest.hotel}`;
-  document.getElementById("receptionExt").innerText = guest.receptionExt;
+  document.getElementById("receptionExt").innerText = guest.receptionExt || '4';
+  
   document.getElementById("heroTitle").innerText = guest.hotel;
-  document.getElementById("journeyIn").innerText = guest.checkIn.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
-  document.getElementById("journeyOut").innerText = guest.checkOut.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
+  document.getElementById("journeyIn").innerText = guest.checkIn.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+  document.getElementById("journeyOut").innerText = guest.checkOut.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+  
   updateJourney();
-  makeSlider(document.getElementById("heroTrack"), guest.heroImgs, {dotsEl:document.getElementById("heroDots"), interval:4200});
+  makeSlider(document.getElementById("heroTrack"), guest.heroImgs, { dotsEl: document.getElementById("heroDots"), interval: 4200 });
   buildBento();
   buildBars();
-  renderQR(document.getElementById("passQr"), guest.code, 76);
+  renderQR(document.getElementById("passQr"), guest.token || guest.code || code, 76);
   switchAppTab('home');
 }
 
@@ -713,7 +937,7 @@ function buildBento(){
     {key:'spa', title:'الاسترخاء', sub:'سبا الشعاب', img:IMG.spa, big:false},
     {key:'pool', title:'الشاطئ', sub:'المسبح والشاطئ الخاص', img:IMG.poolAerial, big:false}
   ];
-  document.getElementById("bentoGrid").innerHTML = items.map((it,i)=>`
+  document.getElementById("bentoGrid").innerHTML = items.map((it)=>`
     <button onclick="openDetail('${it.key}')" class="press relative rounded-[22px] overflow-hidden shadow-soft border border-[var(--line)] text-right ${it.big?'col-span-2 h-36':'h-32'}">
       <img src="${it.img}" class="absolute inset-0 w-full h-full object-cover">
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent"></div>
@@ -730,15 +954,14 @@ function switchAppTab(tab){
   if(tab==='home'){
     home.classList.remove("hidden"); pass.classList.add("hidden");
     navHome.className="flex flex-col items-center gap-1 text-[var(--gold)] text-lg";
-    navPass.className="flex flex-col items-center gap-1 text-white/40 text-lg";
+    navPass.className="flex flex-col items-center gap-1 text-[var(--nav-off)] text-lg";
   } else {
     pass.classList.remove("hidden"); home.classList.add("hidden");
     navPass.className="flex flex-col items-center gap-1 text-[var(--gold)] text-lg";
-    navHome.className="flex flex-col items-center gap-1 text-white/40 text-lg";
+    navHome.className="flex flex-col items-center gap-1 text-[var(--nav-off)] text-lg";
   }
 }
 
-/* ---------------- شاشة التفاصيل ---------------- */
 function openDetail(key){
   const d = DETAILS[key];
   document.getElementById("detailBadge").innerText = d.badge;
@@ -758,6 +981,7 @@ function openDetail(key){
   buildDetailFilm(d.imgs);
   showScreen("screenDetail");
 }
+
 function buildDetailFilm(imgs){
   document.getElementById("detailFilm").innerHTML = imgs.map((src,i)=>`
     <div onclick="jumpDetail(${i})" class="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-soft cursor-pointer">
@@ -766,51 +990,74 @@ function buildDetailFilm(imgs){
       ${i===imgs.length-1 && imgs.length>1?`<span class="absolute inset-0 bg-black/55 flex items-center justify-center text-white text-[11px] font-extrabold">+${imgs.length}</span>`:''}
     </div>`).join("");
 }
+
 function jumpDetail(i){
   const track = document.getElementById("detailTrack");
   track.style.transform = `translateX(${i*(100/track.children.length)}%)`;
 }
+
 function closeDetail(){ showScreen("screenApp"); }
 
-/* ---------------- إدارة الشاشات ---------------- */
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=> s.classList.remove("show"));
   document.getElementById(id).classList.add("show");
 }
 
-/* ---------------- مسح QR ---------------- */
+let qrScanCanvas = null, qrScanCtx = null, qrScanning = false;
+
 async function openQrScanner(){
   const modal = document.getElementById("qrModal");
   const unsupported = document.getElementById("qrUnsupported");
-  modal.classList.remove("hidden");
-  if(!('BarcodeDetector' in window)){ unsupported.classList.remove("hidden"); return; }
   unsupported.classList.add("hidden");
+  modal.classList.remove("hidden");
+
+  if(typeof jsQR === 'undefined'){
+    unsupported.innerText = "تعذّر تحميل مكوّن قراءة QR. تأكد من الاتصال بالإنترنت ثم أعد المحاولة.";
+    unsupported.classList.remove("hidden");
+    return;
+  }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    unsupported.innerText = "متصفحك لا يدعم الوصول إلى الكاميرا أو أن الموقع لا يعمل عبر اتصال آمن (HTTPS). استخدم كود الحجز بدلاً من ذلك.";
+    unsupported.classList.remove("hidden");
+    return;
+  }
+
   try{
     qrStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
     const video = document.getElementById("qrVideo");
     video.srcObject = qrStream;
     await video.play();
-    const detector = new BarcodeDetector({formats:["qr_code"]});
-    const scanLoop = async ()=>{
-      if(!qrStream) return;
-      try{
-        const codes = await detector.detect(video);
-        if(codes.length>0){
-          const val = codes[0].rawValue.trim().toUpperCase();
+
+    qrScanCanvas = qrScanCanvas || document.createElement('canvas');
+    qrScanCtx = qrScanCanvas.getContext('2d', {willReadFrequently:true});
+    qrScanning = true;
+
+    const scanLoop = ()=>{
+      if(!qrScanning || !qrStream) return;
+      if(video.readyState === video.HAVE_ENOUGH_DATA){
+        qrScanCanvas.width = video.videoWidth;
+        qrScanCanvas.height = video.videoHeight;
+        qrScanCtx.drawImage(video, 0, 0, qrScanCanvas.width, qrScanCanvas.height);
+        const frame = qrScanCtx.getImageData(0, 0, qrScanCanvas.width, qrScanCanvas.height);
+        const result = jsQR(frame.data, frame.width, frame.height, {inversionAttempts:"dontInvert"});
+        if(result && result.data){
+          const code = extractCode(result.data);
           closeQrScanner();
-          attemptLogin(val);
+          attemptLogin(code);
           return;
         }
-      }catch(e){}
+      }
       requestAnimationFrame(scanLoop);
     };
     scanLoop();
   }catch(err){
+    unsupported.innerText = "تعذّر الوصول إلى الكاميرا (تحقق من إذن الكاميرا واتصال HTTPS الآمن). استخدم كود الحجز بدلاً من ذلك.";
     unsupported.classList.remove("hidden");
-    unsupported.innerText = "تعذر الوصول إلى الكاميرا. الرجاء استخدام كود الحجز بدلاً من ذلك.";
   }
 }
+
 function closeQrScanner(){
+  qrScanning = false;
   document.getElementById("qrModal").classList.add("hidden");
   if(qrStream){ qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
 }
