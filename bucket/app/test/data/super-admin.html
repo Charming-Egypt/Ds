@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin — Discover Sharm</title>
+<link rel="icon" href="data:,">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+tailwind.config = {
+    theme: { extend: {
+        fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Playfair Display', 'serif'] },
+        colors: {
+            ink: { 950: '#0c0918', 900: '#15101f', 800: '#1f1830', 700: '#2b2140', 600: '#382a54' },
+            brand: { 50: '#fff7ed', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            gold: { 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
+        }
+    } }
+}
+</script>
+<style>
+    * { box-sizing: border-box; }
+    body { background: #0c0918; color: #f1eef9; font-family: 'Inter', sans-serif; margin: 0; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #382a54; border-radius: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* ---------- Layout ---------- */
+    .app-shell { display: flex; min-height: 100vh; }
+    .sidebar { width: 264px; flex-shrink: 0; background: #100c1c; border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 40; transition: transform .3s ease; }
+    .main-area { flex: 1; margin-left: 264px; min-height: 100vh; display: flex; flex-direction: column; }
+    @media (max-width: 900px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); }
+        .main-area { margin-left: 0; }
+    }
+    .side-link { display: flex; align-items: center; gap: .8rem; padding: .75rem 1.1rem; border-radius: 12px; color: rgba(255,255,255,.55); font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all .15s ease; margin: 0 .7rem; }
+    .side-link:hover { background: rgba(255,255,255,.04); color: #fff; }
+    .side-link.active { background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(249,115,22,.06)); color: #fdba74; }
+    .side-link.active i { color: #f97316; }
+    .side-link i { width: 18px; text-align: center; color: rgba(255,255,255,.35); }
+    .side-section-label { font-size: 10px; letter-spacing: .15em; color: rgba(255,255,255,.28); font-weight: 700; padding: 1.1rem 1.4rem .4rem; }
+
+    .topbar { height: 68px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,.06); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; position: sticky; top: 0; background: rgba(12,9,24,.85); backdrop-filter: blur(10px); z-index: 30; }
+    .content { padding: 1.75rem; flex: 1; }
+
+    .card { background: #171029; border: 1px solid #2b2140; border-radius: 18px; }
+    .stat-card { background: linear-gradient(160deg, #171029, #1f1830); border: 1px solid #2b2140; border-radius: 18px; padding: 1.25rem; position: relative; overflow: hidden; }
+    .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+
+    .btn { display: inline-flex; align-items: center; gap: .5rem; font-weight: 600; font-size: 13.5px; border-radius: 12px; padding: .6rem 1.1rem; cursor: pointer; transition: all .15s ease; border: none; }
+    .btn-primary { background: linear-gradient(135deg,#fb923c,#c2410c); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: rgba(255,255,255,.05); color: #e5e0f0; border: 1px solid rgba(255,255,255,.08); }
+    .btn-ghost:hover { background: rgba(255,255,255,.09); }
+    .btn-danger { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+    .btn-sm { padding: .4rem .8rem; font-size: 12px; border-radius: 9px; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .field-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #a99fc4; margin-bottom: .35rem; display: block; text-transform: uppercase; }
+    .field-input, .field-select, .field-textarea { width: 100%; background: #1f1830; border: 1px solid #382a54; border-radius: 10px; padding: .6rem .8rem; color: #fff; font-size: 13.5px; outline: none; transition: border-color .15s; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: #f97316; }
+    .field-textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+
+    table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.data-table th { text-align: left; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a80a3; padding: .7rem .9rem; border-bottom: 1px solid #2b2140; white-space: nowrap; }
+    table.data-table td { padding: .8rem .9rem; border-bottom: 1px solid #211934; vertical-align: middle; }
+    table.data-table tr:hover td { background: rgba(255,255,255,.015); }
+    [dir="rtl"] table.data-table th, [dir="rtl"] table.data-table td { text-align: right; }
+
+    .badge { display: inline-flex; align-items: center; gap: .3rem; font-size: 11px; font-weight: 700; padding: .25rem .6rem; border-radius: 99px; }
+    .badge-green { background: rgba(34,197,94,.15); color: #4ade80; }
+    .badge-red { background: rgba(239,68,68,.15); color: #f87171; }
+    .badge-gold { background: rgba(251,191,36,.15); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .badge-gray { background: rgba(255,255,255,.08); color: #b3abc7; }
+
+    /* ---------- Modal ---------- */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(6,4,14,.75); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 2.5rem 1rem; }
+    .modal-panel { background: #171029; border: 1px solid #2b2140; border-radius: 22px; width: 100%; max-width: 720px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.6); }
+    .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #2b2140; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #171029; border-radius: 22px 22px 0 0; z-index: 5; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer { padding: 1.1rem 1.5rem; border-top: 1px solid #2b2140; display: flex; justify-content: flex-end; gap: .6rem; position: sticky; bottom: 0; background: #171029; border-radius: 0 0 22px 22px; }
+
+    /* ---------- Multi-language field ---------- */
+    .ml-field { border: 1px solid #2b2140; border-radius: 14px; padding: .9rem; margin-bottom: .9rem; background: rgba(255,255,255,.015); }
+    .ml-field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+    .ml-lang-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+    .ml-lang-tab { font-size: 10.5px; font-weight: 700; padding: .25rem .55rem; border-radius: 7px; background: rgba(255,255,255,.05); color: #8a80a3; cursor: pointer; border: 1px solid transparent; }
+    .ml-lang-tab.active { background: rgba(249,115,22,.18); color: #fb923c; border-color: rgba(249,115,22,.35); }
+    .ml-lang-tab.missing::after { content: '•'; color: #f87171; margin-left: 3px; }
+
+    .repeater-item { border: 1px solid #2b2140; border-radius: 14px; padding: .9rem; margin-bottom: .75rem; background: rgba(255,255,255,.015); position: relative; }
+    .repeater-remove { position: absolute; top: .6rem; right: .6rem; width: 26px; height: 26px; border-radius: 8px; background: rgba(239,68,68,.12); color: #f87171; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; }
+    [dir="rtl"] .repeater-remove { right: auto; left: .6rem; }
+
+    .tab-strip { display: flex; gap: .4rem; border-bottom: 1px solid #2b2140; margin-bottom: 1.25rem; overflow-x: auto; }
+    .tab-strip button { font-size: 13px; font-weight: 600; padding: .6rem 1rem; color: #8a80a3; border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; }
+    .tab-strip button.active { color: #fb923c; border-color: #f97316; }
+
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1f1830; border: 1px solid #382a54; padding: .8rem 1.3rem; border-radius: 12px; font-size: 13px; z-index: 200; box-shadow: 0 12px 34px rgba(0,0,0,.4); display: flex; align-items: center; gap: .6rem; }
+    .toast.success { border-color: rgba(34,197,94,.4); }
+    .toast.error { border-color: rgba(239,68,68,.4); }
+
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.2); border-top-color: #f97316; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #6b6382; }
+    .thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #2b2140; }
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN ==================== -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center p-5" style="background: radial-gradient(circle at 30% 20%, #1f1830, #0c0918 60%);">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#fdba74,#c2410c)">
+                <i class="fa-solid fa-crown text-2xl text-ink-950"></i>
+            </div>
+            <h1 class="font-display text-2xl font-bold">Super Admin</h1>
+            <p class="text-sm" style="color:#8a80a3">Discover Sharm — full control panel</p>
+        </div>
+        <div class="card p-6">
+            <div id="loginError" class="hidden mb-4 text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl p-3"></div>
+            <label class="field-label">Email</label>
+            <input id="loginEmail" type="email" class="field-input mb-3" placeholder="you@company.com">
+            <label class="field-label">Password</label>
+            <input id="loginPassword" type="password" class="field-input mb-5" placeholder="••••••••">
+            <button onclick="Auth.login()" id="loginBtn" class="btn btn-primary w-full justify-center mb-3"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+            <button onclick="Auth.loginGoogle()" class="btn btn-ghost w-full justify-center"><i class="fa-brands fa-google"></i> Continue with Google</button>
+        </div>
+        <p class="text-center text-[11px] mt-5" style="color:#4d456a">Access is restricted to Super Admin accounts only.<br>See README.md for how to grant the first Super Admin.</p>
+    </div>
+</div>
+
+<!-- ==================== NOT AUTHORIZED ==================== -->
+<div id="notAuthorizedScreen" class="hidden min-h-screen flex items-center justify-center p-5">
+    <div class="text-center max-w-sm">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-red-500/10">
+            <i class="fa-solid fa-lock text-2xl text-red-400"></i>
+        </div>
+        <h1 class="font-display text-xl font-bold mb-2">Not Authorized</h1>
+        <p class="text-sm mb-6" style="color:#8a80a3">This account isn't registered as a Super Admin. Ask an existing Super Admin to grant access, or see README.md.</p>
+        <button onclick="Auth.logout()" class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+    </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="appShell" class="hidden app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="flex items-center gap-3 px-5 py-5 border-b" style="border-color:rgba(255,255,255,.06)">
+            <img src="../data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
+            <div>
+                <p class="font-display font-bold text-sm leading-tight">Discover Sharm</p>
+                <p class="text-[10px]" style="color:#fb923c">SUPER ADMIN</p>
+            </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-3" id="sideNav">
+            <p class="side-section-label">Overview</p>
+            <div class="side-link active" data-section="dashboard" onclick="Router.go('dashboard')"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
+
+            <p class="side-section-label">Catalog</p>
+            <div class="side-link" data-section="hotels" onclick="Router.go('hotels')"><i class="fa-solid fa-hotel"></i> Hotels</div>
+            <div class="side-link" data-section="excursions" onclick="Router.go('excursions')"><i class="fa-solid fa-umbrella-beach"></i> Excursions</div>
+            <div class="side-link" data-section="transfers" onclick="Router.go('transfers')"><i class="fa-solid fa-shuttle-van"></i> Transfers</div>
+            <div class="side-link" data-section="restaurants" onclick="Router.go('restaurants')"><i class="fa-solid fa-utensils"></i> Restaurants</div>
+            <div class="side-link" data-section="destinations" onclick="Router.go('destinations')"><i class="fa-solid fa-map-location-dot"></i> Destinations</div>
+            <div class="side-link" data-section="articles" onclick="Router.go('articles')"><i class="fa-solid fa-newspaper"></i> Articles</div>
+
+            <p class="side-section-label">Operations</p>
+            <div class="side-link" data-section="bookings" onclick="Router.go('bookings')"><i class="fa-regular fa-calendar-check"></i> Bookings</div>
+            <div class="side-link" data-section="reviews" onclick="Router.go('reviews')"><i class="fa-solid fa-star"></i> Reviews</div>
+            <div class="side-link" data-section="users" onclick="Router.go('users')"><i class="fa-solid fa-users"></i> Users</div>
+            <div class="side-link" data-section="owners" onclick="Router.go('owners')"><i class="fa-solid fa-user-shield"></i> Owner Access</div>
+
+            <p class="side-section-label">System</p>
+            <div class="side-link" data-section="languages" onclick="Router.go('languages')"><i class="fa-solid fa-language"></i> Languages</div>
+            <div class="side-link" data-section="settings" onclick="Router.go('settings')"><i class="fa-solid fa-gear"></i> Settings</div>
+        </nav>
+        <div class="p-4 border-t" style="border-color:rgba(255,255,255,.06)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm" style="background:linear-gradient(135deg,#fdba74,#c2410c); color:#0c0918" id="adminAvatar">A</div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold truncate" id="adminName">Admin</p>
+                    <p class="text-[10px] truncate" style="color:#6b6382" id="adminEmail"></p>
+                </div>
+            </div>
+            <button onclick="Auth.logout()" class="btn btn-ghost btn-sm w-full justify-center"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <div class="topbar">
+            <div class="flex items-center gap-3">
+                <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="md:hidden w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,.06)"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="font-display text-lg font-bold" id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="badge badge-green" id="connStatus"><i class="fa-solid fa-circle text-[6px]"></i> Live</span>
+            </div>
+        </div>
+        <div class="content" id="contentArea">
+
+            <!-- ============ DASHBOARD ============ -->
+            <section class="page-section active" id="section-dashboard">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="statsGrid"></div>
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="card p-5">
+                        <h3 class="font-display font-bold mb-4">Recent Bookings</h3>
+                        <div id="recentBookings" class="space-y-2"><div class="empty-state">Loading…</div></div>
+                    </div>
+                    <div class="card p-5">
+                        <h3 class="font-display font-bold mb-4">Recent Reviews</h3>
+                        <div id="recentReviews" class="space-y-2"><div class="empty-state">Loading…</div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections are injected by their own modules -->
+            <section class="page-section" id="section-hotels"></section>
+            <section class="page-section" id="section-excursions"></section>
+            <section class="page-section" id="section-transfers"></section>
+            <section class="page-section" id="section-restaurants"></section>
+            <section class="page-section" id="section-destinations"></section>
+            <section class="page-section" id="section-articles"></section>
+            <section class="page-section" id="section-bookings"></section>
+            <section class="page-section" id="section-reviews"></section>
+            <section class="page-section" id="section-users"></section>
+            <section class="page-section" id="section-owners"></section>
+            <section class="page-section" id="section-languages"></section>
+            <section class="page-section" id="section-settings"></section>
+
+        </div>
+    </div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script>
+// ==================== CONFIG LOADING (same data/configs.json as the main site) ====================
+let firebaseConfig = {}, APP_CONFIG = {};
+let fbApp, fbAuth, fbDB, currentAdminUid = null;
+
+async function loadConfig() {
+    const res = await fetch('../data/configs.json');
+    const cfg = await res.json();
+    firebaseConfig = cfg.firebase || {};
+    APP_CONFIG = cfg.app || {};
+}
+
+// ==================== TOAST ====================
+const Toast = {
+    show(msg, type) {
+        const el = document.createElement('div');
+        el.className = 'toast ' + (type || '');
+        el.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}" style="color:${type === 'error' ? '#f87171' : '#4ade80'}"></i> ${msg}`;
+        document.getElementById('toastRoot').appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 2600);
+    }
+};
+
+// ==================== AUTH (gated by admins/{uid} = true in Firebase) ====================
+const Auth = {
+    async login() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pass = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginBtn'); const original = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> Signing in…'; btn.disabled = true;
+        try {
+            await fbAuth.signInWithEmailAndPassword(email, pass);
+        } catch (err) {
+            this.showError(err.message);
+        } finally { btn.innerHTML = original; btn.disabled = false; }
+    },
+    async loginGoogle() {
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            await fbAuth.signInWithPopup(provider);
+        } catch (err) { this.showError(err.message); }
+    },
+    showError(msg) {
+        const el = document.getElementById('loginError');
+        el.textContent = msg; el.classList.remove('hidden');
+    },
+    logout() { fbAuth.signOut(); }
+};
+
+function showScreen(name) {
+    document.getElementById('loginScreen').classList.toggle('hidden', name !== 'login');
+    document.getElementById('notAuthorizedScreen').classList.toggle('hidden', name !== 'unauthorized');
+    document.getElementById('appShell').classList.toggle('hidden', name !== 'app');
+}
+
+async function handleAuthState(user) {
+    if (!user) { showScreen('login'); return; }
+    try {
+        const snap = await fbDB.ref('admins/' + user.uid).once('value');
+        if (snap.val() !== true) { showScreen('unauthorized'); return; }
+    } catch (err) { showScreen('unauthorized'); return; }
+    currentAdminUid = user.uid;
+    document.getElementById('adminName').textContent = user.displayName || (user.email || '').split('@')[0];
+    document.getElementById('adminEmail').textContent = user.email || '';
+    document.getElementById('adminAvatar').textContent = ((user.displayName || user.email || 'A')[0] || 'A').toUpperCase();
+    showScreen('app');
+    fbDB.ref('.info/connected').on('value', snap => {
+        const el = document.getElementById('connStatus');
+        if (snap.val() === true) el.className = 'badge badge-green', el.innerHTML = '<i class="fa-solid fa-circle text-[6px]"></i> Live';
+        else el.className = 'badge badge-red', el.innerHTML = '<i class="fa-solid fa-circle text-[6px]"></i> Reconnecting…';
+    });
+    App.init();
+}
+
+// ==================== ROUTER ====================
+const Router = {
+    current: 'dashboard',
+    titles: { dashboard: 'Dashboard', hotels: 'Hotels', excursions: 'Excursions', transfers: 'Transfers', restaurants: 'Restaurants & Cafes', destinations: 'Destinations', articles: 'Articles', bookings: 'Bookings', reviews: 'Reviews', users: 'Users', owners: 'Owner Access', languages: 'Languages', settings: 'Settings' },
+    go(section) {
+        this.current = section;
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + section).classList.add('active');
+        document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.section === section));
+        document.getElementById('pageTitle').textContent = this.titles[section] || section;
+        document.getElementById('sidebar').classList.remove('open');
+        if (Modules[section] && Modules[section].onShow) Modules[section].onShow();
+    }
+};
+
+// Each catalog/section module registers itself here with an onShow() that (re)renders its section.
+const Modules = {};
+
+// ==================== APP INIT ====================
+const App = {
+    inited: false,
+    init() {
+        if (this.inited) return;
+        this.inited = true;
+        Dashboard.load();
+        Object.keys(Modules).forEach(key => { if (Modules[key].init) Modules[key].init(); });
+    }
+};
+
+// ==================== DASHBOARD OVERVIEW ====================
+const Dashboard = {
+    async load() {
+        const statsGrid = document.getElementById('statsGrid');
+        const defs = [
+            { key: 'hotels', label: 'Hotels', icon: 'fa-hotel', color: '#f97316' },
+            { key: 'excursions', label: 'Excursions', icon: 'fa-umbrella-beach', color: '#fbbf24' },
+            { key: 'bookings', label: 'Total Bookings', icon: 'fa-calendar-check', color: '#4ade80' },
+            { key: 'users', label: 'Registered Users', icon: 'fa-users', color: '#60a5fa' }
+        ];
+        statsGrid.innerHTML = defs.map(d => `
+            <div class="stat-card">
+                <div class="stat-icon mb-3" style="background:${d.color}22; color:${d.color}"><i class="fa-solid ${d.icon}"></i></div>
+                <p class="text-2xl font-bold font-display" id="stat-${d.key}">—</p>
+                <p class="text-xs" style="color:#8a80a3">${d.label}</p>
+            </div>`).join('');
+
+        const [hotelsSnap, excSnap, bookingsSnap, usersSnap] = await Promise.all([
+            fbDB.ref('admin_content/hotels').once('value'),
+            fbDB.ref('admin_content/excursions').once('value'),
+            fbDB.ref('allBookings').once('value'),
+            fbDB.ref('users').once('value')
+        ]);
+        const jsonHotels = await fetch('../data/hotels.json').then(r => r.json()).catch(() => []);
+        const jsonExc = await fetch('../data/excursions.json').then(r => r.json()).catch(() => []);
+        const hotelCount = mergeCount(jsonHotels, hotelsSnap.val());
+        const excCount = mergeCount(jsonExc, excSnap.val());
+        document.getElementById('stat-hotels').textContent = hotelCount;
+        document.getElementById('stat-excursions').textContent = excCount;
+        const bookings = objToArray(bookingsSnap.val());
+        document.getElementById('stat-bookings').textContent = bookings.length;
+        document.getElementById('stat-users').textContent = objToArray(usersSnap.val()).length;
+
+        const recentB = bookings.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).slice(0, 6);
+        document.getElementById('recentBookings').innerHTML = recentB.length ? recentB.map(b => `
+            <div class="flex items-center justify-between text-xs py-2 border-b" style="border-color:#211934">
+                <div><p class="font-semibold">${b.type === 'hotel' ? (b.hotelName || 'Hotel') : b.type === 'excursion' ? (b.title || 'Excursion') : (b.vehicleType || 'Transfer')}</p><p style="color:#6b6382">${b.name || ''} · ${(b.createdAt || '').slice(0, 10)}</p></div>
+                <span class="badge badge-gold">${(b.currency || 'EGP')} ${Math.round(b.total || 0)}</span>
+            </div>`).join('') : '<div class="empty-state">No bookings yet</div>';
+
+        const reviewTypes = ['hotel', 'excursion', 'transfer'];
+        const reviewSnaps = await Promise.all(reviewTypes.map(t => fbDB.ref('reviews/' + t).once('value')));
+        let allReviews = [];
+        reviewTypes.forEach((t, i) => {
+            const byItem = reviewSnaps[i].val() || {};
+            Object.keys(byItem).forEach(itemId => {
+                Object.keys(byItem[itemId]).forEach(rid => allReviews.push(Object.assign({ type: t, itemId, id: rid }, byItem[itemId][rid])));
+            });
+        });
+        allReviews.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        document.getElementById('recentReviews').innerHTML = allReviews.length ? allReviews.slice(0, 6).map(r => `
+            <div class="text-xs py-2 border-b" style="border-color:#211934">
+                <div class="flex items-center justify-between"><p class="font-semibold">${r.name || 'Guest'}</p><span style="color:#fbbf24">${'★'.repeat(r.rating || 0)}${'☆'.repeat(5 - (r.rating || 0))}</span></div>
+                <p style="color:#6b6382" class="truncate">${r.comment || ''}</p>
+            </div>`).join('') : '<div class="empty-state">No reviews yet</div>';
+    }
+};
+Modules.dashboard = { onShow() { Dashboard.load(); } };
+
+function mergeCount(jsonArr, fbObj) {
+    const ids = new Set((jsonArr || []).map(x => x.id));
+    if (fbObj) Object.keys(fbObj).forEach(id => { if (fbObj[id]._deleted) ids.delete(id); else ids.add(id); });
+    return ids.size;
+}
+function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
+function generateId() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+// ==================== SHARED: LANGUAGES (loaded from ../data/lang/manifest.json) ====================
+let LANGS = [{ code: 'en', label: 'English' }];
+async function loadLangs() {
+    try {
+        const manifest = await fetch('../data/lang/manifest.json').then(r => r.json());
+        LANGS = manifest.languages;
+    } catch (e) { console.warn('Could not load language manifest', e); }
+}
+
+// ==================== SHARED: MULTI-LANGUAGE FIELD COMPONENT ====================
+// Renders a labeled field with a language-tab strip; only the active language's input is visible.
+// value: either a plain string (legacy), an { en: '...', ar: '...' } object, or (if opts.arrayField)
+// an { en: [...], ar: [...] } object of string arrays edited as one-item-per-line text.
+function mlFieldHtml(fieldId, label, value, opts) {
+    opts = opts || {};
+    const val = (value && typeof value === 'object') ? value : { en: value || '' };
+    const isArray = !!opts.arrayField;
+    const useTextarea = !!(opts.textarea || isArray);
+    return `
+        <div class="ml-field" data-ml-field="${fieldId}">
+            <div class="ml-field-header">
+                <label class="field-label" style="margin:0">${label}${opts.required ? ' *' : ''}${isArray ? ' <span style="font-weight:400;text-transform:none;color:#6b6382">(one per line)</span>' : ''}</label>
+                <div class="ml-lang-tabs">
+                    ${LANGS.map((l, i) => `<span class="ml-lang-tab ${i === 0 ? 'active' : ''}" data-lang="${l.code}" onclick="MlField.switchTab(this)">${l.code.toUpperCase()}</span>`).join('')}
+                </div>
+            </div>
+            ${LANGS.map((l, i) => {
+                const raw = val[l.code] || (isArray ? [] : '');
+                const text = isArray ? (Array.isArray(raw) ? raw.join('\n') : (raw || '')) : (typeof raw === 'string' ? raw : '');
+                const style = i === 0 ? '' : 'display:none';
+                return useTextarea
+                    ? `<textarea rows="${isArray ? 4 : 3}" class="field-textarea ml-input" data-lang-input="${l.code}" style="${style}">${escapeHtml(text)}</textarea>`
+                    : `<input type="text" class="field-input ml-input" data-lang-input="${l.code}" style="${style}" value="${escapeHtml(text)}">`;
+            }).join('')}
+        </div>`;
+}
+function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+const MlField = {
+    switchTab(tabEl) {
+        const wrap = tabEl.closest('.ml-field');
+        wrap.querySelectorAll('.ml-lang-tab').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+        const lang = tabEl.dataset.lang;
+        wrap.querySelectorAll('.ml-input').forEach(inp => { inp.style.display = inp.dataset.langInput === lang ? '' : 'none'; });
+    },
+    // Reads a rendered ml-field back into { en: '...', ar: '...', ... } (or array form if isArray)
+    collect(container, fieldId, isArray) {
+        const wrap = container.querySelector(`[data-ml-field="${fieldId}"]`);
+        if (!wrap) return isArray ? {} : {};
+        const out = {};
+        wrap.querySelectorAll('.ml-input').forEach(inp => {
+            const lang = inp.dataset.langInput;
+            const v = inp.value.trim();
+            if (isArray) { out[lang] = v ? v.split('\n').map(s => s.trim()).filter(Boolean) : []; }
+            else if (v) out[lang] = v;
+        });
+        return out;
+    }
+};
+
+// ==================== SHARED: CRUD HELPERS ====================
+async function loadJsonBaseline(file) {
+    try { return await fetch('../data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
+}
+function mergeWithOverrides(baseArray, fbObj) {
+    const byId = {};
+    (baseArray || []).forEach(item => { byId[item.id] = item; });
+    if (fbObj) Object.keys(fbObj).forEach(id => {
+        const ov = Object.assign({ id }, fbObj[id]);
+        if (ov._deleted) delete byId[id]; else byId[id] = ov;
+    });
+    return Object.values(byId);
+}
+function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
+function openModal(title, bodyHtml, footerHtml, opts) {
+    opts = opts || {};
+    document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+            <div class="modal-panel" style="max-width:${opts.wide ? '920px' : '720px'}">
+                <div class="modal-header">
+                    <h3 class="font-display font-bold text-lg">${title}</h3>
+                    <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,.06)"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body" id="modalBody">${bodyHtml}</div>
+                <div class="modal-footer">${footerHtml}</div>
+            </div>
+        </div>`;
+}
+function confirmDialog(message, onConfirm) {
+    openModal('Confirm', `<p class="text-sm" style="color:#c9c2dd">${message}</p>`,
+        `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="(${onConfirm.toString()})(); closeModal();" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>`);
+}
+
+// ==================== BOOT ====================
+(async function boot() {
+    await loadConfig();
+    await loadLangs();
+    fbApp = firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbDB = firebase.database();
+    fbAuth.onAuthStateChanged(handleAuthState);
+})();
+
+// ==================== HOTELS MODULE ====================
+Modules.hotels = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-hotels').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <input id="hotelsSearch" oninput="Modules.hotels.render()" class="field-input" style="max-width:280px" placeholder="Search hotels…">
+                <button onclick="Modules.hotels.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Hotel</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
+                <th></th><th>Name</th><th>Category</th><th>Price/Night</th><th>Rating</th><th>Rooms</th><th></th>
+            </tr></thead><tbody id="hotelsTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/hotels');
+        loadJsonBaseline('hotels').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => {
+                this.live = mergeWithOverrides(this.baseline, snap.val());
+                this.render();
+            });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('hotelsTbody');
+        if (!tbody) return;
+        const q = (document.getElementById('hotelsSearch').value || '').toLowerCase();
+        const list = this.live.filter(h => !q || (t(h.name) || '').toLowerCase().includes(q));
+        tbody.innerHTML = list.length ? list.map(h => `
+            <tr>
+                <td><img src="${h.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(h.name)}</td>
+                <td><span class="badge badge-gray capitalize">${h.category || '—'}</span></td>
+                <td>${(h.rooms && h.rooms[0]) ? 'EGP ' + h.rooms[0].price : (h.price ? 'EGP ' + h.price : '—')}</td>
+                <td><i class="fa-solid fa-star text-gold-400"></i> ${h.rating || '—'}</td>
+                <td>${(h.rooms || []).length}</td>
+                <td class="text-right"><button onclick="Modules.hotels.openForm('${h.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.hotels.remove('${h.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">No hotels found</div></td></tr>`;
+    },
+    openForm(id) {
+        const h = id ? this.live.find(x => x.id === id) : { id: generateId(), category: 'luxury', rating: 5, reviews: 0, amenities: {}, images: [], rooms: [], unavailableDates: [] };
+        const isNew = !id;
+        openModal(isNew ? 'Add Hotel' : 'Edit Hotel', `
+            <div class="tab-strip">
+                <button class="active" onclick="FormTabs.switch(this,'basic')">Basic Info</button>
+                <button onclick="FormTabs.switch(this,'rooms')">Rooms (${(h.rooms || []).length})</button>
+                <button onclick="FormTabs.switch(this,'dates')">Unavailable Dates</button>
+            </div>
+            <div data-tab="basic">
+                ${mlFieldHtml('name', 'Hotel Name', h.name, { required: true })}
+                ${mlFieldHtml('location', 'Location', h.location)}
+                ${mlFieldHtml('description', 'Short Description', h.description, { textarea: true })}
+                ${mlFieldHtml('fullDescription', 'Full Description', h.fullDescription, { textarea: true })}
+                ${mlFieldHtml('amenities', 'Amenities', h.amenities, { arrayField: true })}
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="field-label">Category</label><select id="f_category" class="field-select"><option value="luxury" ${h.category === 'luxury' ? 'selected' : ''}>Luxury</option><option value="business" ${h.category === 'business' ? 'selected' : ''}>Business</option><option value="budget" ${h.category === 'budget' ? 'selected' : ''}>Budget</option></select></div>
+                    <div><label class="field-label">Rating (0–5)</label><input id="f_rating" type="number" step="0.1" min="0" max="5" value="${h.rating || 5}" class="field-input"></div>
+                    <div><label class="field-label">Review Count</label><input id="f_reviews" type="number" value="${h.reviews || 0}" class="field-input"></div>
+                    <div><label class="field-label">Bestseller</label><select id="f_bestseller" class="field-select"><option value="false" ${!h.bestseller ? 'selected' : ''}>No</option><option value="true" ${h.bestseller ? 'selected' : ''}>Yes</option></select></div>
+                </div>
+                <label class="field-label">Main Image URL</label><input id="f_image" class="field-input mb-3" value="${escapeHtml(h.image || '')}">
+                <label class="field-label">Gallery Image URLs (one per line)</label><textarea id="f_images" rows="3" class="field-textarea">${escapeHtml((h.images || []).join('\n'))}</textarea>
+            </div>
+            <div data-tab="rooms" class="hidden">
+                <div id="roomsRepeater">${(h.rooms || []).map((r, i) => Modules.hotels.roomRow(r, i)).join('')}</div>
+                <button onclick="Modules.hotels.addRoom()" class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Room Type</button>
+            </div>
+            <div data-tab="dates" class="hidden">
+                <label class="field-label">Unavailable Dates (YYYY-MM-DD, one per line)</label>
+                <textarea id="f_unavailableDates" rows="8" class="field-textarea">${escapeHtml((h.unavailableDates || []).join('\n'))}</textarea>
+                <p class="text-xs mt-2" style="color:#6b6382">These dates will be disabled in the check-in/check-out date pickers on the site.</p>
+            </div>
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.hotels.save('${h.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Hotel</button>`, { wide: true });
+        window._roomCount = (h.rooms || []).length;
+    },
+    roomRow(r, i) {
+        r = r || {};
+        return `<div class="repeater-item" data-room-index="${i}">
+            <div class="repeater-remove" onclick="this.closest('[data-room-index]').remove()"><i class="fa-solid fa-xmark"></i></div>
+            ${mlFieldHtml('room_type_' + i, 'Room Type', r.type)}
+            ${mlFieldHtml('room_beds_' + i, 'Beds', r.beds)}
+            ${mlFieldHtml('room_desc_' + i, 'Description', r.description, { textarea: true })}
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div><label class="field-label">Price/Night (EGP)</label><input class="field-input" data-room-field="price" type="number" value="${r.price || ''}"></div>
+                <div><label class="field-label">Size</label><input class="field-input" data-room-field="size" value="${escapeHtml(r.size || '')}" placeholder="35m²"></div>
+                <div><label class="field-label">Max Guests</label><input class="field-input" data-room-field="guests" type="number" value="${r.guests || 2}"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div><label class="field-label">Base Occupancy</label><input class="field-input" data-room-field="baseOccupancy" type="number" value="${r.baseOccupancy || 2}"></div>
+                <div><label class="field-label">Extra Adult Fee</label><input class="field-input" data-room-field="extraAdultFee" type="number" value="${r.extraAdultFee || 0}"></div>
+                <div><label class="field-label">Free Children/Room</label><input class="field-input" data-room-field="freeChildrenPerRoom" type="number" value="${r.freeChildrenPerRoom != null ? r.freeChildrenPerRoom : 2}"></div>
+            </div>
+            <label class="field-label">Room Image URL</label><input class="field-input" data-room-field="image" value="${escapeHtml(r.image || '')}">
+        </div>`;
+    },
+    addRoom() {
+        const i = window._roomCount++;
+        document.getElementById('roomsRepeater').insertAdjacentHTML('beforeend', this.roomRow({}, i));
+    },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            name: MlField.collect(body, 'name'),
+            location: MlField.collect(body, 'location'),
+            description: MlField.collect(body, 'description'),
+            fullDescription: MlField.collect(body, 'fullDescription'),
+            amenities: MlField.collect(body, 'amenities', true),
+            category: document.getElementById('f_category').value,
+            rating: parseFloat(document.getElementById('f_rating').value) || 0,
+            reviews: parseInt(document.getElementById('f_reviews').value) || 0,
+            bestseller: document.getElementById('f_bestseller').value === 'true',
+            image: document.getElementById('f_image').value.trim(),
+            images: document.getElementById('f_images').value.split('\n').map(s => s.trim()).filter(Boolean),
+            unavailableDates: document.getElementById('f_unavailableDates').value.split('\n').map(s => s.trim()).filter(Boolean),
+            rooms: []
+        };
+        body.querySelectorAll('[data-room-index]').forEach((roomEl, i) => {
+            const get = f => roomEl.querySelector(`[data-room-field="${f}"]`).value;
+            data.rooms.push({
+                type: MlField.collect(roomEl, 'room_type_' + i),
+                beds: MlField.collect(roomEl, 'room_beds_' + i),
+                description: MlField.collect(roomEl, 'room_desc_' + i),
+                price: parseFloat(get('price')) || 0,
+                size: get('size'),
+                guests: parseInt(get('guests')) || 2,
+                baseOccupancy: parseInt(get('baseOccupancy')) || 2,
+                extraAdultFee: parseFloat(get('extraAdultFee')) || 0,
+                freeChildrenPerRoom: parseInt(get('freeChildrenPerRoom')) || 0,
+                image: get('image')
+            });
+        });
+        if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
+        try {
+            await this.fbRef.child(id).set(data);
+            Toast.show(isNew ? 'Hotel added' : 'Hotel updated', 'success');
+            closeModal();
+        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this hotel? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Hotel deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+function t(val) { return (val && typeof val === 'object') ? (val.en || Object.values(val)[0] || '') : (val || ''); }
+const FormTabs = {
+    switch(btn, tabName) {
+        const strip = btn.parentElement;
+        strip.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const modalBody = strip.closest('.modal-body') || strip.parentElement;
+        modalBody.querySelectorAll('[data-tab]').forEach(t => t.classList.toggle('hidden', t.dataset.tab !== tabName));
+    }
+};
+
+// ==================== EXCURSIONS MODULE ====================
+Modules.excursions = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-excursions').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <input id="excSearch" oninput="Modules.excursions.render()" class="field-input" style="max-width:280px" placeholder="Search excursions…">
+                <button onclick="Modules.excursions.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Excursion</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
+                <th></th><th>Title</th><th>Category</th><th>Price</th><th>Duration</th><th>Rating</th><th></th>
+            </tr></thead><tbody id="excTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/excursions');
+        loadJsonBaseline('excursions').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('excTbody'); if (!tbody) return;
+        const q = (document.getElementById('excSearch').value || '').toLowerCase();
+        const list = this.live.filter(x => !q || (t(x.title) || '').toLowerCase().includes(q));
+        tbody.innerHTML = list.length ? list.map(x => `
+            <tr>
+                <td><img src="${x.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(x.title)}</td>
+                <td><span class="badge badge-gray">${x.category || '—'}</span></td>
+                <td>EGP ${x.price || 0}</td>
+                <td>${t(x.duration) || '—'}</td>
+                <td><i class="fa-solid fa-star text-gold-400"></i> ${x.rating || '—'}</td>
+                <td class="text-right"><button onclick="Modules.excursions.openForm('${x.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.excursions.remove('${x.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">No excursions found</div></td></tr>`;
+    },
+    openForm(id) {
+        const x = id ? this.live.find(i => i.id === id) : { id: generateId(), category: 'City Tour', rating: 5, reviews: 0, images: [], includes: {}, excludes: {}, whatToBring: {}, itinerary: [] };
+        const isNew = !id;
+        openModal(isNew ? 'Add Excursion' : 'Edit Excursion', `
+            <div class="tab-strip">
+                <button class="active" onclick="FormTabs.switch(this,'basic')">Basic Info</button>
+                <button onclick="FormTabs.switch(this,'lists')">Included / Bring</button>
+                <button onclick="FormTabs.switch(this,'itinerary')">Itinerary (${(x.itinerary || []).length})</button>
+            </div>
+            <div data-tab="basic">
+                ${mlFieldHtml('title', 'Title', x.title, { required: true })}
+                ${mlFieldHtml('description', 'Short Description', x.description, { textarea: true })}
+                ${mlFieldHtml('fullDescription', 'Full Description', x.fullDescription, { textarea: true })}
+                ${mlFieldHtml('duration', 'Duration', x.duration)}
+                ${mlFieldHtml('meetingPoint', 'Meeting Point', x.meetingPoint)}
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="field-label">Category (internal key)</label><input id="f_category" class="field-input" value="${escapeHtml(x.category || '')}" placeholder="Diving, Desert Safari, Boat Trip, City Tour"></div>
+                    <div><label class="field-label">Price (EGP/person)</label><input id="f_price" type="number" value="${x.price || 0}" class="field-input"></div>
+                    <div><label class="field-label">Rating (0–5)</label><input id="f_rating" type="number" step="0.1" min="0" max="5" value="${x.rating || 5}" class="field-input"></div>
+                    <div><label class="field-label">Review Count</label><input id="f_reviews" type="number" value="${x.reviews || 0}" class="field-input"></div>
+                </div>
+                <label class="field-label">Main Image URL</label><input id="f_image" class="field-input mb-3" value="${escapeHtml(x.image || '')}">
+                <label class="field-label">Gallery Image URLs (one per line)</label><textarea id="f_images" rows="3" class="field-textarea">${escapeHtml((x.images || []).join('\n'))}</textarea>
+            </div>
+            <div data-tab="lists" class="hidden">
+                ${mlFieldHtml('includes', "What's Included", x.includes, { arrayField: true })}
+                ${mlFieldHtml('excludes', "What's Not Included", x.excludes, { arrayField: true })}
+                ${mlFieldHtml('whatToBring', 'What to Bring', x.whatToBring, { arrayField: true })}
+            </div>
+            <div data-tab="itinerary" class="hidden">
+                <div id="itineraryRepeater">${(x.itinerary || []).map((s, i) => Modules.excursions.stepRow(s, i)).join('')}</div>
+                <button onclick="Modules.excursions.addStep()" class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Step</button>
+            </div>
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.excursions.save('${x.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Excursion</button>`, { wide: true });
+        window._stepCount = (x.itinerary || []).length;
+    },
+    stepRow(s, i) {
+        s = s || {};
+        return `<div class="repeater-item" data-step-index="${i}">
+            <div class="repeater-remove" onclick="this.closest('[data-step-index]').remove()"><i class="fa-solid fa-xmark"></i></div>
+            <label class="field-label">Time</label><input class="field-input mb-2" data-step-field="time" value="${escapeHtml(s.time || '')}" placeholder="07:30" style="max-width:120px">
+            ${mlFieldHtml('step_title_' + i, 'Step Title', s.title)}
+            ${mlFieldHtml('step_desc_' + i, 'Step Description', s.description, { textarea: true })}
+        </div>`;
+    },
+    addStep() { const i = window._stepCount++; document.getElementById('itineraryRepeater').insertAdjacentHTML('beforeend', this.stepRow({}, i)); },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            title: MlField.collect(body, 'title'),
+            description: MlField.collect(body, 'description'),
+            fullDescription: MlField.collect(body, 'fullDescription'),
+            duration: MlField.collect(body, 'duration'),
+            meetingPoint: MlField.collect(body, 'meetingPoint'),
+            includes: MlField.collect(body, 'includes', true),
+            excludes: MlField.collect(body, 'excludes', true),
+            whatToBring: MlField.collect(body, 'whatToBring', true),
+            category: document.getElementById('f_category').value.trim(),
+            price: parseFloat(document.getElementById('f_price').value) || 0,
+            rating: parseFloat(document.getElementById('f_rating').value) || 0,
+            reviews: parseInt(document.getElementById('f_reviews').value) || 0,
+            image: document.getElementById('f_image').value.trim(),
+            images: document.getElementById('f_images').value.split('\n').map(s => s.trim()).filter(Boolean),
+            itinerary: []
+        };
+        body.querySelectorAll('[data-step-index]').forEach((stepEl, i) => {
+            data.itinerary.push({
+                time: stepEl.querySelector('[data-step-field="time"]').value.trim(),
+                title: MlField.collect(stepEl, 'step_title_' + i),
+                description: MlField.collect(stepEl, 'step_desc_' + i)
+            });
+        });
+        if (!data.title.en) { Toast.show('English title is required', 'error'); return; }
+        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Excursion added' : 'Excursion updated', 'success'); closeModal(); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this excursion? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Excursion deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+
+// ==================== TRANSFERS MODULE ====================
+Modules.transfers = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-transfers').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <p class="text-sm" style="color:#8a80a3">Vehicles used for airport pickup / drop-off transfers.</p>
+                <button onclick="Modules.transfers.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Vehicle</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
+                <th></th><th>Vehicle Type</th><th>Capacity</th><th>Price</th><th></th>
+            </tr></thead><tbody id="trTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/transfers');
+        loadJsonBaseline('transfers').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('trTbody'); if (!tbody) return;
+        tbody.innerHTML = this.live.length ? this.live.map(v => `
+            <tr>
+                <td><img src="${v.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(v.vehicleType)}</td>
+                <td>${v.capacity || '—'} pax</td>
+                <td>EGP ${v.price || 0}</td>
+                <td class="text-right"><button onclick="Modules.transfers.openForm('${v.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.transfers.remove('${v.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No vehicles yet</div></td></tr>`;
+    },
+    openForm(id) {
+        const v = id ? this.live.find(i => i.id === id) : { id: generateId(), capacity: 7, features: {}, images: [] };
+        const isNew = !id;
+        openModal(isNew ? 'Add Vehicle' : 'Edit Vehicle', `
+            ${mlFieldHtml('vehicleType', 'Vehicle Type', v.vehicleType, { required: true })}
+            ${mlFieldHtml('description', 'Description', v.description, { textarea: true })}
+            ${mlFieldHtml('features', 'Features', v.features, { arrayField: true })}
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div><label class="field-label">Capacity (passengers)</label><input id="f_capacity" type="number" value="${v.capacity || 7}" class="field-input"></div>
+                <div><label class="field-label">Price (EGP)</label><input id="f_price" type="number" value="${v.price || 0}" class="field-input"></div>
+            </div>
+            <label class="field-label">Image URL</label><input id="f_image" class="field-input" value="${escapeHtml(v.image || '')}">
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.transfers.save('${v.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Vehicle</button>`);
+    },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            vehicleType: MlField.collect(body, 'vehicleType'),
+            description: MlField.collect(body, 'description'),
+            features: MlField.collect(body, 'features', true),
+            capacity: parseInt(document.getElementById('f_capacity').value) || 7,
+            price: parseFloat(document.getElementById('f_price').value) || 0,
+            image: document.getElementById('f_image').value.trim()
+        };
+        if (!data.vehicleType.en) { Toast.show('English vehicle type is required', 'error'); return; }
+        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Vehicle added' : 'Vehicle updated', 'success'); closeModal(); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this vehicle? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Vehicle deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+
+// ==================== RESTAURANTS MODULE ====================
+Modules.restaurants = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-restaurants').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <input id="restSearch" oninput="Modules.restaurants.render()" class="field-input" style="max-width:280px" placeholder="Search restaurants…">
+                <button onclick="Modules.restaurants.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Restaurant / Cafe</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
+                <th></th><th>Name</th><th>Type</th><th>Cuisine</th><th>Price Level</th><th></th>
+            </tr></thead><tbody id="restTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/restaurants');
+        loadJsonBaseline('restaurants').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('restTbody'); if (!tbody) return;
+        const q = (document.getElementById('restSearch').value || '').toLowerCase();
+        const list = this.live.filter(r => !q || (t(r.name) || '').toLowerCase().includes(q));
+        tbody.innerHTML = list.length ? list.map(r => `
+            <tr>
+                <td><img src="${r.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(r.name)}</td>
+                <td><span class="badge badge-gray capitalize">${r.category || '—'}</span></td>
+                <td>${t(r.cuisine) || '—'}</td>
+                <td>${'$'.repeat(r.priceLevel || 2)}</td>
+                <td class="text-right"><button onclick="Modules.restaurants.openForm('${r.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.restaurants.remove('${r.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state">No restaurants found</div></td></tr>`;
+    },
+    openForm(id) {
+        const r = id ? this.live.find(i => i.id === id) : { id: generateId(), category: 'restaurant', priceLevel: 2, rating: 5, reviews: 0, images: [], menu: [] };
+        const isNew = !id;
+        openModal(isNew ? 'Add Restaurant / Cafe' : 'Edit Restaurant / Cafe', `
+            <div class="tab-strip">
+                <button class="active" onclick="FormTabs.switch(this,'basic')">Basic Info</button>
+                <button onclick="FormTabs.switch(this,'menu')">Menu (${(r.menu || []).length} sections)</button>
+            </div>
+            <div data-tab="basic">
+                ${mlFieldHtml('name', 'Name', r.name, { required: true })}
+                ${mlFieldHtml('cuisine', 'Cuisine', r.cuisine)}
+                ${mlFieldHtml('description', 'Short Description', r.description, { textarea: true })}
+                ${mlFieldHtml('fullDescription', 'Full Description', r.fullDescription, { textarea: true })}
+                ${mlFieldHtml('location', 'Location', r.location)}
+                ${mlFieldHtml('openHours', 'Opening Hours', r.openHours)}
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                    <div><label class="field-label">Type</label><select id="f_category" class="field-select"><option value="restaurant" ${r.category === 'restaurant' ? 'selected' : ''}>Restaurant</option><option value="cafe" ${r.category === 'cafe' ? 'selected' : ''}>Cafe</option></select></div>
+                    <div><label class="field-label">Price Level (1–4)</label><input id="f_priceLevel" type="number" min="1" max="4" value="${r.priceLevel || 2}" class="field-input"></div>
+                    <div><label class="field-label">Rating (0–5)</label><input id="f_rating" type="number" step="0.1" min="0" max="5" value="${r.rating || 5}" class="field-input"></div>
+                </div>
+                <label class="field-label">Main Image URL</label><input id="f_image" class="field-input mb-3" value="${escapeHtml(r.image || '')}">
+                <label class="field-label">Gallery Image URLs (one per line)</label><textarea id="f_images" rows="3" class="field-textarea">${escapeHtml((r.images || []).join('\n'))}</textarea>
+            </div>
+            <div data-tab="menu" class="hidden">
+                <div id="menuRepeater">${(r.menu || []).map((sec, i) => Modules.restaurants.sectionRow(sec, i)).join('')}</div>
+                <button onclick="Modules.restaurants.addSection()" class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Menu Category</button>
+            </div>
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.restaurants.save('${r.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save</button>`, { wide: true });
+        window._sectionCount = (r.menu || []).length;
+    },
+    sectionRow(sec, i) {
+        sec = sec || {};
+        const items = sec.items || [];
+        return `<div class="repeater-item" data-section-index="${i}" style="border-color:#f97316">
+            <div class="repeater-remove" onclick="this.closest('[data-section-index]').remove()"><i class="fa-solid fa-xmark"></i></div>
+            ${mlFieldHtml('sec_cat_' + i, 'Category Name (e.g. Starters)', sec.category)}
+            <div data-items-repeater="${i}">${items.map((it, j) => Modules.restaurants.itemRow(it, i, j)).join('')}</div>
+            <button onclick="Modules.restaurants.addItem(${i})" class="btn btn-ghost btn-sm"><i class="fa-solid fa-plus"></i> Add Item</button>
+        </div>`;
+    },
+    itemRow(it, secIdx, itemIdx) {
+        it = it || {};
+        return `<div class="repeater-item" data-item-index="${itemIdx}" style="background:rgba(255,255,255,.02)">
+            <div class="repeater-remove" onclick="this.closest('[data-item-index]').remove()"><i class="fa-solid fa-xmark"></i></div>
+            ${mlFieldHtml('item_name_' + secIdx + '_' + itemIdx, 'Item Name', it.name)}
+            ${mlFieldHtml('item_desc_' + secIdx + '_' + itemIdx, 'Description', it.description)}
+            <label class="field-label">Price (EGP)</label><input class="field-input" data-item-field="price" type="number" value="${it.price || 0}" style="max-width:140px">
+        </div>`;
+    },
+    addSection() { const i = window._sectionCount++; document.getElementById('menuRepeater').insertAdjacentHTML('beforeend', this.sectionRow({}, i)); },
+    addItem(secIdx) {
+        const repeater = document.querySelector(`[data-items-repeater="${secIdx}"]`);
+        const itemIdx = repeater.children.length;
+        repeater.insertAdjacentHTML('beforeend', this.itemRow({}, secIdx, itemIdx));
+    },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            name: MlField.collect(body, 'name'),
+            cuisine: MlField.collect(body, 'cuisine'),
+            description: MlField.collect(body, 'description'),
+            fullDescription: MlField.collect(body, 'fullDescription'),
+            location: MlField.collect(body, 'location'),
+            openHours: MlField.collect(body, 'openHours'),
+            category: document.getElementById('f_category').value,
+            priceLevel: parseInt(document.getElementById('f_priceLevel').value) || 2,
+            rating: parseFloat(document.getElementById('f_rating').value) || 0,
+            image: document.getElementById('f_image').value.trim(),
+            images: document.getElementById('f_images').value.split('\n').map(s => s.trim()).filter(Boolean),
+            menu: []
+        };
+        body.querySelectorAll('[data-section-index]').forEach(secEl => {
+            const secIdx = secEl.dataset.sectionIndex;
+            const section = { category: MlField.collect(secEl, 'sec_cat_' + secIdx), items: [] };
+            secEl.querySelectorAll('[data-item-index]').forEach(itemEl => {
+                const itemIdx = itemEl.dataset.itemIndex;
+                section.items.push({
+                    name: MlField.collect(itemEl, 'item_name_' + secIdx + '_' + itemIdx),
+                    description: MlField.collect(itemEl, 'item_desc_' + secIdx + '_' + itemIdx),
+                    price: parseFloat(itemEl.querySelector('[data-item-field="price"]').value) || 0
+                });
+            });
+            data.menu.push(section);
+        });
+        if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
+        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this restaurant/cafe? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+
+// ==================== DESTINATIONS MODULE ====================
+Modules.destinations = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-destinations').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <p class="text-sm" style="color:#8a80a3">Popular places shown on the home page (Ras Mohammed, Naama Bay, etc.)</p>
+                <button onclick="Modules.destinations.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Destination</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th></th><th>Name</th><th>Location</th><th>Rating</th><th></th></tr></thead><tbody id="destTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/destinations');
+        loadJsonBaseline('destinations').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('destTbody'); if (!tbody) return;
+        tbody.innerHTML = this.live.length ? this.live.map(d => `
+            <tr>
+                <td><img src="${d.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(d.name)}</td>
+                <td>${t(d.location) || '—'}</td>
+                <td><i class="fa-solid fa-star text-gold-400"></i> ${d.rating || '—'}</td>
+                <td class="text-right"><button onclick="Modules.destinations.openForm('${d.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.destinations.remove('${d.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No destinations yet</div></td></tr>`;
+    },
+    openForm(id) {
+        const d = id ? this.live.find(i => i.id === id) : { id: generateId(), rating: 5, images: [] };
+        const isNew = !id;
+        openModal(isNew ? 'Add Destination' : 'Edit Destination', `
+            ${mlFieldHtml('name', 'Name', d.name, { required: true })}
+            ${mlFieldHtml('tagline', 'Tagline', d.tagline)}
+            ${mlFieldHtml('description', 'Short Description', d.description, { textarea: true })}
+            ${mlFieldHtml('fullDescription', 'Full Description', d.fullDescription, { textarea: true })}
+            ${mlFieldHtml('location', 'Location', d.location)}
+            <label class="field-label">Rating (0–5)</label><input id="f_rating" type="number" step="0.1" min="0" max="5" value="${d.rating || 5}" class="field-input mb-3" style="max-width:140px">
+            <label class="field-label">Main Image URL</label><input id="f_image" class="field-input mb-3" value="${escapeHtml(d.image || '')}">
+            <label class="field-label">Gallery Image URLs (one per line)</label><textarea id="f_images" rows="3" class="field-textarea">${escapeHtml((d.images || []).join('\n'))}</textarea>
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.destinations.save('${d.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save</button>`, { wide: true });
+    },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            name: MlField.collect(body, 'name'),
+            tagline: MlField.collect(body, 'tagline'),
+            description: MlField.collect(body, 'description'),
+            fullDescription: MlField.collect(body, 'fullDescription'),
+            location: MlField.collect(body, 'location'),
+            rating: parseFloat(document.getElementById('f_rating').value) || 0,
+            image: document.getElementById('f_image').value.trim(),
+            images: document.getElementById('f_images').value.split('\n').map(s => s.trim()).filter(Boolean)
+        };
+        if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
+        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this destination? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+
+// ==================== ARTICLES MODULE ====================
+Modules.articles = {
+    baseline: [], live: [], fbRef: null,
+    init() {
+        document.getElementById('section-articles').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <p class="text-sm" style="color:#8a80a3">Travel Guides & Tips blog section on the home page.</p>
+                <button onclick="Modules.articles.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Article</button>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th></th><th>Title</th><th>Author</th><th>Read Time</th><th></th></tr></thead><tbody id="artTbody"></tbody></table></div>`;
+        this.fbRef = fbDB.ref('admin_content/articles');
+        loadJsonBaseline('articles').then(base => {
+            this.baseline = base;
+            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('artTbody'); if (!tbody) return;
+        tbody.innerHTML = this.live.length ? this.live.map(a => `
+            <tr>
+                <td><img src="${a.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
+                <td class="font-semibold">${t(a.title)}</td>
+                <td>${a.author || '—'}</td>
+                <td>${a.readTimeMinutes || '—'} min</td>
+                <td class="text-right"><button onclick="Modules.articles.openForm('${a.id}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button> <button onclick="Modules.articles.remove('${a.id}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No articles yet</div></td></tr>`;
+    },
+    openForm(id) {
+        const a = id ? this.live.find(i => i.id === id) : { id: generateId(), readTimeMinutes: 4 };
+        const isNew = !id;
+        openModal(isNew ? 'Add Article' : 'Edit Article', `
+            ${mlFieldHtml('title', 'Title', a.title, { required: true })}
+            ${mlFieldHtml('excerpt', 'Excerpt', a.excerpt, { textarea: true })}
+            ${mlFieldHtml('content', 'Full Content', a.content, { textarea: true })}
+            <div class="grid grid-cols-3 gap-3 mb-3">
+                <div><label class="field-label">Author</label><input id="f_author" class="field-input" value="${escapeHtml(a.author || 'Discover Sharm Editorial')}"></div>
+                <div><label class="field-label">Read Time (min)</label><input id="f_readTime" type="number" value="${a.readTimeMinutes || 4}" class="field-input"></div>
+            </div>
+            <label class="field-label">Image URL</label><input id="f_image" class="field-input" value="${escapeHtml(a.image || '')}">
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.articles.save('${a.id}', ${isNew})" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save</button>`, { wide: true });
+    },
+    async save(id, isNew) {
+        const body = document.getElementById('modalBody');
+        const data = {
+            title: MlField.collect(body, 'title'),
+            excerpt: MlField.collect(body, 'excerpt'),
+            content: MlField.collect(body, 'content'),
+            author: document.getElementById('f_author').value.trim(),
+            readTimeMinutes: parseInt(document.getElementById('f_readTime').value) || 4,
+            image: document.getElementById('f_image').value.trim()
+        };
+        if (!data.title.en) { Toast.show('English title is required', 'error'); return; }
+        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    remove(id) {
+        confirmDialog('Delete this article? This cannot be undone.', async () => {
+            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
+            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+
+// ==================== BOOKINGS MODULE ====================
+Modules.bookings = {
+    all: [],
+    init() {
+        document.getElementById('section-bookings').innerHTML = `
+            <div class="flex flex-wrap items-center gap-3 mb-5">
+                <select id="bkTypeFilter" onchange="Modules.bookings.render()" class="field-select" style="max-width:160px">
+                    <option value="">All Types</option><option value="hotel">Hotels</option><option value="excursion">Excursions</option><option value="transfer">Transfers</option>
+                </select>
+                <select id="bkStatusFilter" onchange="Modules.bookings.render()" class="field-select" style="max-width:160px">
+                    <option value="">All Statuses</option><option value="confirmed">Confirmed</option><option value="pending_cash">Pending Cash</option><option value="cancelled">Cancelled</option>
+                </select>
+                <input id="bkSearch" oninput="Modules.bookings.render()" class="field-input flex-1" style="min-width:200px" placeholder="Search by name, email, or booking ID…">
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
+                <th>Booking ID</th><th>Type</th><th>Item</th><th>Guest</th><th>Date</th><th>Total</th><th>Status</th><th></th>
+            </tr></thead><tbody id="bkTbody"></tbody></table></div>`;
+        fbDB.ref('allBookings').on('value', snap => { this.all = objToArray(snap.val()); this.render(); });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('bkTbody'); if (!tbody) return;
+        const typeF = document.getElementById('bkTypeFilter').value;
+        const statusF = document.getElementById('bkStatusFilter').value;
+        const q = (document.getElementById('bkSearch').value || '').toLowerCase();
+        let list = this.all.filter(b => (!typeF || b.type === typeF) && (!statusF || b.status === statusF));
+        if (q) list = list.filter(b => (b.name || '').toLowerCase().includes(q) || (b.email || '').toLowerCase().includes(q) || (b.id || '').toLowerCase().includes(q));
+        list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        tbody.innerHTML = list.length ? list.map(b => `
+            <tr>
+                <td class="font-mono text-xs">${b.id}</td>
+                <td><span class="badge badge-blue capitalize">${b.type}</span></td>
+                <td>${b.type === 'hotel' ? (b.hotelName || '—') : b.type === 'excursion' ? (b.title || '—') : (b.vehicleType || '—')}</td>
+                <td>${b.name || '—'}<br><span style="color:#6b6382;font-size:11px">${b.email || ''}</span></td>
+                <td>${(b.checkin || b.date || '—')}${b.checkout ? ' → ' + b.checkout : ''}</td>
+                <td class="font-semibold">EGP ${Math.round(b.total || 0)}</td>
+                <td>${Modules.bookings.statusBadge(b.status)}</td>
+                <td class="text-right">
+                    <select onchange="Modules.bookings.updateStatus('${b.id}', this.value)" class="field-select btn-sm" style="width:auto;display:inline-block">
+                        <option value="">Change…</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="pending_cash">Pending Cash</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </td>
+            </tr>`).join('') : `<tr><td colspan="8"><div class="empty-state">No bookings match</div></td></tr>`;
+    },
+    statusBadge(status) {
+        if (status === 'confirmed' || status === 'paid') return '<span class="badge badge-green">Confirmed</span>';
+        if (status === 'cancelled') return '<span class="badge badge-red">Cancelled</span>';
+        if (status === 'pending_cash') return '<span class="badge badge-gold">Pending Cash</span>';
+        return '<span class="badge badge-gray">' + (status || 'Unknown') + '</span>';
+    },
+    async updateStatus(id, status) {
+        if (!status) return;
+        try {
+            await fbDB.ref('allBookings/' + id + '/status').set(status);
+            Toast.show('Booking status updated', 'success');
+        } catch (err) { Toast.show('Update failed: ' + err.message, 'error'); }
+    }
+};
+
+// ==================== REVIEWS MODULE (moderate real, booking-verified reviews) ====================
+Modules.reviews = {
+    all: [],
+    init() {
+        document.getElementById('section-reviews').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <select id="rvTypeFilter" onchange="Modules.reviews.render()" class="field-select" style="max-width:180px">
+                    <option value="">All Types</option><option value="hotel">Hotels</option><option value="excursion">Excursions</option><option value="transfer">Transfers</option>
+                </select>
+                <span class="text-xs" style="color:#6b6382">Booking-ID-verified reviews submitted by guests</span>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Guest</th><th>Type</th><th>Item ID</th><th>Rating</th><th>Comment</th><th>Date</th><th></th></tr></thead><tbody id="rvTbody"></tbody></table></div>`;
+        this.loadAll();
+    },
+    async loadAll() {
+        const types = ['hotel', 'excursion', 'transfer'];
+        const snaps = await Promise.all(types.map(t => fbDB.ref('reviews/' + t).once('value')));
+        this.all = [];
+        types.forEach((type, i) => {
+            const byItem = snaps[i].val() || {};
+            Object.keys(byItem).forEach(itemId => {
+                Object.keys(byItem[itemId]).forEach(rid => this.all.push(Object.assign({ type, itemId, reviewId: rid }, byItem[itemId][rid])));
+            });
+        });
+        this.render();
+        types.forEach(type => {
+            fbDB.ref('reviews/' + type).on('value', () => this.loadAllQuiet());
+        });
+    },
+    async loadAllQuiet() {
+        const types = ['hotel', 'excursion', 'transfer'];
+        const snaps = await Promise.all(types.map(t => fbDB.ref('reviews/' + t).once('value')));
+        this.all = [];
+        types.forEach((type, i) => {
+            const byItem = snaps[i].val() || {};
+            Object.keys(byItem).forEach(itemId => {
+                Object.keys(byItem[itemId]).forEach(rid => this.all.push(Object.assign({ type, itemId, reviewId: rid }, byItem[itemId][rid])));
+            });
+        });
+        this.render();
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('rvTbody'); if (!tbody) return;
+        const typeF = document.getElementById('rvTypeFilter').value;
+        let list = this.all.filter(r => !typeF || r.type === typeF);
+        list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        tbody.innerHTML = list.length ? list.map(r => `
+            <tr>
+                <td class="font-semibold">${r.name || 'Guest'}${r.nationalityCode ? ' ' + flagEmoji(r.nationalityCode) : ''}</td>
+                <td><span class="badge badge-blue capitalize">${r.type}</span></td>
+                <td class="font-mono text-xs">${r.itemId}</td>
+                <td style="color:#fbbf24">${'★'.repeat(r.rating || 0)}${'☆'.repeat(5 - (r.rating || 0))}</td>
+                <td class="max-w-xs truncate">${r.comment || ''}</td>
+                <td class="text-xs" style="color:#6b6382">${(r.createdAt || '').slice(0, 10)}</td>
+                <td class="text-right"><button onclick="Modules.reviews.remove('${r.type}','${r.itemId}','${r.reviewId}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">No reviews yet</div></td></tr>`;
+    },
+    remove(type, itemId, reviewId) {
+        confirmDialog('Delete this review? This cannot be undone.', async () => {
+            try {
+                await fbDB.ref('reviews/' + type + '/' + itemId + '/' + reviewId).remove();
+                Toast.show('Review deleted', 'success');
+            } catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
+        });
+    }
+};
+function flagEmoji(code) {
+    if (!code || code.length !== 2) return '';
+    return String.fromCodePoint(...[...code.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+}
+
+// ==================== USERS MODULE ====================
+Modules.users = {
+    all: [],
+    init() {
+        document.getElementById('section-users').innerHTML = `
+            <div class="flex items-center justify-between mb-5">
+                <input id="userSearch" oninput="Modules.users.render()" class="field-input" style="max-width:280px" placeholder="Search by name, email, or phone…">
+                <span class="text-xs" style="color:#6b6382" id="userCount"></span>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>UID</th></tr></thead><tbody id="userTbody"></tbody></table></div>`;
+        fbDB.ref('users').on('value', snap => {
+            const val = snap.val() || {};
+            this.all = Object.keys(val).map(uid => Object.assign({ uid }, val[uid].profile || {}));
+            this.render();
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('userTbody'); if (!tbody) return;
+        const q = (document.getElementById('userSearch').value || '').toLowerCase();
+        const list = this.all.filter(u => !q || (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q) || (u.phone || '').includes(q));
+        document.getElementById('userCount').textContent = this.all.length + ' registered users';
+        tbody.innerHTML = list.length ? list.map(u => `
+            <tr>
+                <td class="font-semibold">${u.name || '—'}</td>
+                <td>${u.email || '—'}</td>
+                <td>${u.countryCode || ''} ${u.phone || '—'}</td>
+                <td class="font-mono text-xs" style="color:#6b6382">${u.uid}</td>
+            </tr>`).join('') : `<tr><td colspan="4"><div class="empty-state">No users found</div></td></tr>`;
+    }
+};
+
+// ==================== OWNER ACCESS MODULE ====================
+// Grants a registered user's UID access to one of the four owner dashboards, scoped to specific
+// items (e.g. "this UID manages hotels h1 and h3"). This is what the Hotel/Excursion/Transfer/
+// Restaurant owner dashboards check to know what that signed-in user is allowed to see and edit.
+Modules.owners = {
+    admins: {}, hotelOwners: {}, excOwners: {}, trOwners: {}, restOwners: {},
+    catalogCache: { hotels: [], excursions: [], transfers: [], restaurants: [] },
+    init() {
+        document.getElementById('section-owners').innerHTML = `
+            <div class="grid gap-3 mb-6">
+                <div class="card p-4">
+                    <h3 class="font-display font-bold text-sm mb-1">Super Admins</h3>
+                    <p class="text-xs mb-3" style="color:#6b6382">Full access to this dashboard. Grant carefully.</p>
+                    <div id="adminsList" class="space-y-2 mb-3"></div>
+                    <div class="flex gap-2"><input id="newAdminUid" class="field-input" placeholder="User UID (see Users tab)"><button onclick="Modules.owners.addAdmin()" class="btn btn-primary btn-sm">Grant</button></div>
+                </div>
+            </div>
+            <div class="tab-strip">
+                <button class="active" onclick="FormTabs.switch(this,'own-hotels')">Hotel Owners</button>
+                <button onclick="FormTabs.switch(this,'own-exc')">Excursion Agencies</button>
+                <button onclick="FormTabs.switch(this,'own-tr')">Transfer Owners</button>
+                <button onclick="FormTabs.switch(this,'own-rest')">Restaurant Owners</button>
+            </div>
+            <div data-tab="own-hotels" id="ownHotelsPanel"></div>
+            <div data-tab="own-exc" class="hidden" id="ownExcPanel"></div>
+            <div data-tab="own-tr" class="hidden" id="ownTrPanel"></div>
+            <div data-tab="own-rest" class="hidden" id="ownRestPanel"></div>`;
+        fbDB.ref('admins').on('value', snap => { this.admins = snap.val() || {}; this.renderAdmins(); });
+        fbDB.ref('owners/hotels').on('value', snap => { this.hotelOwners = snap.val() || {}; this.renderOwnerPanel('hotels'); });
+        fbDB.ref('owners/excursions').on('value', snap => { this.excOwners = snap.val() || {}; this.renderOwnerPanel('excursions'); });
+        fbDB.ref('owners/transfers').on('value', snap => { this.trOwners = snap.val() || {}; this.renderOwnerPanel('transfers'); });
+        fbDB.ref('owners/restaurants').on('value', snap => { this.restOwners = snap.val() || {}; this.renderOwnerPanel('restaurants'); });
+        Promise.all(['hotels', 'excursions', 'transfers', 'restaurants'].map(k => loadJsonBaseline(k))).then(([h, e, tr, r]) => {
+            this.catalogCache = { hotels: h, excursions: e, transfers: tr, restaurants: r };
+            ['hotels', 'excursions', 'transfers', 'restaurants'].forEach(k => this.renderOwnerPanel(k));
+        });
+    },
+    onShow() { this.renderAdmins(); ['hotels', 'excursions', 'transfers', 'restaurants'].forEach(k => this.renderOwnerPanel(k)); },
+    renderAdmins() {
+        const el = document.getElementById('adminsList'); if (!el) return;
+        const uids = Object.keys(this.admins).filter(k => this.admins[k]);
+        el.innerHTML = uids.length ? uids.map(uid => `
+            <div class="flex items-center justify-between text-xs font-mono p-2 rounded-lg" style="background:rgba(255,255,255,.03)">
+                <span>${uid}${uid === currentAdminUid ? ' <span class="badge badge-gold" style="font-family:Inter">You</span>' : ''}</span>
+                ${uid === currentAdminUid ? '' : `<button onclick="Modules.owners.removeAdmin('${uid}')" class="btn btn-danger btn-sm"><i class="fa-solid fa-xmark"></i></button>`}
+            </div>`).join('') : '<p class="text-xs" style="color:#6b6382">No admins listed yet</p>';
+    },
+    async addAdmin() {
+        const uid = document.getElementById('newAdminUid').value.trim();
+        if (!uid) return;
+        await fbDB.ref('admins/' + uid).set(true);
+        document.getElementById('newAdminUid').value = '';
+        Toast.show('Super Admin access granted', 'success');
+    },
+    removeAdmin(uid) {
+        confirmDialog('Revoke Super Admin access for this UID?', async () => {
+            await fbDB.ref('admins/' + uid).remove();
+            Toast.show('Access revoked', 'success');
+        });
+    },
+    ownerRefKey: { hotels: 'hotelOwners', excursions: 'excOwners', transfers: 'trOwners', restaurants: 'restOwners' },
+    ownerPanelId: { hotels: 'ownHotelsPanel', excursions: 'ownExcPanel', transfers: 'ownTrPanel', restaurants: 'ownRestPanel' },
+    fbPath: { hotels: 'owners/hotels', excursions: 'owners/excursions', transfers: 'owners/transfers', restaurants: 'owners/restaurants' },
+    renderOwnerPanel(type) {
+        const panel = document.getElementById(this.ownerPanelId[type]); if (!panel) return;
+        const ownersMap = this[this.ownerRefKey[type]];
+        const items = this.catalogCache[type] || [];
+        const uids = Object.keys(ownersMap);
+        panel.innerHTML = `
+            <div class="card p-4 mb-3">
+                <p class="text-xs mb-3" style="color:#6b6382">Grant a registered user's UID access to manage one or more ${type}.</p>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <input id="newOwnerUid_${type}" class="field-input" placeholder="User UID">
+                    <select id="newOwnerItem_${type}" class="field-select">${items.map(i => `<option value="${i.id}">${t(i.name || i.title || i.vehicleType)} (${i.id})</option>`).join('')}</select>
+                </div>
+                <button onclick="Modules.owners.grant('${type}')" class="btn btn-primary btn-sm">Grant Access</button>
+            </div>
+            <div class="space-y-2">
+                ${uids.length ? uids.map(uid => `
+                    <div class="card p-3 flex items-center justify-between">
+                        <div><p class="font-mono text-xs mb-1">${uid}</p><div class="flex flex-wrap gap-1">${(ownersMap[uid].itemIds || []).map(iid => `<span class="badge badge-gray">${iid} <i class="fa-solid fa-xmark ml-1 cursor-pointer" onclick="Modules.owners.revoke('${type}','${uid}','${iid}')"></i></span>`).join('') || '<span style="color:#6b6382;font-size:11px">none</span>'}</div></div>
+                    </div>`).join('') : '<p class="text-xs" style="color:#6b6382">No owners assigned yet</p>'}
+            </div>`;
+    },
+    async grant(type) {
+        const uid = document.getElementById('newOwnerUid_' + type).value.trim();
+        const itemId = document.getElementById('newOwnerItem_' + type).value;
+        if (!uid || !itemId) return;
+        const ref = fbDB.ref(this.fbPath[type] + '/' + uid + '/itemIds');
+        const snap = await ref.once('value');
+        const current = snap.val() || [];
+        if (!current.includes(itemId)) current.push(itemId);
+        await ref.set(current);
+        Toast.show('Access granted', 'success');
+    },
+    async revoke(type, uid, itemId) {
+        const ref = fbDB.ref(this.fbPath[type] + '/' + uid + '/itemIds');
+        const snap = await ref.once('value');
+        const current = (snap.val() || []).filter(id => id !== itemId);
+        if (current.length) await ref.set(current); else await fbDB.ref(this.fbPath[type] + '/' + uid).remove();
+        Toast.show('Access revoked', 'success');
+    }
+};
+
+// ==================== LANGUAGES MODULE ====================
+Modules.languages = {
+    baseline: {}, overrides: {}, activeLang: 'en',
+    init() {
+        document.getElementById('section-languages').innerHTML = `
+            <div class="card p-4 mb-5">
+                <div class="flex flex-wrap items-end gap-3">
+                    <div><label class="field-label">Add / Update a Key</label>
+                        <div class="flex gap-2">
+                            <input id="newKeyName" class="field-input" style="width:200px" placeholder="key name (e.g. tagline)">
+                            <select id="newKeyLang" class="field-select" style="width:110px">${LANGS.map(l => `<option value="${l.code}">${l.code.toUpperCase()}</option>`).join('')}</select>
+                            <input id="newKeyValue" class="field-input" style="width:280px" placeholder="value">
+                            <button onclick="Modules.languages.saveKey()" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs mt-3" style="color:#6b6382">To add a whole new language: add its JSON file + manifest entry in <code>data/lang/</code> directly (see README), then its keys become editable here too.</p>
+            </div>
+            <div class="flex items-center justify-between mb-3">
+                <input id="langSearch" oninput="Modules.languages.render()" class="field-input" style="max-width:280px" placeholder="Search keys…">
+                <select id="langFilterLang" onchange="Modules.languages.render()" class="field-select" style="max-width:140px">${LANGS.map(l => `<option value="${l.code}">${l.code.toUpperCase()} — ${l.label}</option>`).join('')}</select>
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Key</th><th>Value</th><th></th></tr></thead><tbody id="langTbody"></tbody></table></div>`;
+        Promise.all(LANGS.map(l => fetch('../data/lang/' + l.code + '.json').then(r => r.json()).catch(() => ({})))).then(results => {
+            LANGS.forEach((l, i) => { this.baseline[l.code] = results[i]; });
+            this.render();
+        });
+        LANGS.forEach(l => {
+            fbDB.ref('admin_content/translations/' + l.code).on('value', snap => {
+                this.overrides[l.code] = snap.val() || {};
+                this.render();
+            });
+        });
+    },
+    onShow() { this.render(); },
+    render() {
+        const tbody = document.getElementById('langTbody'); if (!tbody) return;
+        const lang = document.getElementById('langFilterLang').value || 'en';
+        const q = (document.getElementById('langSearch').value || '').toLowerCase();
+        const base = this.baseline[lang] || {};
+        const over = this.overrides[lang] || {};
+        const allKeys = Array.from(new Set([...Object.keys(base), ...Object.keys(over)])).sort();
+        const keys = allKeys.filter(k => !q || k.toLowerCase().includes(q));
+        tbody.innerHTML = keys.length ? keys.map(k => {
+            const val = over[k] !== undefined ? over[k] : base[k];
+            const isOverridden = over[k] !== undefined;
+            return `<tr>
+                <td class="font-mono text-xs">${k} ${isOverridden ? '<span class="badge badge-gold" style="font-family:Inter">edited</span>' : ''}</td>
+                <td><input class="field-input" id="langval_${k}" value="${escapeHtml(val || '')}" style="min-width:280px"></td>
+                <td class="text-right"><button onclick="Modules.languages.quickSave('${k}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-check"></i></button></td>
+            </tr>`;
+        }).join('') : `<tr><td colspan="3"><div class="empty-state">No keys found</div></td></tr>`;
+    },
+    async quickSave(key) {
+        const lang = document.getElementById('langFilterLang').value || 'en';
+        const value = document.getElementById('langval_' + key).value;
+        try { await fbDB.ref('admin_content/translations/' + lang + '/' + key).set(value); Toast.show('Translation saved — live on the site now', 'success'); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    },
+    async saveKey() {
+        const key = document.getElementById('newKeyName').value.trim();
+        const lang = document.getElementById('newKeyLang').value;
+        const value = document.getElementById('newKeyValue').value;
+        if (!key || !value) { Toast.show('Key and value are required', 'error'); return; }
+        try {
+            await fbDB.ref('admin_content/translations/' + lang + '/' + key).set(value);
+            Toast.show('Saved', 'success');
+            document.getElementById('newKeyName').value = ''; document.getElementById('newKeyValue').value = '';
+        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    }
+};
+
+// ==================== SETTINGS MODULE ====================
+// Only "safe" site settings are editable here — brand colors and the display currency list.
+// Firebase credentials and Kashier payment secrets live only in data/configs.json, edited by a
+// developer directly — never exposed to a web form for security reasons.
+Modules.settings = {
+    init() {
+        document.getElementById('section-settings').innerHTML = `
+            <div class="card p-5 max-w-lg">
+                <h3 class="font-display font-bold mb-1">Brand & Currency</h3>
+                <p class="text-xs mb-4" style="color:#6b6382">Changes apply live across the site immediately.</p>
+                <label class="field-label">Primary Brand Color</label>
+                <input id="s_brandPrimary" type="color" class="field-input mb-3" style="height:44px;padding:4px">
+                <label class="field-label">Primary Brand Color (Dark Shade)</label>
+                <input id="s_brandPrimaryDark" type="color" class="field-input mb-3" style="height:44px;padding:4px">
+                <label class="field-label">Site Name</label>
+                <input id="s_siteName" class="field-input mb-3">
+                <label class="field-label">Display Currencies (comma-separated, EGP always included)</label>
+                <input id="s_currencies" class="field-input mb-4" placeholder="EGP,USD,EUR,GBP,SAR,RUB">
+                <button onclick="Modules.settings.save()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Settings</button>
+                <p class="text-xs mt-4" style="color:#4d456a"><i class="fa-solid fa-lock"></i> Firebase and payment credentials are never editable here — they live only in <code>data/configs.json</code>.</p>
+            </div>`;
+        fetch('../data/configs.json').then(r => r.json()).then(cfg => {
+            const app = cfg.app || {};
+            fbDB.ref('admin_content/settings').once('value').then(snap => {
+                const s = Object.assign({}, app, snap.val() || {});
+                document.getElementById('s_brandPrimary').value = s.brandColorPrimary || '#f97316';
+                document.getElementById('s_brandPrimaryDark').value = s.brandColorPrimaryDark || '#c2410c';
+                document.getElementById('s_siteName').value = s.siteName || 'Discover Sharm';
+                document.getElementById('s_currencies').value = (s.displayCurrencies || ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB']).join(',');
+            });
+        });
+    },
+    onShow() {},
+    async save() {
+        const data = {
+            brandColorPrimary: document.getElementById('s_brandPrimary').value,
+            brandColorPrimaryDark: document.getElementById('s_brandPrimaryDark').value,
+            siteName: document.getElementById('s_siteName').value.trim(),
+            displayCurrencies: document.getElementById('s_currencies').value.split(',').map(c => c.trim().toUpperCase()).filter(Boolean)
+        };
+        try { await fbDB.ref('admin_content/settings').set(data); Toast.show('Settings saved — live on the site now', 'success'); }
+        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+    }
+};
+</script>
+</body>
+</html>
