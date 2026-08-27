@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Cataract Resort & Layalina | بطاقة رحلتكم</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" onerror="this.onerror=null;this.src='https://unpkg.com/jsqr@1.4.0/dist/jsQR.js';"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" onerror="this.onerror=null;this.src='https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -83,12 +83,6 @@
       <span class="text-[var(--gold)] text-[10px] tracking-[4px] font-bold">SHARM EL SHEIKH · EGYPT</span>
       <h1 class="serif text-white text-[34px] leading-[1.3] mt-4">بطاقة<br>رحلتكم على<br><span class="text-[var(--teal)]">البحر الأحمر</span></h1>
       <p class="text-white/45 text-xs mt-4 leading-relaxed max-w-[230px]">تذكرة إقامتكم الرقمية في Cataract Resort &amp; Layalina — تُفتح تلقائياً عند وصولكم وتُغلق عند مغادرتكم</p>
-
-      <div class="mt-auto mb-6 flex items-center gap-2 text-white/30 text-[10px]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[var(--gold)]"></span> إقامة نشطة &nbsp;·&nbsp;
-        <span class="w-1.5 h-1.5 rounded-full bg-white/30"></span> بانتظار الوصول &nbsp;·&nbsp;
-        <span class="w-1.5 h-1.5 rounded-full bg-[var(--coral)]"></span> منتهية
-      </div>
     </div>
 
     <div class="relative z-10 bg-[var(--sand)] rounded-t-[34px] p-6 flex flex-col no-scrollbar overflow-y-auto shadow-deep">
@@ -106,30 +100,27 @@
         <p id="loginError" class="hidden text-[var(--coral-d)] text-[11px] text-center font-bold">كود غير صحيح أو منتهي، حاول مرة أخرى</p>
         <button onclick="handlePasswordLogin()" class="press w-full bg-[var(--night)] text-white font-extrabold py-3.5 rounded-2xl text-sm shadow-lg">دخول إلى رحلتي</button>
         
-        <!-- Demo Tokens -->
         <div class="mt-3 p-3 bg-white border border-[var(--line)] rounded-xl text-xs">
           <p class="font-bold text-[var(--ink)] mb-2">🔑 توكنات تجريبية:</p>
           <div class="space-y-1.5">
             <button onclick="document.getElementById('passInput').value='catk82329'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
-              <span class="font-mono font-bold text-[var(--coral)]">catk82329</span> - TETIANA BIELAIA
+              <span class="font-mono font-bold text-[var(--coral)]">catk82329</span> - TETIANA BIELAIA (Resort)
             </button>
             <button onclick="document.getElementById('passInput').value='cate89881'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
-              <span class="font-mono font-bold text-[var(--coral)]">cate89881</span> - IGOR ALEKSEEV
+              <span class="font-mono font-bold text-[var(--coral)]">cate89881</span> - IGOR ALEKSEEV (Layalina)
             </button>
             <button onclick="document.getElementById('passInput').value='caty90916'; handlePasswordLogin()" class="w-full text-right px-2.5 py-1.5 bg-slate-50 rounded-lg hover:bg-slate-100 transition">
-              <span class="font-mono font-bold text-[var(--coral)]">caty90916</span> - Waled A. El Rahman
+              <span class="font-mono font-bold text-[var(--coral)]">caty90916</span> - Waled A. El Rahman (Layalina)
             </button>
           </div>
         </div>
       </div>
 
       <div id="qrForm" class="hidden text-center space-y-3 py-1">
-        <div class="w-16 h-16 mx-auto bg-[var(--gold-soft)] text-[var(--gold)] rounded-2xl flex items-center justify-center text-2xl">{{camera}}</div>
+        <div class="w-16 h-16 mx-auto bg-[var(--gold-soft)] text-[var(--gold)] rounded-2xl flex items-center justify-center text-2xl">📷</div>
         <p class="text-xs text-[var(--gray)] px-4">وجّهوا الكاميرا نحو رمز QR الموجود على بطاقة الوصول</p>
         <button onclick="openQrScanner()" class="press w-full bg-[var(--night)] text-white font-extrabold py-3.5 rounded-2xl text-sm">فتح الكاميرا</button>
       </div>
-
-      <div class="mt-auto pt-5"></div>
     </div>
   </section>
 
@@ -138,7 +129,7 @@
     <div id="starfield2" class="absolute inset-0"></div>
     <div class="orb w-56 h-56 bg-[var(--gold)]/20 -top-10 -right-16"></div>
     <div class="relative z-10 rise">
-      <div class="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 text-[var(--gold)] text-3xl">{{calendar}}</div>
+      <div class="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 text-[var(--gold)] text-3xl">🗓️</div>
       <h2 class="serif text-white text-2xl mb-2">رحلتكم لم تبدأ بعد</h2>
       <p class="text-white/45 text-xs leading-relaxed mb-6">أهلاً <span id="pendingName" class="text-white font-bold"></span>، تبدأ إقامتكم في <span id="pendingHotel" class="text-[var(--gold)] font-bold"></span> بتاريخ<br><span id="pendingDate" class="text-white font-bold text-sm block mt-1.5"></span></p>
       <p class="text-white/30 text-[11px]">ستُفتح بطاقتكم تلقائياً في يوم الوصول</p>
@@ -151,10 +142,10 @@
     <div id="starfield3" class="absolute inset-0"></div>
     <div class="orb w-60 h-60 bg-[var(--coral)]/20 -top-14 -left-10"></div>
     <div class="relative z-10 rise">
-      <div class="w-20 h-20 rounded-full bg-[var(--coral)]/10 border border-[var(--coral)]/25 flex items-center justify-center mx-auto mb-6 text-[var(--coral)] text-3xl">{{moon}}</div>
+      <div class="w-20 h-20 rounded-full bg-[var(--coral)]/10 border border-[var(--coral)]/25 flex items-center justify-center mx-auto mb-6 text-[var(--coral)] text-3xl">🌙</div>
       <h2 class="serif text-white text-[26px] mb-2">ختام رحلة جميلة</h2>
       <p class="text-white/50 text-xs leading-relaxed mb-1" id="thanksName"></p>
-      <p class="text-white/40 text-xs leading-relaxed mb-7 px-2">شكراً لاختياركم <span id="thanksHotel" class="text-[var(--gold)] font-bold"></span>. طُويت بطاقة رحلتكم الآن، وننتظر أن نستقبلكم مجدداً على شواطئ البحر الأحمر</p>
+      <p class="text-white/40 text-xs leading-relaxed mb-7 px-2">شكراً لاختياركم <span id="thanksHotel" class="text-[var(--gold)] font-bold"></span>. طُويت بطاقة رحلتكم الآن</p>
       <button onclick="goToLogin()" class="press bg-[var(--gold)] text-[var(--night)] font-extrabold py-3 px-8 rounded-2xl text-sm">بدء رحلة جديدة</button>
     </div>
   </section>
@@ -167,8 +158,8 @@
         <div class="orb w-40 h-40 bg-[var(--gold)]/15 -top-10 -right-10"></div>
         <div class="relative z-10 px-5 pt-6 flex items-center justify-between">
           <div id="appAvatar" class="w-10 h-10 rounded-2xl bg-white/10 border border-white/15 text-white flex items-center justify-center font-extrabold text-sm"></div>
-          <span class="flex items-center gap-1.5 text-[11px] font-bold text-white/70"><span class="text-[var(--gold)] text-sm">{{pin}}</span> شرم الشيخ، مصر</span>
-          <button onclick="switchAppTab('pass')" class="w-10 h-10 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white text-sm">{{ticket}}</button>
+          <span class="flex items-center gap-1.5 text-[11px] font-bold text-white/70"><span class="text-[var(--gold)] text-sm">📍</span> شرم الشيخ، مصر</span>
+          <button onclick="switchAppTab('pass')" class="w-10 h-10 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white text-sm">🎫</button>
         </div>
         <div class="relative z-10 px-5 pt-5">
           <p class="text-white/40 text-xs">أهلاً بعودتكم</p>
@@ -194,7 +185,7 @@
             </div>
             <div class="relative h-1.5 bg-[var(--line)] rounded-full">
               <div id="journeyFill" class="absolute top-0 right-0 h-1.5 bg-[var(--teal)] rounded-full"></div>
-              <div id="journeyBoat" class="absolute -top-2.5 text-[var(--coral)] text-base boat-bob">{{boat}}</div>
+              <div id="journeyBoat" class="absolute -top-2.5 text-[var(--coral)] text-base boat-bob">⛵</div>
             </div>
             <div class="flex justify-between text-[10px] font-extrabold text-[var(--ink)] mt-2">
               <span id="journeyIn"></span><span id="journeyOut"></span>
@@ -205,7 +196,7 @@
             <div class="notch notch-light -right-3"></div>
             <div class="notch notch-light -left-3"></div>
             <div><span class="text-[9px] text-[var(--gray)] block">رقم الغرفة</span><span id="homeRoom" class="text-lg font-extrabold text-[var(--ink)]"></span></div>
-            <div class="text-left"><span class="text-[9px] text-[var(--gray)] block">حالة البطاقة</span><span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1 justify-end">{{check}} نشطة الآن</span></div>
+            <div class="text-left"><span class="text-[9px] text-[var(--gray)] block">حالة البطاقة</span><span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1 justify-end">✓ نشطة الآن</span></div>
           </div>
         </div>
       </div>
@@ -224,7 +215,7 @@
       <div class="bg-[var(--night)] px-5 pt-6 pb-8 rounded-b-[32px] relative overflow-hidden">
         <div class="orb w-40 h-40 bg-[var(--gold)]/15 -top-10 -left-10"></div>
         <div class="relative z-10 flex items-center gap-2">
-          <button onclick="switchAppTab('home')" class="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white text-sm">{{chevronR}}</button>
+          <button onclick="switchAppTab('home')" class="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white text-sm">←</button>
           <h2 class="serif text-white text-lg">بطاقة رحلتكم</h2>
         </div>
       </div>
@@ -259,7 +250,7 @@
 
         <div class="bg-gradient-to-br from-[var(--night)] to-[var(--night2)] rounded-3xl p-5 text-white">
           <div class="flex items-center gap-3">
-            <span class="icon-badge bg-white/10 text-[var(--gold)]">{{clock}}</span>
+            <span class="icon-badge bg-white/10 text-[var(--gold)]">🕐</span>
             <div><span class="text-[10px] text-white/45 block">مواعيد الاستقبال الرسمية</span><p class="font-bold text-sm">دخول ٢:٠٠ م &nbsp;·&nbsp; خروج ١٢:٠٠ ظهراً</p></div>
           </div>
           <p class="text-white/45 text-[10px] leading-relaxed mt-3 pt-3 border-t border-white/10">يُرجى تسليم مفتاح الغرفة والأساور لمكتب الاستقبال عند المغادرة. للتأخير في الخروج، يُرجى التواصل مع الاستقبال حسب التوافر.</p>
@@ -267,7 +258,7 @@
 
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
           <div class="flex items-center gap-3">
-            <span class="icon-badge bg-[var(--teal-soft)] text-[var(--teal)]">{{wifi}}</span>
+            <span class="icon-badge bg-[var(--teal-soft)] text-[var(--teal)]">📶</span>
             <div><p class="font-extrabold text-[var(--ink)] text-sm">الإنترنت المجاني وخزائن الأمانات</p><p class="text-[var(--gray)] text-[11px] mt-0.5">متاحة فقط في منطقة اللوبي، ومجانية بالكامل</p></div>
           </div>
           <p class="text-[var(--gray)] text-[10px] leading-relaxed mt-3 pt-3 border-t border-[var(--line)]">الفندق غير مسؤول عن أي مقتنيات ثمينة تُترك خارج الخزانة الآمنة.</p>
@@ -275,32 +266,21 @@
 
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">مواعيد الوجبات الرئيسية</h3>
-          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الإفطار</span><span class="font-extrabold text-[var(--ink)]">٧:٠٠ – ١٠:٠٠ ص</span></div>
-          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الغداء</span><span class="font-extrabold text-[var(--ink)]">١:٠٠ – ٣:٠٠ م</span></div>
-          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} العشاء</span><span class="font-extrabold text-[var(--ink)]">٧:٣٠ – ٩:٣٠ م</span></div>
-          <div class="pt-2 mt-1 border-t border-[var(--line)]">
-            <p class="text-[10px] text-[var(--gray)] font-bold mb-1.5">وجبات خفيفة لنزلاء الشامل الكلي — عند البار الشاطئي وبار المسبح</p>
-            <div class="flex gap-2">
-              <span class="bg-[var(--gold-soft)] text-[var(--coral-d)] text-[10px] font-extrabold px-2.5 py-1 rounded-full">١١:٠٠ – ١٢:٣٠</span>
-              <span class="bg-[var(--gold-soft)] text-[var(--coral-d)] text-[10px] font-extrabold px-2.5 py-1 rounded-full">٣:٣٠ – ٥:٣٠ م</span>
-            </div>
-          </div>
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">🕐 الإفطار</span><span class="font-extrabold text-[var(--ink)]">٧:٠٠ – ١٠:٠٠ ص</span></div>
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">🕐 الغداء</span><span class="font-extrabold text-[var(--ink)]">١:٠٠ – ٣:٠٠ م</span></div>
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">🕐 العشاء</span><span class="font-extrabold text-[var(--ink)]">٧:٣٠ – ٩:٣٠ م</span></div>
         </div>
 
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1.5">البارات ومواعيد العمل</h3>
           <div id="barsList" class="space-y-2"></div>
-          <div class="flex justify-between items-center p-2.5 bg-[var(--teal-soft)] rounded-xl text-xs mt-1">
-            <span class="text-[var(--teal)] font-bold flex items-center gap-1.5">{{route}} الشاطئ والمسابح</span>
-            <span class="font-extrabold text-[var(--teal)]">٨:٠٠ ص – ٦:٠٠ م</span>
-          </div>
         </div>
 
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-3">التواصل مع الاستقبال</h3>
           <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-3.5">
             <div class="flex items-center gap-3">
-              <span class="icon-badge bg-[var(--gold-soft)] text-[var(--coral)]">{{phone}}</span>
+              <span class="icon-badge bg-[var(--gold-soft)] text-[var(--coral)]">📞</span>
               <div><p id="receptionHotelLabel" class="text-xs font-extrabold text-[var(--ink)]"></p><p class="text-[10px] text-[var(--gray)]">اتصلوا من هاتف الغرفة الداخلي</p></div>
             </div>
             <span id="receptionExt" class="text-2xl font-extrabold text-[var(--coral)]"></span>
@@ -310,11 +290,11 @@
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
           <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">تعليمات هامة لإقامتكم</h3>
           <ul class="space-y-2 text-[11px] text-slate-600 leading-relaxed">
-            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> الزي الرسمي في اللوبي وأثناء الوجبات: كاجوال أنيق، دون حفاء أو ملابس سباحة</li>
-            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُرجى عدم إطعام الأسماك في المسطحات المائية</li>
-            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُمنع اصطحاب الشيشة داخل مبنى الفندق</li>
-            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> لا يُسمح بحجز كراسي الشاطئ مسبقاً بالمناشف أو الأغراض الشخصية</li>
-            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُنصح بشرب كمية كافية من الماء خاصة في الصيف لتجنب الجفاف</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">✓</span> الزي الرسمي في اللوبي وأثناء الوجبات: كاجوال أنيق، دون حفاء أو ملابس سباحة</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">✓</span> يُرجى عدم إطعام الأسماك في المسطحات المائية</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">✓</span> يُمنع اصطحاب الشيشة داخل مبنى الفندق</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">✓</span> لا يُسمح بحجز كراسي الشاطئ مسبقاً بالمناشف أو الأغراض الشخصية</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">✓</span> يُنصح بشرب كمية كافية من الماء خاصة في الصيف لتجنب الجفاف</li>
           </ul>
           <div class="pt-2.5 mt-1 border-t border-[var(--line)] grid grid-cols-3 gap-2 text-center">
             <div class="bg-slate-50 rounded-xl p-2"><span class="text-[9px] text-[var(--gray)] block">فقدان المفتاح</span><span class="text-[11px] font-extrabold text-[var(--ink)]">٦٥٠ ج.م</span></div>
@@ -325,10 +305,10 @@
 
         <div class="grid grid-cols-2 gap-3">
           <button onclick="alert('تم إرسال طلب تنظيف الغرفة بنجاح')" class="press p-3.5 bg-white shadow-soft border border-[var(--line)] rounded-2xl flex items-center gap-2.5">
-            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">{{sparkle}}</span><span class="text-xs font-extrabold text-slate-700">تنظيف الغرفة</span>
+            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">✨</span><span class="text-xs font-extrabold text-slate-700">تنظيف الغرفة</span>
           </button>
           <button onclick="alert('جاري تحويلك لخدمة الغرف')" class="press p-3.5 bg-white shadow-soft border border-[var(--line)] rounded-2xl flex items-center gap-2.5">
-            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">{{phone}}</span><span class="text-xs font-extrabold text-slate-700">خدمة الغرف</span>
+            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">📞</span><span class="text-xs font-extrabold text-slate-700">خدمة الغرف</span>
           </button>
         </div>
 
@@ -339,10 +319,10 @@
     <!-- NAV -->
     <nav class="absolute bottom-5 left-5 right-5 z-20 bg-[var(--night)]/95 backdrop-blur-lg rounded-2xl px-6 py-3.5 flex justify-around items-center shadow-deep">
       <button id="navHome" onclick="switchAppTab('home')" class="flex flex-col items-center gap-1 text-[var(--gold)] text-lg">
-        {{home}}<span class="text-[9px] font-bold">رحلتي</span>
+        🏠<span class="text-[9px] font-bold">رحلتي</span>
       </button>
       <button id="navPass" onclick="switchAppTab('pass')" class="flex flex-col items-center gap-1 text-[var(--nav-off)] text-lg">
-        {{ticket}}<span class="text-[9px] font-bold">البطاقة</span>
+        🎫<span class="text-[9px] font-bold">البطاقة</span>
       </button>
     </nav>
   </section>
@@ -352,36 +332,13 @@
     <div class="relative h-[54%] shrink-0 overflow-hidden">
       <div id="detailTrack" class="track absolute inset-0"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/25"></div>
-      <button onclick="closeDetail()" class="press absolute top-5 right-5 w-10 h-10 rounded-full bg-white/95 flex items-center justify-center text-[var(--ink)] shadow-soft">{{chevronR}}</button>
+      <button onclick="closeDetail()" class="press absolute top-5 right-5 w-10 h-10 rounded-full bg-white/95 flex items-center justify-center text-[var(--ink)] shadow-soft">←</button>
       <span id="detailBadge" class="absolute top-5 left-5 bg-black/45 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full"></span>
-      <div id="detailFilm" class="absolute top-[4.5rem] left-5 flex flex-col gap-2"></div>
     </div>
     <div class="flex-1 bg-white rounded-t-[28px] -mt-6 relative z-10 p-5 overflow-y-auto no-scrollbar">
       <span class="text-[10px] font-bold text-[var(--gold)] tracking-widest">محطة رحلتكم</span>
-      <div class="flex justify-between items-start mt-1">
-        <div>
-          <h2 id="detailTitle" class="serif text-[var(--ink)] text-xl"></h2>
-          <p class="text-[var(--gray)] text-xs mt-1 flex items-center gap-1">{{pin}} <span id="detailLocation"></span></p>
-        </div>
-        <span class="text-[var(--coral)] text-xl">{{heart}}</span>
-      </div>
-      <div class="grid grid-cols-3 gap-2 mt-4">
-        <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat1Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
-          <span id="detailStat1" class="block text-xs font-extrabold text-[var(--ink)]"></span>
-          <span id="detailStat1Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
-        </div>
-        <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat2Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
-          <span id="detailStat2" class="block text-xs font-extrabold text-[var(--ink)]"></span>
-          <span id="detailStat2Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
-        </div>
-        <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat3Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
-          <span id="detailStat3" class="block text-xs font-extrabold text-[var(--ink)]"></span>
-          <span id="detailStat3Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
-        </div>
-      </div>
+      <h2 id="detailTitle" class="serif text-[var(--ink)] text-xl mt-1"></h2>
+      <p class="text-[var(--gray)] text-xs mt-1">📍 <span id="detailLocation"></span></p>
       <p id="detailDesc" class="text-slate-500 text-xs leading-relaxed mt-4"></p>
       <button id="detailCta" class="press w-full bg-[var(--night)] text-white font-extrabold py-4 rounded-2xl text-sm mt-5 shadow-lg"></button>
     </div>
@@ -395,9 +352,9 @@
     </div>
     <div class="absolute top-6 right-6 left-6 flex justify-between items-center">
       <span class="text-white text-xs bg-white/10 px-3 py-1.5 rounded-full">وجّهوا الكاميرا نحو رمز QR</span>
-      <button onclick="closeQrScanner()" class="w-9 h-9 rounded-full bg-white/15 text-white flex items-center justify-center">{{x}}</button>
+      <button onclick="closeQrScanner()" class="w-9 h-9 rounded-full bg-white/15 text-white flex items-center justify-center">✕</button>
     </div>
-    <p id="qrUnsupported" class="hidden text-white text-xs text-center px-8 absolute inset-0 flex items-center justify-center bg-black">جهازك/متصفحك لا يدعم مسح QR مباشرة. الرجاء استخدام كود الحجز بدلاً من ذلك.</p>
+    <p id="qrUnsupported" class="hidden text-white text-xs text-center px-8 absolute inset-0 flex items-center justify-center bg-black">جهازك/متصفحك لا يدعم مسح QR مباشرة</p>
   </div>
 
 </div>
@@ -414,82 +371,6 @@ const API_CONFIG = {
   baseUrl: 'https://okgini-proxy.gm-093.workers.dev',
   timeout: 10000
 };
-
-const ICONS = {
-  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7l1.4-2.6h5.2L16 7"/><circle cx="12" cy="13.5" r="3.4"/></svg>',
-  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-  moon:'<svg viewBox="0 0 24 24" class="icon"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>',
-  pin:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.4 7-12.2A7 7 0 1 0 5 9.8C5 14.6 12 22 12 22z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
-  star:'<svg viewBox="0 0 24 24" fill="currentColor" class="icon"><path d="M12 2.5l2.9 6.1 6.6.7-4.9 4.5 1.3 6.6L12 16.9l-5.9 3.5 1.3-6.6-4.9-4.5 6.6-.7z"/></svg>',
-  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20.6 4.9a5.4 5.4 0 0 0-7.7 0L12 5.8l-.9-.9a5.4 5.4 0 1 0-7.7 7.7l.9.9L12 21.2l7.7-7.7.9-.9a5.4 5.4 0 0 0 0-7.7z"/></svg>',
-  route:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="9.2"/><path d="M15.8 8.2l-2 5.6-5.6 2 2-5.6z"/></svg>',
-  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="9" cy="8" r="3"/><path d="M2.5 20.5v-.8a6.5 6.5 0 0 1 13 0v.8"/><circle cx="17.2" cy="8.6" r="2.6"/><path d="M14.8 20.5v-.6a5.6 5.6 0 0 1 8-5"/></svg>',
-  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="icon"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/></svg>',
-  wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="icon"><path d="M4.5 12.6a11 11 0 0 1 15 0"/><path d="M7.8 16a6.4 6.4 0 0 1 8.4 0"/><circle cx="12" cy="19.3" r="1.1" fill="currentColor" stroke="none"/></svg>',
-  fork:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M6.5 2.5v7.7a2.3 2.3 0 0 0 2.3 2.3v9M6.5 2.5v6M9 2.5v6M18 2.5c-2 0-3.3 2.4-3.3 5.6s1.3 4 3.3 4v9.4"/></svg>',
-  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20.5A7.5 7.5 0 0 1 3.5 13c0-7.5 9.5-11.5 17-11.5 0 7.5-4.5 17-9.5 17z"/><path d="M3.8 13.2c4.3-1 8.5-4.3 11.7-9.6"/></svg>',
-  bed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M2.5 18.5v-6a2 2 0 0 1 2-2h15a2 2 0 0 1 2 2v6M2.5 18.5h19M2.5 18.5v2.8M21.5 18.5v2.8M6.5 10.5V7a2 2 0 0 1 2-2h3.2v5.5"/></svg>',
-  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M21.5 16.9v2.7a1.8 1.8 0 0 1-2 1.8 17.9 17.9 0 0 1-7.8-2.8 17.6 17.6 0 0 1-5.4-5.4A17.9 17.9 0 0 1 3.5 5.4a1.8 1.8 0 0 1 1.8-2h2.7a1.8 1.8 0 0 1 1.8 1.5c.1.9.3 1.7.6 2.5a1.8 1.8 0 0 1-.4 1.9L8.7 10.7a14.3 14.3 0 0 0 5.4 5.4l1.4-1.3a1.8 1.8 0 0 1 1.9-.4c.8.3 1.6.5 2.5.6a1.8 1.8 0 0 1 1.6 1.9z"/></svg>',
-  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  chevronR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="9 18 15 12 9 6"/></svg>',
-  clock:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.3"/><polyline points="12 7 12 12 15.5 14"/></svg>',
-  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor" class="icon"><path d="M12 2.5l2 5.7L20 10l-6 2-2 5.7-2-5.7L4 10l6-1.8z"/></svg>',
-  boat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 15.5h18l-2.2 4.3H5.2z"/><path d="M12 15.5V3.5l6 5.4"/><path d="M12 3.5l-6.5 5.4"/></svg>',
-  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 8.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.2a1.6 1.6 0 0 0 0 3.1v1.2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.2a1.6 1.6 0 0 0 0-3.1z"/><line x1="9.5" y1="6.8" x2="9.5" y2="17.2" stroke-dasharray="2 2"/></svg>',
-  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-5.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2V21h3.5a1 1 0 0 0 1-1V9.5"/></svg>',
-  check:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-};
-
-function ic(name){ return ICONS[name] || ''; }
-
-function hydrateIcons(){
-  const root = document.getElementById('frame');
-  if(!root) return;
-  root.innerHTML = root.innerHTML.replace(/\{\{(\w+)\}\}/g, (m, name) => ic(name));
-}
-
-function buildStarfield(id, count){
-  const el = document.getElementById(id); if(!el) return;
-  let html = "";
-  for(let i=0;i<count;i++){
-    const size = Math.random()*1.6+0.6;
-    html += `<span class="star" style="width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${Math.random()*0.6+0.15}"></span>`;
-  }
-  el.innerHTML = html;
-}
-
-function buildBubbles(id, count){
-  const el = document.getElementById(id); if(!el) return;
-  let html = "";
-  for(let i=0;i<count;i++){
-    const size = Math.random()*12+5;
-    html += `<span class="bubble" style="width:${size}px;height:${size}px;left:${Math.random()*94+2}%;animation-duration:${(Math.random()*5+6).toFixed(1)}s;animation-delay:${(Math.random()*6).toFixed(1)}s"></span>`;
-  }
-  el.innerHTML = html;
-}
-
-function renderQR(canvasEl, text, size){
-  if(!canvasEl) return;
-  try{
-    if(typeof QRCode !== 'undefined' && QRCode.toCanvas){
-      QRCode.toCanvas(canvasEl, text, {width:size, margin:1, color:{dark:"#0A1128"}}, function(err){
-        if(err) drawQrFallback(canvasEl, text, size);
-      });
-      return;
-    }
-  }catch(e){}
-  drawQrFallback(canvasEl, text, size);
-}
-
-function drawQrFallback(canvasEl, text, size){
-  canvasEl.width = size; canvasEl.height = size;
-  const ctx = canvasEl.getContext('2d');
-  ctx.fillStyle = '#F3F0E8'; ctx.fillRect(0,0,size,size);
-  ctx.strokeStyle = '#0A1128'; ctx.lineWidth = 1.5; ctx.strokeRect(4,4,size-8,size-8);
-  ctx.fillStyle = '#0A1128'; ctx.font = `bold ${Math.max(10,size*0.13)}px Tajawal, sans-serif`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(text, size/2, size/2);
-}
 
 const IMG = {
   poolAerial:"https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=80&auto=format&fit=crop",
@@ -512,10 +393,7 @@ const GUEST_DB = {
     heroImgs:[IMG.poolAerial, IMG.beachAerial, IMG.suite] },
   "LY2026": { hotel:"Cataract Layalina", hotelKey:"layalina", mealPlan:"Soft All-Inclusive", receptionExt:"3", name:"سارة يوسف", room:"214",
     checkIn:daysFromNow(3), checkOut:daysFromNow(6),
-    heroImgs:[IMG.palmBeach, IMG.coralReef, IMG.beachAerial] },
-  "EXP2025": { hotel:"Cataract Resort", hotelKey:"resort", mealPlan:"Half Board", receptionExt:"4", name:"محمود سيد", room:"308",
-    checkIn:daysFromNow(-10), checkOut:daysFromNow(-5),
-    heroImgs:[IMG.poolLoungers, IMG.hotelArch] }
+    heroImgs:[IMG.palmBeach, IMG.coralReef, IMG.beachAerial] }
 };
 
 const BARS = [
@@ -529,24 +407,20 @@ const BARS = [
 const DETAILS = {
   room:{ badge:"الغرفة", title:"جناح ديلوكس - إطلالة على البحر", location:"الطابق الخامس",
     imgs:[IMG.roomBed, IMG.suite, IMG.hotelArch],
-    stat1:{icon:ic('star'), v:"ديلوكس", l:"نوع الغرفة"}, stat2:{icon:ic('route'), v:"الطابق ٥", l:"الموقع"}, stat3:{icon:ic('users'), v:"ضيفان", l:"السعة"},
     desc:"جناح فسيح بإطلالة بانورامية على البحر الأحمر، يضم شرفة خاصة وأثاثاً معاصراً مستوحى من ألوان الشعاب المرجانية.",
-    cta:"طلب خدمة الغرفة", action:()=>alert('تم إرسال طلب خدمة الغرفة، سيصلكم الطلب قريباً') },
+    cta:"طلب خدمة الغرفة", action:()=>alert('تم إرسال طلب خدمة الغرفة') },
   restaurant:{ badge:"المطعم", title:"مطعم المرجان - المطبخ العالمي", location:"الطابق الأرضي",
     imgs:[IMG.restaurant, IMG.hotelArch],
-    stat1:{icon:ic('star'), v:"٤.٨", l:"التقييم"}, stat2:{icon:ic('clock'), v:"٧–١١ م", l:"مواعيد العشاء"}, stat3:{icon:ic('fork'), v:"عالمي", l:"نوع المطبخ"},
-    desc:"تجربة طعام فاخرة تجمع بين المأكولات المصرية الأصيلة والعالمية، في أجواء ساحلية تطل مباشرة على البحر الأحمر.",
-    cta:"حجز طاولة", action:()=>alert('تم إرسال طلب حجز الطاولة، سنؤكد الموعد خلال دقائق') },
+    desc:"تجربة طعام فاخرة تجمع بين المأكولات المصرية الأصيلة والعالمية.",
+    cta:"حجز طاولة", action:()=>alert('تم إرسال طلب حجز الطاولة') },
   spa:{ badge:"السبا", title:"سبا الشعاب - استرخاء على البحر الأحمر", location:"الطابق الأول",
     imgs:[IMG.spa, IMG.poolLoungers],
-    stat1:{icon:ic('star'), v:"٤.٩", l:"التقييم"}, stat2:{icon:ic('clock'), v:"٦٠ د", l:"مدة الجلسة"}, stat3:{icon:ic('leaf'), v:"١٢+", l:"جلسة متاحة"},
-    desc:"استمتعوا بجلسات استرخاء وعلاج تقليدية مستوحاة من الطبيعة المصرية، مع إطلالة هادئة على الشعاب المرجانية والبحر الأحمر.",
-    cta:"حجز جلسة سبا", action:()=>alert('تم إرسال طلب حجز جلسة السبا، سيتواصل معكم الفريق قريباً') },
-  pool:{ badge:"الشاطئ والمسبح", title:"الشاطئ الخاص والمسبح اللامتناهي", location:"الطابق الأرضي",
+    desc:"جلسات استرخاء وعلاج تقليدية مستوحاة من الطبيعة المصرية.",
+    cta:"حجز جلسة سبا", action:()=>alert('تم إرسال طلب حجز جلسة السبا') },
+  pool:{ badge:"الشاطئ", title:"الشاطئ الخاص والمسبح اللامتناهي", location:"الطابق الأرضي",
     imgs:[IMG.beachAerial, IMG.poolAerial, IMG.palmBeach],
-    stat1:{icon:ic('star'), v:"٤.٧", l:"التقييم"}, stat2:{icon:ic('clock'), v:"٦–١٨", l:"ساعات الفتح"}, stat3:{icon:ic('users'), v:"خاص", l:"شاطئ النزلاء"},
-    desc:"شاطئ رملي خاص ومسبح لامتناهي يطلان مباشرة على شعاب البحر الأحمر المرجانية، مع كراسي استرخاء ومظلات وخدمة مشروبات على مدار اليوم.",
-    cta:"حجز كرسي شاطئ", action:()=>alert('تم حجز كرسي الشاطئ بنجاح، بانتظاركم') }
+    desc:"شاطئ رملي خاص ومسبح لامتناهي يطلان مباشرة على شعاب البحر الأحمر.",
+    cta:"حجز كرسي شاطئ", action:()=>alert('تم حجز كرسي الشاطئ بنجاح') }
 };
 
 let session = null;
@@ -573,33 +447,45 @@ class CloudflareApiService {
       
       clearTimeout(timeoutId);
 
+      if (response.status === 404) {
+        console.warn('⚠️ Guest not found for token:', token);
+        return { success: false, error: 'Guest not found' };
+      }
+
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
       const data = await response.json();
-      if (data.error) throw new Error(data.error);
+      
+      if (data.error) {
+        console.warn('⚠️ API returned error:', data.error);
+        return { success: false, error: data.error };
+      }
 
       let guestData = null;
       
-      if (Array.isArray(data)) {
-        guestData = data.find(guest => 
-          String(guest.token || '').toLowerCase() === token.toLowerCase()
-        );
-        
-        if (!guestData) {
-          guestData = data.find(guest => 
-            String(guest.token || '').toLowerCase().includes(token.toLowerCase()) ||
-            token.toLowerCase().includes(String(guest.token || '').toLowerCase())
-          );
-        }
-        
-        if (!guestData && data.length > 0) guestData = data[0];
-      } else {
+      if (Array.isArray(data) && data.length > 0) {
+        guestData = data[0];
+      } else if (typeof data === 'object' && !data.error) {
         guestData = data;
       }
 
-      if (!guestData) throw new Error('No guest found');
+      if (!guestData || !guestData.token) {
+        console.warn('⚠️ No valid guest data found');
+        return { success: false, error: 'No guest data' };
+      }
 
+      // ✅ التحقق من تطابق التوكن
+      const returnedToken = String(guestData.token || '').toLowerCase();
+      const searchToken = token.toLowerCase();
+      
+      if (returnedToken !== searchToken && !returnedToken.includes(searchToken) && !searchToken.includes(returnedToken)) {
+        console.warn('⚠️ Token mismatch:', { returned: returnedToken, searched: searchToken });
+        return { success: false, error: 'Token mismatch' };
+      }
+
+      console.log('✅ Guest found:', guestData);
       return { success: true, data: this.mapOkginiGuest(guestData, token) };
+      
     } catch (error) {
       console.error('❌ API error:', error);
       return { success: false, error: error.message };
@@ -705,14 +591,55 @@ function makeSlider(track, images, {dotsEl=null, interval=4000}={}){
   return { go };
 }
 
+function buildStarfield(id, count){
+  const el = document.getElementById(id); if(!el) return;
+  let html = "";
+  for(let i=0;i<count;i++){
+    const size = Math.random()*1.6+0.6;
+    html += `<span class="star" style="width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;opacity:${Math.random()*0.6+0.15}"></span>`;
+  }
+  el.innerHTML = html;
+}
+
+function buildBubbles(id, count){
+  const el = document.getElementById(id); if(!el) return;
+  let html = "";
+  for(let i=0;i<count;i++){
+    const size = Math.random()*12+5;
+    html += `<span class="bubble" style="width:${size}px;height:${size}px;left:${Math.random()*94+2}%;animation-duration:${(Math.random()*5+6).toFixed(1)}s;animation-delay:${(Math.random()*6).toFixed(1)}s"></span>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderQR(canvasEl, text, size){
+  if(!canvasEl) return;
+  try{
+    if(typeof QRCode !== 'undefined' && QRCode.toCanvas){
+      QRCode.toCanvas(canvasEl, text, {width:size, margin:1, color:{dark:"#0A1128"}}, function(err){
+        if(err) drawQrFallback(canvasEl, text, size);
+      });
+      return;
+    }
+  }catch(e){}
+  drawQrFallback(canvasEl, text, size);
+}
+
+function drawQrFallback(canvasEl, text, size){
+  canvasEl.width = size; canvasEl.height = size;
+  const ctx = canvasEl.getContext('2d');
+  ctx.fillStyle = '#F3F0E8'; ctx.fillRect(0,0,size,size);
+  ctx.strokeStyle = '#0A1128'; ctx.lineWidth = 1.5; ctx.strokeRect(4,4,size-8,size-8);
+  ctx.fillStyle = '#0A1128'; ctx.font = `bold ${Math.max(10,size*0.13)}px Tajawal, sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, size/2, size/2);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
-  hydrateIcons();
   buildStarfield('starfield', 45); 
   buildStarfield('starfield2', 35); 
   buildStarfield('starfield3', 35);
   buildBubbles('bubbles', 16);
 
-  // Check for URL parameters first
   const urlParams = new URLSearchParams(window.location.search);
   const lid = urlParams.get('lid');
   const token = urlParams.get('token');
@@ -784,7 +711,6 @@ async function attemptLogin(code, silent) {
 
   console.log('🔑 Attempting login with:', code);
 
-  // Try Cloudflare Worker API first
   const apiResult = await apiService.validateGuestToken(code);
   
   let guestData = null;
@@ -809,7 +735,7 @@ async function attemptLogin(code, silent) {
   if (!guestData) {
     if (!silent) {
       errEl.classList.remove("hidden");
-      showToast('كود غير صحيح', 'error');
+      showToast('كود غير صحيح - لم يتم العثور على النزيل', 'error');
     }
     localStorage.removeItem("cataract_session_code");
     return;
@@ -841,7 +767,7 @@ async function attemptLogin(code, silent) {
   errEl.classList.add("hidden");
   localStorage.setItem("cataract_session_code", code);
   enterApp(guestData);
-  showToast('تم تسجيل الدخول بنجاح', 'success');
+  showToast('تم تسجيل الدخول بنجاح - ' + guestData.name, 'success');
 }
 
 function checkSessionValidity(){
@@ -971,29 +897,8 @@ function openDetail(key){
   const cta = document.getElementById("detailCta");
   cta.innerText = d.cta;
   cta.onclick = d.action;
-  ["stat1","stat2","stat3"].forEach(s=>{
-    const cap = s.charAt(0).toUpperCase()+s.slice(1);
-    document.getElementById(`detail${cap}Icon`).innerHTML = d[s].icon;
-    document.getElementById(`detail${cap}`).innerText = d[s].v;
-    document.getElementById(`detail${cap}Label`).innerText = d[s].l;
-  });
   makeSlider(document.getElementById("detailTrack"), d.imgs, {interval:4500});
-  buildDetailFilm(d.imgs);
   showScreen("screenDetail");
-}
-
-function buildDetailFilm(imgs){
-  document.getElementById("detailFilm").innerHTML = imgs.map((src,i)=>`
-    <div onclick="jumpDetail(${i})" class="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-white shadow-soft cursor-pointer">
-      <img src="${src}" class="w-full h-full object-cover">
-      ${i===0?`<span class="absolute inset-0 bg-black/25 flex items-center justify-center text-white text-lg">${ic('play')}</span>`:''}
-      ${i===imgs.length-1 && imgs.length>1?`<span class="absolute inset-0 bg-black/55 flex items-center justify-center text-white text-[11px] font-extrabold">+${imgs.length}</span>`:''}
-    </div>`).join("");
-}
-
-function jumpDetail(i){
-  const track = document.getElementById("detailTrack");
-  track.style.transform = `translateX(${i*(100/track.children.length)}%)`;
 }
 
 function closeDetail(){ showScreen("screenApp"); }
@@ -1012,12 +917,7 @@ async function openQrScanner(){
   modal.classList.remove("hidden");
 
   if(typeof jsQR === 'undefined'){
-    unsupported.innerText = "تعذّر تحميل مكوّن قراءة QR. تأكد من الاتصال بالإنترنت ثم أعد المحاولة.";
-    unsupported.classList.remove("hidden");
-    return;
-  }
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    unsupported.innerText = "متصفحك لا يدعم الوصول إلى الكاميرا أو أن الموقع لا يعمل عبر اتصال آمن (HTTPS). استخدم كود الحجز بدلاً من ذلك.";
+    unsupported.innerText = "تعذّر تحميل مكوّن قراءة QR";
     unsupported.classList.remove("hidden");
     return;
   }
@@ -1051,7 +951,7 @@ async function openQrScanner(){
     };
     scanLoop();
   }catch(err){
-    unsupported.innerText = "تعذّر الوصول إلى الكاميرا (تحقق من إذن الكاميرا واتصال HTTPS الآمن). استخدم كود الحجز بدلاً من ذلك.";
+    unsupported.innerText = "تعذّر الوصول إلى الكاميرا";
     unsupported.classList.remove("hidden");
   }
 }
