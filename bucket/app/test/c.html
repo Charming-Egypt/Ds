@@ -35,7 +35,9 @@
   .stagger > *{ animation:rise .5s cubic-bezier(.2,.7,.3,1) both; }
   .stagger > *:nth-child(1){ animation-delay:.02s } .stagger > *:nth-child(2){ animation-delay:.08s }
   .stagger > *:nth-child(3){ animation-delay:.14s } .stagger > *:nth-child(4){ animation-delay:.2s }
-  .icon{ width:1em; height:1em; }
+  .icon{ width:1em; height:1em; display:inline-block; vertical-align:-0.125em; flex-shrink:0; }
+  .icon-badge{ width:2.35rem; height:2.35rem; border-radius:0.85rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.05rem; }
+  .icon-badge-sm{ width:1.9rem; height:1.9rem; border-radius:0.65rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:.85rem; }
   /* perforated ticket edge */
   .perf{ position:relative; border-top:2px dashed rgba(255,255,255,.18); }
   .perf-light{ border-top:2px dashed var(--line); }
@@ -126,7 +128,7 @@
   </section>
 
   <!-- ===================== MAIN APP ===================== -->
-  <section id="screenApp" class="screen flex-col h-full bg-[var(--sand)]">
+  <section id="screenApp" class="screen flex-col h-full bg-[var(--sand)] relative">
     <div id="viewHome" class="flex-1 overflow-y-auto no-scrollbar pb-28">
 
       <!-- الشريط العلوي -->
@@ -195,7 +197,7 @@
       <div class="bg-[var(--night)] px-5 pt-6 pb-8 rounded-b-[32px] relative overflow-hidden">
         <div class="orb w-40 h-40 bg-[var(--gold)]/15 -top-10 -left-10"></div>
         <div class="relative z-10 flex items-center gap-2">
-          <button onclick="switchAppTab('home')" class="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">{{chevronR}}</button>
+          <button onclick="switchAppTab('home')" class="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white text-sm">{{chevronR}}</button>
           <h2 class="serif text-white text-lg">بطاقة رحلتكم</h2>
         </div>
       </div>
@@ -216,6 +218,10 @@
               <div class="bg-slate-50 p-3 rounded-2xl"><span class="text-[var(--gray)] block text-[9px] mb-0.5">الوصول</span><span id="infoCheckIn" class="font-extrabold text-[var(--ink)] block text-sm"></span></div>
               <div class="bg-slate-50 p-3 rounded-2xl"><span class="text-[var(--gray)] block text-[9px] mb-0.5">المغادرة</span><span id="infoCheckOut" class="font-extrabold text-[var(--ink)] block text-sm"></span></div>
             </div>
+            <div class="mt-2.5 bg-[var(--teal-soft)] rounded-2xl px-3.5 py-2.5 flex items-center justify-between">
+              <span class="text-[10px] text-[var(--gray)] font-bold">نظام الإقامة</span>
+              <span id="infoMealPlan" class="text-xs font-extrabold text-[var(--teal)]"></span>
+            </div>
           </div>
           <div class="perf-light relative flex items-center gap-4 px-5 py-5 bg-slate-50">
             <div class="notch -right-3"></div>
@@ -225,37 +231,84 @@
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-[var(--night)] to-[var(--night2)] rounded-3xl p-5 text-white space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs bg-white/10 px-2.5 py-1 rounded-full">الإنترنت المجاني</span>
-            <span class="text-xl text-[var(--gold)]">{{wifi}}</span>
+        <!-- تسجيل الوصول/المغادرة الرسمي -->
+        <div class="bg-gradient-to-br from-[var(--night)] to-[var(--night2)] rounded-3xl p-5 text-white">
+          <div class="flex items-center gap-3">
+            <span class="icon-badge bg-white/10 text-[var(--gold)]">{{clock}}</span>
+            <div><span class="text-[10px] text-white/45 block">مواعيد الاستقبال الرسمية</span><p class="font-bold text-sm">دخول ٢:٠٠ م &nbsp;·&nbsp; خروج ١٢:٠٠ ظهراً</p></div>
           </div>
-          <div><span class="text-[10px] text-white/45 block">شبكة الواي فاي</span><p id="wifiName" class="font-bold text-sm tracking-wide"></p></div>
-          <div class="pt-2 border-t border-white/10 flex justify-between items-center text-xs">
-            <span class="text-white/50">كلمة السر: <strong id="wifiPass" class="text-white"></strong></span>
-            <button onclick="copyWifi()" class="press bg-[var(--gold)] text-[var(--night)] font-extrabold px-3 py-1.5 rounded-xl text-[10px]">نسخ</button>
-          </div>
+          <p class="text-white/45 text-[10px] leading-relaxed mt-3 pt-3 border-t border-white/10">يُرجى تسليم مفتاح الغرفة والأساور لمكتب الاستقبال عند المغادرة. للتأخير في الخروج، يُرجى التواصل مع الاستقبال حسب التوافر.</p>
         </div>
 
+        <!-- الواي فاي وخزائن الأمانات -->
+        <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
+          <div class="flex items-center gap-3">
+            <span class="icon-badge bg-[var(--teal-soft)] text-[var(--teal)]">{{wifi}}</span>
+            <div><p class="font-extrabold text-[var(--ink)] text-sm">الإنترنت المجاني وخزائن الأمانات</p><p class="text-[var(--gray)] text-[11px] mt-0.5">متاحة فقط في منطقة اللوبي، ومجانية بالكامل</p></div>
+          </div>
+          <p class="text-[var(--gray)] text-[10px] leading-relaxed mt-3 pt-3 border-t border-[var(--line)]">الفندق غير مسؤول عن أي مقتنيات ثمينة تُترك خارج الخزانة الآمنة.</p>
+        </div>
+
+        <!-- مواعيد الوجبات -->
         <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
-          <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">مواعيد المطعم الرئيسي</h3>
+          <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">مواعيد الوجبات الرئيسية</h3>
           <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الإفطار</span><span class="font-extrabold text-[var(--ink)]">٧:٠٠ – ١٠:٠٠ ص</span></div>
-          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الغداء</span><span class="font-extrabold text-[var(--ink)]">١:٠٠ – ٤:٠٠ م</span></div>
-          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} العشاء</span><span class="font-extrabold text-[var(--ink)]">٧:٠٠ – ١١:٠٠ م</span></div>
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} الغداء</span><span class="font-extrabold text-[var(--ink)]">١:٠٠ – ٣:٠٠ م</span></div>
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="text-slate-600 font-bold flex items-center gap-1.5">{{clock}} العشاء</span><span class="font-extrabold text-[var(--ink)]">٧:٣٠ – ٩:٣٠ م</span></div>
+          <div class="pt-2 mt-1 border-t border-[var(--line)]">
+            <p class="text-[10px] text-[var(--gray)] font-bold mb-1.5">وجبات خفيفة لنزلاء الشامل الكلي — عند البار الشاطئي وبار المسبح</p>
+            <div class="flex gap-2">
+              <span class="bg-[var(--gold-soft)] text-[var(--coral-d)] text-[10px] font-extrabold px-2.5 py-1 rounded-full">١١:٠٠ – ١٢:٣٠</span>
+              <span class="bg-[var(--gold-soft)] text-[var(--coral-d)] text-[10px] font-extrabold px-2.5 py-1 rounded-full">٣:٣٠ – ٥:٣٠ م</span>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2.5 text-xs">
-          <div class="bg-white p-3 shadow-soft border border-[var(--line)] rounded-2xl text-center"><span class="text-[var(--gray)] text-[9px] block mb-1">الاستقبال</span><span class="font-extrabold text-[var(--coral)] text-base">0</span></div>
-          <div class="bg-white p-3 shadow-soft border border-[var(--line)] rounded-2xl text-center"><span class="text-[var(--gray)] text-[9px] block mb-1">خدمة الغرف</span><span class="font-extrabold text-[var(--coral)] text-base">1</span></div>
-          <div class="bg-white p-3 shadow-soft border border-[var(--line)] rounded-2xl text-center"><span class="text-[var(--gray)] text-[9px] block mb-1">الطوارئ</span><span class="font-extrabold text-[var(--coral)] text-base">9</span></div>
+        <!-- البارات -->
+        <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2">
+          <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1.5">البارات ومواعيد العمل</h3>
+          <div id="barsList" class="space-y-2"></div>
+          <div class="flex justify-between items-center p-2.5 bg-[var(--teal-soft)] rounded-xl text-xs mt-1">
+            <span class="text-[var(--teal)] font-bold flex items-center gap-1.5">{{route}} الشاطئ والمسابح</span>
+            <span class="font-extrabold text-[var(--teal)]">٨:٠٠ ص – ٦:٠٠ م</span>
+          </div>
+        </div>
+
+        <!-- التواصل مع الاستقبال -->
+        <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)]">
+          <h3 class="text-xs font-extrabold text-[var(--ink)] mb-3">التواصل مع الاستقبال</h3>
+          <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-3.5">
+            <div class="flex items-center gap-3">
+              <span class="icon-badge bg-[var(--coral-soft,#FFE8DF)] text-[var(--coral)]">{{phone}}</span>
+              <div><p id="receptionHotelLabel" class="text-xs font-extrabold text-[var(--ink)]"></p><p class="text-[10px] text-[var(--gray)]">اتصلوا من هاتف الغرفة الداخلي</p></div>
+            </div>
+            <span id="receptionExt" class="text-2xl font-extrabold text-[var(--coral)]"></span>
+          </div>
+        </div>
+
+        <!-- تعليمات هامة -->
+        <div class="bg-white rounded-3xl p-5 shadow-soft border border-[var(--line)] space-y-2.5">
+          <h3 class="text-xs font-extrabold text-[var(--ink)] mb-1">تعليمات هامة لإقامتكم</h3>
+          <ul class="space-y-2 text-[11px] text-slate-600 leading-relaxed">
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> الزي الرسمي في اللوبي وأثناء الوجبات: كاجوال أنيق، دون حفاء أو ملابس سباحة</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُرجى عدم إطعام الأسماك في المسطحات المائية</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُمنع اصطحاب الشيشة داخل مبنى الفندق</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> لا يُسمح بحجز كراسي الشاطئ مسبقاً بالمناشف أو الأغراض الشخصية</li>
+            <li class="flex gap-2"><span class="text-[var(--coral)] shrink-0">{{check}}</span> يُنصح بشرب كمية كافية من الماء خاصة في الصيف لتجنب الجفاف</li>
+          </ul>
+          <div class="pt-2.5 mt-1 border-t border-[var(--line)] grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-50 rounded-xl p-2"><span class="text-[9px] text-[var(--gray)] block">فقدان المفتاح</span><span class="text-[11px] font-extrabold text-[var(--ink)]">٦٥٠ ج.م</span></div>
+            <div class="bg-slate-50 rounded-xl p-2"><span class="text-[9px] text-[var(--gray)] block">مفتاح الخزانة</span><span class="text-[11px] font-extrabold text-[var(--ink)]">١٠٠$</span></div>
+            <div class="bg-slate-50 rounded-xl p-2"><span class="text-[9px] text-[var(--gray)] block">منشفة الشاطئ</span><span class="text-[11px] font-extrabold text-[var(--ink)]">٣٥٠ ج.م</span></div>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <button onclick="alert('تم إرسال طلب تنظيف الغرفة بنجاح')" class="press p-3.5 bg-white shadow-soft border border-[var(--line)] rounded-2xl flex items-center gap-2.5">
-            <span class="text-lg text-[var(--coral)]">{{sparkle}}</span><span class="text-xs font-extrabold text-slate-700">تنظيف الغرفة</span>
+            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">{{sparkle}}</span><span class="text-xs font-extrabold text-slate-700">تنظيف الغرفة</span>
           </button>
           <button onclick="alert('جاري تحويلك لخدمة الغرف')" class="press p-3.5 bg-white shadow-soft border border-[var(--line)] rounded-2xl flex items-center gap-2.5">
-            <span class="text-lg text-[var(--coral)]">{{phone}}</span><span class="text-xs font-extrabold text-slate-700">خدمة الغرف</span>
+            <span class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)]">{{phone}}</span><span class="text-xs font-extrabold text-slate-700">خدمة الغرف</span>
           </button>
         </div>
 
@@ -263,13 +316,13 @@
       </div>
     </div>
 
-    <!-- تنقل عائم -->
-    <nav class="absolute bottom-5 left-5 right-5 bg-[var(--night)]/95 backdrop-blur-lg rounded-2xl px-6 py-3.5 flex justify-around items-center shadow-deep">
-      <button id="navHome" onclick="switchAppTab('home')" class="flex flex-col items-center gap-1 text-[var(--gold)]">
-        <span class="text-lg w-5 h-5">{{home}}</span><span class="text-[9px] font-bold">رحلتي</span>
+    <!-- تنقل سفلي ثابت -->
+    <nav class="absolute bottom-5 left-5 right-5 z-20 bg-[var(--night)]/95 backdrop-blur-lg rounded-2xl px-6 py-3.5 flex justify-around items-center shadow-deep">
+      <button id="navHome" onclick="switchAppTab('home')" class="flex flex-col items-center gap-1 text-[var(--gold)] text-lg">
+        {{home}}<span class="text-[9px] font-bold">رحلتي</span>
       </button>
-      <button id="navPass" onclick="switchAppTab('pass')" class="flex flex-col items-center gap-1 text-white/40">
-        <span class="text-lg w-5 h-5">{{ticket}}</span><span class="text-[9px] font-bold">البطاقة</span>
+      <button id="navPass" onclick="switchAppTab('pass')" class="flex flex-col items-center gap-1 text-white/40 text-lg">
+        {{ticket}}<span class="text-[9px] font-bold">البطاقة</span>
       </button>
     </nav>
   </section>
@@ -294,17 +347,17 @@
       </div>
       <div class="grid grid-cols-3 gap-2 mt-4">
         <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat1Icon" class="block text-lg text-[var(--coral)] mb-1"></span>
+          <span id="detailStat1Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
           <span id="detailStat1" class="block text-xs font-extrabold text-[var(--ink)]"></span>
           <span id="detailStat1Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
         </div>
         <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat2Icon" class="block text-lg text-[var(--coral)] mb-1"></span>
+          <span id="detailStat2Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
           <span id="detailStat2" class="block text-xs font-extrabold text-[var(--ink)]"></span>
           <span id="detailStat2Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
         </div>
         <div class="bg-slate-50 rounded-2xl p-3 text-center">
-          <span id="detailStat3Icon" class="block text-lg text-[var(--coral)] mb-1"></span>
+          <span id="detailStat3Icon" class="icon-badge-sm bg-[var(--gold-soft)] text-[var(--coral)] mx-auto mb-1.5"></span>
           <span id="detailStat3" class="block text-xs font-extrabold text-[var(--ink)]"></span>
           <span id="detailStat3Label" class="block text-[9px] text-[var(--gray)] mt-0.5"></span>
         </div>
@@ -342,28 +395,28 @@
    أيقونات خطية (SVG)
    ========================================================================= */
 const ICONS = {
-  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.4-2.6h5.2L16 7"/><circle cx="12" cy="13.5" r="3.4"/></svg>',
-  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
-  moon:'<svg viewBox="0 0 24 24" class="w-full h-full"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>',
-  pin:'<svg viewBox="0 0 24 24" class="icon inline-block" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.4 7-12.2A7 7 0 1 0 5 9.8C5 14.6 12 22 12 22z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
-  star:'<svg viewBox="0 0 24 24" fill="currentColor" class="icon inline-block"><path d="M12 2.5l2.9 6.1 6.6.7-4.9 4.5 1.3 6.6L12 16.9l-5.9 3.5 1.3-6.6-4.9-4.5 6.6-.7z"/></svg>',
-  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M20.6 4.9a5.4 5.4 0 0 0-7.7 0L12 5.8l-.9-.9a5.4 5.4 0 1 0-7.7 7.7l.9.9L12 21.2l7.7-7.7.9-.9a5.4 5.4 0 0 0 0-7.7z"/></svg>',
-  route:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><circle cx="12" cy="12" r="9.2"/><path d="M15.8 8.2l-2 5.6-5.6 2 2-5.6z"/></svg>',
-  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><circle cx="9" cy="8" r="3"/><path d="M2.5 20.5v-.8a6.5 6.5 0 0 1 13 0v.8"/><circle cx="17.2" cy="8.6" r="2.6"/><path d="M14.8 20.5v-.6a5.6 5.6 0 0 1 8-5"/></svg>',
-  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="w-full h-full"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/></svg>',
-  wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" class="w-full h-full"><path d="M4.5 12.6a11 11 0 0 1 15 0"/><path d="M7.8 16a6.4 6.4 0 0 1 8.4 0"/><circle cx="12" cy="19.3" r="1.1" fill="currentColor" stroke="none"/></svg>',
-  fork:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M6.5 2.5v7.7a2.3 2.3 0 0 0 2.3 2.3v9M6.5 2.5v6M9 2.5v6M18 2.5c-2 0-3.3 2.4-3.3 5.6s1.3 4 3.3 4v9.4"/></svg>',
-  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M11 20.5A7.5 7.5 0 0 1 3.5 13c0-7.5 9.5-11.5 17-11.5 0 7.5-4.5 17-9.5 17z"/><path d="M3.8 13.2c4.3-1 8.5-4.3 11.7-9.6"/></svg>',
-  bed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M2.5 18.5v-6a2 2 0 0 1 2-2h15a2 2 0 0 1 2 2v6M2.5 18.5h19M2.5 18.5v2.8M21.5 18.5v2.8M6.5 10.5V7a2 2 0 0 1 2-2h3.2v5.5"/></svg>',
-  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M21.5 16.9v2.7a1.8 1.8 0 0 1-2 1.8 17.9 17.9 0 0 1-7.8-2.8 17.6 17.6 0 0 1-5.4-5.4A17.9 17.9 0 0 1 3.5 5.4a1.8 1.8 0 0 1 1.8-2h2.7a1.8 1.8 0 0 1 1.8 1.5c.1.9.3 1.7.6 2.5a1.8 1.8 0 0 1-.4 1.9L8.7 10.7a14.3 14.3 0 0 0 5.4 5.4l1.4-1.3a1.8 1.8 0 0 1 1.9-.4c.8.3 1.6.5 2.5.6a1.8 1.8 0 0 1 1.6 1.9z"/></svg>',
-  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-full h-full"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  chevronR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><polyline points="9 18 15 12 9 6"/></svg>',
-  clock:'<svg viewBox="0 0 24 24" class="icon inline-block" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.3"/><polyline points="12 7 12 12 15.5 14"/></svg>',
-  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 2.5l2 5.7L20 10l-6 2-2 5.7-2-5.7L4 10l6-1.8z"/></svg>',
-  boat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M3 15.5h18l-2.2 4.3H5.2z"/><path d="M12 15.5V3.5l6 5.4"/><path d="M12 3.5l-6.5 5.4"/></svg>',
-  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M3 8.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.2a1.6 1.6 0 0 0 0 3.1v1.2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.2a1.6 1.6 0 0 0 0-3.1z"/><line x1="9.5" y1="6.8" x2="9.5" y2="17.2" stroke-dasharray="2 2"/></svg>',
-  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-5.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2V21h3.5a1 1 0 0 0 1-1V9.5"/></svg>',
-  check:'<svg viewBox="0 0 24 24" class="icon inline-block" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7l1.4-2.6h5.2L16 7"/><circle cx="12" cy="13.5" r="3.4"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" class="icon"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.4 7-12.2A7 7 0 1 0 5 9.8C5 14.6 12 22 12 22z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="currentColor" class="icon"><path d="M12 2.5l2.9 6.1 6.6.7-4.9 4.5 1.3 6.6L12 16.9l-5.9 3.5 1.3-6.6-4.9-4.5 6.6-.7z"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20.6 4.9a5.4 5.4 0 0 0-7.7 0L12 5.8l-.9-.9a5.4 5.4 0 1 0-7.7 7.7l.9.9L12 21.2l7.7-7.7.9-.9a5.4 5.4 0 0 0 0-7.7z"/></svg>',
+  route:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="9.2"/><path d="M15.8 8.2l-2 5.6-5.6 2 2-5.6z"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="9" cy="8" r="3"/><path d="M2.5 20.5v-.8a6.5 6.5 0 0 1 13 0v.8"/><circle cx="17.2" cy="8.6" r="2.6"/><path d="M14.8 20.5v-.6a5.6 5.6 0 0 1 8-5"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="icon"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.3l6 3.7-6 3.7z" fill="currentColor" stroke="none"/></svg>',
+  wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="icon"><path d="M4.5 12.6a11 11 0 0 1 15 0"/><path d="M7.8 16a6.4 6.4 0 0 1 8.4 0"/><circle cx="12" cy="19.3" r="1.1" fill="currentColor" stroke="none"/></svg>',
+  fork:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M6.5 2.5v7.7a2.3 2.3 0 0 0 2.3 2.3v9M6.5 2.5v6M9 2.5v6M18 2.5c-2 0-3.3 2.4-3.3 5.6s1.3 4 3.3 4v9.4"/></svg>',
+  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20.5A7.5 7.5 0 0 1 3.5 13c0-7.5 9.5-11.5 17-11.5 0 7.5-4.5 17-9.5 17z"/><path d="M3.8 13.2c4.3-1 8.5-4.3 11.7-9.6"/></svg>',
+  bed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M2.5 18.5v-6a2 2 0 0 1 2-2h15a2 2 0 0 1 2 2v6M2.5 18.5h19M2.5 18.5v2.8M21.5 18.5v2.8M6.5 10.5V7a2 2 0 0 1 2-2h3.2v5.5"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M21.5 16.9v2.7a1.8 1.8 0 0 1-2 1.8 17.9 17.9 0 0 1-7.8-2.8 17.6 17.6 0 0 1-5.4-5.4A17.9 17.9 0 0 1 3.5 5.4a1.8 1.8 0 0 1 1.8-2h2.7a1.8 1.8 0 0 1 1.8 1.5c.1.9.3 1.7.6 2.5a1.8 1.8 0 0 1-.4 1.9L8.7 10.7a14.3 14.3 0 0 0 5.4 5.4l1.4-1.3a1.8 1.8 0 0 1 1.9-.4c.8.3 1.6.5 2.5.6a1.8 1.8 0 0 1 1.6 1.9z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  chevronR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="9 18 15 12 9 6"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.3"/><polyline points="12 7 12 12 15.5 14"/></svg>',
+  sparkle:'<svg viewBox="0 0 24 24" fill="currentColor" class="icon"><path d="M12 2.5l2 5.7L20 10l-6 2-2 5.7-2-5.7L4 10l6-1.8z"/></svg>',
+  boat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 15.5h18l-2.2 4.3H5.2z"/><path d="M12 15.5V3.5l6 5.4"/><path d="M12 3.5l-6.5 5.4"/></svg>',
+  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 8.5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.2a1.6 1.6 0 0 0 0 3.1v1.2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.2a1.6 1.6 0 0 0 0-3.1z"/><line x1="9.5" y1="6.8" x2="9.5" y2="17.2" stroke-dasharray="2 2"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-5.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2V21h3.5a1 1 0 0 0 1-1V9.5"/></svg>',
+  check:'<svg viewBox="0 0 24 24" class="icon" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 };
 function ic(name){ return ICONS[name] || ''; }
 function hydrateIcons(){
@@ -438,19 +491,25 @@ const IMG = {
 function daysFromNow(n){ const d=new Date(); d.setDate(d.getDate()+n); d.setHours(0,0,0,0); return d; }
 
 const GUEST_DB = {
-  "CR2026": { hotel:"Cataract Resort", name:"أحمد مصطفى", room:"512",
+  "CR2026": { hotel:"Cataract Resort", hotelKey:"resort", mealPlan:"Hard All-Inclusive", receptionExt:"4", name:"أحمد مصطفى", room:"512",
     checkIn:daysFromNow(-1), checkOut:daysFromNow(2),
-    heroImgs:[IMG.poolAerial, IMG.beachAerial, IMG.suite],
-    wifiName:"CataractResort_Guest", wifiPass:"resort2026" },
-  "LY2026": { hotel:"Cataract Layalina", name:"سارة يوسف", room:"214",
+    heroImgs:[IMG.poolAerial, IMG.beachAerial, IMG.suite] },
+  "LY2026": { hotel:"Cataract Layalina", hotelKey:"layalina", mealPlan:"Soft All-Inclusive", receptionExt:"3", name:"سارة يوسف", room:"214",
     checkIn:daysFromNow(3), checkOut:daysFromNow(6),
-    heroImgs:[IMG.palmBeach, IMG.coralReef, IMG.beachAerial],
-    wifiName:"Layalina_Guest_WiFi", wifiPass:"layalina2026" },
-  "EXP2025": { hotel:"Cataract Resort", name:"محمود سيد", room:"308",
+    heroImgs:[IMG.palmBeach, IMG.coralReef, IMG.beachAerial] },
+  "EXP2025": { hotel:"Cataract Resort", hotelKey:"resort", mealPlan:"Half Board", receptionExt:"4", name:"محمود سيد", room:"308",
     checkIn:daysFromNow(-10), checkOut:daysFromNow(-5),
-    heroImgs:[IMG.poolLoungers, IMG.hotelArch],
-    wifiName:"CataractResort_Guest", wifiPass:"resort2026" }
+    heroImgs:[IMG.poolLoungers, IMG.hotelArch] }
 };
+
+/* البارات الرسمية بمواعيدها كما وردت في نشرة الفندق */
+const BARS = [
+  { name:"Pub Bar 222", hotel:"Cataract Resort", hours:"١٠:٠٠ ص – ٧:٠٠ م" },
+  { name:"Pergola Bar", hotel:"Cataract Resort", hours:"٧:٠٠ – ١١:٠٠ م" },
+  { name:"Pool Bar", hotel:"Cataract Resort", hours:"١٠:٠٠ ص – ٦:٠٠ م" },
+  { name:"Beach Bar", hotel:"الشاطئ المشترك", hours:"١٠:٠٠ ص – ٦:٠٠ م" },
+  { name:"Anchor Bar", hotel:"Cataract Layalina", hours:"٦:٠٠ – ١١:٠٠ م" }
+];
 
 const DETAILS = {
   room:{ badge:"الغرفة", title:"جناح ديلوكس - إطلالة على البحر", location:"الطابق الخامس",
@@ -610,16 +669,28 @@ function enterApp(guest){
   document.getElementById("infoRoom").innerText = guest.room;
   document.getElementById("infoCheckIn").innerText = guest.checkIn.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
   document.getElementById("infoCheckOut").innerText = guest.checkOut.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
-  document.getElementById("wifiName").innerText = guest.wifiName;
-  document.getElementById("wifiPass").innerText = guest.wifiPass;
+  document.getElementById("infoMealPlan").innerText = guest.mealPlan;
+  document.getElementById("receptionHotelLabel").innerText = `استقبال ${guest.hotel}`;
+  document.getElementById("receptionExt").innerText = guest.receptionExt;
   document.getElementById("heroTitle").innerText = guest.hotel;
   document.getElementById("journeyIn").innerText = guest.checkIn.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
   document.getElementById("journeyOut").innerText = guest.checkOut.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
   updateJourney();
   makeSlider(document.getElementById("heroTrack"), guest.heroImgs, {dotsEl:document.getElementById("heroDots"), interval:4200});
   buildBento();
+  buildBars();
   renderQR(document.getElementById("passQr"), guest.code, 76);
   switchAppTab('home');
+}
+
+function buildBars(){
+  const el = document.getElementById("barsList");
+  if(!el) return;
+  el.innerHTML = BARS.map(b=>`
+    <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs">
+      <span class="text-slate-600 font-bold">${b.name}<span class="block text-[9px] text-[var(--gray)] font-normal">${b.hotel}</span></span>
+      <span class="font-extrabold text-[var(--ink)]">${b.hours}</span>
+    </div>`).join("");
 }
 
 function updateJourney(){
@@ -658,18 +729,13 @@ function switchAppTab(tab){
   const navHome=document.getElementById("navHome"), navPass=document.getElementById("navPass");
   if(tab==='home'){
     home.classList.remove("hidden"); pass.classList.add("hidden");
-    navHome.className="flex flex-col items-center gap-1 text-[var(--gold)]";
-    navPass.className="flex flex-col items-center gap-1 text-white/40";
+    navHome.className="flex flex-col items-center gap-1 text-[var(--gold)] text-lg";
+    navPass.className="flex flex-col items-center gap-1 text-white/40 text-lg";
   } else {
     pass.classList.remove("hidden"); home.classList.add("hidden");
-    navPass.className="flex flex-col items-center gap-1 text-[var(--gold)]";
-    navHome.className="flex flex-col items-center gap-1 text-white/40";
+    navPass.className="flex flex-col items-center gap-1 text-[var(--gold)] text-lg";
+    navHome.className="flex flex-col items-center gap-1 text-white/40 text-lg";
   }
-}
-
-function copyWifi(){
-  navigator.clipboard.writeText(document.getElementById("wifiPass").innerText);
-  alert("تم نسخ كلمة سر الواي فاي");
 }
 
 /* ---------------- شاشة التفاصيل ---------------- */
