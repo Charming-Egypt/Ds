@@ -505,7 +505,7 @@
                 </div>
             </div>
 
-            <div class="relative z-20 px-5 -mt-[8rem]">
+            <div class="relative z-20 px-5 -mt-16">
                 <div class="search-card rounded-[26px] p-5 space-y-4">
                     <div class="flex gap-1 field-box p-1 rounded-2xl">
                         <button onclick="search.switchTab('hotels')" id="searchTabHotels" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-hotel"></i> <span data-i18n="navHotels">Hotels</span></button>
@@ -900,6 +900,7 @@
                 try { fbStorage = firebase.storage(); } catch (e) { fbStorage = null; }
                 fbEnabled = true;
                 bindCatalog();
+                bindTranslationAndSettingsOverlays();
                 fbAuth.onAuthStateChanged(handleAuthChange);
             } else {
                 fbEnabled = false;
@@ -972,12 +973,48 @@
     function arrayToKeyedObject(arr) { const o = {}; arr.forEach(item => { const copy = Object.assign({}, item); delete copy.id; o[item.id] = copy; }); return o; }
 
     function bindCatalog() {
-        // Catalog CONTENT always comes from data/*.json — that's the single source of truth the
-        // site owner edits. We intentionally do NOT mirror it into Firebase and read it back: an
-        // early Firebase snapshot would otherwise silently keep overriding every later edit to the
-        // JSON files with stale data forever. Firebase is still used for accounts, bookings,
-        // favorites, reviews and notifications — just not catalog content.
-        loadCatalogJson().then(() => { refreshCatalogUI(); });
+        // data/*.json is always the baseline/seed content. If any of the admin dashboards have saved
+        // edits to Firebase (under admin_content/<type>), those are layered live on top — so changes
+        // made in an admin panel appear immediately across the site without ever going stale, and a
+        // fresh deployment with no admin edits yet just shows the JSON content exactly as before.
+        loadCatalogJson().then(() => {
+            refreshCatalogUI();
+            if (!fbEnabled) return;
+            ['hotels', 'excursions', 'transfers', 'restaurants', 'destinations', 'articles'].forEach(type => {
+                fbDB.ref('admin_content/' + type).on('value', snap => {
+                    CATALOG_RAW[type] = mergeCatalogWithOverrides(JSON_BASELINE[type], snap.val());
+                    localizeCatalog(I18N.get());
+                    refreshCatalogUI();
+                });
+            });
+        });
+    }
+    function bindTranslationAndSettingsOverlays() {
+        // Live admin overrides for translations — same layering idea as the catalog: data/lang/*.json
+        // is the baseline, admin_content/translations/<lang>/<key> overlays it live if an admin has
+        // edited or added a string via the Languages section of the dashboard.
+        SUPPORTED_LANGS.forEach(lang => {
+            fbDB.ref('admin_content/translations/' + lang).on('value', snap => {
+                const overrides = snap.val();
+                if (!overrides) return;
+                Object.keys(overrides).forEach(key => {
+                    if (!I18N_DICT[key]) I18N_DICT[key] = {};
+                    I18N_DICT[key][lang] = overrides[key];
+                });
+                I18N.set(I18N.get());
+            });
+        });
+        // Live admin overrides for safe site settings (brand colors, display currencies) — Firebase
+        // credentials and payment gateway secrets are never editable from a web dashboard, only from
+        // data/configs.json directly.
+        fbDB.ref('admin_content/settings').on('value', snap => {
+            const overrides = snap.val();
+            if (!overrides) return;
+            APP_CONFIG = Object.assign(APP_CONFIG, overrides);
+            document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
+            document.documentElement.style.setProperty('--brand-primary-dark', APP_CONFIG.brandColorPrimaryDark);
+            CurrencyAPI.applyAvailability();
+        });
     }
     function refreshCatalogUI() {
         if (!document.getElementById('mainApp') || document.getElementById('mainApp').classList.contains('hidden')) return;
@@ -1136,15 +1173,33 @@
         destinations: [], restaurants: [], reviews: [], articles: []
     };
 
+    // JSON_BASELINE holds the pure data/*.json content, untouched by any admin edits. Every time an
+    // admin dashboard writes to Firebase under admin_content/<type>, the live listener below re-merges
+    // JSON_BASELINE with the latest Firebase snapshot into CATALOG_RAW — so admin edits show up
+    // instantly everywhere, while data/*.json remains the reliable "day one" seed content.
+    const JSON_BASELINE = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], articles: [] };
+    // An admin_content entry with _deleted:true is a tombstone — it hides a JSON_BASELINE item without
+    // needing to edit the JSON file itself (used when an admin deletes a seed item via the dashboard).
+    function mergeCatalogWithOverrides(baseArray, firebaseObj) {
+        const byId = {};
+        (baseArray || []).forEach(item => { byId[item.id] = item; });
+        if (firebaseObj) {
+            Object.keys(firebaseObj).forEach(id => {
+                const override = Object.assign({ id }, firebaseObj[id]);
+                if (override._deleted) delete byId[id]; else byId[id] = override;
+            });
+        }
+        return Object.values(byId);
+    }
     async function loadCatalogJson() {
         const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
         try {
             const responses = await Promise.all(files.map(f => fetch('data/' + f + '.json')));
             const parsed = await Promise.all(responses.map(r => r.json()));
-            files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i]; });
+            files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i]; if (JSON_BASELINE[f]) JSON_BASELINE[f] = parsed[i]; });
         } catch (err) {
             console.warn('Could not load data/*.json catalog files — using minimal built-in fallback.', err);
-            files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
+            files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; if (JSON_BASELINE[f]) JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
         }
         localizeCatalog(I18N.get());
     }
