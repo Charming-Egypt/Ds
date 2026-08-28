@@ -1,18 +1,18 @@
 [
   {
     "id": "h1",
-    "category": "luxury",
+    "category": "Budget",
     "name": {
-      "en": "Discover Grand Hotel",
-      "ar": "فندق ديسكفر جراند",
-      "ru": "Discover Grand Hotel",
-      "de": "Discover Grand Hotel",
-      "it": "Discover Grand Hotel",
-      "tr": "Discover Grand Hotel"
-    },
+      "en": "Cataract Layalina",
+      "ar": "كاتاراكت ليالينا",
+      "ru": "Cataract Layalina",
+      "de": "Cataract Layalina",
+      "it": "Cataract Layalina",
+      "tr": "Cataract Layalina"
+    }
     "description": {
-      "en": "Luxury 5-star hotel with sea view",
-      "ar": "فندق فاخر 5 نجوم بإطلالة على البحر",
+      "en": " 4-star hotel with sea view",
+      "ar": "فندق 4 نجوم بإطلالة على البحر",
       "ru": "Роскошный 5-звездочный отель с видом на море",
       "de": "Luxus-5-Sterne-Hotel mit Meerblick",
       "it": "Hotel di lusso 5 stelle con vista mare",
