@@ -2405,14 +2405,17 @@
                     <div class="flex">
                         <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
                             <img src="${x.image}" class="w-full h-full object-cover">
-                            <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></div>
+                            <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <span class="text-[9px]" style="color:var(--text-secondary)">(${x.reviews} reviews)</span>
+                            <i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
+                            </div>
                         </div>
                         <div class="flex-1 p-3 flex flex-col justify-between">
                             <div>
                                 <span class="text-[9px] font-bold text-violet-500 mb-1 inline-block">${x.category}</span>
                                 <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1" style="color:var(--text-primary)">${x.title}</h3>
                                 <p class="text-[10px] flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${x.duration}</p>
-                                <span class="text-[9px]" style="color:var(--text-secondary)">(${x.reviews} reviews)</span>
+                                
                             </div>
                             <div class="flex items-center justify-between">
                                 
