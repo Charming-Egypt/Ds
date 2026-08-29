@@ -252,7 +252,7 @@ tailwind.config = {
 
 <script>
 // ==================== CONFIG LOADING (same data/configs.json as the main site) ====================
-let firebaseConfig = {}, APP_CONFIG = {};
+let firebaseConfig = {}, APP_CONFIG = {}, GITHUB_CFG = {};
 let fbApp, fbAuth, fbDB, currentAdminUid = null;
 
 async function loadConfig() {
@@ -260,7 +260,55 @@ async function loadConfig() {
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
     APP_CONFIG = cfg.app || {};
+    GITHUB_CFG = cfg.github || {};
 }
+
+// ==================== GITHUB STORE ====================
+// All catalog content, translations, and safe settings are read from — and saved directly
+// back to — the actual data/*.json files on GitHub via the secure proxy Worker
+// (admin/github-proxy-worker.js). No content edit ever touches Firebase; Firebase is only
+// used elsewhere in this dashboard for Bookings, Reviews, Users and Owner Access, which are
+// live operational data, not authored content.
+const GitHubStore = {
+    cache: {},
+    configured() { return !!(GITHUB_CFG.owner && GITHUB_CFG.repo && GITHUB_CFG.proxyEndpoint && GITHUB_CFG.owner.indexOf('YOUR_') !== 0); },
+    getSecret() { return localStorage.getItem('ds_admin_proxy_secret') || ''; },
+    async ensureSecret() {
+        let s = this.getSecret();
+        if (s) return s;
+        s = prompt('Enter the Admin Proxy Secret (the ADMIN_PROXY_SECRET you set when deploying the GitHub proxy Worker — see admin/github-proxy-worker.js):');
+        if (s) localStorage.setItem('ds_admin_proxy_secret', s);
+        return s || '';
+    },
+    async read(path) {
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of data/configs.json first.');
+        const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(path)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Read failed (' + res.status + ')');
+        const parsed = JSON.parse(data.content);
+        this.cache[path] = { sha: data.sha };
+        return parsed;
+    },
+    async write(path, newContent, message) {
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of data/configs.json first.');
+        const secret = await this.ensureSecret();
+        if (!secret) throw new Error('Admin secret is required to save.');
+        const cached = this.cache[path];
+        const res = await fetch(`${GITHUB_CFG.proxyEndpoint}/file`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ owner: GITHUB_CFG.owner, repo: GITHUB_CFG.repo, branch: GITHUB_CFG.branch || 'main', path, content: JSON.stringify(newContent, null, 2) + '\n', sha: cached ? cached.sha : undefined, message, adminSecret: secret })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            if (res.status === 401) { localStorage.removeItem('ds_admin_proxy_secret'); }
+            throw new Error(data.error || 'Save failed (' + res.status + ')');
+        }
+        this.cache[path] = { sha: data.sha };
+        return data;
+    }
+};
 
 // ==================== TOAST ====================
 const Toast = {
@@ -370,18 +418,14 @@ const Dashboard = {
                 <p class="text-xs" style="color:#8a80a3">${d.label}</p>
             </div>`).join('');
 
-        const [hotelsSnap, excSnap, bookingsSnap, usersSnap] = await Promise.all([
-            fbDB.ref('admin_content/hotels').once('value'),
-            fbDB.ref('admin_content/excursions').once('value'),
+        const [bookingsSnap, usersSnap] = await Promise.all([
             fbDB.ref('allBookings').once('value'),
             fbDB.ref('users').once('value')
         ]);
         const jsonHotels = await fetch('../data/hotels.json').then(r => r.json()).catch(() => []);
         const jsonExc = await fetch('../data/excursions.json').then(r => r.json()).catch(() => []);
-        const hotelCount = mergeCount(jsonHotels, hotelsSnap.val());
-        const excCount = mergeCount(jsonExc, excSnap.val());
-        document.getElementById('stat-hotels').textContent = hotelCount;
-        document.getElementById('stat-excursions').textContent = excCount;
+        document.getElementById('stat-hotels').textContent = jsonHotels.length;
+        document.getElementById('stat-excursions').textContent = jsonExc.length;
         const bookings = objToArray(bookingsSnap.val());
         document.getElementById('stat-bookings').textContent = bookings.length;
         document.getElementById('stat-users').textContent = objToArray(usersSnap.val()).length;
@@ -412,11 +456,6 @@ const Dashboard = {
 };
 Modules.dashboard = { onShow() { Dashboard.load(); } };
 
-function mergeCount(jsonArr, fbObj) {
-    const ids = new Set((jsonArr || []).map(x => x.id));
-    if (fbObj) Object.keys(fbObj).forEach(id => { if (fbObj[id]._deleted) ids.delete(id); else ids.add(id); });
-    return ids.size;
-}
 function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
 function generateId() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
@@ -481,17 +520,11 @@ const MlField = {
 };
 
 // ==================== SHARED: CRUD HELPERS ====================
+// loadJsonBaseline is a plain, unauthenticated read of the live data/*.json files — still used by
+// Owner Access below to populate its "assign to..." pickers, since that's just a read-only list of
+// names/IDs, not an edit (edits always go through GitHubStore, never this).
 async function loadJsonBaseline(file) {
     try { return await fetch('../data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
-}
-function mergeWithOverrides(baseArray, fbObj) {
-    const byId = {};
-    (baseArray || []).forEach(item => { byId[item.id] = item; });
-    if (fbObj) Object.keys(fbObj).forEach(id => {
-        const ov = Object.assign({ id }, fbObj[id]);
-        if (ov._deleted) delete byId[id]; else byId[id] = ov;
-    });
-    return Object.values(byId);
 }
 function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
 function openModal(title, bodyHtml, footerHtml, opts) {
@@ -524,32 +557,67 @@ function confirmDialog(message, onConfirm) {
 })();
 
 // ==================== HOTELS MODULE ====================
-Modules.hotels = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-hotels').innerHTML = `
+// ==================== SHARED: GitHub-backed collection base ====================
+// Every catalog module (Hotels, Excursions, Transfers, Restaurants, Destinations, Articles) is a
+// plain array stored in one data/*.json file on GitHub. This factory provides the common
+// load/save/delete plumbing so each module only needs to define its table + form.
+function makeGitHubCollection(path) {
+    return {
+        items: [], path,
+        async load() { this.items = await GitHubStore.read(this.path); },
+        async reload() { try { await this.load(); this.render(); Toast.show('Reloaded from GitHub', 'success'); } catch (err) { Toast.show(err.message, 'error'); } },
+        async saveItem(id, dataObj, isNew, label) {
+            const idx = this.items.findIndex(x => x.id === id);
+            const withId = Object.assign({ id }, dataObj);
+            const backup = this.items.slice();
+            if (idx >= 0) this.items[idx] = withId; else this.items.push(withId);
+            try {
+                await GitHubStore.write(this.path, this.items, (isNew ? 'Add ' : 'Update ') + label + ' (' + id + ')');
+                Toast.show(isNew ? 'Added — committed to GitHub' : 'Updated — committed to GitHub', 'success');
+                closeModal();
+                this.render();
+            } catch (err) {
+                this.items = backup;
+                Toast.show('Save failed: ' + err.message, 'error');
+            }
+        },
+        async removeItem(id, label) {
+            const backup = this.items.slice();
+            this.items = this.items.filter(x => x.id !== id);
+            try {
+                await GitHubStore.write(this.path, this.items, 'Delete ' + label + ' (' + id + ')');
+                Toast.show('Deleted — committed to GitHub', 'success');
+                this.render();
+            } catch (err) {
+                this.items = backup;
+                Toast.show('Delete failed: ' + err.message, 'error');
+            }
+        }
+    };
+}
+function githubNotConfiguredBanner() {
+    return GitHubStore.configured() ? '' : `<div class="card p-4 mb-5" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm font-semibold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> GitHub isn't configured yet</p><p class="text-xs" style="color:#c9c2dd">Fill in the <code>github</code> section of <code>data/configs.json</code> (owner, repo, proxyEndpoint) — see <code>admin/github-proxy-worker.js</code> for the one-time Worker setup. Nothing can be saved until this is done.</p></div>`;
+}
+
+Modules.hotels = Object.assign(makeGitHubCollection('data/hotels.json'), {
+    async init() {
+        document.getElementById('section-hotels').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <input id="hotelsSearch" oninput="Modules.hotels.render()" class="field-input" style="max-width:280px" placeholder="Search hotels…">
-                <button onclick="Modules.hotels.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Hotel</button>
+                <div class="flex gap-2"><button onclick="Modules.hotels.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.hotels.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Hotel</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
                 <th></th><th>Name</th><th>Category</th><th>Price/Night</th><th>Rating</th><th>Rooms</th><th></th>
             </tr></thead><tbody id="hotelsTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/hotels');
-        loadJsonBaseline('hotels').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => {
-                this.live = mergeWithOverrides(this.baseline, snap.val());
-                this.render();
-            });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('hotelsTbody');
         if (!tbody) return;
         const q = (document.getElementById('hotelsSearch').value || '').toLowerCase();
-        const list = this.live.filter(h => !q || (t(h.name) || '').toLowerCase().includes(q));
+        const list = this.items.filter(h => !q || (t(h.name) || '').toLowerCase().includes(q));
         tbody.innerHTML = list.length ? list.map(h => `
             <tr>
                 <td><img src="${h.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
@@ -562,7 +630,7 @@ Modules.hotels = {
             </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">No hotels found</div></td></tr>`;
     },
     openForm(id) {
-        const h = id ? this.live.find(x => x.id === id) : { id: generateId(), category: 'luxury', rating: 5, reviews: 0, amenities: {}, images: [], rooms: [], unavailableDates: [] };
+        const h = id ? this.items.find(x => x.id === id) : { id: generateId(), category: 'luxury', rating: 5, reviews: 0, amenities: {}, images: [], rooms: [], unavailableDates: [] };
         const isNew = !id;
         openModal(isNew ? 'Add Hotel' : 'Edit Hotel', `
             <div class="tab-strip">
@@ -654,19 +722,12 @@ Modules.hotels = {
             });
         });
         if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
-        try {
-            await this.fbRef.child(id).set(data);
-            Toast.show(isNew ? 'Hotel added' : 'Hotel updated', 'success');
-            closeModal();
-        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'hotel');
     },
     remove(id) {
-        confirmDialog('Delete this hotel? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Hotel deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this hotel? This cannot be undone.', () => this.removeItem(id, 'hotel'));
     }
-};
+});
 function t(val) { return (val && typeof val === 'object') ? (val.en || Object.values(val)[0] || '') : (val || ''); }
 const FormTabs = {
     switch(btn, tabName) {
@@ -679,28 +740,24 @@ const FormTabs = {
 };
 
 // ==================== EXCURSIONS MODULE ====================
-Modules.excursions = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-excursions').innerHTML = `
+Modules.excursions = Object.assign(makeGitHubCollection('data/excursions.json'), {
+    async init() {
+        document.getElementById('section-excursions').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <input id="excSearch" oninput="Modules.excursions.render()" class="field-input" style="max-width:280px" placeholder="Search excursions…">
-                <button onclick="Modules.excursions.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Excursion</button>
+                <div class="flex gap-2"><button onclick="Modules.excursions.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.excursions.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Excursion</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
                 <th></th><th>Title</th><th>Category</th><th>Price</th><th>Duration</th><th>Rating</th><th></th>
             </tr></thead><tbody id="excTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/excursions');
-        loadJsonBaseline('excursions').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('excTbody'); if (!tbody) return;
         const q = (document.getElementById('excSearch').value || '').toLowerCase();
-        const list = this.live.filter(x => !q || (t(x.title) || '').toLowerCase().includes(q));
+        const list = this.items.filter(x => !q || (t(x.title) || '').toLowerCase().includes(q));
         tbody.innerHTML = list.length ? list.map(x => `
             <tr>
                 <td><img src="${x.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
@@ -713,7 +770,7 @@ Modules.excursions = {
             </tr>`).join('') : `<tr><td colspan="7"><div class="empty-state">No excursions found</div></td></tr>`;
     },
     openForm(id) {
-        const x = id ? this.live.find(i => i.id === id) : { id: generateId(), category: 'City Tour', rating: 5, reviews: 0, images: [], includes: {}, excludes: {}, whatToBring: {}, itinerary: [] };
+        const x = id ? this.items.find(i => i.id === id) : { id: generateId(), category: 'City Tour', rating: 5, reviews: 0, images: [], includes: {}, excludes: {}, whatToBring: {}, itinerary: [] };
         const isNew = !id;
         openModal(isNew ? 'Add Excursion' : 'Edit Excursion', `
             <div class="tab-strip">
@@ -785,39 +842,31 @@ Modules.excursions = {
             });
         });
         if (!data.title.en) { Toast.show('English title is required', 'error'); return; }
-        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Excursion added' : 'Excursion updated', 'success'); closeModal(); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'excursion');
     },
     remove(id) {
-        confirmDialog('Delete this excursion? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Excursion deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this excursion? This cannot be undone.', () => this.removeItem(id, 'excursion'));
     }
-};
+});
 
 // ==================== TRANSFERS MODULE ====================
-Modules.transfers = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-transfers').innerHTML = `
+Modules.transfers = Object.assign(makeGitHubCollection('data/transfers.json'), {
+    async init() {
+        document.getElementById('section-transfers').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <p class="text-sm" style="color:#8a80a3">Vehicles used for airport pickup / drop-off transfers.</p>
-                <button onclick="Modules.transfers.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Vehicle</button>
+                <div class="flex gap-2"><button onclick="Modules.transfers.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.transfers.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Vehicle</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
                 <th></th><th>Vehicle Type</th><th>Capacity</th><th>Price</th><th></th>
             </tr></thead><tbody id="trTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/transfers');
-        loadJsonBaseline('transfers').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('trTbody'); if (!tbody) return;
-        tbody.innerHTML = this.live.length ? this.live.map(v => `
+        tbody.innerHTML = this.items.length ? this.items.map(v => `
             <tr>
                 <td><img src="${v.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
                 <td class="font-semibold">${t(v.vehicleType)}</td>
@@ -827,7 +876,7 @@ Modules.transfers = {
             </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No vehicles yet</div></td></tr>`;
     },
     openForm(id) {
-        const v = id ? this.live.find(i => i.id === id) : { id: generateId(), capacity: 7, features: {}, images: [] };
+        const v = id ? this.items.find(i => i.id === id) : { id: generateId(), capacity: 7, features: {}, images: [] };
         const isNew = !id;
         openModal(isNew ? 'Add Vehicle' : 'Edit Vehicle', `
             ${mlFieldHtml('vehicleType', 'Vehicle Type', v.vehicleType, { required: true })}
@@ -851,40 +900,32 @@ Modules.transfers = {
             image: document.getElementById('f_image').value.trim()
         };
         if (!data.vehicleType.en) { Toast.show('English vehicle type is required', 'error'); return; }
-        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Vehicle added' : 'Vehicle updated', 'success'); closeModal(); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'transfer vehicle');
     },
     remove(id) {
-        confirmDialog('Delete this vehicle? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Vehicle deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this vehicle? This cannot be undone.', () => this.removeItem(id, 'transfer vehicle'));
     }
-};
+});
 
 // ==================== RESTAURANTS MODULE ====================
-Modules.restaurants = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-restaurants').innerHTML = `
+Modules.restaurants = Object.assign(makeGitHubCollection('data/restaurants.json'), {
+    async init() {
+        document.getElementById('section-restaurants').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <input id="restSearch" oninput="Modules.restaurants.render()" class="field-input" style="max-width:280px" placeholder="Search restaurants…">
-                <button onclick="Modules.restaurants.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Restaurant / Cafe</button>
+                <div class="flex gap-2"><button onclick="Modules.restaurants.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.restaurants.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Restaurant / Cafe</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr>
                 <th></th><th>Name</th><th>Type</th><th>Cuisine</th><th>Price Level</th><th></th>
             </tr></thead><tbody id="restTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/restaurants');
-        loadJsonBaseline('restaurants').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('restTbody'); if (!tbody) return;
         const q = (document.getElementById('restSearch').value || '').toLowerCase();
-        const list = this.live.filter(r => !q || (t(r.name) || '').toLowerCase().includes(q));
+        const list = this.items.filter(r => !q || (t(r.name) || '').toLowerCase().includes(q));
         tbody.innerHTML = list.length ? list.map(r => `
             <tr>
                 <td><img src="${r.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
@@ -896,7 +937,7 @@ Modules.restaurants = {
             </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state">No restaurants found</div></td></tr>`;
     },
     openForm(id) {
-        const r = id ? this.live.find(i => i.id === id) : { id: generateId(), category: 'restaurant', priceLevel: 2, rating: 5, reviews: 0, images: [], menu: [] };
+        const r = id ? this.items.find(i => i.id === id) : { id: generateId(), category: 'restaurant', priceLevel: 2, rating: 5, reviews: 0, images: [], menu: [] };
         const isNew = !id;
         openModal(isNew ? 'Add Restaurant / Cafe' : 'Edit Restaurant / Cafe', `
             <div class="tab-strip">
@@ -980,37 +1021,29 @@ Modules.restaurants = {
             data.menu.push(section);
         });
         if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
-        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'restaurant');
     },
     remove(id) {
-        confirmDialog('Delete this restaurant/cafe? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this restaurant/cafe? This cannot be undone.', () => this.removeItem(id, 'restaurant'));
     }
-};
+});
 
 // ==================== DESTINATIONS MODULE ====================
-Modules.destinations = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-destinations').innerHTML = `
+Modules.destinations = Object.assign(makeGitHubCollection('data/destinations.json'), {
+    async init() {
+        document.getElementById('section-destinations').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <p class="text-sm" style="color:#8a80a3">Popular places shown on the home page (Ras Mohammed, Naama Bay, etc.)</p>
-                <button onclick="Modules.destinations.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Destination</button>
+                <div class="flex gap-2"><button onclick="Modules.destinations.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.destinations.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Destination</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th></th><th>Name</th><th>Location</th><th>Rating</th><th></th></tr></thead><tbody id="destTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/destinations');
-        loadJsonBaseline('destinations').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('destTbody'); if (!tbody) return;
-        tbody.innerHTML = this.live.length ? this.live.map(d => `
+        tbody.innerHTML = this.items.length ? this.items.map(d => `
             <tr>
                 <td><img src="${d.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
                 <td class="font-semibold">${t(d.name)}</td>
@@ -1020,7 +1053,7 @@ Modules.destinations = {
             </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No destinations yet</div></td></tr>`;
     },
     openForm(id) {
-        const d = id ? this.live.find(i => i.id === id) : { id: generateId(), rating: 5, images: [] };
+        const d = id ? this.items.find(i => i.id === id) : { id: generateId(), rating: 5, images: [] };
         const isNew = !id;
         openModal(isNew ? 'Add Destination' : 'Edit Destination', `
             ${mlFieldHtml('name', 'Name', d.name, { required: true })}
@@ -1046,37 +1079,29 @@ Modules.destinations = {
             images: document.getElementById('f_images').value.split('\n').map(s => s.trim()).filter(Boolean)
         };
         if (!data.name.en) { Toast.show('English name is required', 'error'); return; }
-        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'destination');
     },
     remove(id) {
-        confirmDialog('Delete this destination? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this destination? This cannot be undone.', () => this.removeItem(id, 'destination'));
     }
-};
+});
 
 // ==================== ARTICLES MODULE ====================
-Modules.articles = {
-    baseline: [], live: [], fbRef: null,
-    init() {
-        document.getElementById('section-articles').innerHTML = `
+Modules.articles = Object.assign(makeGitHubCollection('data/articles.json'), {
+    async init() {
+        document.getElementById('section-articles').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
                 <p class="text-sm" style="color:#8a80a3">Travel Guides & Tips blog section on the home page.</p>
-                <button onclick="Modules.articles.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Article</button>
+                <div class="flex gap-2"><button onclick="Modules.articles.reload()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button><button onclick="Modules.articles.openForm()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Article</button></div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th></th><th>Title</th><th>Author</th><th>Read Time</th><th></th></tr></thead><tbody id="artTbody"></tbody></table></div>`;
-        this.fbRef = fbDB.ref('admin_content/articles');
-        loadJsonBaseline('articles').then(base => {
-            this.baseline = base;
-            this.fbRef.on('value', snap => { this.live = mergeWithOverrides(this.baseline, snap.val()); this.render(); });
-        });
+        try { await this.load(); } catch (err) { Toast.show(err.message, 'error'); }
+        this.render();
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('artTbody'); if (!tbody) return;
-        tbody.innerHTML = this.live.length ? this.live.map(a => `
+        tbody.innerHTML = this.items.length ? this.items.map(a => `
             <tr>
                 <td><img src="${a.image || ''}" class="thumb" onerror="this.style.visibility='hidden'"></td>
                 <td class="font-semibold">${t(a.title)}</td>
@@ -1086,7 +1111,7 @@ Modules.articles = {
             </tr>`).join('') : `<tr><td colspan="5"><div class="empty-state">No articles yet</div></td></tr>`;
     },
     openForm(id) {
-        const a = id ? this.live.find(i => i.id === id) : { id: generateId(), readTimeMinutes: 4 };
+        const a = id ? this.items.find(i => i.id === id) : { id: generateId(), readTimeMinutes: 4 };
         const isNew = !id;
         openModal(isNew ? 'Add Article' : 'Edit Article', `
             ${mlFieldHtml('title', 'Title', a.title, { required: true })}
@@ -1110,16 +1135,12 @@ Modules.articles = {
             image: document.getElementById('f_image').value.trim()
         };
         if (!data.title.en) { Toast.show('English title is required', 'error'); return; }
-        try { await this.fbRef.child(id).set(data); Toast.show(isNew ? 'Added' : 'Updated', 'success'); closeModal(); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        this.saveItem(id, data, isNew, 'article');
     },
     remove(id) {
-        confirmDialog('Delete this article? This cannot be undone.', async () => {
-            try { await this.fbRef.child(id).set({ _deleted: true }); Toast.show('Deleted', 'success'); }
-            catch (err) { Toast.show('Delete failed: ' + err.message, 'error'); }
-        });
+        confirmDialog('Delete this article? This cannot be undone.', () => this.removeItem(id, 'article'));
     }
-};
+});
 
 // ==================== BOOKINGS MODULE ====================
 Modules.bookings = {
@@ -1393,9 +1414,10 @@ Modules.owners = {
 
 // ==================== LANGUAGES MODULE ====================
 Modules.languages = {
-    baseline: {}, overrides: {}, activeLang: 'en',
-    init() {
-        document.getElementById('section-languages').innerHTML = `
+    dicts: {}, paths: {},
+    async init() {
+        LANGS.forEach(l => { this.paths[l.code] = 'data/lang/' + l.code + '.json'; });
+        document.getElementById('section-languages').innerHTML = githubNotConfiguredBanner() + `
             <div class="card p-4 mb-5">
                 <div class="flex flex-wrap items-end gap-3">
                     <div><label class="field-label">Add / Update a Key</label>
@@ -1407,59 +1429,63 @@ Modules.languages = {
                         </div>
                     </div>
                 </div>
-                <p class="text-xs mt-3" style="color:#6b6382">To add a whole new language: add its JSON file + manifest entry in <code>data/lang/</code> directly (see README), then its keys become editable here too.</p>
+                <p class="text-xs mt-3" style="color:#6b6382">Every save here commits directly to that language's <code>data/lang/&lt;code&gt;.json</code> file on GitHub. To add a whole new language: add its JSON file + manifest entry in <code>data/lang/manifest.json</code> directly (see README), then reload this page — its keys become editable here too.</p>
             </div>
             <div class="flex items-center justify-between mb-3">
                 <input id="langSearch" oninput="Modules.languages.render()" class="field-input" style="max-width:280px" placeholder="Search keys…">
-                <select id="langFilterLang" onchange="Modules.languages.render()" class="field-select" style="max-width:140px">${LANGS.map(l => `<option value="${l.code}">${l.code.toUpperCase()} — ${l.label}</option>`).join('')}</select>
+                <div class="flex gap-2">
+                    <select id="langFilterLang" onchange="Modules.languages.render()" class="field-select" style="max-width:140px">${LANGS.map(l => `<option value="${l.code}">${l.code.toUpperCase()} — ${l.label}</option>`).join('')}</select>
+                    <button onclick="Modules.languages.reloadAll()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button>
+                </div>
             </div>
             <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Key</th><th>Value</th><th></th></tr></thead><tbody id="langTbody"></tbody></table></div>`;
-        Promise.all(LANGS.map(l => fetch('../data/lang/' + l.code + '.json').then(r => r.json()).catch(() => ({})))).then(results => {
-            LANGS.forEach((l, i) => { this.baseline[l.code] = results[i]; });
+        await this.reloadAll(true);
+    },
+    async reloadAll(silent) {
+        try {
+            const results = await Promise.all(LANGS.map(l => GitHubStore.read(this.paths[l.code])));
+            LANGS.forEach((l, i) => { this.dicts[l.code] = results[i]; });
             this.render();
-        });
-        LANGS.forEach(l => {
-            fbDB.ref('admin_content/translations/' + l.code).on('value', snap => {
-                this.overrides[l.code] = snap.val() || {};
-                this.render();
-            });
-        });
+            if (!silent) Toast.show('Reloaded from GitHub', 'success');
+        } catch (err) { Toast.show(err.message, 'error'); }
     },
     onShow() { this.render(); },
     render() {
         const tbody = document.getElementById('langTbody'); if (!tbody) return;
         const lang = document.getElementById('langFilterLang').value || 'en';
         const q = (document.getElementById('langSearch').value || '').toLowerCase();
-        const base = this.baseline[lang] || {};
-        const over = this.overrides[lang] || {};
-        const allKeys = Array.from(new Set([...Object.keys(base), ...Object.keys(over)])).sort();
-        const keys = allKeys.filter(k => !q || k.toLowerCase().includes(q));
-        tbody.innerHTML = keys.length ? keys.map(k => {
-            const val = over[k] !== undefined ? over[k] : base[k];
-            const isOverridden = over[k] !== undefined;
-            return `<tr>
-                <td class="font-mono text-xs">${k} ${isOverridden ? '<span class="badge badge-gold" style="font-family:Inter">edited</span>' : ''}</td>
-                <td><input class="field-input" id="langval_${k}" value="${escapeHtml(val || '')}" style="min-width:280px"></td>
+        const dict = this.dicts[lang] || {};
+        const keys = Object.keys(dict).sort().filter(k => !q || k.toLowerCase().includes(q));
+        tbody.innerHTML = keys.length ? keys.map(k => `<tr>
+                <td class="font-mono text-xs">${k}</td>
+                <td><input class="field-input" id="langval_${k}" value="${escapeHtml(dict[k] || '')}" style="min-width:280px"></td>
                 <td class="text-right"><button onclick="Modules.languages.quickSave('${k}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-check"></i></button></td>
-            </tr>`;
-        }).join('') : `<tr><td colspan="3"><div class="empty-state">No keys found</div></td></tr>`;
+            </tr>`).join('') : `<tr><td colspan="3"><div class="empty-state">No keys found</div></td></tr>`;
     },
     async quickSave(key) {
         const lang = document.getElementById('langFilterLang').value || 'en';
         const value = document.getElementById('langval_' + key).value;
-        try { await fbDB.ref('admin_content/translations/' + lang + '/' + key).set(value); Toast.show('Translation saved — live on the site now', 'success'); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        const backup = this.dicts[lang][key];
+        this.dicts[lang][key] = value;
+        try {
+            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Update translation: ' + key + ' (' + lang + ')');
+            Toast.show('Saved — committed to GitHub', 'success');
+        } catch (err) { this.dicts[lang][key] = backup; Toast.show('Save failed: ' + err.message, 'error'); }
     },
     async saveKey() {
         const key = document.getElementById('newKeyName').value.trim();
         const lang = document.getElementById('newKeyLang').value;
         const value = document.getElementById('newKeyValue').value;
         if (!key || !value) { Toast.show('Key and value are required', 'error'); return; }
+        if (!this.dicts[lang]) this.dicts[lang] = {};
+        const backup = this.dicts[lang][key];
+        this.dicts[lang][key] = value;
         try {
-            await fbDB.ref('admin_content/translations/' + lang + '/' + key).set(value);
-            Toast.show('Saved', 'success');
+            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Add/update translation: ' + key + ' (' + lang + ')');
+            Toast.show('Saved — committed to GitHub', 'success');
             document.getElementById('newKeyName').value = ''; document.getElementById('newKeyValue').value = '';
-        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+            this.render();
+        } catch (err) { this.dicts[lang][key] = backup; Toast.show('Save failed: ' + err.message, 'error'); }
     }
 };
 
@@ -1468,11 +1494,12 @@ Modules.languages = {
 // Firebase credentials and Kashier payment secrets live only in data/configs.json, edited by a
 // developer directly — never exposed to a web form for security reasons.
 Modules.settings = {
-    init() {
-        document.getElementById('section-settings').innerHTML = `
+    fullConfig: null, path: 'data/configs.json',
+    async init() {
+        document.getElementById('section-settings').innerHTML = githubNotConfiguredBanner() + `
             <div class="card p-5 max-w-lg">
                 <h3 class="font-display font-bold mb-1">Brand & Currency</h3>
-                <p class="text-xs mb-4" style="color:#6b6382">Changes apply live across the site immediately.</p>
+                <p class="text-xs mb-4" style="color:#6b6382">Saved directly into <code>data/configs.json</code> on GitHub — everything else in that file (Firebase, Kashier, GitHub settings) is left untouched.</p>
                 <label class="field-label">Primary Brand Color</label>
                 <input id="s_brandPrimary" type="color" class="field-input mb-3" style="height:44px;padding:4px">
                 <label class="field-label">Primary Brand Color (Dark Shade)</label>
@@ -1482,29 +1509,32 @@ Modules.settings = {
                 <label class="field-label">Display Currencies (comma-separated, EGP always included)</label>
                 <input id="s_currencies" class="field-input mb-4" placeholder="EGP,USD,EUR,GBP,SAR,RUB">
                 <button onclick="Modules.settings.save()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Settings</button>
-                <p class="text-xs mt-4" style="color:#4d456a"><i class="fa-solid fa-lock"></i> Firebase and payment credentials are never editable here — they live only in <code>data/configs.json</code>.</p>
+                <p class="text-xs mt-4" style="color:#4d456a"><i class="fa-solid fa-lock"></i> Firebase, Kashier and GitHub credentials are never editable here — only from <code>data/configs.json</code> directly, by a developer.</p>
             </div>`;
-        fetch('../data/configs.json').then(r => r.json()).then(cfg => {
-            const app = cfg.app || {};
-            fbDB.ref('admin_content/settings').once('value').then(snap => {
-                const s = Object.assign({}, app, snap.val() || {});
-                document.getElementById('s_brandPrimary').value = s.brandColorPrimary || '#f97316';
-                document.getElementById('s_brandPrimaryDark').value = s.brandColorPrimaryDark || '#c2410c';
-                document.getElementById('s_siteName').value = s.siteName || 'Discover Sharm';
-                document.getElementById('s_currencies').value = (s.displayCurrencies || ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB']).join(',');
-            });
-        });
+        try {
+            this.fullConfig = await GitHubStore.read(this.path);
+            const s = this.fullConfig.app || {};
+            document.getElementById('s_brandPrimary').value = s.brandColorPrimary || '#f97316';
+            document.getElementById('s_brandPrimaryDark').value = s.brandColorPrimaryDark || '#c2410c';
+            document.getElementById('s_siteName').value = s.siteName || 'Discover Sharm';
+            document.getElementById('s_currencies').value = (s.displayCurrencies || ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB']).join(',');
+        } catch (err) { Toast.show(err.message, 'error'); }
     },
     onShow() {},
     async save() {
-        const data = {
+        if (!this.fullConfig) { Toast.show('Settings haven\'t loaded yet — try again in a moment', 'error'); return; }
+        const newApp = Object.assign({}, this.fullConfig.app, {
+            siteName: document.getElementById('s_siteName').value.trim(),
             brandColorPrimary: document.getElementById('s_brandPrimary').value,
             brandColorPrimaryDark: document.getElementById('s_brandPrimaryDark').value,
-            siteName: document.getElementById('s_siteName').value.trim(),
             displayCurrencies: document.getElementById('s_currencies').value.split(',').map(c => c.trim().toUpperCase()).filter(Boolean)
-        };
-        try { await fbDB.ref('admin_content/settings').set(data); Toast.show('Settings saved — live on the site now', 'success'); }
-        catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+        });
+        const updatedConfig = Object.assign({}, this.fullConfig, { app: newApp });
+        try {
+            await GitHubStore.write(this.path, updatedConfig, 'Update site settings via admin dashboard');
+            this.fullConfig = updatedConfig;
+            Toast.show('Settings saved — committed to GitHub', 'success');
+        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
     }
 };
 </script>
