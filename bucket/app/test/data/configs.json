@@ -1,3 +1,4 @@
+
 {
   "firebase": {
     "apiKey": "AIzaSyAO6vyXm4lKoEmzfD8guXKZV8MLRTllFk4",
@@ -28,7 +29,6 @@
     "owner": "Charming-Egypt",
     "repo": "Ds",
     "branch": "main",
-    "proxyEndpoint": "https://gh.gm-093.workers.dev/",
-    "_note": "owner/repo/branch point at wherever this site's data/*.json files live on GitHub. proxyEndpoint is the Cloudflare Worker from admin/github-proxy-worker.js — deploy it first (see that file's comments), then fill this in. The admin dashboards will not be able to save until this section is filled in with real values."
+    "proxyEndpoint": "https://gh.gm-093.workers.dev"
   }
 }
