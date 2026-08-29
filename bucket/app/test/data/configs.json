@@ -23,5 +23,12 @@
     "defaultCurrency": "EGP",
     "displayCurrencies": ["EGP", "USD", "EUR", "GBP", "SAR", "RUB"],
     "supportedLanguages": ["en", "ar", "ru", "de", "it", "tr"]
+  },
+  "github": {
+    "owner": "YOUR_GITHUB_USERNAME_OR_ORG",
+    "repo": "YOUR_REPO_NAME",
+    "branch": "main",
+    "proxyEndpoint": "https://gh.gm-093.workers.dev/",
+    "_note": "owner/repo/branch point at wherever this site's data/*.json files live on GitHub. proxyEndpoint is the Cloudflare Worker from admin/github-proxy-worker.js — deploy it first (see that file's comments), then fill this in. The admin dashboards will not be able to save until this section is filled in with real values."
   }
 }
