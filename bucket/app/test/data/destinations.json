@@ -4,11 +4,10 @@
     "name": { "en": "Ras Mohammed National Park", "ar": "محمية رأس محمد", "ru": "Рас-Мохаммед", "de": "Ras Mohammed Nationalpark", "it": "Parco Nazionale di Ras Mohammed", "tr": "Ras Muhammed Milli Parkı" },
     "tagline": { "en": "Egypt's premier marine national park", "ar": "أول وأشهر محمية طبيعية في مصر", "ru": "Первый национальный парк Египта", "de": "Ägyptens erster Nationalpark", "it": "Il primo parco nazionale d'Egitto", "tr": "Mısır'ın ilk milli parkı" },
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Ras_Mohammed_Panorama.jpg/800px-Ras_Mohammed_Panorama.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1546026423-cc4642628d2b?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Ras_Mohammed_Panorama.jpg/1000px-Ras_Mohammed_Panorama.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Mangrove_channel_in_Ras_Muhammad_National_Park.jpg/1000px-Mangrove_channel_in_Ras_Muhammad_National_Park.jpg"
     ],
     "description": {
       "en": "A protected national park where the desert meets world-class coral reefs and rich marine life.",
@@ -19,9 +18,9 @@
       "tr": "Çölün, dünyanın en iyi mercan resiflerinden bazılarıyla buluştuğu korunan bir milli park."
     },
     "fullDescription": {
-      "en": "Established in 1983, Ras Mohammed National Park sits at the southern tip of the Sinai Peninsula, where the Gulf of Aqaba meets the Gulf of Suez. Its sheer reef walls, mangrove channels, Magic Lake, and the famous Yolanda Wreck make it an unmissable destination for diving, snorkeling, and sight-seeing.",
-      "ar": "تأسست محمية رأس محمد عام ١٩٨٣ عند الطرف الجنوبي لشبه جزيرة سيناء، حيث يلتقي خليج العقبة بخليج السويس. تتميز بالجدران المرجانية الرأسية، وقنوات المانجروف الفريدة، والبحيرة المسحورة، وحطام سفينة يولاندا، مما يجعلها الوجهة الأولى للغوص والسنوركل والاستكشاف البري.",
-      "ru": "Основанный в 1983 году, национальный парк Рас-Мохаммед расположен на южной оконечности Синайского полуострова. Отвесные рифовые стены, мангровые каналы и затонувший корабль Yolanda делают его одним из самых знаменитых мест для дайвинга и снорклинга в мире.",
+      "en": "Established in 1983, Ras Mohammed National Park sits at the southern tip of the Sinai Peninsula, where the Gulf of Aqaba meets the Gulf of Suez. Its sheer reef walls, mangrove channels, Magic Lake, and the famous Yolanda Wreck make it an unmissable destination for diving and snorkeling.",
+      "ar": "تأسست محمية رأس محمد عام ١٩٨٣ عند الطرف الجنوبي لشبه جزيرة سيناء، حيث يلتقي خليج العقبة بخليج السويس. تتميز بالجدران المرجانية الرأسية، وقنوات المانجروف الفريدة، والبحيرة المسحورة، وحطام سفينة يولاندا، مما يجعلها الوجهة الأولى للغوص والسنوركل.",
+      "ru": "Основанный в 1983 году, национальный парк Рас-Мохаммед расположен на южной оконечности Синайского полуострова. Отвесные рифовые стены, мангровые каналы и затонувший корабль Yolanda делают его одним из самых знаменитых мест для дайвинга в мире.",
       "de": "Der 1983 gegründete Ras-Mohammed-Nationalpark liegt an der Südspitze der Sinai-Halbinsel. Seine steilen Riffwände, Mangrovenkanäle und das Yolanda-Wrack machen ihn zu einem weltberühmten Tauchziel.",
       "it": "Istituito nel 1983, il Parco Nazionale di Ras Mohammed si trova all'estremità meridionale della penisola del Sinai. Le sue pareti a strapiombo e il relitto Yolanda ne fanno una meta iconica.",
       "tr": "1983'te kurulan Ras Muhammed Milli Parkı, Akabe Körfezi'nin Süveyş Körfezi ile buluştuğu noktada yer alır. Dik resif duvarları ve Yolanda Batığı ile dünyaca ünlüdür."
@@ -33,10 +32,10 @@
     "name": { "en": "Naama Bay", "ar": "خليج نعمة", "ru": "Наама Бэй", "de": "Naama Bay", "it": "Naama Bay", "tr": "Naama Bay" },
     "tagline": { "en": "The vibrant heart of Sharm El Sheikh", "ar": "القلب النابض والمركز السياحي لشرم الشيخ", "ru": "Сердце ночной жизни Шарма", "de": "Das Herz von Sharms Nachtleben", "it": "Il cuore della vita notturna di Sharm", "tr": "Sharm'ın gece hayatının kalbi" },
     "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Naama_Bay_Sharm_El_Sheikh_Egypt.jpg/800px-Naama_Bay_Sharm_El_Sheikh_Egypt.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1582967788606-a171f1080ca8?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Naama_Bay_Sharm_El_Sheikh_Egypt.jpg/1000px-Naama_Bay_Sharm_El_Sheikh_Egypt.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Naama_Bay_Beach_Panorama.jpg/1000px-Naama_Bay_Beach_Panorama.jpg"
     ],
     "description": {
       "en": "A pedestrian promenade lined with resorts, restaurants, cafes, and sandy beaches.",
@@ -47,7 +46,7 @@
       "tr": "Kızıldeniz kıyısında tesisler, restoranlar ve mağazalarla dolu bir yürüyüş yolu."
     },
     "fullDescription": {
-      "en": "Naama Bay is Sharm El Sheikh's bustling central hub. Featuring a pedestrianized boulevard, sandy beaches, international dining, and vibrant nightlife, it's perfect for evening walks, shopping, and watersports during the day.",
+      "en": "Naama Bay is Sharm El Sheikh's bustling central hub. Featuring a pedestrianized boulevard, sandy beaches, international dining, and vibrant nightlife.",
       "ar": "خليج نعمة هو المركز السياحي الرئيسي في شرم الشيخ. يتميز بممشى مشاة حيوي، وشواطئ رملية آمنة للسباحة، ومطاعم عالمية، ومقاهي وشيشة، بالإضافة إلى أنشطة الرياضات البحرية ورحلات اليخوت.",
       "ru": "Наама Бэй — главный туристический центр Шарм-эль-Шейха с песчаными пляжами, пешеходными променадами, кафе и насыщенной ночной жизнью.",
       "de": "Naama Bay ist das Zentrum von Sharm El Sheikh mit Sandstränden, Fußgängerpromenade und vielfältigen Gastronomieangeboten.",
@@ -61,10 +60,9 @@
     "name": { "en": "Farsha Mountain Cafe", "ar": "كافيه فرشة (جبل فرشة)", "ru": "Кафе Фарша", "de": "Farsha Cafe", "it": "Farsha Mountain Cafe", "tr": "Farsha Mountain Cafe" },
     "tagline": { "en": "Iconic cliffside Bedouin lounge", "ar": "أشهر مقهى جبلي بطراز بدوي فريد", "ru": "Культовое атмосферное кафе на скале", "de": "Kultiges Bedouinen-Café an der Klippe", "it": "Iconico locale beduino sulla scogliera", "tr": "Kayalıkta ikonik Bedevi kafesi" },
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Farsha_Cafe_Ras_Um_Sid.jpg/800px-Farsha_Cafe_Ras_Um_Sid.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Farsha_Cafe_Ras_Um_Sid.jpg/1000px-Farsha_Cafe_Ras_Um_Sid.jpg"
     ],
     "description": {
       "en": "A unique Bohemian-Bedouin cafe built into the cliff side at Hadaba with breathtaking sea views.",
@@ -75,7 +73,7 @@
       "tr": "Uçurum kenarına inşa edilmiş, muhteşem deniz manzaralı Bedevi tarzı otantik kafe."
     },
     "fullDescription": {
-      "en": "Located in El Hadaba overlooking Ras Um Sid bay, Farsha Lounge is renowned worldwide for its antique decor, traditional floor cushions, warm lanterns, and magical sunset views over the Red Sea.",
+      "en": "Located in El Hadaba overlooking Ras Um Sid bay, Farsha Lounge is renowned worldwide for its antique decor, traditional floor cushions, warm lanterns, and magical sunset views.",
       "ar": "يقع في منطقة الهضبة مطلًا على خليج رأس أم سيد، ويعد فرشة من أشهر المقاهي عالميًا بفضل ديكوراته المكونة من التحف والأناديل التقليدية، والوسائد البدوية الأرضية، ولحظات الغروب الخلابة.",
       "ru": "Кафе Фарша в районе Хадаба славится своим уникальным антикварным декором, традиционными подушками и волшебной атмосферой во время заката.",
       "de": "Das Farsha in El Hadaba ist weltbekannt für sein Antik-Dekor, gemütliche Sitzkissen und magische Sonnenuntergänge.",
@@ -89,10 +87,9 @@
     "name": { "en": "Al-Sahaba Mosque", "ar": "مسجد الصحابة", "ru": "Мечеть Сахаба", "de": "Sahaba-Moschee", "it": "Moschea Sahaba", "tr": "Sahaba Camii" },
     "tagline": { "en": "An architectural masterpiece in the Old Market", "ar": "تحفة معمارية عثمانية وفاطمية في قلب السوق القديم", "ru": "Шедевр архитектуры в Старом городе", "de": "Ein architektonisches Meisterwerk im Alten Markt", "it": "Un capolavoro architettonico nel Vecchio Mercato", "tr": "Eski Çarşı'da bir mimari şaheser" },
     "rating": 4.9,
-    "image": "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg/800px-Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1591604442920-4a3ff5f5f4e7?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg/1000px-Al_Sahaba_Mosque_Sharm_El_Sheikh.jpg"
     ],
     "description": {
       "en": "A grand mosque blending Ottoman and Fatimid styles, standing as the focal point of the Old City.",
@@ -103,7 +100,7 @@
       "tr": "Eski Çarşı'nın merkezinde Osmanlı ve Fatımi mimarisini birleştiren görkemli cami."
     },
     "fullDescription": {
-      "en": "Inaugurated in 2017, Al-Sahaba Mosque features twin 76-meter minarets, intricate stone carvings, and opulent domes. It is open to international visitors outside prayer times and offers cultural guide services.",
+      "en": "Inaugurated in 2017, Al-Sahaba Mosque features twin 76-meter minarets, intricate stone carvings, and opulent domes. It is open to international visitors outside prayer times.",
       "ar": "افتُتح مسجد الصحابة عام ٢٠١٧ بآذنتين ارتفاعهما ٧٦ متراً ونقوش حجرية فريدة وقباب مذهبة. يرحب بالزوار الأجانب للاطلاع على المعالم الإسلامية والتقاط الصور الخلابة خاصة أثناء الإضاءة الليلية.",
       "ru": "Мечеть Аль-Сахаба открыта в 2017 году. Её 76-метровые минареты и резные элементы фасада привлекают множество туристов со всего мира.",
       "de": "Die 2017 eröffnete Moschee beeindruckt mit 76 Meter hohen Minaretten und aufwendigen Steinmetzarbeiten.",
@@ -114,13 +111,12 @@
   },
   {
     "id": "d5",
-    "name": { "en": "Old Market (Souk)", "ar": "السوق القديم (البيئة الشعبية)", "ru": "Старый рынок (Сук)", "de": "Alter Markt (Souk)", "it": "Vecchio Mercato (Souk)", "tr": "Eski Çarşı (Sûk)" },
+    "name": { "en": "Old Market (Souk)", "ar": "السوق القديم", "ru": "Старый рынок (Сук)", "de": "Alter Markt (Souk)", "it": "Vecchio Mercato (Souk)", "tr": "Eski Çarşı (Sûk)" },
     "tagline": { "en": "Traditional Egyptian shopping and seafood dining", "ar": "التسوق التقليدي والمأكولات البحرية والتوابل", "ru": "Традиционный базар и морепродукты", "de": "Traditionelles Shopping und Meeresfrüchte", "it": "Shopping tradizionale e ristoranti di pesce", "tr": "Geleneksel alışveriş ve deniz ürünleri" },
     "rating": 4.6,
-    "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Old_Market_Sharm_el-Sheikh.jpg/800px-Old_Market_Sharm_el-Sheikh.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Old_Market_Sharm_el-Sheikh.jpg/1000px-Old_Market_Sharm_el-Sheikh.jpg"
     ],
     "description": {
       "en": "A lively bazaar offering spices, herbs, leather goods, souvenirs, and authentic seafood dining.",
@@ -131,8 +127,8 @@
       "tr": "Baharatlar, hediyelik eşyalar ve deniz ürünleri restoranlarıyla dolu canlı bir pazar."
     },
     "fullDescription": {
-      "en": "The Old Market offers an authentic Egyptian atmosphere where visitors can shop for oriental spices, local handicrafts, Egyptian cotton, and enjoy fresh seafood at renowned local restaurants like Fares and El Masrien.",
-      "ar": "يوفر السوق القديم أجواءً مصرية أصيلة لشراء التوابل الشرقية، الأعشاب الطبيعية، القطنيات المصرية، والمشغولات اليدوية، إلى جانب تناول أشهى المأكولات البحرية والمشويات في مطاعم شهيرة مثل فارس والمصريين.",
+      "en": "The Old Market offers an authentic Egyptian atmosphere where visitors can shop for oriental spices, local handicrafts, Egyptian cotton, and enjoy fresh seafood at renowned local restaurants.",
+      "ar": "يوفر السوق القديم أجواءً مصرية أصيلة لشراء التوابل الشرقية، الأعشاب الطبيعية، القطنيات المصرية، والمشغولات اليدوية، إلى جانب تناول أشهى المأكولات البحرية والمشويات.",
       "ru": "Старый рынок предлагает погрузиться в местный колорит: купить специи, хлопковые изделия, сувениры и попробовать свежие морепродукты.",
       "de": "Der Alte Markt bietet ein authentisches ägyptisches Einkaufserlebnis mit Gewürzen, Handwerk und hervorragenden Fischrestaurants.",
       "it": "Il Vecchio Mercato offre un'autentica atmosfera egiziana per acquistare spezie, artigianato e gustare ottimo pesce fresco.",
@@ -145,10 +141,9 @@
     "name": { "en": "SOHO Square", "ar": "سوهو سكوير", "ru": "SOHO Square", "de": "SOHO Square", "it": "SOHO Square", "tr": "SOHO Square" },
     "tagline": { "en": "Modern entertainment, dining, and shows", "ar": "مركز الترفيه الحديث والنوافير الراقصة والعروض", "ru": "Современные развлечения и танцующий фонтан", "de": "Moderne Unterhaltung, Gastronomie und Shows", "it": "Intrattenimento moderno, spettacoli e ristoranti", "tr": "Modern eğlence, gösteriler ve restoranlar" },
     "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=800&q=80",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/SOHO_Square_Sharm_El_Sheikh.jpg/800px-SOHO_Square_Sharm_El_Sheikh.jpg",
     "images": [
-      "https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/SOHO_Square_Sharm_El_Sheikh.jpg/1000px-SOHO_Square_Sharm_El_Sheikh.jpg"
     ],
     "description": {
       "en": "A high-end pedestrian entertainment complex with a dancing fountain, ice rink, and international restaurants.",
@@ -159,125 +154,13 @@
       "tr": "Dans eden fıskiye, buz pateni pisti ve uluslararası restoranlarla modern eğlence kompleksi."
     },
     "fullDescription": {
-      "en": "SOHO Square in White Knight Bay is a clean, pedestrian-only square packed with family attractions including a musical fountain, ice-skating rink, bowling center, duty-free shopping, and upscale international dining options.",
-      "ar": "سوهو سكوير في منطقة شاطئ الفارس الأبيض هي ساحة مشاة حديثة وآمنة تماماً للعائلات والأفراد، تمتاز بوجود النافورة الموسيقية الراقصة، صالة تزلج جليدية، صالة بولينج، ومجموعة مطاعم فاخرة من مختلف مطابخ العالم.",
+      "en": "SOHO Square is a clean, pedestrian-only square packed with family attractions including a musical fountain, ice-skating rink, bowling center, and international dining options.",
+      "ar": "سوهو سكوير ساحة مشاة حديثة وآمنة تماماً للعائلات والأفراد، تمتاز بوجود النافورة الموسيقية الراقصة، صالة تزلج جليدية، صالة بولينج، ومجموعة مطاعم فاخرة من مختلف مطابخ العالم.",
       "ru": "SOHO Square — безопасная пешеходная зона с развлечениями для всей семьи: музыкальный фонтан, каток, боулинг и рестораны высокой кухни.",
       "de": "SOHO Square bietet familienfreundliche Unterhaltung mit Tanzbrunnen, Eishalle, Bowling und erstklassigen Restaurants.",
       "it": "SOHO Square è una piazza pedonale con attrazioni per famiglie, tra cui fontana musicale, bowling e ristoranti di qualità.",
       "tr": "SOHO Square, müzikli fıskiye, buz pateni, bowling ve kaliteli restoranlarıyla aile dostu bir eğlence merkezidir."
     },
     "location": { "en": "Sharks Bay / White Knight Bay", "ar": "خليج القرش / الفارس الأبيض، شرم الشيخ", "ru": "Шаркс Бэй, Шарм-эль-Шейх", "de": "Sharks Bay, Sharm El Sheikh", "it": "Sharks Bay, Sharm El Sheikh", "tr": "Sharks Bay, Sharm El Sheikh" }
-  },
-  {
-    "id": "d7",
-    "name": { "en": "Tiran Island Reefs", "ar": "منطقة جزيرة تيران للشعاب المرجانية", "ru": "Остров Тиран и рифы", "de": "Insel Tiran & Riffe", "it": "Isola di Tiran e barriere", "tr": "Tiran Adası Resifleri" },
-    "tagline": { "en": "World-famous island boat trips and diving reefs", "ar": "رحلات اليخوت والغوص بين أشهر ٤ شعاب مرجانية", "ru": "Морские прогулки и легендарные рифы", "de": "Weltberühmte Bootsausflüge und Tauchspots", "it": "Escursioni in barca e immersioni famose", "tr": "Dünyaca ünlü tekne turları ve dalış resifleri" },
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
-    "images": [
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85"
-    ],
-    "description": {
-      "en": "A premier destination for day yacht cruises, home to Jackson, Woodhouse, Thomas, and Gordon reefs.",
-      "ar": "مقصد رحلات اليخوت اليومية الأول، وموطن لأشهر شعب مرجانية: جاكسون، وودهاوس، توماس، وجوردون.",
-      "ru": "Излюбленное место для однодневных круизов на яхте к рифам Джексон, Вудхаус, Томас и Гордон.",
-      "de": "Beliebtes Ziel für Tagesausflüge per Yacht zu den Riffen Jackson, Woodhouse, Thomas und Gordon.",
-      "it": "Mete per gite in barca di un giorno, famosa per i reef Jackson, Woodhouse, Thomas e Gordon.",
-      "tr": "Jackson, Woodhouse, Thomas ve Gordon resiflerine yapılan günlük yat turlarının adresi."
-    },
-    "fullDescription": {
-      "en": "Situated at the entrance of the Gulf of Aqaba, the Straits of Tiran feature four famous reef systems offering spectacular wall diving, vibrant coral formations, and high chances of spotting sea turtles, rays, and dolphins.",
-      "ar": "تقع مضايق تيران عند مدخل خليج العقبة، وتضم أربعة من أشهر الشعاب المرجانية في العالم (جاكسون، وودهاوس، توماس، جوردون). تعد الرحلة باليخت خياراً مثالياً للاستمتاع بالسنوركل والغوص والسباحة في المياه الفيروزية.",
-      "ru": "Пролив Тиран славится своими четырьмя рифами, где дайверы и снорклингисты могут увидеть богатейшую морскую фауну и затонувшие корабли.",
-      "de": "Die Straße von Tiran ist bekannt für faszinierende Steilwände, korallenreiche Riffe und Begegnungen mit Großfischen.",
-      "it": "Lo Stretto di Tiran offre pareti coralline spettacolari e la possibilità di avvistare tartarughe, razze e delfini.",
-      "tr": "Tiran Boğazı, muhteşem mercان duvarları, zengin deniz yaşamı ve yunuslarla karşılaşma imkanı sunar."
-    },
-    "location": { "en": "Straits of Tiran, Off Nabq Coast", "ar": "مضايق تيران، قبالة ساحل نبق", "ru": "Пролив Тиран, у побережья Набк", "de": "Straße von Tiran, vor Nabq", "it": "Stretto di Tiran, al largo di Nabq", "tr": "Tiran Boğazı, Nabq açıkları" }
-  },
-  {
-    "id": "d8",
-    "name": { "en": "Ras Um Sid", "ar": "رأس أم سيد", "ru": "Рас-Умм-Сид", "de": "Ras Um Sid", "it": "Ras Um Sid", "tr": "Ras Um Sid" },
-    "tagline": { "en": "Dramatically steep reef drop-offs", "ar": "شاطئ الجرف المرجاني المنحدر والسنوركل المباشر", "ru": "Крутые рифовые стены у самого берега", "de": "Imposante Steilwände direkt vom Strand", "it": "Spettacolari pareti coralline a picco sul mare", "tr": "Kıyıya yakın dik resif duvarları" },
-    "rating": 4.8,
-    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-    "images": [
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=85"
-    ],
-    "description": {
-      "en": "A peaceful headland famed for its cliffside lighthouse and exceptional shore-access snorkeling.",
-      "ar": "منطقة هضبة مرتفعة تشتهر بالفنار التاريخي والشعاب المرجانية الغنية التي يمكن الوصول إليها مباشرة من الشاطئ.",
-      "ru": "Спокойный мыс с маяком, известнейший легким доступом к богатейшему рифу прямо с пляжа.",
-      "de": "Ein ruhiges Kap mit Leuchtturm und hervorragendem Schnorcheln direkt vom Ufer aus.",
-      "it": "Un promontorio tranquillo con faro, perfetto per lo snorkeling direttamente dalla spiaggia.",
-      "tr": "Feneri ve sahilden kolayca ulaşılan zengin resifiyle ünlü huzurlu bir burun."
-    },
-    "fullDescription": {
-      "en": "Located near the southern tip of the Sharm peninsula, Ras Um Sid offers breathtaking cliff views, a historic lighthouse, and some of the finest gorgonian fan coral forests accessible straight from the shore via jetties.",
-      "ar": "تتميز منطقة رأس أم سيد بإطلالتها المرتفعة وجودة شعابها المرجانية، حيث توجد غابات المرجان المروحي (Gorgonian) المذهلة على مسافة خطوات قليلة من الشاطئ عبر السقالات البحرية.",
-      "ru": "Район Рас-Умм-Сид известен красивейшими садами веерных кораллов и глубокими рифовыми стенами.",
-      "de": "Ras Um Sid bietet Gorgonien-Fächerkorallen und tief abfallende Riffe – ideal für Schnorchler und Taucher.",
-      "it": "Ras Um Sid è rinomata per i suoi giardini di corallo a ventaglio e le pareti che scendono nel blu.",
-      "tr": "Ras Um Sid, yelpaze mercan bahçeleri ve dik resif duvarlarıyla şnorkel ve dalış tutkunları için idealdir."
-    },
-    "location": { "en": "Hadaba Peninsula, Sharm El Sheikh", "ar": "هضبة أم سيد، شرم الشيخ", "ru": "Полуостров Хадаба, Шарм-эль-Шейх", "de": "Halbinsel Hadaba, Sharm El Sheikh", "it": "Penisola di Hadaba, Sharm El Sheikh", "tr": "Hadaba Yarımadası, Sharm El Sheikh" }
-  },
-  {
-    "id": "d9",
-    "name": { "en": "Nabq Protected Area", "ar": "محمية نبق الطبيعية", "ru": "Заповедник Набк", "de": "Nabq-Protektorat", "it": "Area Protetta di Nabq", "tr": "Nabq Koruma Alanı" },
-    "tagline": { "en": "Mangroves, desert dunes, and wild coastlines", "ar": "غابات المانجروف والكثبان الرملية والحياة البرية", "ru": "Мангровые леса, пустыня и дикое побережье", "de": "Mangrovenwälder, Dünen und wilde Küste", "it": "Foreste di mangrovie, dune e costa selvaggia", "tr": "Mangrovlar, kum tepeleri ve el değmemiş sahil" },
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=800&q=80",
-    "images": [
-      "https://images.unsplash.com/photo-1544537150-6e4b999de2a8?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=85"
-    ],
-    "description": {
-      "en": "A coastal environmental reserve featuring northernmost mangrove forests, Bedouin settlements, and shipwreck sites.",
-      "ar": "محمية بيئية شاسعة تشتهر بأشجار المانجروف النادرة، القرى البدوية، حطام السفن الغارقة، والكثبان الصحراوية.",
-      "ru": "Природный заповедник с северными мангровыми лесами, бедуинскими деревнями и дикими пляжами.",
-      "de": "Ein Naturschutzgebiet mit nördlichsten Mangrovenwäldern, Beduinendörfern und ruhigen Küsten.",
-      "it": "Un'area protetta con mangrovie, villaggi beduini e relitti lungo la costa.",
-      "tr": "En kuzeydeki mangrov ormanları, Bedevi köyleri ve batık alanlarıyla doğal koruma bölgesi."
-    },
-    "fullDescription": {
-      "en": "Covering 600 sq km north of Sharm El Sheikh, Nabq Protected Area features unique coastal mangrove ecosystems, rare bird habitats, gazelles, Bedouin cultural stops, and the famous Maria Schröder shipwreck stranded on the outer reef reef flat.",
-      "ar": "تمتد محمية نبق على مساحة ٦٠٠ كم مربع شمال شرم الشيخ. تضم أقصى غابات مانجروف شمالاً على كوكب الأرض، وأعشاباً بحرية نادرة، وحطام السفينة الألمانية الغارقة (ماريا شرودر) المميزة بإطلالتها فوق الماء.",
-      "ru": "Заповедник Набк привлекает любителей экотуризма, предлагая катание на квадроциклах, знакомство с бедуинской культурой и дикий снорклинг.",
-      "de": "Nabq ist ideal für Ökotourismus, Quad-Safaris, Vogelbeobachtung und ruhige Naturerlebnisse.",
-      "it": "Nabq offre un'esperienza ecoturistica unica tra mangrovie, safari nel deserto e cultura beduina.",
-      "tr": "Nabq, ekoturizm, atv safarileri, kuş gözlemciliği ve el değmemiş doğasıyla öne çıkar."
-    },
-    "location": { "en": "North Nabq Bay, ~35km from Naama Bay", "ar": "شمال خليج نبق، حوالي ٣٥ كم من خليج نعمة", "ru": "Север Набк Бэй, ~35 км от Наама Бэй", "de": "Nördlich von Nabq, ~35 km von Naama Bay", "it": "Nord di Nabq, ~35 km da Naama Bay", "tr": "Nabq kuzeyi, Naama Bay'e ~35km" }
-  },
-  {
-    "id": "d10",
-    "name": { "en": "Sharks Bay Beach", "ar": "خليج القرش (الشاطئ والمنتجعات)", "ru": "Шаркс Бэй", "de": "Sharks Bay Strand", "it": "Spiaggia di Sharks Bay", "tr": "Sharks Bay Sahili" },
-    "tagline": { "en": "Relaxed atmosphere with shore-entry coral reefs", "ar": "شاطئ هادئ ومناسب للعائلات وسهل الغوص", "ru": "Уютная бухта с коралловым рифом", "de": "Entspannter Strand mit leichtem Riffzugang", "it": "Baia rilassante con barriera corallina facile", "tr": "Resife kolay erişimli sakin koy" },
-    "rating": 4.7,
-    "image": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80",
-    "images": [
-      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=85",
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85"
-    ],
-    "description": {
-      "en": "A tranquil bay offering calm waters, rich house reefs, and scenic views of Tiran Island.",
-      "ar": "خليج هادئ يمتاز بمياهه المستقرة، شعابه المرجانية القريبة، وإطلالته المباشرة على جزيرة تيران.",
-      "ru": "Спокойный район с великолепным видом на остров Тиран и отличным береговым снорклингом.",
-      "de": "Ruhige Bucht mit herrlichem Blick auf die Insel Tiran und schönem Hausriff.",
-      "it": "Baia tranquilla con vista sull'Isola di Tiran e splendida barriera corallina.",
-      "tr": "Tiran Adası manzaralı, sakin suları ve ev resifiyle huzurlu koy."
-    },
-    "fullDescription": {
-      "en": "Despite its fierce-sounding name, Sharks Bay is a tranquil coastal area lined with luxury family resorts and dive centers. The waters are sheltered and clear, making it a favorite for beginners and experienced divers alike.",
-      "ar": "على عكس اسمه المشوق، فإن خليج القرش هو واحد من أهدأ خليجان شرم الشيخ وأكثرها أماناً، ويتميز بوجود منتجعات راقية ومراكز غوص توفر نزولاً مباشراً إلى الشعاب المرجانية دون الحاجة لقوارب.",
-      "ru": "Шаркс Бэй — безопасный и спокойный район, идеальный для семейного отдыха и лёгкого дайвинга прямо с пирса.",
-      "de": "Sharks Bay ist eine entspannte Bucht, ideal für Familien und Schnorchler, die direkt vom Steg ins Wasser möchten.",
-      "it": "Sharks Bay offre acque calme e accesso immediato alla barriera corallina tramite pontili.",
-      "tr": "Sharks Bay, aileler ve iskeleden doğrudan şnorkel yapmak isteyenler için ideal, sakin bir koydur."
-    },
-    "location": { "en": "Between Naama Bay and Nabq Bay", "ar": "بين خليج نعمة وخليج نبق، شرم الشيخ", "ru": "Между Наама Бэй и Набк", "de": "Zwischen Naama Bay und Nabq", "it": "Tra Naama Bay e Nabq", "tr": "Naama Bay ile Nabq arasında" }
   }
 ]
