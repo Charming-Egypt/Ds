@@ -1673,14 +1673,19 @@
         let SUPPORTED_LANGS = ['en'];
         let LANG_LABELS = { en: 'English' };
         let I18N_DICT = {
+            // Hero texts
             heroExcEyebrow: { en: '— ADVENTURE AWAITS', ar: '— المغامرة تنتظر', ru: '— ПРИКЛЮЧЕНИЕ ЖДЕТ', de: '— ABENTEUER ERWARTET', it: '— L\'AVVENTURA ATTENDE', tr: '— MACERA SİZİ BEKLİYOR' },
             heroTitleExcursions: { en: 'Explore the<br><span class="italic text-gold-400">Red Sea</span>', ar: 'استكشف<br><span class="italic text-gold-400">البحر الأحمر</span>', ru: 'Исследуйте<br><span class="italic text-gold-400">Красное море</span>', de: 'Entdecken Sie das<br><span class="italic text-gold-400">Rote Meer</span>', it: 'Esplora il<br><span class="italic text-gold-400">Mar Rosso</span>', tr: 'Keşfedin<br><span class="italic text-gold-400">Kızıldeniz</span>' },
             heroSubtitleExcursions: { en: 'Excursions. Transfers. Dining.', ar: 'رحلات. نقل. مطاعم.', ru: 'Экскурсии. Трансферы. Рестораны.', de: 'Ausflüge. Transfers. Gastronomie.', it: 'Escursioni. Trasferimenti. Ristoranti.', tr: 'Turlar. Transferler. Yemek.' },
             heroTransferEyebrow: { en: '— RIDE IN STYLE', ar: '— رحلة بأناقة', ru: '— СТИЛЬНАЯ ПОЕЗДКА', de: '— STILVOLLE FAHRT', it: '— VIAGGIA CON STILE', tr: '— ŞIK BİR YOLCULUK' },
             heroTitleTransfers: { en: 'Your Ride<br><span class="italic text-gold-400">Awaits</span>', ar: 'رحلتك<br><span class="italic text-gold-400">في انتظارك</span>', ru: 'Ваш трансфер<br><span class="italic text-gold-400">ждет</span>', de: 'Ihre Fahrt<br><span class="italic text-gold-400">wartet</span>', it: 'Il tuo trasferimento<br><span class="italic text-gold-400">ti aspetta</span>', tr: 'Aracınız<br><span class="italic text-gold-400">Sizi Bekliyor</span>' },
             heroSubtitleTransfers: { en: 'From Airport to Hotel — Premium Vehicles', ar: 'من المطار إلى الفندق — سيارات فاخرة', ru: 'Из аэропорта в отель — премиальные автомобили', de: 'Vom Flughafen zum Hotel — Premium-Fahrzeuge', it: 'Dall\'aeroporto all\'hotel — Veicoli premium', tr: 'Havalimanından Otele — Premium Araçlar' },
+            // Search buttons
             searchExcursions: { en: 'Search Excursions', ar: 'البحث عن الرحلات', ru: 'Поиск экскурсий', de: 'Ausflüge suchen', it: 'Cerca escursioni', tr: 'Turları Ara' },
-            searchTransfers: { en: 'Search Transfers', ar: 'البحث عن النقل', ru: 'Поиск трансферов', de: 'Transfers suchen', it: 'Cerca trasferimenti', tr: 'Transferleri Ara' }
+            searchTransfers: { en: 'Search Transfers', ar: 'البحث عن النقل', ru: 'Поиск трансферов', de: 'Transfers suchen', it: 'Cerca trasferimenti', tr: 'Transferleri Ara' },
+            // Search labels
+            excursionDate: { en: 'EXCURSION DATE', ar: 'تاريخ الرحلة', ru: 'ДАТА ЭКСКУРСИИ', de: 'AUSFLUGSDATUM', it: 'DATA DELL\'ESCURSIONE', tr: 'TUR TARİHİ' },
+            transferDate: { en: 'TRANSFER DATE', ar: 'تاريخ النقل', ru: 'ДАТА ТРАНСФЕРА', de: 'TRANSFERDATUM', it: 'DATA DEL TRASFERIMENTO', tr: 'TRANSFER TARİHİ' }
         };
 
         // ==================== MULTILANG FUNCTIONS ====================
@@ -2754,7 +2759,6 @@
         const app = {
             enterMainApp() {
                 document.getElementById('mainApp').classList.remove('hidden');
-                // Wait for catalog to load before rendering
                 if (catalogLoaded) {
                     refreshCatalogUI();
                 } else {
@@ -4058,7 +4062,6 @@
                 }
             },
             continueAsGuest() {
-                // Ensure catalog is loaded before showing app
                 if (!catalogLoaded) {
                     loadCatalogJson().then(() => {
                         nav.showApp();
@@ -4119,7 +4122,6 @@
             search.switchTab('excursions');
             skeleton.fillAll();
 
-            // Pre-load catalog in background
             loadCatalogJson().then(() => {
                 refreshCatalogUI();
             });
