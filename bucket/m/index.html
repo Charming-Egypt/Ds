@@ -1654,6 +1654,150 @@
             currentUser = null;
         let userDataRefs = [];
 
+        // ==================== I18N ====================
+        let SUPPORTED_LANGS = ['en'];
+        let LANG_LABELS = { en: 'English' };
+        let I18N_DICT = {
+            // Hero texts
+            heroExcEyebrow: { en: '— ADVENTURE AWAITS', ar: '— المغامرة تنتظر', ru: '— ПРИКЛЮЧЕНИЕ ЖДЕТ', de: '— ABENTEUER ERWARTET', it: '— L\'AVVENTURA ATTENDE', tr: '— MACERA SİZİ BEKLİYOR' },
+            heroTitleExcursions: { en: 'Explore the<br><span class="italic text-gold-400">Red Sea</span>', ar: 'استكشف<br><span class="italic text-gold-400">البحر الأحمر</span>', ru: 'Исследуйте<br><span class="italic text-gold-400">Красное море</span>', de: 'Entdecken Sie das<br><span class="italic text-gold-400">Rote Meer</span>', it: 'Esplora il<br><span class="italic text-gold-400">Mar Rosso</span>', tr: 'Keşfedin<br><span class="italic text-gold-400">Kızıldeniz</span>' },
+            heroSubtitleExcursions: { en: 'Excursions. Transfers. Dining.', ar: 'رحلات. نقل. مطاعم.', ru: 'Экскурсии. Трансферы. Рестораны.', de: 'Ausflüge. Transfers. Gastronomie.', it: 'Escursioni. Trasferimenti. Ristoranti.', tr: 'Turlar. Transferler. Yemek.' },
+            heroTransferEyebrow: { en: '— RIDE IN STYLE', ar: '— رحلة بأناقة', ru: '— СТИЛЬНАЯ ПОЕЗДКА', de: '— STILVOLLE FAHRT', it: '— VIAGGIA CON STILE', tr: '— ŞIK BİR YOLCULUK' },
+            heroTitleTransfers: { en: 'Your Ride<br><span class="italic text-gold-400">Awaits</span>', ar: 'رحلتك<br><span class="italic text-gold-400">في انتظارك</span>', ru: 'Ваш трансфер<br><span class="italic text-gold-400">ждет</span>', de: 'Ihre Fahrt<br><span class="italic text-gold-400">wartet</span>', it: 'Il tuo trasferimento<br><span class="italic text-gold-400">ti aspetta</span>', tr: 'Aracınız<br><span class="italic text-gold-400">Sizi Bekliyor</span>' },
+            heroSubtitleTransfers: { en: 'From Airport to Hotel — Premium Vehicles', ar: 'من المطار إلى الفندق — سيارات فاخرة', ru: 'Из аэропорта в отель — премиальные автомобили', de: 'Vom Flughafen zum Hotel — Premium-Fahrzeuge', it: 'Dall\'aeroporto all\'hotel — Veicoli premium', tr: 'Havalimanından Otele — Premium Araçlar' },
+            // Search buttons
+            searchExcursions: { en: 'Search Excursions', ar: 'البحث عن الرحلات', ru: 'Поиск экскурсий', de: 'Ausflüge suchen', it: 'Cerca escursioni', tr: 'Turları Ara' },
+            searchTransfers: { en: 'Search Transfers', ar: 'البحث عن النقل', ru: 'Поиск трансферов', de: 'Transfers suchen', it: 'Cerca trasferimenti', tr: 'Transferleri Ara' },
+            // ... rest of translations will be loaded from JSON files
+        };
+
+        // ==================== MULTILANG FUNCTIONS ====================
+        function getTranslation(key, lang) {
+            const entry = I18N_DICT[key];
+            if (entry) {
+                return entry[lang] || entry.en || key;
+            }
+            return key;
+        }
+
+        // ==================== HERO CONTEXT ====================
+        const HERO_CONTEXT = {
+            excursions: { eyebrowKey: 'heroExcEyebrow', titleKey: 'heroTitleExcursions', subtitleKey: 'heroSubtitleExcursions', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=90' },
+            transfers: { eyebrowKey: 'heroTransferEyebrow', titleKey: 'heroTitleTransfers', subtitleKey: 'heroSubtitleTransfers', image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=90' }
+        };
+
+        function applyHeroContext(tab) {
+            const cfg = HERO_CONTEXT[tab] || HERO_CONTEXT.excursions;
+            const lang = I18N.get();
+            const eyebrowEl = document.getElementById('heroEyebrowText');
+            const titleEl = document.getElementById('heroTitleText');
+            const subtitleEl = document.getElementById('heroSubtitleText');
+            const imgEl = document.getElementById('heroBgImage');
+            if (!eyebrowEl || !titleEl || !subtitleEl || !imgEl) return;
+
+            // Get translations
+            const eyebrowText = getTranslation(cfg.eyebrowKey, lang);
+            const titleText = getTranslation(cfg.titleKey, lang);
+            const subtitleText = getTranslation(cfg.subtitleKey, lang);
+
+            // Update with animation
+            [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '0');
+
+            setTimeout(() => {
+                eyebrowEl.textContent = eyebrowText;
+                titleEl.innerHTML = titleText;
+                subtitleEl.textContent = subtitleText;
+                if (imgEl.src !== cfg.image) {
+                    imgEl.style.display = '';
+                    imgEl.src = cfg.image;
+                }
+                [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '1');
+            }, 220);
+
+            // Update search button texts as well
+            updateSearchButtonTexts(lang);
+        }
+
+        function updateSearchButtonTexts(lang) {
+            const excursionBtn = document.querySelector('#excursionSearchForm .btn-violet span');
+            const transferBtn = document.querySelector('#transferSearchForm .btn-violet span');
+            if (excursionBtn) {
+                excursionBtn.textContent = getTranslation('searchExcursions', lang);
+            }
+            if (transferBtn) {
+                transferBtn.textContent = getTranslation('searchTransfers', lang);
+            }
+        }
+
+        // ==================== I18N OBJECT ====================
+        const I18N = {
+            get() { return localStorage.getItem('ds_lang') || 'en'; },
+            set(lang) {
+                if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
+                localStorage.setItem('ds_lang', lang);
+                document.documentElement.setAttribute('lang', lang);
+                document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+                // Update all data-i18n elements
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    const val = getTranslation(key, lang);
+                    if (val !== key) {
+                        if (el.tagName === 'OPTION') el.textContent = val;
+                        else el.innerHTML = val;
+                    }
+                });
+
+                // Update language selects
+                document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
+
+                // Update search button texts
+                updateSearchButtonTexts(lang);
+
+                // Update hero based on current tab
+                const activeTab = state.activeSearchTab || 'excursions';
+                applyHeroContext(activeTab);
+
+                if (typeof onLanguageChanged === 'function') onLanguageChanged(lang);
+            },
+            init() {
+                const lang = this.get();
+                this.set(lang);
+            }
+        };
+
+        async function loadI18nDict() {
+            try {
+                const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
+                const manifest = await manifestRes.json();
+                SUPPORTED_LANGS = manifest.languages.map(l => l.code);
+                LANG_LABELS = {};
+                manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
+
+                const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
+                const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
+                SUPPORTED_LANGS.forEach((code, i) => {
+                    const langDict = dictJsons[i];
+                    Object.keys(langDict).forEach(key => {
+                        if (!I18N_DICT[key]) I18N_DICT[key] = {};
+                        I18N_DICT[key][code] = langDict[key];
+                    });
+                });
+            } catch (err) {
+                console.warn('Could not load https://www.discover-sharm.com/app/test/data/lang/*.json — falling back to built-in English text.', err);
+                SUPPORTED_LANGS = ['en'];
+                LANG_LABELS = { en: 'English' };
+            }
+            populateLanguageSelects();
+        }
+
+        function populateLanguageSelects() {
+            const optionsHtml = SUPPORTED_LANGS.map(code => `<option value="${code}">${LANG_LABELS[code] || code}</option>`).join('');
+            document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
+        }
+
+        // ==================== REST OF THE CODE ====================
+
         async function loadAppConfig() {
             try {
                 const res = await fetch('https://www.discover-sharm.com/app/https://www.discover-sharm.com/app/test/data/configs.json');
@@ -1664,7 +1808,7 @@
                 APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
                 document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
                 document.documentElement.style.setProperty('--brand-primary-dark', APP_CONFIG.brandColorPrimaryDark);
-            } catch (err) { console.warn('Could not load https://www.discover-sharm.com/app/test/data/configs.json', err); }
+            } catch (err) { console.warn('Could not load configs.json', err); }
         }
 
         function initFirebase() {
@@ -1818,6 +1962,8 @@
                 localizeCatalog(lang);
                 refreshCatalogUI();
             }
+            // Update search button texts
+            updateSearchButtonTexts(lang);
         }
 
         function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
@@ -1892,7 +2038,7 @@
                 files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i];
                     JSON_BASELINE[f] = parsed[i]; });
             } catch (err) {
-                console.warn('Could not load https://www.discover-sharm.com/app/test/data/*.json catalog files — using minimal built-in fallback.', err);
+                console.warn('Could not load catalog files — using fallback.', err);
                 files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || [];
                     JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
             }
@@ -2038,61 +2184,6 @@
             init() { this.set(this.get()); }
         };
 
-        // ==================== I18N ====================
-        let SUPPORTED_LANGS = ['en'];
-        let LANG_LABELS = { en: 'English' };
-        let I18N_DICT = {};
-
-        async function loadI18nDict() {
-            try {
-                const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
-                const manifest = await manifestRes.json();
-                SUPPORTED_LANGS = manifest.languages.map(l => l.code);
-                LANG_LABELS = {};
-                manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-                const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
-                const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
-                SUPPORTED_LANGS.forEach((code, i) => {
-                    const langDict = dictJsons[i];
-                    Object.keys(langDict).forEach(key => {
-                        if (!I18N_DICT[key]) I18N_DICT[key] = {};
-                        I18N_DICT[key][code] = langDict[key];
-                    });
-                });
-            } catch (err) {
-                console.warn('Could not load https://www.discover-sharm.com/app/test/data/lang/*.json — falling back to built-in English text.', err);
-                SUPPORTED_LANGS = ['en'];
-                LANG_LABELS = { en: 'English' };
-            }
-            populateLanguageSelects();
-        }
-
-        function populateLanguageSelects() {
-            const optionsHtml = SUPPORTED_LANGS.map(code => `<option value="${code}">${LANG_LABELS[code] || code}</option>`).join(
-            '');
-            document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
-        }
-
-        const I18N = {
-            get() { return localStorage.getItem('ds_lang') || 'en'; },
-            set(lang) {
-                if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
-                localStorage.setItem('ds_lang', lang);
-                document.documentElement.setAttribute('lang', lang);
-                document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-                document.querySelectorAll('[data-i18n]').forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    const entry = I18N_DICT[key];
-                    const val = entry && (entry[lang] || entry.en);
-                    if (val) { if (el.tagName === 'OPTION') el.textContent = val;
-                        else el.innerHTML = val; }
-                });
-                document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
-                if (typeof onLanguageChanged === 'function') onLanguageChanged(lang);
-            },
-            init() { this.set(this.get()); }
-        };
-
         // ==================== UTILS ====================
         const utils = {
             formatPrice(egp) {
@@ -2191,7 +2282,7 @@
                 document.getElementById('sideDrawerOverlay').classList.remove('open'); }
         };
 
-        // ==================== GUESTS MODAL (now participants) ====================
+        // ==================== GUESTS MODAL ====================
         function openGuestsModal() {
             document.getElementById('guestsModal').classList.remove('hidden');
             document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -2367,7 +2458,7 @@
                     window.addEventListener('message', listener);
                 } catch (err) {
                     console.error('Kashier error:', err);
-                    utils.toast('Could not reach the payment server. Check KASHIER_CONFIG.hashEndpoint.', 'error');
+                    utils.toast('Could not reach the payment server.', 'error');
                 }
             },
             showModal(innerHtml, onCancel) {
@@ -2388,12 +2479,12 @@
 
         function paymentMethodsBlock(currentMethod, onchangeFn) {
             const methods = [
-                { id: 'card', label: I18N.get() === 'ar' ? I18N_DICT.creditDebitCard.ar : I18N_DICT.creditDebitCard.en,
+                { id: 'card', label: I18N.get() === 'ar' ? getTranslation('creditDebitCard', 'ar') : getTranslation('creditDebitCard', 'en'),
                     icon: 'fa-credit-card',
                     extra: '<i class="fa-brands fa-cc-visa text-lg text-violet-500"></i><i class="fa-brands fa-cc-mastercard text-lg text-gold-500"></i>' },
-                { id: 'instapay', label: I18N.get() === 'ar' ? I18N_DICT.instapayWallet.ar : I18N_DICT.instapayWallet.en,
+                { id: 'instapay', label: I18N.get() === 'ar' ? getTranslation('instapayWallet', 'ar') : getTranslation('instapayWallet', 'en'),
                     icon: 'fa-wallet', extra: '' },
-                { id: 'cash', label: I18N.get() === 'ar' ? I18N_DICT.cashOnArrival.ar : I18N_DICT.cashOnArrival.en,
+                { id: 'cash', label: I18N.get() === 'ar' ? getTranslation('cashOnArrival', 'ar') : getTranslation('cashOnArrival', 'en'),
                     icon: 'fa-money-bill-wave', extra: '' }
             ];
             return methods.map(m => `
@@ -2621,6 +2712,8 @@
                 if (curSel) curSel.value = state.currency;
                 if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage
                         .getItem('ds_avatar')); }
+                // Apply hero context based on active tab
+                applyHeroContext(state.activeSearchTab);
             }
         };
 
@@ -3221,10 +3314,10 @@
 
         // ==================== BOOKING DETAIL BODY ====================
         function bookingDetailBody(b) {
-            const paymentLabel = b.payment === 'cash' ? (I18N.get() === 'ar' ? I18N_DICT.cashOnArrival.ar : I18N_DICT
-                .cashOnArrival.en) : b.payment === 'instapay' ? (I18N.get() === 'ar' ? I18N_DICT.instapayWallet.ar :
-                I18N_DICT.instapayWallet.en) : (I18N.get() === 'ar' ? I18N_DICT.creditDebitCard.ar : I18N_DICT
-                .creditDebitCard.en);
+            const paymentLabel = b.payment === 'cash' ? (I18N.get() === 'ar' ? getTranslation('cashOnArrival', 'ar') : getTranslation(
+                    'cashOnArrival', 'en')) : b.payment === 'instapay' ? (I18N.get() === 'ar' ? getTranslation(
+                    'instapayWallet', 'ar') : getTranslation('instapayWallet', 'en')) : (I18N.get() === 'ar' ? getTranslation(
+                    'creditDebitCard', 'ar') : getTranslation('creditDebitCard', 'en'));
             const paymentRow =
                 `<div class="flex justify-between"><span style="color:var(--text-secondary)" class="flex items-center gap-2"><i class="fa-solid fa-credit-card text-violet-500"></i>Payment</span><span class="font-semibold" style="color:var(--text-primary)">${paymentLabel}</span></div>`;
             if (b.type === 'excursion') {
@@ -3653,38 +3746,6 @@
                 applyHeroContext(tab);
             }
         };
-
-        // ==================== HERO CONTEXT ====================
-        const HERO_CONTEXT = {
-            excursions: { eyebrowKey: 'heroExcEyebrow', titleKey: 'heroTitleExcursions',
-                subtitleKey: 'heroSubtitleExcursions',
-                image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=90' },
-            transfers: { eyebrowKey: 'heroTransferEyebrow', titleKey: 'heroTitleTransfers',
-                subtitleKey: 'heroSubtitleTransfers',
-                image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=90' }
-        };
-
-        function applyHeroContext(tab) {
-            const cfg = HERO_CONTEXT[tab] || HERO_CONTEXT.excursions;
-            const lang = I18N.get();
-            const eyebrowEl = document.getElementById('heroEyebrowText');
-            const titleEl = document.getElementById('heroTitleText');
-            const subtitleEl = document.getElementById('heroSubtitleText');
-            const imgEl = document.getElementById('heroBgImage');
-            if (!eyebrowEl || !titleEl || !subtitleEl || !imgEl) return;
-            [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '0');
-            setTimeout(() => {
-                const eyebrowEntry = I18N_DICT[cfg.eyebrowKey],
-                    titleEntry = I18N_DICT[cfg.titleKey],
-                    subtitleEntry = I18N_DICT[cfg.subtitleKey];
-                if (eyebrowEntry) eyebrowEl.textContent = eyebrowEntry[lang] || eyebrowEntry.en;
-                if (titleEntry) titleEl.innerHTML = titleEntry[lang] || titleEntry.en;
-                if (subtitleEntry) subtitleEl.textContent = subtitleEntry[lang] || subtitleEntry.en;
-                if (imgEl.src !== cfg.image) { imgEl.style.display = '';
-                    imgEl.src = cfg.image; }
-                [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '1');
-            }, 220);
-        }
 
         // ==================== NOTIFICATIONS ====================
         const notifications = {
