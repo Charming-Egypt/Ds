@@ -968,6 +968,92 @@
                 padding: .5rem .7rem
             }
         }
+
+        /* Bottom nav icons - improved styling */
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 0 8px;
+            min-width: 48px;
+            height: 48px;
+            transition: all .3s ease;
+        }
+        .bottom-nav .nav-item i {
+            font-size: 22px;
+            transition: all .3s ease;
+        }
+        .bottom-nav .nav-item span {
+            display: none;
+        }
+        .bottom-nav .nav-item.active i {
+            transform: scale(1.1);
+        }
+        .bottom-nav .nav-item-home {
+            width: 56px;
+            height: 56px;
+            margin-top: -28px;
+        }
+        .bottom-nav .nav-item-home .nav-home-logo img {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Improved spacing for listing pages */
+        .listing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        @media (min-width: 480px) {
+            .listing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Improved restaurant grid */
+        .restaurant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 380px) {
+            .restaurant-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Search forms without category select */
+        .search-simple .field-box {
+            padding: 12px 16px;
+        }
+        .search-simple .field-box .field-label {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .search-simple .field-box .field-label i {
+            font-size: 12px;
+            color: #f97316;
+        }
+        .search-simple .field-box .field-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .search-simple .date-field {
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-field);
+            background: var(--bg-field);
+            border-radius: 14px;
+        }
     </style>
 </head>
 <body>
@@ -1255,37 +1341,22 @@
                         <button onclick="search.switchTab('transfers')" id="searchTabTransfers" class="flex-1 py-2.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-shuttle-van"></i> <span data-i18n="navTransfers">Transfers</span></button>
                     </div>
 
-                    <div id="excursionSearchForm" class="space-y-4">
+                    <div id="excursionSearchForm" class="space-y-4 search-simple">
                         <div class="field-box p-3">
-                            <div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-layer-group text-violet-600 text-xs"></i><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="category">CATEGORY</span></div>
-                            <select id="excursionCategorySelect" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)">
-                                <option value="all" data-i18n="all">All</option>
-                                <option value="Diving" data-i18n="catDiving">Diving & Snorkeling</option>
-                                <option value="Desert Safari" data-i18n="catDesert">Desert Safari</option>
-                                <option value="Boat Trip" data-i18n="catBoat">Boat Trip</option>
-                                <option value="City Tour" data-i18n="catCity">City Tour</option>
-                            </select>
-                        </div>
-                        <div id="excursionDate" class="date-field p-3" data-value="" onclick="datepicker.open('excursionDate', { minIso: utils.addDays(utils.todayIso(), 1) })">
-                            <div class="flex items-center gap-2 mb-1.5"><div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-regular fa-calendar text-violet-600 text-xs"></i></div><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="excursionDate">EXCURSION DATE</span></div>
-                            <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
+                            <div class="field-label"><i class="fa-regular fa-calendar"></i><span data-i18n="excursionDate">EXCURSION DATE</span></div>
+                            <div id="excursionDate" class="date-field w-full mt-1" data-value="" onclick="datepicker.open('excursionDate', { minIso: utils.addDays(utils.todayIso(), 1) })">
+                                <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
+                            </div>
                         </div>
                         <button onclick="search.applyExcursionSearch()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchExcursions">Search Excursions</span></button>
                     </div>
 
-                    <div id="transferSearchForm" class="space-y-4 hidden">
+                    <div id="transferSearchForm" class="space-y-4 hidden search-simple">
                         <div class="field-box p-3">
-                            <div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-car text-violet-600 text-xs"></i><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="vehicleType">VEHICLE TYPE</span></div>
-                            <select id="transferCategorySelect" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)">
-                                <option value="all" data-i18n="all">All</option>
-                                <option value="Tourist H1">Tourist H1</option>
-                                <option value="Mercedes Sprinter">Mercedes Sprinter</option>
-                                <option value="Limo">Limo</option>
-                            </select>
-                        </div>
-                        <div id="transferDate" class="date-field p-3" data-value="" onclick="datepicker.open('transferDate', { minIso: utils.addDays(utils.todayIso(), 1) })">
-                            <div class="flex items-center gap-2 mb-1.5"><div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-regular fa-calendar text-violet-600 text-xs"></i></div><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="transferDate">TRANSFER DATE</span></div>
-                            <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
+                            <div class="field-label"><i class="fa-regular fa-calendar"></i><span data-i18n="transferDate">TRANSFER DATE</span></div>
+                            <div id="transferDate" class="date-field w-full mt-1" data-value="" onclick="datepicker.open('transferDate', { minIso: utils.addDays(utils.todayIso(), 1) })">
+                                <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
+                            </div>
                         </div>
                         <button onclick="search.applyTransferSearch()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchTransfers">Search Transfers</span></button>
                     </div>
@@ -1385,7 +1456,9 @@
                         <button onclick="search.filterExcursionCategory('City Tour')" class="filter-chip excursion-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-city"></i> <span data-i18n="catCity">City Tour</span></button>
                     </div>
                 </div>
-                <div class="px-5 pt-4 space-y-4 pb-28" id="excursionsList"></div>
+                <div class="px-5 pt-4 pb-28">
+                    <div class="listing-grid" id="excursionsList"></div>
+                </div>
             </div>
         </div>
 
@@ -1399,7 +1472,9 @@
                     </div>
                     <p class="text-xs leading-relaxed mt-2" style="color:var(--text-secondary)" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
                 </div>
-                <div class="px-5 pt-4 space-y-4 pb-28" id="transfersList"></div>
+                <div class="px-5 pt-4 pb-28">
+                    <div class="listing-grid" id="transfersList"></div>
+                </div>
             </div>
         </div>
 
@@ -1412,7 +1487,9 @@
                         <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="restaurantsTitle">Restaurants & Cafes</h1></div>
                     </div>
                 </div>
-                <div class="px-5 pt-4 pb-28" id="restaurantsFullList"></div>
+                <div class="px-5 pt-4 pb-28">
+                    <div class="restaurant-grid" id="restaurantsFullList"></div>
+                </div>
             </div>
         </div>
 
@@ -1551,13 +1628,13 @@
 
         <nav class="bottom-nav">
             <div class="flex items-center justify-around relative">
-                <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-umbrella-beach text-xl"></i><span class="text-[10px] font-medium" data-i18n="navExcursions"></span></button>
-                <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings"></span></button>
+                <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item"><i class="fa-solid fa-umbrella-beach"></i></button>
+                <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item"><i class="fa-regular fa-calendar-check"></i></button>
                 <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
                     <span class="nav-home-logo"><img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
                 </button>
-                <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites"></span></button>
-                <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1">
+                <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item"><i class="fa-regular fa-heart"></i></button>
+                <button onclick="nav.go('profile')" data-page="profile" class="nav-item">
                     <span class="nav-avatar-circle" id="navProfileAvatar">A</span>
                 </button>
             </div>
@@ -2615,7 +2692,7 @@
                 if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state
                     .currentExcursionFilter);
                 if (filtered.length === 0) { list.innerHTML =
-                        `<div class="text-center py-16"><p style="color:var(--text-secondary)">No excursions found</p></div>`; return; }
+                        `<div class="text-center py-16 col-span-full"><p style="color:var(--text-secondary)">No excursions found</p></div>`; return; }
                 list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
             }
         };
@@ -3412,7 +3489,7 @@
             renderRow() { const row = document.getElementById('restaurantsRow'); if (row) row.innerHTML = CATALOG
                     .restaurants.map(r => this.renderCard(r)).join(''); },
             renderFull() { const list = document.getElementById('restaurantsFullList'); if (list) list.innerHTML =
-                    `<div class="grid grid-cols-2 gap-3">${CATALOG.restaurants.map(r => this.renderCard(r)).join('')}</div>`; }
+                    CATALOG.restaurants.map(r => this.renderCard(r)).join(''); }
         };
 
         function showRestaurantPage(id) {
@@ -3554,25 +3631,12 @@
                 excursionsUi.render();
             },
             applyExcursionSearch() {
-                const cat = document.getElementById('excursionCategorySelect').value;
-                state.currentExcursionFilter = cat;
-                nav.go('excursions');
+                state.currentExcursionFilter = 'all';
                 document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn
-                    .getAttribute('onclick').includes(`'${cat}'`)));
+                    .getAttribute('onclick').includes(`'all'`)));
+                nav.go('excursions');
             },
             applyTransferSearch() {
-                const cat = document.getElementById('transferCategorySelect').value;
-                if (cat !== 'all') {
-                    const list = document.getElementById('transfersList');
-                    if (list) {
-                        const filtered = CATALOG.transfers.filter(v => v.vehicleType === cat);
-                        list.innerHTML = filtered.length ? filtered.map(v => transfersUi.renderVehicleCard(v)).join(
-                            '') :
-                            `<div class="text-center py-16"><p style="color:var(--text-secondary)">No vehicles found</p></div>`;
-                    }
-                } else {
-                    transfersUi.render();
-                }
                 nav.go('transfers');
             },
             switchTab(tab) {
