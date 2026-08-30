@@ -992,7 +992,7 @@
             <div class="w-24 h-24 relative mb-6">
                 <div class="absolute inset-0 bg-gold-400 rounded-3xl opacity-25 animate-ping"></div>
                 <div class="relative w-full h-full bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-3xl flex items-center justify-center shadow-2xl border border-gold-300/50 overflow-hidden">
-                    <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm">
+                    <img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="w-full h-full object-cover" alt="Discover Sharm">
                 </div>
             </div>
             <h1 class="font-display text-2xl font-bold text-white tracking-tight"><span class="shimmer-text">DISCOVER</span> SHARM</h1>
@@ -1166,7 +1166,7 @@
         <div class="p-5 flex flex-col h-full">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-2">
-                    <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo">
+                    <img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo">
                     <span class="font-display font-bold text-white text-sm">Discover Sharm</span>
                 </div>
                 <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
@@ -1216,7 +1216,7 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm">
+                <img src="https://www.discover-sharm.com/app/test/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm">
             </div>
             <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
         </div>
@@ -1235,7 +1235,7 @@
                         <div class="header-floating">
                             <div class="flex items-center gap-3">
                                 <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
-                                <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm">
+                                <img src="https://www.discover-sharm.com/app/test/data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm">
                             </div>
                             <button onclick="nav.go('notifications')" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
                         </div>
@@ -1554,7 +1554,7 @@
                 <button onclick="nav.go('excursions')" data-page="excursions" class="nav-item flex flex-col items-center gap-1"><i class="fa-solid fa-umbrella-beach text-xl"></i><span class="text-[10px] font-medium" data-i18n="navExcursions"></span></button>
                 <button onclick="nav.go('bookings')" data-page="bookings" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-calendar-check text-xl"></i><span class="text-[10px] font-medium" data-i18n="navBookings"></span></button>
                 <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-                    <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
+                    <span class="nav-home-logo"><img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover"></span>
                 </button>
                 <button onclick="nav.go('favorites')" data-page="favorites" class="nav-item flex flex-col items-center gap-1"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] font-medium" data-i18n="favorites"></span></button>
                 <button onclick="nav.go('profile')" data-page="profile" class="nav-item flex flex-col items-center gap-1">
@@ -1579,7 +1579,7 @@
 
         async function loadAppConfig() {
             try {
-                const res = await fetch('https://www.discover-sharm.com/app/data/configs.json');
+                const res = await fetch('https://www.discover-sharm.com/app/https://www.discover-sharm.com/app/test/data/configs.json');
                 const cfg = await res.json();
                 firebaseConfig = cfg.firebase || {};
                 KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '' }, cfg.kashier || {});
@@ -1587,7 +1587,7 @@
                 APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
                 document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
                 document.documentElement.style.setProperty('--brand-primary-dark', APP_CONFIG.brandColorPrimaryDark);
-            } catch (err) { console.warn('Could not load data/configs.json', err); }
+            } catch (err) { console.warn('Could not load https://www.discover-sharm.com/app/test/data/configs.json', err); }
         }
 
         function initFirebase() {
@@ -1810,12 +1810,12 @@
         async function loadCatalogJson() {
             const files = ['excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
             try {
-                const responses = await Promise.all(files.map(f => fetch('data/' + f + '.json')));
+                const responses = await Promise.all(files.map(f => fetch('https://www.discover-sharm.com/app/test/data/' + f + '.json')));
                 const parsed = await Promise.all(responses.map(r => r.json()));
                 files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i];
                     JSON_BASELINE[f] = parsed[i]; });
             } catch (err) {
-                console.warn('Could not load data/*.json catalog files — using minimal built-in fallback.', err);
+                console.warn('Could not load https://www.discover-sharm.com/app/test/data/*.json catalog files — using minimal built-in fallback.', err);
                 files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || [];
                     JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
             }
@@ -1968,12 +1968,12 @@
 
         async function loadI18nDict() {
             try {
-                const manifestRes = await fetch('data/lang/manifest.json');
+                const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
                 const manifest = await manifestRes.json();
                 SUPPORTED_LANGS = manifest.languages.map(l => l.code);
                 LANG_LABELS = {};
                 manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-                const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
+                const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
                 const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
                 SUPPORTED_LANGS.forEach((code, i) => {
                     const langDict = dictJsons[i];
@@ -1983,7 +1983,7 @@
                     });
                 });
             } catch (err) {
-                console.warn('Could not load data/lang/*.json — falling back to built-in English text.', err);
+                console.warn('Could not load https://www.discover-sharm.com/app/test/data/lang/*.json — falling back to built-in English text.', err);
                 SUPPORTED_LANGS = ['en'];
                 LANG_LABELS = { en: 'English' };
             }
