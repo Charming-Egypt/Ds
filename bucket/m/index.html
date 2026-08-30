@@ -1800,7 +1800,7 @@
 
         async function loadAppConfig() {
             try {
-                const res = await fetch('https://www.discover-sharm.com/app/https://www.discover-sharm.com/app/test/data/configs.json');
+                const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
                 const cfg = await res.json();
                 firebaseConfig = cfg.firebase || {};
                 KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '' }, cfg.kashier || {});
