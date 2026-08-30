@@ -1054,6 +1054,19 @@
             background: var(--bg-field);
             border-radius: 14px;
         }
+
+        /* Loading spinner */
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-field);
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -1653,22 +1666,21 @@
             fbStorage = null,
             currentUser = null;
         let userDataRefs = [];
+        let catalogLoaded = false;
+        let catalogLoadingPromise = null;
 
         // ==================== I18N ====================
         let SUPPORTED_LANGS = ['en'];
         let LANG_LABELS = { en: 'English' };
         let I18N_DICT = {
-            // Hero texts
             heroExcEyebrow: { en: '— ADVENTURE AWAITS', ar: '— المغامرة تنتظر', ru: '— ПРИКЛЮЧЕНИЕ ЖДЕТ', de: '— ABENTEUER ERWARTET', it: '— L\'AVVENTURA ATTENDE', tr: '— MACERA SİZİ BEKLİYOR' },
             heroTitleExcursions: { en: 'Explore the<br><span class="italic text-gold-400">Red Sea</span>', ar: 'استكشف<br><span class="italic text-gold-400">البحر الأحمر</span>', ru: 'Исследуйте<br><span class="italic text-gold-400">Красное море</span>', de: 'Entdecken Sie das<br><span class="italic text-gold-400">Rote Meer</span>', it: 'Esplora il<br><span class="italic text-gold-400">Mar Rosso</span>', tr: 'Keşfedin<br><span class="italic text-gold-400">Kızıldeniz</span>' },
             heroSubtitleExcursions: { en: 'Excursions. Transfers. Dining.', ar: 'رحلات. نقل. مطاعم.', ru: 'Экскурсии. Трансферы. Рестораны.', de: 'Ausflüge. Transfers. Gastronomie.', it: 'Escursioni. Trasferimenti. Ristoranti.', tr: 'Turlar. Transferler. Yemek.' },
             heroTransferEyebrow: { en: '— RIDE IN STYLE', ar: '— رحلة بأناقة', ru: '— СТИЛЬНАЯ ПОЕЗДКА', de: '— STILVOLLE FAHRT', it: '— VIAGGIA CON STILE', tr: '— ŞIK BİR YOLCULUK' },
             heroTitleTransfers: { en: 'Your Ride<br><span class="italic text-gold-400">Awaits</span>', ar: 'رحلتك<br><span class="italic text-gold-400">في انتظارك</span>', ru: 'Ваш трансфер<br><span class="italic text-gold-400">ждет</span>', de: 'Ihre Fahrt<br><span class="italic text-gold-400">wartet</span>', it: 'Il tuo trasferimento<br><span class="italic text-gold-400">ti aspetta</span>', tr: 'Aracınız<br><span class="italic text-gold-400">Sizi Bekliyor</span>' },
             heroSubtitleTransfers: { en: 'From Airport to Hotel — Premium Vehicles', ar: 'من المطار إلى الفندق — سيارات فاخرة', ru: 'Из аэропорта в отель — премиальные автомобили', de: 'Vom Flughafen zum Hotel — Premium-Fahrzeuge', it: 'Dall\'aeroporto all\'hotel — Veicoli premium', tr: 'Havalimanından Otele — Premium Araçlar' },
-            // Search buttons
             searchExcursions: { en: 'Search Excursions', ar: 'البحث عن الرحلات', ru: 'Поиск экскурсий', de: 'Ausflüge suchen', it: 'Cerca escursioni', tr: 'Turları Ara' },
-            searchTransfers: { en: 'Search Transfers', ar: 'البحث عن النقل', ru: 'Поиск трансферов', de: 'Transfers suchen', it: 'Cerca trasferimenti', tr: 'Transferleri Ara' },
-            // ... rest of translations will be loaded from JSON files
+            searchTransfers: { en: 'Search Transfers', ar: 'البحث عن النقل', ru: 'Поиск трансферов', de: 'Transfers suchen', it: 'Cerca trasferimenti', tr: 'Transferleri Ara' }
         };
 
         // ==================== MULTILANG FUNCTIONS ====================
@@ -1695,12 +1707,10 @@
             const imgEl = document.getElementById('heroBgImage');
             if (!eyebrowEl || !titleEl || !subtitleEl || !imgEl) return;
 
-            // Get translations
             const eyebrowText = getTranslation(cfg.eyebrowKey, lang);
             const titleText = getTranslation(cfg.titleKey, lang);
             const subtitleText = getTranslation(cfg.subtitleKey, lang);
 
-            // Update with animation
             [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '0');
 
             setTimeout(() => {
@@ -1714,7 +1724,6 @@
                 [eyebrowEl, titleEl, subtitleEl, imgEl].forEach(el => el.style.opacity = '1');
             }, 220);
 
-            // Update search button texts as well
             updateSearchButtonTexts(lang);
         }
 
@@ -1738,7 +1747,6 @@
                 document.documentElement.setAttribute('lang', lang);
                 document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
-                // Update all data-i18n elements
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     const val = getTranslation(key, lang);
@@ -1748,16 +1756,10 @@
                     }
                 });
 
-                // Update language selects
                 document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
-
-                // Update search button texts
                 updateSearchButtonTexts(lang);
-
-                // Update hero based on current tab
                 const activeTab = state.activeSearchTab || 'excursions';
                 applyHeroContext(activeTab);
-
                 if (typeof onLanguageChanged === 'function') onLanguageChanged(lang);
             },
             init() {
@@ -1784,7 +1786,7 @@
                     });
                 });
             } catch (err) {
-                console.warn('Could not load https://www.discover-sharm.com/app/test/data/lang/*.json — falling back to built-in English text.', err);
+                console.warn('Could not load lang files — using fallback.', err);
                 SUPPORTED_LANGS = ['en'];
                 LANG_LABELS = { en: 'English' };
             }
@@ -1795,8 +1797,6 @@
             const optionsHtml = SUPPORTED_LANGS.map(code => `<option value="${code}">${LANG_LABELS[code] || code}</option>`).join('');
             document.querySelectorAll('.lang-select').forEach(sel => { sel.innerHTML = optionsHtml; });
         }
-
-        // ==================== REST OF THE CODE ====================
 
         async function loadAppConfig() {
             try {
@@ -1814,7 +1814,7 @@
         function initFirebase() {
             try {
                 const looksConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf('YOUR_') !== 0;
-                if (looksConfigured && typeof firebase !== 'undefined') {
+                if (looksConfigured && typeof firebase !== 'undefined' && firebaseConfig.apiKey) {
                     fbApp = firebase.initializeApp(firebaseConfig);
                     fbAuth = firebase.auth();
                     fbDB = firebase.database();
@@ -1825,13 +1825,19 @@
                     fbAuth.onAuthStateChanged(handleAuthChange);
                 } else {
                     fbEnabled = false;
-                    loadCatalogJson().then(refreshCatalogUI);
+                    loadCatalogJson().then(() => {
+                        catalogLoaded = true;
+                        refreshCatalogUI();
+                    });
                     setTimeout(() => handleAuthChange(null), 300);
                 }
             } catch (err) {
                 console.warn('Firebase init failed.', err);
                 fbEnabled = false;
-                loadCatalogJson().then(refreshCatalogUI);
+                loadCatalogJson().then(() => {
+                    catalogLoaded = true;
+                    refreshCatalogUI();
+                });
                 setTimeout(() => handleAuthChange(null), 300);
             }
         }
@@ -1884,7 +1890,13 @@
             const profRef = fbDB.ref('users/' + uid + '/profile');
             const profCb = snap => {
                 const val = snap.val() || {};
-                if (val.photoURL) updateDrawerUser(document.getElementById('drawerName').textContent, document.getElementById('drawerEmail').textContent, val.photoURL);
+                if (val.photoURL) {
+                    updateDrawerUser(
+                        document.getElementById('drawerName').textContent,
+                        document.getElementById('drawerEmail').textContent,
+                        val.photoURL
+                    );
+                }
             };
             profRef.on('value', profCb);
             userDataRefs.push({ ref: profRef, cb: profCb });
@@ -1910,12 +1922,26 @@
         const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring'];
         const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
         const EMERGENCY_FALLBACK_CATALOG = {
-            excursions: [],
-            transfers: [],
-            destinations: [],
-            restaurants: [],
-            reviews: [],
-            articles: []
+            excursions: [
+                { id: 'exc1', title: 'Snorkeling Adventure', category: 'Diving', price: 25, rating: 4.8, reviews: 120, duration: '4 hours', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80', description: 'Explore the beautiful coral reefs of the Red Sea.' },
+                { id: 'exc2', title: 'Desert Safari', category: 'Desert Safari', price: 35, rating: 4.9, reviews: 95, duration: '6 hours', image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=400&q=80', description: 'Experience the thrill of the desert with dune bashing and Bedouin dinner.' }
+            ],
+            transfers: [
+                { id: 'tr1', vehicleType: 'Tourist H1', capacity: 4, price: 25, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=400&q=80', description: 'Comfortable sedan for up to 4 passengers.' },
+                { id: 'tr2', vehicleType: 'Mercedes Sprinter', capacity: 10, price: 45, image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=400&q=80', description: 'Spacious van perfect for groups.' }
+            ],
+            destinations: [
+                { id: 'dest1', name: 'Naama Bay', rating: 4.7, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80', tagline: 'Heart of Sharm' }
+            ],
+            restaurants: [
+                { id: 'rest1', name: 'Sea View Restaurant', cuisine: 'Seafood', rating: 4.6, priceLevel: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80', location: 'Naama Bay' }
+            ],
+            reviews: [
+                { id: 'rev1', name: 'John Doe', rating: 5, text: 'Amazing experience! Highly recommended.', itemName: 'Snorkeling Adventure' }
+            ],
+            articles: [
+                { id: 'art1', title: 'Best Time to Visit Sharm', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80', excerpt: 'Discover the perfect season for your trip.', readTimeMinutes: 5, content: 'The best time to visit Sharm El Sheikh is from October to April.' }
+            ]
         };
 
         function localizeValue(val, lang) {
@@ -1962,7 +1988,6 @@
                 localizeCatalog(lang);
                 refreshCatalogUI();
             }
-            // Update search button texts
             updateSearchButtonTexts(lang);
         }
 
@@ -1983,6 +2008,7 @@
 
         function bindCatalog() {
             loadCatalogJson().then(() => {
+                catalogLoaded = true;
                 refreshCatalogUI();
                 if (!fbEnabled) return;
                 ['excursions', 'transfers', 'restaurants', 'destinations', 'articles'].forEach(type => {
@@ -2019,6 +2045,7 @@
 
         function refreshCatalogUI() {
             if (!document.getElementById('mainApp') || document.getElementById('mainApp').classList.contains('hidden')) return;
+            if (!catalogLoaded) return;
             excursionsUi.renderFeatured();
             excursionsUi.render();
             transfersUi.render();
@@ -2031,18 +2058,31 @@
         }
 
         async function loadCatalogJson() {
-            const files = ['excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-            try {
-                const responses = await Promise.all(files.map(f => fetch('https://www.discover-sharm.com/app/test/data/' + f + '.json')));
-                const parsed = await Promise.all(responses.map(r => r.json()));
-                files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i];
-                    JSON_BASELINE[f] = parsed[i]; });
-            } catch (err) {
-                console.warn('Could not load catalog files — using fallback.', err);
-                files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || [];
-                    JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
-            }
-            localizeCatalog(I18N.get());
+            if (catalogLoadingPromise) return catalogLoadingPromise;
+
+            catalogLoadingPromise = new Promise(async (resolve) => {
+                const files = ['excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+                try {
+                    const responses = await Promise.all(files.map(f => fetch('https://www.discover-sharm.com/app/test/data/' + f + '.json')));
+                    const parsed = await Promise.all(responses.map(r => r.json()));
+                    files.forEach((f, i) => {
+                        CATALOG_RAW[f] = parsed[i] && parsed[i].length ? parsed[i] : EMERGENCY_FALLBACK_CATALOG[f] || [];
+                        JSON_BASELINE[f] = CATALOG_RAW[f];
+                    });
+                    console.log('Catalog loaded successfully from JSON files');
+                } catch (err) {
+                    console.warn('Could not load catalog files — using fallback data.', err);
+                    files.forEach(f => {
+                        CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || [];
+                        JSON_BASELINE[f] = CATALOG_RAW[f];
+                    });
+                }
+                localizeCatalog(I18N.get());
+                catalogLoaded = true;
+                resolve();
+            });
+
+            return catalogLoadingPromise;
         }
 
         // ==================== KASHIER CALLBACK ====================
@@ -2506,12 +2546,22 @@
                 const wrap = document.getElementById('profileAvatarWrap');
                 const drawerAv = document.getElementById('drawerAvatar');
                 const navAv = document.getElementById('navProfileAvatar');
-                if (wrap) wrap.innerHTML = photoURL ?
-                    `<img src="${photoURL}" class="w-full h-full object-cover">` :
-                    `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
-                if (drawerAv) drawerAv.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` :
-                    letter;
-                if (navAv) navAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+
+                if (wrap) {
+                    wrap.innerHTML = photoURL ?
+                        `<img src="${photoURL}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<span class=\'font-display text-5xl font-bold text-violet-600\'>${letter}</span>'">` :
+                        `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
+                }
+                if (drawerAv) {
+                    drawerAv.innerHTML = photoURL ?
+                        `<img src="${photoURL}" class="w-full h-full object-cover" onerror="this.textContent='${letter}'">` :
+                        letter;
+                }
+                if (navAv) {
+                    navAv.innerHTML = photoURL ?
+                        `<img src="${photoURL}" class="w-full h-full object-cover" onerror="this.textContent='${letter}'">` :
+                        letter;
+                }
             }
         };
 
@@ -2704,7 +2754,14 @@
         const app = {
             enterMainApp() {
                 document.getElementById('mainApp').classList.remove('hidden');
-                excursionsUi.renderFeatured();
+                // Wait for catalog to load before rendering
+                if (catalogLoaded) {
+                    refreshCatalogUI();
+                } else {
+                    loadCatalogJson().then(() => {
+                        refreshCatalogUI();
+                    });
+                }
                 transfersUi.render();
                 ui.setDefaultDates();
                 ui.updateProfileStats();
@@ -2712,7 +2769,6 @@
                 if (curSel) curSel.value = state.currency;
                 if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage
                         .getItem('ds_avatar')); }
-                // Apply hero context based on active tab
                 applyHeroContext(state.activeSearchTab);
             }
         };
@@ -2739,13 +2795,18 @@
             renderFeatured() {
                 const el = document.getElementById('featuredExcursions');
                 if (!el) return;
+                if (!CATALOG.excursions.length) {
+                    el.innerHTML =
+                        `<div class="flex items-center justify-center w-full py-8"><div class="loader-spinner"></div></div>`;
+                    return;
+                }
                 el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
             },
             renderMiniCard(x) {
                 return `
                             <div onclick="showExcursionPage('${x.id}')" class="flex-shrink-0 w-44 cursor-pointer">
                                 <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
-                                    <img src="${x.image}" class="w-full h-full object-cover">
+                                    <img src="${x.image}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=400&q=80'">
                                     <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></div>
                                     <div class="absolute bottom-2 right-2 left-2"><span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${x.category}</span></div>
                                 </div>
@@ -2758,7 +2819,7 @@
                             <div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
                                 <div class="flex">
                                     <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-                                        <img src="${x.image}" class="w-full h-full object-cover">
+                                        <img src="${x.image}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=400&q=80'">
                                         <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
                                         <span class="text-[9px]" style="color:var(--text-secondary)">(${x.reviews} reviews)</span>
                                         <i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
@@ -2781,6 +2842,11 @@
             render() {
                 const list = document.getElementById('excursionsList');
                 if (!list) return;
+                if (!CATALOG.excursions.length) {
+                    list.innerHTML =
+                        `<div class="text-center py-16 col-span-full"><div class="loader-spinner mx-auto"></div><p class="mt-4" style="color:var(--text-secondary)">Loading excursions...</p></div>`;
+                    return;
+                }
                 let filtered = CATALOG.excursions;
                 if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state
                     .currentExcursionFilter);
@@ -2804,7 +2870,7 @@
                         <div class="min-h-screen pb-28" style="background:var(--bg-card)">
                             <div class="relative h-72">
                                 <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
-                                    ${(x.images||[x.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+                                    ${(x.images||[x.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onerror="this.src='https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=800&q=80'">`).join('')}
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
                                 <button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -3054,7 +3120,7 @@
             renderVehicleCard(v) {
                 return `
                             <div class="hotel-card rounded-2xl overflow-hidden">
-                                <img src="${v.image}" class="w-full h-36 object-cover">
+                                <img src="${v.image}" class="w-full h-36 object-cover" onerror="this.src='https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=400&q=80'">
                                 <div class="p-4">
                                     <div class="flex items-center justify-between mb-2">
                                         <h3 class="font-display font-bold text-base" style="color:var(--text-primary)">${v.vehicleType}</h3>
@@ -3072,6 +3138,11 @@
             render() {
                 const list = document.getElementById('transfersList');
                 if (!list) return;
+                if (!CATALOG.transfers.length) {
+                    list.innerHTML =
+                        `<div class="text-center py-16 col-span-full"><div class="loader-spinner mx-auto"></div><p class="mt-4" style="color:var(--text-secondary)">Loading transfers...</p></div>`;
+                    return;
+                }
                 list.innerHTML = CATALOG.transfers.map(v => this.renderVehicleCard(v)).join('');
             }
         };
@@ -3508,9 +3579,14 @@
             render() {
                 const row = document.getElementById('destinationsRow');
                 if (!row) return;
+                if (!CATALOG.destinations.length) {
+                    row.innerHTML =
+                        `<div class="flex items-center justify-center w-full py-8"><div class="loader-spinner"></div></div>`;
+                    return;
+                }
                 row.innerHTML = CATALOG.destinations.map(d => `
                             <div onclick="showDestinationPage('${d.id}')" class="destination-card">
-                                <img src="${d.image}" class="w-full h-full object-cover absolute inset-0">
+                                <img src="${d.image}" class="w-full h-full object-cover absolute inset-0" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
                                 <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
                                 <div class="absolute bottom-3 right-3 left-3 text-white"><p class="font-display font-bold text-base leading-tight">${d.name}</p><p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p></div>
@@ -3530,7 +3606,7 @@
                         <div class="min-h-screen pb-28" style="background:var(--bg-card)">
                             <div class="relative h-72">
                                 <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onDestGalleryScroll(this)" id="destGallery">
-                                    ${(d.images || [d.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+                                    ${(d.images || [d.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'">`).join('')}
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
                                 <button onclick="closeDestinationPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -3568,7 +3644,7 @@
                 return `
                             <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card">
                                 <div class="relative h-28">
-                                    <img src="${r.image}" class="w-full h-full object-cover">
+                                    <img src="${r.image}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80'">
                                     <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
                                     <div class="absolute top-2 left-2 bg-ink-950/70 text-white text-[9px] font-bold px-2 py-1 rounded-full capitalize">${r.category}</div>
                                 </div>
@@ -3597,7 +3673,7 @@
                         <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
                             <div class="relative h-80">
                                 <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
-                                    ${(r.images || [r.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+                                    ${(r.images || [r.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%" onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'">`).join('')}
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
                                 <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -3656,6 +3732,11 @@
             render() {
                 const row = document.getElementById('reviewsRow');
                 if (!row) return;
+                if (!CATALOG.reviews.length) {
+                    row.innerHTML =
+                        `<div class="flex items-center justify-center w-full py-8"><div class="loader-spinner"></div></div>`;
+                    return;
+                }
                 row.innerHTML = CATALOG.reviews.map(rv => `
                             <div class="review-slide-card">
                                 <div class="flex items-center gap-3 mb-3">
@@ -3673,9 +3754,14 @@
             render() {
                 const row = document.getElementById('articlesRow');
                 if (!row) return;
+                if (!CATALOG.articles.length) {
+                    row.innerHTML =
+                        `<div class="flex items-center justify-center w-full py-8"><div class="loader-spinner"></div></div>`;
+                    return;
+                }
                 row.innerHTML = CATALOG.articles.map(a => `
                             <div onclick="showArticlePage('${a.id}')" class="article-card">
-                                <img src="${a.image}" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0">
+                                <img src="${a.image}" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80'">
                                 <div class="flex-1 min-w-0 py-1">
                                     <p class="font-display font-bold text-sm mb-1 leading-snug" style="color:var(--text-primary)">${a.title}</p>
                                     <p class="text-[11px] mb-1.5" style="color:var(--text-secondary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${a.excerpt}</p>
@@ -3696,7 +3782,7 @@
             page.innerHTML = `
                         <div class="min-h-screen pb-28" style="background:var(--bg-card)">
                             <div class="relative h-56">
-                                <img src="${a.image}" class="w-full h-full object-cover">
+                                <img src="${a.image}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
                                 <button onclick="closeArticlePage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
                             </div>
@@ -3912,15 +3998,18 @@
             },
             async submit(e) {
                 e.preventDefault();
+                if (!fbEnabled) { utils.toast("Sign-in is temporarily unavailable — continuing as guest", 'info'); return nav
+                        .showApp(); }
+
                 const email = document.getElementById('authEmail').value;
                 const pass = document.getElementById('authPassword').value;
                 const name = document.getElementById('authName') ? document.getElementById('authName').value : '';
                 const countryCode = document.getElementById('authCountryCode') ? document.getElementById('authCountryCode')
                     .value : '';
                 const phone = document.getElementById('authPhone') ? document.getElementById('authPhone').value.trim() : '';
+
                 if (this.mode === 'signup' && !phone) { utils.toast('Please enter your phone number', 'error'); return; }
-                if (!fbEnabled) { utils.toast("Sign-in is temporarily unavailable — continuing as guest", 'info'); return nav
-                        .showApp(); }
+
                 const btn = document.getElementById('authSubmitBtn');
                 const original = btn.textContent;
                 btn.textContent = 'Please wait…';
@@ -3936,8 +4025,12 @@
                         await fbAuth.signInWithEmailAndPassword(email, pass);
                         utils.toast('Welcome back!', 'success');
                     }
-                } catch (err) { utils.toast(err.message, 'error'); } finally { btn.textContent = original;
-                    btn.disabled = false; }
+                } catch (err) {
+                    utils.toast(err.message, 'error');
+                } finally {
+                    btn.textContent = original;
+                    btn.disabled = false;
+                }
             },
             async googleSignIn() {
                 if (!fbEnabled) { utils.toast("Firebase not connected — continuing in guest mode", 'info'); return nav
@@ -3946,23 +4039,42 @@
                     const provider = new firebase.auth.GoogleAuthProvider();
                     const cred = await fbAuth.signInWithPopup(provider);
                     const snap = await fbDB.ref('users/' + cred.user.uid + '/profile').once('value');
-                    if (!snap.exists()) await fbDB.ref('users/' + cred.user.uid + '/profile').set({ name: cred.user
-                            .displayName || '', email: cred.user.email || '', photoURL: cred.user.photoURL ||
-                            '' });
+                    if (!snap.exists()) {
+                        await fbDB.ref('users/' + cred.user.uid + '/profile').set({
+                            name: cred.user.displayName || '',
+                            email: cred.user.email || '',
+                            photoURL: cred.user.photoURL || ''
+                        });
+                    }
                     utils.toast('Signed in with Google!', 'success');
                 } catch (err) {
                     if (err.code === 'auth/popup-closed-by-user') return;
-                    if (err.code === 'auth/unauthorized-domain') utils.toast(
-                        'This domain isn\'t authorized for Google sign-in yet — add it in Firebase Console → Authentication → Settings.',
-                        'error');
-                    else utils.toast(err.message, 'error');
+                    if (err.code === 'auth/unauthorized-domain') {
+                        utils.toast('This domain isn\'t authorized for Google sign-in yet — add it in Firebase Console → Authentication → Settings.',
+                            'error');
+                    } else {
+                        utils.toast(err.message, 'error');
+                    }
                 }
             },
-            continueAsGuest() { nav.showApp(); },
+            continueAsGuest() {
+                // Ensure catalog is loaded before showing app
+                if (!catalogLoaded) {
+                    loadCatalogJson().then(() => {
+                        nav.showApp();
+                    });
+                } else {
+                    nav.showApp();
+                }
+            },
             async logout() {
                 if (!confirm('Are you sure?')) return;
-                if (fbEnabled && fbAuth && currentUser) { await fbAuth.signOut(); } else { localStorage.clear();
-                    location.reload(); }
+                if (fbEnabled && fbAuth && currentUser) {
+                    await fbAuth.signOut();
+                } else {
+                    localStorage.clear();
+                    location.reload();
+                }
             }
         };
 
@@ -4006,9 +4118,19 @@
             populateNationalitySelect();
             search.switchTab('excursions');
             skeleton.fillAll();
+
+            // Pre-load catalog in background
+            loadCatalogJson().then(() => {
+                refreshCatalogUI();
+            });
+
             await loadAppConfig();
-            CurrencyAPI.init().then(() => { refreshCatalogUI();
-                bookings.render(); });
+            CurrencyAPI.init().then(() => {
+                if (catalogLoaded) {
+                    refreshCatalogUI();
+                }
+                bookings.render();
+            });
             initFirebase();
         });
     </script>
