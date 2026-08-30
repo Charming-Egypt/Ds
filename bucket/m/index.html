@@ -1579,7 +1579,7 @@
 
         async function loadAppConfig() {
             try {
-                const res = await fetch('data/configs.json');
+                const res = await fetch('https://www.discover-sharm.com/app/data/configs.json');
                 const cfg = await res.json();
                 firebaseConfig = cfg.firebase || {};
                 KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '' }, cfg.kashier || {});
@@ -1689,8 +1689,8 @@
         const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring'];
         const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
         const EMERGENCY_FALLBACK_CATALOG = {
-            excursions: [{ id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 1150, rating: 4.8, reviews: 312, duration: 'Full Day (8h)', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80', images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'], description: 'Snorkel the coral reefs of Ras Mohammed National Park.', fullDescription: 'Snorkel the coral reefs of Ras Mohammed National Park.', includes: ['Hotel pickup & drop-off', 'Snorkeling equipment'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' }],
-            transfers: [{ id: 't1', vehicleType: 'Tourist H1', capacity: 7, price: 950, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off.', features: ['Tourist-class Hyundai H1', 'Air-conditioned', 'Meet & greet at arrivals'] }],
+            excursions: [],
+            transfers: [],
             destinations: [],
             restaurants: [],
             reviews: [],
