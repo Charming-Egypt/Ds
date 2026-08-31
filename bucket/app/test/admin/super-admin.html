@@ -6,7 +6,8 @@
 <title>Super Admin — Discover Sharm</title>
 <link rel="icon" href="data:,">
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/css/inter@latest/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/css/playfair-display@latest/index.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -32,7 +33,6 @@ tailwind.config = {
     ::-webkit-scrollbar-track { background: transparent; }
     .font-display { font-family: 'Playfair Display', serif; }
 
-    /* ---------- Layout ---------- */
     .app-shell { display: flex; min-height: 100vh; }
     .sidebar { width: 264px; flex-shrink: 0; background: #100c1c; border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 40; transition: transform .3s ease; }
     .main-area { flex: 1; margin-left: 264px; min-height: 100vh; display: flex; flex-direction: column; }
@@ -83,14 +83,12 @@ tailwind.config = {
     .badge-blue { background: rgba(59,130,246,.15); color: #60a5fa; }
     .badge-gray { background: rgba(255,255,255,.08); color: #b3abc7; }
 
-    /* ---------- Modal ---------- */
     .modal-overlay { position: fixed; inset: 0; background: rgba(6,4,14,.75); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 2.5rem 1rem; }
     .modal-panel { background: #171029; border: 1px solid #2b2140; border-radius: 22px; width: 100%; max-width: 720px; box-shadow: 0 30px 80px -20px rgba(0,0,0,.6); }
     .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #2b2140; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #171029; border-radius: 22px 22px 0 0; z-index: 5; }
     .modal-body { padding: 1.5rem; }
     .modal-footer { padding: 1.1rem 1.5rem; border-top: 1px solid #2b2140; display: flex; justify-content: flex-end; gap: .6rem; position: sticky; bottom: 0; background: #171029; border-radius: 0 0 22px 22px; }
 
-    /* ---------- Multi-language field ---------- */
     .ml-field { border: 1px solid #2b2140; border-radius: 14px; padding: .9rem; margin-bottom: .9rem; background: rgba(255,255,255,.015); }
     .ml-field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
     .ml-lang-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -103,7 +101,7 @@ tailwind.config = {
     [dir="rtl"] .repeater-remove { right: auto; left: .6rem; }
 
     .tab-strip { display: flex; gap: .4rem; border-bottom: 1px solid #2b2140; margin-bottom: 1.25rem; overflow-x: auto; }
-    .tab-strip button { font-size: 13px; font-weight: 600; padding: .6rem 1rem; color: #8a80a3; border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; }
+    .tab-strip button { font-size: 13px; font-weight: 600; padding: .6rem 1rem; color: #8a80a3; border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; background: transparent; }
     .tab-strip button.active { color: #fb923c; border-color: #f97316; }
 
     .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1f1830; border: 1px solid #382a54; padding: .8rem 1.3rem; border-radius: 12px; font-size: 13px; z-index: 200; box-shadow: 0 12px 34px rgba(0,0,0,.4); display: flex; align-items: center; gap: .6rem; }
@@ -119,6 +117,12 @@ tailwind.config = {
 
     .empty-state { text-align: center; padding: 3rem 1rem; color: #6b6382; }
     .thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #2b2140; }
+
+    .key-row { display: grid; grid-template-columns: 1fr 2fr auto; gap: .6rem; align-items: center; padding: .6rem .9rem; border-bottom: 1px solid #211934; font-size: 13px; }
+    .key-row:hover { background: rgba(255,255,255,.015); }
+    .key-name { font-family: ui-monospace, monospace; font-size: 12px; color: #fdba74; word-break: break-all; }
+    .key-value { color: #e5e0f0; word-break: break-word; }
+    .key-value.empty { color: #6b6382; font-style: italic; }
 </style>
 </head>
 <body>
@@ -162,7 +166,7 @@ tailwind.config = {
 <div id="appShell" class="hidden app-shell">
     <aside class="sidebar" id="sidebar">
         <div class="flex items-center gap-3 px-5 py-5 border-b" style="border-color:rgba(255,255,255,.06)">
-            <img src="../data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
+            <img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
             <div>
                 <p class="font-display font-bold text-sm leading-tight">Discover Sharm</p>
                 <p class="text-[10px]" style="color:#fb923c">SUPER ADMIN</p>
@@ -214,7 +218,6 @@ tailwind.config = {
         </div>
         <div class="content" id="contentArea">
 
-            <!-- ============ DASHBOARD ============ -->
             <section class="page-section active" id="section-dashboard">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="statsGrid"></div>
                 <div class="grid md:grid-cols-2 gap-5">
@@ -229,7 +232,6 @@ tailwind.config = {
                 </div>
             </section>
 
-            <!-- Other sections are injected by their own modules -->
             <section class="page-section" id="section-hotels"></section>
             <section class="page-section" id="section-excursions"></section>
             <section class="page-section" id="section-transfers"></section>
@@ -251,12 +253,12 @@ tailwind.config = {
 <div id="toastRoot"></div>
 
 <script>
-// ==================== CONFIG LOADING (same data/configs.json as the main site) ====================
+// ==================== CONFIG LOADING ====================
 let firebaseConfig = {}, APP_CONFIG = {}, GITHUB_CFG = {};
 let fbApp, fbAuth, fbDB, currentAdminUid = null;
 
 async function loadConfig() {
-    const res = await fetch('../data/configs.json');
+    const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
     APP_CONFIG = cfg.app || {};
@@ -264,14 +266,14 @@ async function loadConfig() {
 }
 
 // ==================== GITHUB STORE ====================
-// All catalog content, translations, and safe settings are read from — and saved directly
-// back to — the actual data/*.json files on GitHub via the secure proxy Worker
-// (admin/github-proxy-worker.js). No content edit ever touches Firebase; Firebase is only
-// used elsewhere in this dashboard for Bookings, Reviews, Users and Owner Access, which are
-// live operational data, not authored content.
 const GitHubStore = {
     cache: {},
     configured() { return !!(GITHUB_CFG.owner && GITHUB_CFG.repo && GITHUB_CFG.proxyEndpoint && GITHUB_CFG.owner.indexOf('YOUR_') !== 0); },
+    resolvePath(path) {
+        const prefix = GITHUB_CFG.dataPathPrefix;
+        if (prefix && path.indexOf('https://www.discover-sharm.com/app/test/data/') === 0) return prefix + path.slice(4);
+        return path;
+    },
     getSecret() { return localStorage.getItem('ds_admin_proxy_secret') || ''; },
     async ensureSecret() {
         let s = this.getSecret();
@@ -281,24 +283,26 @@ const GitHubStore = {
         return s || '';
     },
     async read(path) {
-        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of data/configs.json first.');
-        const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(path)}`;
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/app/test/data/configs.json first.');
+        const realPath = this.resolvePath(path);
+        const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(realPath)}`;
         const res = await fetch(url);
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Read failed (' + res.status + ')');
+        if (!res.ok) throw new Error(data.error || 'Read failed (' + res.status + ') for ' + realPath);
         const parsed = JSON.parse(data.content);
         this.cache[path] = { sha: data.sha };
         return parsed;
     },
     async write(path, newContent, message) {
-        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of data/configs.json first.');
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/app/test/data/configs.json first.');
         const secret = await this.ensureSecret();
         if (!secret) throw new Error('Admin secret is required to save.');
+        const realPath = this.resolvePath(path);
         const cached = this.cache[path];
         const res = await fetch(`${GITHUB_CFG.proxyEndpoint}/file`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ owner: GITHUB_CFG.owner, repo: GITHUB_CFG.repo, branch: GITHUB_CFG.branch || 'main', path, content: JSON.stringify(newContent, null, 2) + '\n', sha: cached ? cached.sha : undefined, message, adminSecret: secret })
+            body: JSON.stringify({ owner: GITHUB_CFG.owner, repo: GITHUB_CFG.repo, branch: GITHUB_CFG.branch || 'main', path: realPath, content: JSON.stringify(newContent, null, 2) + '\n', sha: cached ? cached.sha : undefined, message, adminSecret: secret })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
@@ -321,7 +325,7 @@ const Toast = {
     }
 };
 
-// ==================== AUTH (gated by admins/{uid} = true in Firebase) ====================
+// ==================== AUTH ====================
 const Auth = {
     async login() {
         const email = document.getElementById('loginEmail').value.trim();
@@ -387,7 +391,6 @@ const Router = {
     }
 };
 
-// Each catalog/section module registers itself here with an onShow() that (re)renders its section.
 const Modules = {};
 
 // ==================== APP INIT ====================
@@ -401,7 +404,7 @@ const App = {
     }
 };
 
-// ==================== DASHBOARD OVERVIEW ====================
+// ==================== DASHBOARD ====================
 const Dashboard = {
     async load() {
         const statsGrid = document.getElementById('statsGrid');
@@ -422,8 +425,8 @@ const Dashboard = {
             fbDB.ref('allBookings').once('value'),
             fbDB.ref('users').once('value')
         ]);
-        const jsonHotels = await fetch('../data/hotels.json').then(r => r.json()).catch(() => []);
-        const jsonExc = await fetch('../data/excursions.json').then(r => r.json()).catch(() => []);
+        const jsonHotels = await fetch('https://www.discover-sharm.com/app/test/data/hotels.json').then(r => r.json()).catch(() => []);
+        const jsonExc = await fetch('https://www.discover-sharm.com/app/test/data/excursions.json').then(r => r.json()).catch(() => []);
         document.getElementById('stat-hotels').textContent = jsonHotels.length;
         document.getElementById('stat-excursions').textContent = jsonExc.length;
         const bookings = objToArray(bookingsSnap.val());
@@ -459,19 +462,16 @@ Modules.dashboard = { onShow() { Dashboard.load(); } };
 function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
 function generateId() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
-// ==================== SHARED: LANGUAGES (loaded from ../data/lang/manifest.json) ====================
+// ==================== SHARED: LANGUAGES ====================
 let LANGS = [{ code: 'en', label: 'English' }];
 async function loadLangs() {
     try {
-        const manifest = await fetch('../data/lang/manifest.json').then(r => r.json());
+        const manifest = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json').then(r => r.json());
         LANGS = manifest.languages;
     } catch (e) { console.warn('Could not load language manifest', e); }
 }
 
-// ==================== SHARED: MULTI-LANGUAGE FIELD COMPONENT ====================
-// Renders a labeled field with a language-tab strip; only the active language's input is visible.
-// value: either a plain string (legacy), an { en: '...', ar: '...' } object, or (if opts.arrayField)
-// an { en: [...], ar: [...] } object of string arrays edited as one-item-per-line text.
+// ==================== SHARED: MULTI-LANGUAGE FIELD ====================
 function mlFieldHtml(fieldId, label, value, opts) {
     opts = opts || {};
     const val = (value && typeof value === 'object') ? value : { en: value || '' };
@@ -504,7 +504,6 @@ const MlField = {
         const lang = tabEl.dataset.lang;
         wrap.querySelectorAll('.ml-input').forEach(inp => { inp.style.display = inp.dataset.langInput === lang ? '' : 'none'; });
     },
-    // Reads a rendered ml-field back into { en: '...', ar: '...', ... } (or array form if isArray)
     collect(container, fieldId, isArray) {
         const wrap = container.querySelector(`[data-ml-field="${fieldId}"]`);
         if (!wrap) return isArray ? {} : {};
@@ -520,11 +519,8 @@ const MlField = {
 };
 
 // ==================== SHARED: CRUD HELPERS ====================
-// loadJsonBaseline is a plain, unauthenticated read of the live data/*.json files — still used by
-// Owner Access below to populate its "assign to..." pickers, since that's just a read-only list of
-// names/IDs, not an edit (edits always go through GitHubStore, never this).
 async function loadJsonBaseline(file) {
-    try { return await fetch('../data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
+    try { return await fetch('https://www.discover-sharm.com/app/test/data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
 }
 function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
 function openModal(title, bodyHtml, footerHtml, opts) {
@@ -557,10 +553,6 @@ function confirmDialog(message, onConfirm) {
 })();
 
 // ==================== HOTELS MODULE ====================
-// ==================== SHARED: GitHub-backed collection base ====================
-// Every catalog module (Hotels, Excursions, Transfers, Restaurants, Destinations, Articles) is a
-// plain array stored in one data/*.json file on GitHub. This factory provides the common
-// load/save/delete plumbing so each module only needs to define its table + form.
 function makeGitHubCollection(path) {
     return {
         items: [], path,
@@ -596,10 +588,10 @@ function makeGitHubCollection(path) {
     };
 }
 function githubNotConfiguredBanner() {
-    return GitHubStore.configured() ? '' : `<div class="card p-4 mb-5" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm font-semibold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> GitHub isn't configured yet</p><p class="text-xs" style="color:#c9c2dd">Fill in the <code>github</code> section of <code>data/configs.json</code> (owner, repo, proxyEndpoint) — see <code>admin/github-proxy-worker.js</code> for the one-time Worker setup. Nothing can be saved until this is done.</p></div>`;
+    return GitHubStore.configured() ? '' : `<div class="card p-4 mb-5" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm font-semibold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> GitHub isn't configured yet</p><p class="text-xs" style="color:#c9c2dd">Fill in the <code>github</code> section of <code>https://www.discover-sharm.com/app/test/data/configs.json</code> (owner, repo, proxyEndpoint) — see <code>admin/github-proxy-worker.js</code> for the one-time Worker setup. Nothing can be saved until this is done.</p></div>`;
 }
 
-Modules.hotels = Object.assign(makeGitHubCollection('data/hotels.json'), {
+Modules.hotels = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/hotels.json'), {
     async init() {
         document.getElementById('section-hotels').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -740,7 +732,7 @@ const FormTabs = {
 };
 
 // ==================== EXCURSIONS MODULE ====================
-Modules.excursions = Object.assign(makeGitHubCollection('data/excursions.json'), {
+Modules.excursions = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/excursions.json'), {
     async init() {
         document.getElementById('section-excursions').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -850,7 +842,7 @@ Modules.excursions = Object.assign(makeGitHubCollection('data/excursions.json'),
 });
 
 // ==================== TRANSFERS MODULE ====================
-Modules.transfers = Object.assign(makeGitHubCollection('data/transfers.json'), {
+Modules.transfers = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/transfers.json'), {
     async init() {
         document.getElementById('section-transfers').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -908,7 +900,7 @@ Modules.transfers = Object.assign(makeGitHubCollection('data/transfers.json'), {
 });
 
 // ==================== RESTAURANTS MODULE ====================
-Modules.restaurants = Object.assign(makeGitHubCollection('data/restaurants.json'), {
+Modules.restaurants = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/restaurants.json'), {
     async init() {
         document.getElementById('section-restaurants').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1029,7 +1021,7 @@ Modules.restaurants = Object.assign(makeGitHubCollection('data/restaurants.json'
 });
 
 // ==================== DESTINATIONS MODULE ====================
-Modules.destinations = Object.assign(makeGitHubCollection('data/destinations.json'), {
+Modules.destinations = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/destinations.json'), {
     async init() {
         document.getElementById('section-destinations').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1087,7 +1079,7 @@ Modules.destinations = Object.assign(makeGitHubCollection('data/destinations.jso
 });
 
 // ==================== ARTICLES MODULE ====================
-Modules.articles = Object.assign(makeGitHubCollection('data/articles.json'), {
+Modules.articles = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/articles.json'), {
     async init() {
         document.getElementById('section-articles').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1204,7 +1196,7 @@ Modules.bookings = {
     }
 };
 
-// ==================== REVIEWS MODULE (moderate real, booking-verified reviews) ====================
+// ==================== REVIEWS MODULE ====================
 Modules.reviews = {
     all: [],
     init() {
@@ -1309,9 +1301,6 @@ Modules.users = {
 };
 
 // ==================== OWNER ACCESS MODULE ====================
-// Grants a registered user's UID access to one of the four owner dashboards, scoped to specific
-// items (e.g. "this UID manages hotels h1 and h3"). This is what the Hotel/Excursion/Transfer/
-// Restaurant owner dashboards check to know what that signed-in user is allowed to see and edit.
 Modules.owners = {
     admins: {}, hotelOwners: {}, excOwners: {}, trOwners: {}, restOwners: {},
     catalogCache: { hotels: [], excursions: [], transfers: [], restaurants: [] },
@@ -1414,9 +1403,11 @@ Modules.owners = {
 
 // ==================== LANGUAGES MODULE ====================
 Modules.languages = {
-    dicts: {}, paths: {},
+    dicts: {},       // { en: { key: value, ... }, ar: { ... }, ... }
+    paths: {},       // { en: 'data/lang/en.json', ... }
+    dirty: {},       // { en: true, ar: true } — tracks which dicts have been edited locally
     async init() {
-        LANGS.forEach(l => { this.paths[l.code] = 'data/lang/' + l.code + '.json'; });
+        LANGS.forEach(l => { this.paths[l.code] = 'https://www.discover-sharm.com/app/test/data/lang/' + l.code + '.json'; });
         document.getElementById('section-languages').innerHTML = githubNotConfiguredBanner() + `
             <div class="card p-4 mb-5">
                 <div class="flex flex-wrap items-end gap-3">
@@ -1429,7 +1420,7 @@ Modules.languages = {
                         </div>
                     </div>
                 </div>
-                <p class="text-xs mt-3" style="color:#6b6382">Every save here commits directly to that language's <code>data/lang/&lt;code&gt;.json</code> file on GitHub. To add a whole new language: add its JSON file + manifest entry in <code>data/lang/manifest.json</code> directly (see README), then reload this page — its keys become editable here too.</p>
+                <p class="text-xs mt-3" style="color:#6b6382">Every save here commits directly to that language's <code>https://www.discover-sharm.com/app/test/data/lang/&lt;code&gt;.json</code> file on GitHub. To add a whole new language: add its JSON file + manifest entry in <code>https://www.discover-sharm.com/app/test/data/lang/manifest.json</code> directly (see README), then reload this page — its keys become editable here too.</p>
             </div>
             <div class="flex items-center justify-between mb-3">
                 <input id="langSearch" oninput="Modules.languages.render()" class="field-input" style="max-width:280px" placeholder="Search keys…">
@@ -1438,103 +1429,264 @@ Modules.languages = {
                     <button onclick="Modules.languages.reloadAll()" class="btn btn-ghost" title="Reload from GitHub"><i class="fa-solid fa-rotate"></i></button>
                 </div>
             </div>
-            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Key</th><th>Value</th><th></th></tr></thead><tbody id="langTbody"></tbody></table></div>`;
-        await this.reloadAll(true);
-    },
-    async reloadAll(silent) {
-        try {
-            const results = await Promise.all(LANGS.map(l => GitHubStore.read(this.paths[l.code])));
-            LANGS.forEach((l, i) => { this.dicts[l.code] = results[i]; });
-            this.render();
-            if (!silent) Toast.show('Reloaded from GitHub', 'success');
-        } catch (err) { Toast.show(err.message, 'error'); }
+            <div class="card overflow-hidden"><div id="langKeysList"></div></div>`;
+        await this.reloadAll();
     },
     onShow() { this.render(); },
+    async reloadAll() {
+        if (!GitHubStore.configured()) { Toast.show('GitHub not configured', 'error'); return; }
+        const list = document.getElementById('langKeysList');
+        if (list) list.innerHTML = '<div class="empty-state">Loading translations…</div>';
+        for (const l of LANGS) {
+            try {
+                this.dicts[l.code] = await GitHubStore.read(this.paths[l.code]);
+                this.dirty[l.code] = false;
+            } catch (err) {
+                this.dicts[l.code] = {};
+                Toast.show('Could not load ' + l.code.toUpperCase() + ': ' + err.message, 'error');
+            }
+        }
+        this.render();
+    },
     render() {
-        const tbody = document.getElementById('langTbody'); if (!tbody) return;
-        const lang = document.getElementById('langFilterLang').value || 'en';
+        const list = document.getElementById('langKeysList');
+        if (!list) return;
+        const lang = document.getElementById('langFilterLang').value;
         const q = (document.getElementById('langSearch').value || '').toLowerCase();
         const dict = this.dicts[lang] || {};
-        const keys = Object.keys(dict).sort().filter(k => !q || k.toLowerCase().includes(q));
-        tbody.innerHTML = keys.length ? keys.map(k => `<tr>
-                <td class="font-mono text-xs">${k}</td>
-                <td><input class="field-input" id="langval_${k}" value="${escapeHtml(dict[k] || '')}" style="min-width:280px"></td>
-                <td class="text-right"><button onclick="Modules.languages.quickSave('${k}')" class="btn btn-ghost btn-sm"><i class="fa-solid fa-check"></i></button></td>
-            </tr>`).join('') : `<tr><td colspan="3"><div class="empty-state">No keys found</div></td></tr>`;
-    },
-    async quickSave(key) {
-        const lang = document.getElementById('langFilterLang').value || 'en';
-        const value = document.getElementById('langval_' + key).value;
-        const backup = this.dicts[lang][key];
-        this.dicts[lang][key] = value;
-        try {
-            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Update translation: ' + key + ' (' + lang + ')');
-            Toast.show('Saved — committed to GitHub', 'success');
-        } catch (err) { this.dicts[lang][key] = backup; Toast.show('Save failed: ' + err.message, 'error'); }
+        const keys = Object.keys(dict).sort();
+        const filtered = q ? keys.filter(k => k.toLowerCase().includes(q) || String(dict[k]).toLowerCase().includes(q)) : keys;
+        if (!filtered.length) {
+            list.innerHTML = '<div class="empty-state">No keys found</div>';
+            return;
+        }
+        list.innerHTML = filtered.map(k => `
+            <div class="key-row">
+                <div class="key-name">${escapeHtml(k)}</div>
+                <div class="key-value ${dict[k] ? '' : 'empty'}" ondblclick="Modules.languages.editInline(this, '${lang}', '${escapeJs(k)}')">${dict[k] ? escapeHtml(String(dict[k])) : '<em style="color:#6b6382">empty</em>'}</div>
+                <div class="flex gap-1 justify-end">
+                    <button onclick="Modules.languages.editKey('${lang}', '${escapeJs(k)}')" class="btn btn-ghost btn-sm" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="Modules.languages.deleteKey('${lang}', '${escapeJs(k)}')" class="btn btn-danger btn-sm" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>`).join('');
     },
     async saveKey() {
         const key = document.getElementById('newKeyName').value.trim();
         const lang = document.getElementById('newKeyLang').value;
-        const value = document.getElementById('newKeyValue').value;
-        if (!key || !value) { Toast.show('Key and value are required', 'error'); return; }
+        const val = document.getElementById('newKeyValue').value;
+        if (!key) { Toast.show('Key name is required', 'error'); return; }
         if (!this.dicts[lang]) this.dicts[lang] = {};
-        const backup = this.dicts[lang][key];
-        this.dicts[lang][key] = value;
+        this.dicts[lang][key] = val;
+        this.dirty[lang] = true;
         try {
-            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Add/update translation: ' + key + ' (' + lang + ')');
-            Toast.show('Saved — committed to GitHub', 'success');
-            document.getElementById('newKeyName').value = ''; document.getElementById('newKeyValue').value = '';
+            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Update ' + lang.toUpperCase() + ' translation (' + key + ')');
+            this.dirty[lang] = false;
+            Toast.show('Saved to GitHub', 'success');
+            document.getElementById('newKeyName').value = '';
+            document.getElementById('newKeyValue').value = '';
             this.render();
-        } catch (err) { this.dicts[lang][key] = backup; Toast.show('Save failed: ' + err.message, 'error'); }
+        } catch (err) {
+            Toast.show('Save failed: ' + err.message, 'error');
+        }
+    },
+    editKey(lang, key) {
+        const current = (this.dicts[lang] || {})[key] || '';
+        openModal('Edit Translation Key', `
+            <label class="field-label">Key</label>
+            <input id="ek_key" class="field-input mb-3" value="${escapeHtml(key)}" readonly style="opacity:.6">
+            <label class="field-label">Language</label>
+            <input id="ek_lang" class="field-input mb-3" value="${lang.toUpperCase()}" readonly style="opacity:.6">
+            <label class="field-label">Value</label>
+            <textarea id="ek_value" rows="4" class="field-textarea">${escapeHtml(current)}</textarea>
+        `, `<button onclick="closeModal()" class="btn btn-ghost">Cancel</button><button onclick="Modules.languages.commitEdit('${lang}', '${escapeJs(key)}')" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save to GitHub</button>`);
+    },
+    async commitEdit(lang, key) {
+        const val = document.getElementById('ek_value').value;
+        this.dicts[lang][key] = val;
+        try {
+            await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Update ' + lang.toUpperCase() + ' translation (' + key + ')');
+            Toast.show('Saved to GitHub', 'success');
+            closeModal();
+            this.render();
+        } catch (err) {
+            Toast.show('Save failed: ' + err.message, 'error');
+        }
+    },
+    editInline(el, lang, key) {
+        const current = (this.dicts[lang] || {})[key] || '';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'field-input';
+        input.value = current;
+        el.innerHTML = '';
+        el.appendChild(input);
+        input.focus();
+        input.select();
+        const commit = async () => {
+            const newVal = input.value;
+            this.dicts[lang][key] = newVal;
+            try {
+                await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Update ' + lang.toUpperCase() + ' translation (' + key + ')');
+                Toast.show('Saved to GitHub', 'success');
+                this.render();
+            } catch (err) {
+                Toast.show('Save failed: ' + err.message, 'error');
+                this.render();
+            }
+        };
+        input.addEventListener('blur', commit, { once: true });
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+            if (e.key === 'Escape') { input.value = current; input.blur(); }
+        });
+    },
+    deleteKey(lang, key) {
+        confirmDialog(`Delete key "${key}" from ${lang.toUpperCase()}? This cannot be undone.`, async () => {
+            delete this.dicts[lang][key];
+            try {
+                await GitHubStore.write(this.paths[lang], this.dicts[lang], 'Delete key ' + key + ' from ' + lang.toUpperCase());
+                Toast.show('Deleted from GitHub', 'success');
+                this.render();
+            } catch (err) {
+                Toast.show('Delete failed: ' + err.message, 'error');
+            }
+        });
     }
 };
+function escapeJs(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 
 // ==================== SETTINGS MODULE ====================
-// Only "safe" site settings are editable here — brand colors and the display currency list.
-// Firebase credentials and Kashier payment secrets live only in data/configs.json, edited by a
-// developer directly — never exposed to a web form for security reasons.
+// Manages app-level settings stored in data/configs.json on GitHub (the "app" section).
+// Firebase credentials and GitHub credentials are NOT editable here for safety — edit configs.json
+// directly for those. This module only edits safe, runtime-facing values like site name, currency,
+// contact details, social links, feature flags, etc.
 Modules.settings = {
-    fullConfig: null, path: 'data/configs.json',
+    cfg: null,
     async init() {
         document.getElementById('section-settings').innerHTML = githubNotConfiguredBanner() + `
-            <div class="card p-5 max-w-lg">
-                <h3 class="font-display font-bold mb-1">Brand & Currency</h3>
-                <p class="text-xs mb-4" style="color:#6b6382">Saved directly into <code>data/configs.json</code> on GitHub — everything else in that file (Firebase, Kashier, GitHub settings) is left untouched.</p>
-                <label class="field-label">Primary Brand Color</label>
-                <input id="s_brandPrimary" type="color" class="field-input mb-3" style="height:44px;padding:4px">
-                <label class="field-label">Primary Brand Color (Dark Shade)</label>
-                <input id="s_brandPrimaryDark" type="color" class="field-input mb-3" style="height:44px;padding:4px">
-                <label class="field-label">Site Name</label>
-                <input id="s_siteName" class="field-input mb-3">
-                <label class="field-label">Display Currencies (comma-separated, EGP always included)</label>
-                <input id="s_currencies" class="field-input mb-4" placeholder="EGP,USD,EUR,GBP,SAR,RUB">
-                <button onclick="Modules.settings.save()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Settings</button>
-                <p class="text-xs mt-4" style="color:#4d456a"><i class="fa-solid fa-lock"></i> Firebase, Kashier and GitHub credentials are never editable here — only from <code>data/configs.json</code> directly, by a developer.</p>
-            </div>`;
-        try {
-            this.fullConfig = await GitHubStore.read(this.path);
-            const s = this.fullConfig.app || {};
-            document.getElementById('s_brandPrimary').value = s.brandColorPrimary || '#f97316';
-            document.getElementById('s_brandPrimaryDark').value = s.brandColorPrimaryDark || '#c2410c';
-            document.getElementById('s_siteName').value = s.siteName || 'Discover Sharm';
-            document.getElementById('s_currencies').value = (s.displayCurrencies || ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB']).join(',');
-        } catch (err) { Toast.show(err.message, 'error'); }
+            <div id="settingsBody"><div class="empty-state">Loading settings…</div></div>`;
+        await this.load();
     },
-    onShow() {},
-    async save() {
-        if (!this.fullConfig) { Toast.show('Settings haven\'t loaded yet — try again in a moment', 'error'); return; }
-        const newApp = Object.assign({}, this.fullConfig.app, {
-            siteName: document.getElementById('s_siteName').value.trim(),
-            brandColorPrimary: document.getElementById('s_brandPrimary').value,
-            brandColorPrimaryDark: document.getElementById('s_brandPrimaryDark').value,
-            displayCurrencies: document.getElementById('s_currencies').value.split(',').map(c => c.trim().toUpperCase()).filter(Boolean)
-        });
-        const updatedConfig = Object.assign({}, this.fullConfig, { app: newApp });
+    onShow() { this.render(); },
+    async load() {
         try {
-            await GitHubStore.write(this.path, updatedConfig, 'Update site settings via admin dashboard');
-            this.fullConfig = updatedConfig;
-            Toast.show('Settings saved — committed to GitHub', 'success');
-        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); }
+            if (GitHubStore.configured()) {
+                const full = await GitHubStore.read('https://www.discover-sharm.com/app/test/data/configs.json');
+                this.cfg = full;
+            } else {
+                const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
+                this.cfg = await res.json();
+            }
+            this.render();
+        } catch (err) {
+            document.getElementById('settingsBody').innerHTML = `<div class="card p-4" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm text-red-400">Could not load settings: ${escapeHtml(err.message)}</p></div>`;
+        }
+    },
+    render() {
+        const body = document.getElementById('settingsBody');
+        if (!body || !this.cfg) return;
+        const app = this.cfg.app || {};
+        const contact = app.contact || {};
+        const social = app.social || {};
+        const features = app.features || {};
+        body.innerHTML = `
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="card p-5">
+                    <h3 class="font-display font-bold mb-4"><i class="fa-solid fa-building" style="color:#fb923c"></i> Site Identity</h3>
+                    <label class="field-label">Site Name</label>
+                    <input id="s_name" class="field-input mb-3" value="${escapeHtml(app.name || '')}">
+                    <label class="field-label">Tagline</label>
+                    <input id="s_tagline" class="field-input mb-3" value="${escapeHtml(app.tagline || '')}">
+                    <label class="field-label">Default Currency</label>
+                    <select id="s_currency" class="field-select mb-3">
+                        ${['EGP','USD','EUR','GBP','SAR','AED'].map(c => `<option value="${c}" ${app.currency === c ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
+                    <label class="field-label">Default Language</label>
+                    <select id="s_defaultLang" class="field-select mb-3">
+                        ${LANGS.map(l => `<option value="${l.code}" ${app.defaultLang === l.code ? 'selected' : ''}>${l.code.toUpperCase()} — ${l.label}</option>`).join('')}
+                    </select>
+                    <label class="field-label">Logo URL</label>
+                    <input id="s_logo" class="field-input" value="${escapeHtml(app.logo || '')}">
+                </div>
+
+                <div class="card p-5">
+                    <h3 class="font-display font-bold mb-4"><i class="fa-solid fa-address-book" style="color:#fb923c"></i> Contact</h3>
+                    <label class="field-label">Email</label>
+                    <input id="s_email" class="field-input mb-3" value="${escapeHtml(contact.email || '')}">
+                    <label class="field-label">Phone</label>
+                    <input id="s_phone" class="field-input mb-3" value="${escapeHtml(contact.phone || '')}">
+                    <label class="field-label">WhatsApp</label>
+                    <input id="s_whatsapp" class="field-input mb-3" value="${escapeHtml(contact.whatsapp || '')}">
+                    <label class="field-label">Address</label>
+                    <textarea id="s_address" rows="2" class="field-textarea">${escapeHtml(contact.address || '')}</textarea>
+                </div>
+
+                <div class="card p-5">
+                    <h3 class="font-display font-bold mb-4"><i class="fa-solid fa-share-nodes" style="color:#fb923c"></i> Social</h3>
+                    <label class="field-label">Facebook</label>
+                    <input id="s_fb" class="field-input mb-3" value="${escapeHtml(social.facebook || '')}">
+                    <label class="field-label">Instagram</label>
+                    <input id="s_ig" class="field-input mb-3" value="${escapeHtml(social.instagram || '')}">
+                    <label class="field-label">Twitter / X</label>
+                    <input id="s_tw" class="field-input mb-3" value="${escapeHtml(social.twitter || '')}">
+                    <label class="field-label">TikTok</label>
+                    <input id="s_tt" class="field-input" value="${escapeHtml(social.tiktok || '')}">
+                </div>
+
+                <div class="card p-5">
+                    <h3 class="font-display font-bold mb-4"><i class="fa-solid fa-toggle-on" style="color:#fb923c"></i> Feature Flags</h3>
+                    <p class="text-xs mb-3" style="color:#6b6382">Toggle sections of the public site on or off.</p>
+                    ${[['enableBookings','Bookings'],['enableReviews','Reviews'],['enableRestaurants','Restaurants'],['enableArticles','Articles / Blog'],['enableDestinations','Destinations']].map(([k,label]) => `
+                        <label class="flex items-center justify-between py-2 border-b" style="border-color:#211934">
+                            <span class="text-sm">${label}</span>
+                            <input type="checkbox" id="s_${k}" ${features[k] !== false ? 'checked' : ''} style="width:18px;height:18px;accent-color:#f97316">
+                        </label>`).join('')}
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-5">
+                <button onclick="Modules.settings.load()" class="btn btn-ghost"><i class="fa-solid fa-rotate"></i> Reset</button>
+                <button onclick="Modules.settings.save()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Settings</button>
+            </div>
+
+            <div class="card p-4 mt-5" style="border-color:rgba(251,191,36,.3); background:rgba(251,191,36,.04)">
+                <p class="text-xs" style="color:#c9c2dd"><i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> <strong>Firebase</strong> and <strong>GitHub</strong> credentials live in <code>https://www.discover-sharm.com/app/test/data/configs.json</code> but are intentionally hidden from this editor for safety. Edit that file directly (or via GitHub) to change them, then reload.</p>
+            </div>`;
+    },
+    async save() {
+        if (!GitHubStore.configured()) { Toast.show('GitHub not configured', 'error'); return; }
+        const app = this.cfg.app || {};
+        app.name = document.getElementById('s_name').value.trim();
+        app.tagline = document.getElementById('s_tagline').value.trim();
+        app.currency = document.getElementById('s_currency').value;
+        app.defaultLang = document.getElementById('s_defaultLang').value;
+        app.logo = document.getElementById('s_logo').value.trim();
+        app.contact = {
+            email: document.getElementById('s_email').value.trim(),
+            phone: document.getElementById('s_phone').value.trim(),
+            whatsapp: document.getElementById('s_whatsapp').value.trim(),
+            address: document.getElementById('s_address').value.trim()
+        };
+        app.social = {
+            facebook: document.getElementById('s_fb').value.trim(),
+            instagram: document.getElementById('s_ig').value.trim(),
+            twitter: document.getElementById('s_tw').value.trim(),
+            tiktok: document.getElementById('s_tt').value.trim()
+        };
+        app.features = {
+            enableBookings: document.getElementById('s_enableBookings').checked,
+            enableReviews: document.getElementById('s_enableReviews').checked,
+            enableRestaurants: document.getElementById('s_enableRestaurants').checked,
+            enableArticles: document.getElementById('s_enableArticles').checked,
+            enableDestinations: document.getElementById('s_enableDestinations').checked
+        };
+        this.cfg.app = app;
+        try {
+            await GitHubStore.write('https://www.discover-sharm.com/app/test/data/configs.json', this.cfg, 'Update app settings');
+            Toast.show('Settings saved to GitHub', 'success');
+        } catch (err) {
+            Toast.show('Save failed: ' + err.message, 'error');
+        }
     }
 };
 </script>
