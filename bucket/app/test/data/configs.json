@@ -1,4 +1,3 @@
-
 {
   "firebase": {
     "apiKey": "AIzaSyAO6vyXm4lKoEmzfD8guXKZV8MLRTllFk4",
@@ -22,8 +21,46 @@
     "brandColorPrimary": "#f97316",
     "brandColorPrimaryDark": "#c2410c",
     "defaultCurrency": "EGP",
-    "displayCurrencies": ["EGP", "USD", "EUR", "GBP", "SAR", "RUB"],
-    "supportedLanguages": ["en", "ar", "ru", "de", "it", "tr"]
+    "displayCurrencies": [
+      "EGP",
+      "USD",
+      "EUR",
+      "GBP",
+      "SAR",
+      "RUB"
+    ],
+    "supportedLanguages": [
+      "en",
+      "ar",
+      "ru",
+      "de",
+      "it",
+      "tr"
+    ],
+    "name": "Discover Sharm",
+    "tagline": "Get your Personal Guide",
+    "currency": "EGP",
+    "defaultLang": "en",
+    "logo": "",
+    "contact": {
+      "email": "sales@discover-sharm.com",
+      "phone": "+201061693679",
+      "whatsapp": "+201290094093",
+      "address": ""
+    },
+    "social": {
+      "facebook": "",
+      "instagram": "",
+      "twitter": "",
+      "tiktok": ""
+    },
+    "features": {
+      "enableBookings": true,
+      "enableReviews": true,
+      "enableRestaurants": true,
+      "enableArticles": true,
+      "enableDestinations": true
+    }
   },
   "github": {
     "owner": "Charming-Egypt",
