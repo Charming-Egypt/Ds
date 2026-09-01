@@ -23,9 +23,9 @@
     },
     "image": "images/ras-m/1.jpg",
     "images": [
-      "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/0f/a6/0d/5f.jpg",
-      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/7c/c5/2b/caption.jpg?w=1200&h=-1&s=1",
-      "https://landioustravel.com/wp-content/uploads/2018/12/Ras-Mohammed-Snorkelling-Trip-Sharm-El-Sheikh-e1669505579298.jpg"
+      "images/ras-m/1.jpg",
+      "images/ras-m/2.jpg",
+      "images/ras-m/3.jpg"
     ],
     "description": {
       "en": "Snorkel the coral reefs of Ras Mohammed National Park, one of the world's top dive sites.",
