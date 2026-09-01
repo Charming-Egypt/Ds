@@ -2594,13 +2594,21 @@ function mergeCatalogWithOverrides(baseArray, firebaseObj) {
 
 async function loadCatalogJson() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-  try {
-    const responses = await Promise.all(files.map(f => fetch('data/' + f + '.json')));
-    const parsed = await Promise.all(responses.map(r => r.json()));
-    files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i]; if (JSON_BASELINE[f]) JSON_BASELINE[f] = parsed[i]; });
-  } catch (err) {
-    console.warn('Could not load data/*.json catalog files — using minimal built-in fallback.', err);
-    files.forEach(f => { CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; if (JSON_BASELINE[f]) JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f] || []; });
+  for (const f of files) {
+    try {
+      const res = await fetch('data/' + f + '.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      CATALOG_RAW[f] = data;
+      if (JSON_BASELINE[f]) JSON_BASELINE[f] = data;
+    } catch (err) {
+      console.warn('Could not load ' + f + '.json, using fallback.', err);
+      // الاحتفاظ بالبيانات الاحتياطية إن وجدت
+      if (EMERGENCY_FALLBACK_CATALOG[f]) {
+        CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f];
+        if (JSON_BASELINE[f]) JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f];
+      }
+    }
   }
   localizeCatalog(I18N.get());
 }
