@@ -58,9 +58,9 @@ const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes',
 const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
 
 const EMERGENCY_FALLBACK_CATALOG = {
-  hotels: [{ id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view', fullDescription: 'Luxury 5-star hotel with sea view.', price: 3800, rating: 5, reviews: 234, location: 'Naama Bay, Sharm El Sheikh', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90', images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90'], amenities: ['Free WiFi', 'Breakfast', 'Pool'], bestseller: true, rooms: [{ type: 'Deluxe Sea View', price: 3800, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80', description: 'A bright room with sea views.' }] }],
-  excursions: [{ id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 1150, rating: 4.8, reviews: 312, duration: 'Full Day (8h)', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80', images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'], description: 'Snorkel the coral reefs of Ras Mohammed National Park.', fullDescription: 'Snorkel the coral reefs of Ras Mohammed National Park.', includes: ['Hotel pickup & drop-off', 'Snorkeling equipment'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' }],
-  transfers: [{ id: 't1', vehicleType: 'Tourist H1', capacity: 7, price: 950, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off.', features: ['Tourist-class Hyundai H1', 'Air-conditioned', 'Meet & greet at arrivals'] }],
+  hotels: [],
+  excursions: [],
+  transfers: [],
   destinations: [], restaurants: [], reviews: [], articles: []
 };
 
