@@ -242,7 +242,7 @@ input[type="number"],
 input[type="time"],
 textarea,
 select {
-  border: 1.5px solid var(--border-field);
+  
   border-radius: 14px;
   background: var(--bg-field);
   color: var(--text-primary);
@@ -276,7 +276,6 @@ select:focus {
   left: 50%;
   transform: translateX(-50%);
   width: 92%;
-  max-width: 430px;
   z-index: 50;
   border-radius: 26px;
   padding: .55rem .7rem;
