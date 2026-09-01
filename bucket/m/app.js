@@ -1,5 +1,5 @@
 /* ============================================================
-   DISCOVER SHARM — MAIN APPLICATION LOGIC
+   DISCOVER SHARM — MAIN APPLICATION LOGIC (FULL)
    ============================================================ */
 
 // ==================== FALLBACK LOGO ====================
@@ -11,6 +11,18 @@ window.FALLBACK_LOGO = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
 <path d="M32 14 L38 32 L32 50 L26 32 Z" fill="#171029"/>
 <circle cx="32" cy="32" r="4" fill="#fdba74"/>
 </svg>`);
+
+// ==================== IMAGE HELPER (FIXES EXCURSIONS & DESTINATIONS) ====================
+function getImageUrl(item) {
+  // لو الصورة object (مترجمة)، خد اللغة الحالية
+  if (item && typeof item === 'object' && !Array.isArray(item)) {
+    const lang = I18N.get();
+    return item[lang] || item.en || '';
+  }
+  return item || '';
+}
+
+const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%232b2140' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%239d94b8' font-size='20' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 // ==================== CONFIG ====================
 let firebaseConfig = {};
@@ -58,9 +70,9 @@ const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes',
 const MULTILANG_OBJECT_MAP_FIELDS = ['meetingPoint'];
 
 const EMERGENCY_FALLBACK_CATALOG = {
-  hotels: [],
-  excursions: [],
-  transfers: [],
+  hotels: [{ id: 'h1', name: 'Discover Grand Hotel', category: 'luxury', description: 'Luxury 5-star hotel with sea view', fullDescription: 'Luxury 5-star hotel with sea view.', price: 3800, rating: 5, reviews: 234, location: 'Naama Bay, Sharm El Sheikh', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90', images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=90'], amenities: ['Free WiFi', 'Breakfast', 'Pool'], bestseller: true, rooms: [{ type: 'Deluxe Sea View', price: 3800, size: '35m²', beds: '1 King Bed', guests: 2, image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=400&q=80', description: 'A bright room with sea views.' }] }],
+  excursions: [{ id: 'e1', title: 'Ras Mohammed Snorkeling Trip', category: 'Diving', price: 1150, rating: 4.8, reviews: 312, duration: 'Full Day (8h)', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80', images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'], description: 'Snorkel the coral reefs of Ras Mohammed National Park.', fullDescription: 'Snorkel the coral reefs of Ras Mohammed National Park.', includes: ['Hotel pickup & drop-off', 'Snorkeling equipment'], meetingPoint: 'Hotel lobby pickup, 7:30 AM' }],
+  transfers: [{ id: 't1', vehicleType: 'Tourist H1', capacity: 7, price: 950, image: 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80', description: 'Air-conditioned tourist-class Hyundai H1 for airport pickup or drop-off.', features: ['Tourist-class Hyundai H1', 'Air-conditioned', 'Meet & greet at arrivals'] }],
   destinations: [], restaurants: [], reviews: [], articles: []
 };
 
@@ -135,12 +147,12 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('data/lang/manifest.json');
+    const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
     manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
+    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
     const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
     SUPPORTED_LANGS.forEach((code, i) => {
       const langDict = dictJsons[i];
@@ -1304,7 +1316,7 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS ====================
+// ==================== EXCURSIONS (FIXED IMAGES) ====================
 const excursionsUi = {
   renderFeatured() {
     const el = document.getElementById('featuredExcursions');
@@ -1312,26 +1324,44 @@ const excursionsUi = {
     el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
   },
   renderMiniCard(x) {
+    const imgSrc = getImageUrl(x.image);
     return `
       <div onclick="showExcursionPage('${x.id}')" class="flex-shrink-0 w-44 cursor-pointer">
         <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
-          <img src="${x.image}" class="w-full h-full object-cover">
-          <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></div>
-          <div class="absolute bottom-2 right-2 left-2"><span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${x.category}</span></div>
+          <img 
+            src="${imgSrc}" 
+            referrerpolicy="no-referrer"
+            onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+            class="w-full h-full object-cover"
+          >
+          <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
+            <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
+            <span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
+          </div>
+          <div class="absolute bottom-2 right-2 left-2">
+            <span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${x.category}</span>
+          </div>
         </div>
         <h4 class="font-display font-bold text-sm line-clamp-2 mb-1" style="color:var(--text-primary)">${x.title}</h4>
         <p class="font-display font-bold text-violet-500 text-sm">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal" style="color:var(--text-secondary)"> /person</span></p>
       </div>`;
   },
   renderCard(x) {
+    const imgSrc = getImageUrl(x.image);
     return `
       <div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
         <div class="flex">
           <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-            <img src="${x.image}" class="w-full h-full object-cover">
+            <img 
+              src="${imgSrc}" 
+              referrerpolicy="no-referrer"
+              onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+              class="w-full h-full object-cover"
+            >
             <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
               <span class="text-[9px]" style="color:var(--text-secondary)">(${x.reviews} reviews)</span>
-              <i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
+              <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
+              <span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
             </div>
           </div>
           <div class="flex-1 p-3 flex flex-col justify-between">
@@ -1371,7 +1401,10 @@ function showExcursionPage(excursionId) {
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-72">
         <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
-          ${(x.images || [x.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(x.images || [x.image]).map(img => {
+            const src = getImageUrl(img);
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+          }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -1794,18 +1827,31 @@ function payAndConfirmTransferBooking(subtotal, taxes, total) {
   btn.innerHTML = orig;
 }
 
-// ==================== DESTINATIONS ====================
+// ==================== DESTINATIONS (FIXED IMAGES) ====================
 const destinationsUi = {
   render() {
     const row = document.getElementById('destinationsRow');
     if (!row) return;
-    row.innerHTML = CATALOG.destinations.map(d => `
-      <div onclick="showDestinationPage('${d.id}')" class="destination-card">
-        <img src="${d.image}" class="w-full h-full object-cover absolute inset-0">
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
-        <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
-        <div class="absolute bottom-3 right-3 left-3 text-white"><p class="font-display font-bold text-base leading-tight">${d.name}</p><p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p></div>
-      </div>`).join('');
+    row.innerHTML = CATALOG.destinations.map(d => {
+      const imgSrc = getImageUrl(d.image);
+      return `
+        <div onclick="showDestinationPage('${d.id}')" class="destination-card">
+          <img 
+            src="${imgSrc}" 
+            referrerpolicy="no-referrer"
+            onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+            class="w-full h-full object-cover absolute inset-0"
+          >
+          <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+          <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full">
+            <span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span>
+          </div>
+          <div class="absolute bottom-3 right-3 left-3 text-white">
+            <p class="font-display font-bold text-base leading-tight">${d.name}</p>
+            <p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p>
+          </div>
+        </div>`;
+    }).join('');
   }
 };
 
@@ -1821,7 +1867,10 @@ function showDestinationPage(id) {
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-72">
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onDestGalleryScroll(this)" id="destGallery">
-          ${(d.images || [d.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(d.images || [d.image]).map(img => {
+            const src = getImageUrl(img);
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+          }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeDestinationPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -1855,10 +1904,11 @@ function closeDestinationPage() { const p = document.getElementById('destination
 // ==================== RESTAURANTS ====================
 const restaurantsUi = {
   renderCard(r) {
+    const imgSrc = getImageUrl(r.image);
     return `
       <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card">
         <div class="relative h-28">
-          <img src="${r.image}" class="w-full h-full object-cover">
+          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
           <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
           <div class="absolute top-2 left-2 bg-ink-950/70 text-white text-[9px] font-bold px-2 py-1 rounded-full capitalize">${r.category}</div>
         </div>
@@ -1885,7 +1935,10 @@ function showRestaurantPage(id) {
     <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
       <div class="relative h-80">
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
-          ${(r.images || [r.image]).map(img => `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+          ${(r.images || [r.image]).map(img => {
+            const src = getImageUrl(img);
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+          }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
         <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
@@ -2594,19 +2647,22 @@ function mergeCatalogWithOverrides(baseArray, firebaseObj) {
 
 async function loadCatalogJson() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+  // Try loading each file individually so failure of one doesn't break the others
   for (const f of files) {
     try {
       const res = await fetch('data/' + f + '.json');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) throw new Error('Status ' + res.status);
       const data = await res.json();
       CATALOG_RAW[f] = data;
       if (JSON_BASELINE[f]) JSON_BASELINE[f] = data;
     } catch (err) {
-      console.warn('Could not load ' + f + '.json, using fallback.', err);
-      // الاحتفاظ بالبيانات الاحتياطية إن وجدت
+      console.warn(`Failed to load ${f}.json, using fallback.`, err);
       if (EMERGENCY_FALLBACK_CATALOG[f]) {
         CATALOG_RAW[f] = EMERGENCY_FALLBACK_CATALOG[f];
         if (JSON_BASELINE[f]) JSON_BASELINE[f] = EMERGENCY_FALLBACK_CATALOG[f];
+      } else {
+        CATALOG_RAW[f] = [];
+        if (JSON_BASELINE[f]) JSON_BASELINE[f] = [];
       }
     }
   }
