@@ -135,12 +135,12 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
+    const manifestRes = await fetch('data/lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
     manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
+    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
     const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
     SUPPORTED_LANGS.forEach((code, i) => {
       const langDict = dictJsons[i];
@@ -2608,7 +2608,7 @@ async function loadCatalogJson() {
 // ==================== FIREBASE INIT ====================
 async function loadAppConfig() {
   try {
-    const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
+    const res = await fetch('data/configs.json');
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
     KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '' }, cfg.kashier || {});
