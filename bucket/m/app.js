@@ -2595,7 +2595,7 @@ function mergeCatalogWithOverrides(baseArray, firebaseObj) {
 async function loadCatalogJson() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   try {
-    const responses = await Promise.all(files.map(f => fetch('https://www.discover-sharm.com/app/test/data/' + f + '.json')));
+    const responses = await Promise.all(files.map(f => fetch('data/' + f + '.json')));
     const parsed = await Promise.all(responses.map(r => r.json()));
     files.forEach((f, i) => { CATALOG_RAW[f] = parsed[i]; if (JSON_BASELINE[f]) JSON_BASELINE[f] = parsed[i]; });
   } catch (err) {
