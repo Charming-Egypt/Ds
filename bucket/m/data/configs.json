@@ -58,8 +58,8 @@
       "enableBookings": true,
       "enableReviews": true,
       "enableRestaurants": true,
-      "enableArticles": true,
-      "enableDestinations": true
+      "enableArticles": false,
+      "enableDestinations": false
     }
   },
   "github": {
