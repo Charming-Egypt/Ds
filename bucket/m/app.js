@@ -15,6 +15,7 @@ window.FALLBACK_LOGO = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
 </svg>`);
 
 // ==================== WORKER API CONFIG ====================
+// تأكد من استخدام الرابط الصحيح للـ Worker
 const WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev';
 
 // ==================== IMAGE HELPER ====================
@@ -39,7 +40,7 @@ const API = {
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.error || 'Search failed');
-    return result.data;
+    return result; // { success: true, data: {...} }
   },
 
   async checkRates(rateKey) {
@@ -89,7 +90,7 @@ const API = {
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.error || 'Search failed');
-    return result.data;
+    return result; // { success: true, data: {...} }
   },
 
   async activityDetails(params) {
@@ -139,7 +140,7 @@ const API = {
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.error || 'Availability failed');
-    return result.data;
+    return result; // { success: true, data: {...} }
   },
 
   async bookTransfer(bookingData) {
@@ -219,7 +220,7 @@ const state = {
   flightTripType: 'round',
   transferPax: 2,
   transferDirection: 'Airport to Hotel',
-  // Store search results from API
+  // Store API results
   hotelsCache: [],
   excursionsCache: [],
   transfersCache: []
@@ -932,28 +933,32 @@ const nav = {
 const app = {
   enterMainApp() {
     document.getElementById('mainApp').classList.remove('hidden');
-    ui.renderFeaturedHotels();
-    excursionsUi.renderFeatured();
-    transfersUi.render();
+    
+    // عرض مؤشر تحميل
+    document.getElementById('featuredHotels').innerHTML = `<div class="text-center py-10"><div class="spinner-border text-gold-400" role="status"><span class="visually-hidden">Loading...</span></div><p class="text-white/60 text-sm mt-4">جاري تحميل الفنادق...</p></div>`;
+    document.getElementById('featuredExcursions').innerHTML = `<div class="text-center py-10"><div class="spinner-border text-gold-400" role="status"><span class="visually-hidden">Loading...</span></div><p class="text-white/60 text-sm mt-4">جاري تحميل الرحلات...</p></div>`;
+    
     ui.setDefaultDates();
     ui.updateProfileStats();
     const curSel = document.getElementById('currencySelect');
     if (curSel) curSel.value = state.currency;
     if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage.getItem('ds_avatar')); }
+    
     if (!window._flightFormsInitialized) {
       setTimeout(() => {
         initFlightAndTransferForms();
         window._flightFormsInitialized = true;
       }, 300);
     }
-    // Load hotels from Worker on home page
+    
+    // تحميل البيانات من الـ API (بدون JSON)
     loadFeaturedHotels();
     loadFeaturedExcursions();
     loadFeaturedTransfers();
   }
 };
 
-// ==================== LOAD FROM WORKER ====================
+// ==================== LOAD FROM API ====================
 async function loadFeaturedHotels() {
   try {
     const params = {
@@ -966,14 +971,22 @@ async function loadFeaturedHotels() {
       currency: state.currency
     };
     const result = await API.searchHotels(params);
-    if (result && result.hotels) {
-      state.hotelsCache = result.hotels.hotels || [];
-      ui.renderFeaturedHotelsFromAPI(state.hotelsCache.slice(0, 2));
+    if (result && result.data && result.data.hotels) {
+      const hotelsArray = result.data.hotels.hotels || [];
+      state.hotelsCache = hotelsArray;
+      ui.renderFeaturedHotelsFromAPI(hotelsArray.slice(0, 4));
+    } else {
+      throw new Error('No hotels data');
     }
   } catch (err) {
-    console.warn('Could not load featured hotels from API:', err);
-    // Fallback to local catalog
-    ui.renderFeaturedHotels();
+    console.error('Failed to load featured hotels:', err);
+    document.getElementById('featuredHotels').innerHTML = `
+      <div class="text-center py-10 text-red-400">
+        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+        <p class="text-sm mt-2">تعذر تحميل الفنادق. تأكد من اتصال الـ API.</p>
+        <button onclick="loadFeaturedHotels()" class="btn-gold px-4 py-2 rounded-xl text-sm mt-3">إعادة المحاولة</button>
+      </div>
+    `;
   }
 }
 
@@ -983,13 +996,21 @@ async function loadFeaturedExcursions() {
       destination: 'SSH',
       language: 'en'
     });
-    if (result && result.activities) {
-      state.excursionsCache = result.activities || [];
+    if (result && result.data && result.data.activities) {
+      state.excursionsCache = result.data.activities || [];
       excursionsUi.renderFeaturedFromAPI(state.excursionsCache.slice(0, 4));
+    } else {
+      throw new Error('No excursions data');
     }
   } catch (err) {
-    console.warn('Could not load featured excursions from API:', err);
-    excursionsUi.renderFeatured();
+    console.error('Failed to load featured excursions:', err);
+    document.getElementById('featuredExcursions').innerHTML = `
+      <div class="text-center py-10 text-red-400">
+        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+        <p class="text-sm mt-2">تعذر تحميل الرحلات.</p>
+        <button onclick="loadFeaturedExcursions()" class="btn-gold px-4 py-2 rounded-xl text-sm mt-3">إعادة المحاولة</button>
+      </div>
+    `;
   }
 }
 
@@ -1004,19 +1025,20 @@ async function loadFeaturedTransfers() {
       time: '14:00',
       passengers: 2
     });
-    if (result && result.services) {
-      state.transfersCache = result.services || [];
+    if (result && result.data && result.data.services) {
+      state.transfersCache = result.data.services || [];
       transfersUi.renderFromAPI(state.transfersCache);
     }
   } catch (err) {
     console.warn('Could not load featured transfers from API:', err);
-    transfersUi.render();
+    // لا نعرض خطأ في النقل لأنه أقل أهمية
   }
 }
 
 // ==================== UI ====================
 const ui = {
   renderFeaturedHotels() {
+    // هذه الدالة تستخدم فقط في حالة فشل الـ API (نادراً)
     const featured = CATALOG.hotels.slice(0, 2);
     const el = document.getElementById('featuredHotels');
     if (el) el.innerHTML = featured.map(h => this.renderHotelCard(h)).join('');
@@ -1720,7 +1742,7 @@ const excursionsUi = {
     if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => (x.category || '').toLowerCase() === state.currentExcursionFilter);
     if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16"><p style="color:var(--text-secondary)">No excursions found</p></div>`; return; }
     list.innerHTML = filtered.map(x => {
-      if (x.code || x.id.startsWith('act-')) {
+      if (x.code || x.id && x.id.startsWith('act-')) {
         return this.renderCardFromAPI(x);
       }
       return this.renderCard(x);
@@ -2917,9 +2939,9 @@ function bindTranslationAndSettingsOverlays() {
 
 function refreshCatalogUI() {
   if (!document.getElementById('mainApp') || document.getElementById('mainApp').classList.contains('hidden')) return;
-  ui.renderFeaturedHotels();
+  // Do NOT render featured hotels here because they are loaded via API
+  // Only render static content
   hotels.render();
-  excursionsUi.renderFeatured();
   excursionsUi.render();
   transfersUi.render();
   destinationsUi.render();
