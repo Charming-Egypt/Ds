@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Owner Dashboard — Discover Sharm</title>
+<link rel="icon" href="data:,">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+tailwind.config = {
+    theme: { extend: {
+        fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Playfair Display', 'serif'] },
+        colors: {
+            ink: { 950: '#0c0918', 900: '#15101f', 800: '#1f1830', 700: '#2b2140', 600: '#382a54' },
+            brand: { 50: '#fff7ed', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            gold: { 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
+        }
+    } }
+}
+</script>
+<style>
+    * { box-sizing: border-box; }
+    body { background: #0c0918; color: #f1eef9; font-family: 'Inter', sans-serif; margin: 0; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #382a54; border-radius: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    .app-shell { display: flex; min-height: 100vh; }
+    .sidebar { width: 264px; flex-shrink: 0; background: #100c1c; border-right: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 40; transition: transform .3s ease; }
+    .main-area { flex: 1; margin-left: 264px; min-height: 100vh; display: flex; flex-direction: column; }
+    @media (max-width: 900px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); }
+        .main-area { margin-left: 0; }
+    }
+    .side-link { display: flex; align-items: center; gap: .8rem; padding: .75rem 1.1rem; border-radius: 12px; color: rgba(255,255,255,.55); font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all .15s ease; margin: 0 .7rem; }
+    .side-link:hover { background: rgba(255,255,255,.04); color: #fff; }
+    .side-link.active { background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(249,115,22,.06)); color: #fdba74; }
+    .side-link.active i { color: #f97316; }
+    .side-link i { width: 18px; text-align: center; color: rgba(255,255,255,.35); }
+    .side-section-label { font-size: 10px; letter-spacing: .15em; color: rgba(255,255,255,.28); font-weight: 700; padding: 1.1rem 1.4rem .4rem; }
+
+    .topbar { height: 68px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,.06); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; position: sticky; top: 0; background: rgba(12,9,24,.85); backdrop-filter: blur(10px); z-index: 30; }
+    .content { padding: 1.75rem; flex: 1; }
+
+    .card { background: #171029; border: 1px solid #2b2140; border-radius: 18px; }
+    .stat-card { background: linear-gradient(160deg, #171029, #1f1830); border: 1px solid #2b2140; border-radius: 18px; padding: 1.25rem; position: relative; overflow: hidden; }
+    .stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+
+    .btn { display: inline-flex; align-items: center; gap: .5rem; font-weight: 600; font-size: 13.5px; border-radius: 12px; padding: .6rem 1.1rem; cursor: pointer; transition: all .15s ease; border: none; }
+    .btn-primary { background: linear-gradient(135deg,#fb923c,#c2410c); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: rgba(255,255,255,.05); color: #e5e0f0; border: 1px solid rgba(255,255,255,.08); }
+    .btn-ghost:hover { background: rgba(255,255,255,.09); }
+    .btn-danger { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+    .btn-sm { padding: .4rem .8rem; font-size: 12px; border-radius: 9px; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .field-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #a99fc4; margin-bottom: .35rem; display: block; text-transform: uppercase; }
+    .field-input, .field-select, .field-textarea { width: 100%; background: #1f1830; border: 1px solid #382a54; border-radius: 10px; padding: .6rem .8rem; color: #fff; font-size: 13.5px; outline: none; transition: border-color .15s; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: #f97316; }
+    .field-textarea { resize: vertical; min-height: 72px; font-family: inherit; }
+
+    table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.data-table th { text-align: left; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a80a3; padding: .7rem .9rem; border-bottom: 1px solid #2b2140; white-space: nowrap; }
+    table.data-table td { padding: .8rem .9rem; border-bottom: 1px solid #211934; vertical-align: middle; }
+    table.data-table tr:hover td { background: rgba(255,255,255,.015); }
+
+    .badge { display: inline-flex; align-items: center; gap: .3rem; font-size: 11px; font-weight: 700; padding: .25rem .6rem; border-radius: 99px; }
+    .badge-green { background: rgba(34,197,94,.15); color: #4ade80; }
+    .badge-red { background: rgba(239,68,68,.15); color: #f87171; }
+    .badge-gold { background: rgba(251,191,36,.15); color: #fbbf24; }
+    .badge-blue { background: rgba(59,130,246,.15); color: #60a5fa; }
+    .badge-gray { background: rgba(255,255,255,.08); color: #b3abc7; }
+
+    .tab-strip { display: flex; gap: .4rem; border-bottom: 1px solid #2b2140; margin-bottom: 1.25rem; overflow-x: auto; }
+    .tab-strip button { font-size: 13px; font-weight: 600; padding: .6rem 1rem; color: #8a80a3; border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; background: none; border-top: none; border-left: none; border-right: none; }
+    .tab-strip button.active { color: #fb923c; border-bottom-color: #f97316; }
+
+    .ml-field { border: 1px solid #2b2140; border-radius: 14px; padding: .9rem; margin-bottom: .9rem; background: rgba(255,255,255,.015); }
+    .ml-field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+    .ml-lang-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+    .ml-lang-tab { font-size: 10.5px; font-weight: 700; padding: .25rem .55rem; border-radius: 7px; background: rgba(255,255,255,.05); color: #8a80a3; cursor: pointer; border: 1px solid transparent; }
+    .ml-lang-tab.active { background: rgba(249,115,22,.18); color: #fb923c; border-color: rgba(249,115,22,.35); }
+
+    .repeater-item { border: 1px solid #2b2140; border-radius: 14px; padding: .9rem; margin-bottom: .75rem; background: rgba(255,255,255,.015); position: relative; }
+    .repeater-remove { position: absolute; top: .6rem; right: .6rem; width: 26px; height: 26px; border-radius: 8px; background: rgba(239,68,68,.12); color: #f87171; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; }
+
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1f1830; border: 1px solid #382a54; padding: .8rem 1.3rem; border-radius: 12px; font-size: 13px; z-index: 200; box-shadow: 0 12px 34px rgba(0,0,0,.4); display: flex; align-items: center; gap: .6rem; }
+    .toast.success { border-color: rgba(34,197,94,.4); }
+    .toast.error { border-color: rgba(239,68,68,.4); }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.2); border-top-color: #f97316; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #6b6382; }
+    .thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #2b2140; }
+
+    /* ---------- Availability calendar ---------- */
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .cal-weekday { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: .05em; color: #6b6382; padding-bottom: 4px; }
+    .cal-day { aspect-ratio: 1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; background: rgba(255,255,255,.03); border: 1px solid transparent; transition: all .12s ease; user-select: none; }
+    .cal-day:hover { background: rgba(255,255,255,.07); }
+    .cal-day.past { opacity: .25; cursor: not-allowed; pointer-events: none; }
+    .cal-day.blocked { background: rgba(239,68,68,.16); color: #f87171; border-color: rgba(239,68,68,.3); }
+    .cal-day.blocked:hover { background: rgba(239,68,68,.26); }
+    .cal-day.empty { visibility: hidden; }
+    .cal-legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN ==================== -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center p-5" style="background: radial-gradient(circle at 30% 20%, #1f1830, #0c0918 60%);">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style="background:linear-gradient(135deg,#fdba74,#c2410c)">
+                <i class="fa-solid fa-hotel text-2xl text-ink-950"></i>
+            </div>
+            <h1 class="font-display text-2xl font-bold">Hotel Owner</h1>
+            <p class="text-sm" style="color:#8a80a3">Discover Sharm — manage your property</p>
+        </div>
+        <div class="card p-6">
+            <div id="loginError" class="hidden mb-4 text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl p-3"></div>
+            <label class="field-label">Email</label>
+            <input id="loginEmail" type="email" class="field-input mb-3" placeholder="you@hotel.com">
+            <label class="field-label">Password</label>
+            <input id="loginPassword" type="password" class="field-input mb-5" placeholder="••••••••">
+            <button onclick="Auth.login()" id="loginBtn" class="btn btn-primary w-full justify-center mb-3"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+            <button onclick="Auth.loginGoogle()" class="btn btn-ghost w-full justify-center"><i class="fa-brands fa-google"></i> Continue with Google</button>
+        </div>
+        <p class="text-center text-[11px] mt-5" style="color:#4d456a">Access is granted per-property by Discover Sharm's Super Admin.<br>Don't have access yet? Ask them to add you under Owner Access.</p>
+    </div>
+</div>
+
+<!-- ==================== NOT AUTHORIZED ==================== -->
+<div id="notAuthorizedScreen" class="hidden min-h-screen flex items-center justify-center p-5">
+    <div class="text-center max-w-sm">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center bg-red-500/10">
+            <i class="fa-solid fa-lock text-2xl text-red-400"></i>
+        </div>
+        <h1 class="font-display text-xl font-bold mb-2">Not Authorized</h1>
+        <p class="text-sm mb-6" style="color:#8a80a3">This account isn't linked to any hotel yet. Ask Discover Sharm's Super Admin to grant you access from the Owner Access tab.</p>
+        <button onclick="Auth.logout()" class="btn btn-ghost"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+    </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="appShell" class="hidden app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="flex items-center gap-3 px-5 py-5 border-b" style="border-color:rgba(255,255,255,.06)">
+            <img src="../data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
+            <div>
+                <p class="font-display font-bold text-sm leading-tight">Discover Sharm</p>
+                <p class="text-[10px]" style="color:#fb923c">HOTEL OWNER</p>
+            </div>
+        </div>
+        <div class="px-4 pt-4" id="hotelSwitcherWrap"></div>
+        <nav class="flex-1 overflow-y-auto py-3" id="sideNav">
+            <div class="side-link active" data-section="overview" onclick="Router.go('overview')"><i class="fa-solid fa-gauge-high"></i> Overview</div>
+            <div class="side-link" data-section="details" onclick="Router.go('details')"><i class="fa-solid fa-pen-to-square"></i> Hotel Details</div>
+            <div class="side-link" data-section="rooms" onclick="Router.go('rooms')"><i class="fa-solid fa-bed"></i> Rooms & Pricing</div>
+            <div class="side-link" data-section="availability" onclick="Router.go('availability')"><i class="fa-regular fa-calendar"></i> Availability</div>
+            <div class="side-link" data-section="bookings" onclick="Router.go('bookings')"><i class="fa-regular fa-calendar-check"></i> Bookings</div>
+            <div class="side-link" data-section="reviews" onclick="Router.go('reviews')"><i class="fa-solid fa-star"></i> Reviews</div>
+        </nav>
+        <div class="p-4 border-t" style="border-color:rgba(255,255,255,.06)">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm" style="background:linear-gradient(135deg,#fdba74,#c2410c); color:#0c0918" id="ownerAvatar">A</div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-xs font-semibold truncate" id="ownerName">Owner</p>
+                    <p class="text-[10px] truncate" style="color:#6b6382" id="ownerEmail"></p>
+                </div>
+            </div>
+            <button onclick="Auth.logout()" class="btn btn-ghost btn-sm w-full justify-center"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <div class="topbar">
+            <div class="flex items-center gap-3">
+                <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="md:hidden w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,.06)"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="font-display text-lg font-bold" id="pageTitle">Overview</h1>
+            </div>
+            <span class="badge badge-green" id="connStatus"><i class="fa-solid fa-circle text-[6px]"></i> Live</span>
+        </div>
+        <div class="content" id="contentArea">
+            <section class="page-section active" id="section-overview">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="statsGrid"></div>
+                <div class="card p-5">
+                    <h3 class="font-display font-bold mb-4">Recent Bookings</h3>
+                    <div id="overviewBookings" class="space-y-2"><div class="empty-state">Loading…</div></div>
+                </div>
+            </section>
+            <section class="page-section" id="section-details"></section>
+            <section class="page-section" id="section-rooms"></section>
+            <section class="page-section" id="section-availability"></section>
+            <section class="page-section" id="section-bookings"></section>
+            <section class="page-section" id="section-reviews"></section>
+        </div>
+    </div>
+</div>
+
+<div id="toastRoot"></div>
+
+<script>
+// ==================== CONFIG ====================
+let firebaseConfig = {}, GITHUB_CFG = {};
+let fbApp, fbAuth, fbDB, currentUid = null, isSuperAdminUser = false;
+let myHotelIds = [], currentHotelId = null;
+
+async function loadConfig() {
+    const res = await fetch('../data/configs.json');
+    const cfg = await res.json();
+    firebaseConfig = cfg.firebase || {};
+    GITHUB_CFG = cfg.github || {};
+}
+
+// ==================== GITHUB STORE (shared pattern with Super Admin) ====================
+const GitHubStore = {
+    cache: {},
+    configured() { return !!(GITHUB_CFG.owner && GITHUB_CFG.repo && GITHUB_CFG.proxyEndpoint && GITHUB_CFG.owner.indexOf('YOUR_') !== 0); },
+    resolvePath(path) {
+        const prefix = GITHUB_CFG.dataPathPrefix;
+        if (prefix && path.indexOf('data/') === 0) return prefix + path.slice(4);
+        return path;
+    },
+    async getIdToken() {
+        if (!fbAuth.currentUser) throw new Error('You are not signed in.');
+        return await fbAuth.currentUser.getIdToken();
+    },
+    async read(path) {
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — ask your Super Admin to finish setup in data/configs.json.');
+        const realPath = this.resolvePath(path);
+        const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(realPath)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Read failed (' + res.status + ')');
+        this.cache[path] = { sha: data.sha };
+        return JSON.parse(data.content);
+    },
+    async writeItem(collection, path, itemId, itemData, message) {
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — ask your Super Admin to finish setup in data/configs.json.');
+        const idToken = await this.getIdToken();
+        const realPath = this.resolvePath(path);
+        const res = await fetch(`${GITHUB_CFG.proxyEndpoint}/catalog-item`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ owner: GITHUB_CFG.owner, repo: GITHUB_CFG.repo, branch: GITHUB_CFG.branch || 'main', dataPath: realPath, collection, itemId, itemData, idToken, message })
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || 'Save failed (' + res.status + ')');
+        return data;
+    }
+};
+
+// ==================== TOAST ====================
+const Toast = {
+    show(msg, type) {
+        const el = document.createElement('div');
+        el.className = 'toast ' + (type || '');
+        el.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}" style="color:${type === 'error' ? '#f87171' : '#4ade80'}"></i> ${msg}`;
+        document.getElementById('toastRoot').appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 2600);
+    }
+};
+
+// ==================== AUTH (gated by owners/hotels/{uid} or admins/{uid}) ====================
+const Auth = {
+    async login() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pass = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginBtn'); const original = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> Signing in…'; btn.disabled = true;
+        try { await fbAuth.signInWithEmailAndPassword(email, pass); }
+        catch (err) { this.showError(err.message); }
+        finally { btn.innerHTML = original; btn.disabled = false; }
+    },
+    async loginGoogle() {
+        try { await fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        catch (err) { this.showError(err.message); }
+    },
+    showError(msg) { const el = document.getElementById('loginError'); el.textContent = msg; el.classList.remove('hidden'); },
+    logout() { fbAuth.signOut(); }
+};
+
+function showScreen(name) {
+    document.getElementById('loginScreen').classList.toggle('hidden', name !== 'login');
+    document.getElementById('notAuthorizedScreen').classList.toggle('hidden', name !== 'unauthorized');
+    document.getElementById('appShell').classList.toggle('hidden', name !== 'app');
+}
+
+async function handleAuthState(user) {
+    if (!user) { showScreen('login'); return; }
+    try {
+        const [adminSnap, ownerSnap] = await Promise.all([
+            fbDB.ref('admins/' + user.uid).once('value'),
+            fbDB.ref('owners/hotels/' + user.uid + '/itemIds').once('value')
+        ]);
+        isSuperAdminUser = adminSnap.val() === true;
+        myHotelIds = ownerSnap.val() || [];
+        if (!isSuperAdminUser && !myHotelIds.length) { showScreen('unauthorized'); return; }
+    } catch (err) { showScreen('unauthorized'); return; }
+    currentUid = user.uid;
+    document.getElementById('ownerName').textContent = user.displayName || (user.email || '').split('@')[0];
+    document.getElementById('ownerEmail').textContent = user.email || '';
+    document.getElementById('ownerAvatar').textContent = ((user.displayName || user.email || 'A')[0] || 'A').toUpperCase();
+    showScreen('app');
+    fbDB.ref('.info/connected').on('value', snap => {
+        const el = document.getElementById('connStatus');
+        if (snap.val() === true) el.className = 'badge badge-green', el.innerHTML = '<i class="fa-solid fa-circle text-[6px]"></i> Live';
+        else el.className = 'badge badge-red', el.innerHTML = '<i class="fa-solid fa-circle text-[6px]"></i> Reconnecting…';
+    });
+    await HotelApp.init();
+}
+
+function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
+function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function t(val) { return (val && typeof val === 'object') ? (val.en || Object.values(val)[0] || '') : (val || ''); }
+
+// ==================== ROUTER ====================
+const Router = {
+    current: 'overview',
+    titles: { overview: 'Overview', details: 'Hotel Details', rooms: 'Rooms & Pricing', availability: 'Availability', bookings: 'Bookings', reviews: 'Reviews' },
+    go(section) {
+        this.current = section;
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + section).classList.add('active');
+        document.querySelectorAll('.side-link').forEach(l => l.classList.toggle('active', l.dataset.section === section));
+        document.getElementById('pageTitle').textContent = this.titles[section] || section;
+        document.getElementById('sidebar').classList.remove('open');
+        if (HotelApp.onSectionShow) HotelApp.onSectionShow(section);
+    }
+};
+
+// ==================== BOOT ====================
+(async function boot() {
+    await loadConfig();
+    await loadLangs();
+    fbApp = firebase.initializeApp(firebaseConfig);
+    fbAuth = firebase.auth();
+    fbDB = firebase.database();
+    fbAuth.onAuthStateChanged(handleAuthState);
+})();
+
+// ==================== LANGUAGES + MULTI-LANGUAGE FIELD (same pattern as Super Admin) ====================
+let LANGS = [{ code: 'en', label: 'English' }];
+async function loadLangs() {
+    try { LANGS = (await fetch('../data/lang/manifest.json').then(r => r.json())).languages; }
+    catch (e) { console.warn('Could not load language manifest', e); }
+}
+function mlFieldHtml(fieldId, label, value, opts) {
+    opts = opts || {};
+    const val = (value && typeof value === 'object') ? value : { en: value || '' };
+    const isArray = !!opts.arrayField;
+    const useTextarea = !!(opts.textarea || isArray);
+    return `
+        <div class="ml-field" data-ml-field="${fieldId}">
+            <div class="ml-field-header">
+                <label class="field-label" style="margin:0">${label}${opts.required ? ' *' : ''}${isArray ? ' <span style="font-weight:400;text-transform:none;color:#6b6382">(one per line)</span>' : ''}</label>
+                <div class="ml-lang-tabs">
+                    ${LANGS.map((l, i) => `<span class="ml-lang-tab ${i === 0 ? 'active' : ''}" data-lang="${l.code}" onclick="MlField.switchTab(this)">${l.code.toUpperCase()}</span>`).join('')}
+                </div>
+            </div>
+            ${LANGS.map((l, i) => {
+                const raw = val[l.code] || (isArray ? [] : '');
+                const text = isArray ? (Array.isArray(raw) ? raw.join('\n') : (raw || '')) : (typeof raw === 'string' ? raw : '');
+                const style = i === 0 ? '' : 'display:none';
+                return useTextarea
+                    ? `<textarea rows="${isArray ? 4 : 3}" class="field-textarea ml-input" data-lang-input="${l.code}" style="${style}">${escapeHtml(text)}</textarea>`
+                    : `<input type="text" class="field-input ml-input" data-lang-input="${l.code}" style="${style}" value="${escapeHtml(text)}">`;
+            }).join('')}
+        </div>`;
+}
+const MlField = {
+    switchTab(tabEl) {
+        const wrap = tabEl.closest('.ml-field');
+        wrap.querySelectorAll('.ml-lang-tab').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+        const lang = tabEl.dataset.lang;
+        wrap.querySelectorAll('.ml-input').forEach(inp => { inp.style.display = inp.dataset.langInput === lang ? '' : 'none'; });
+    },
+    collect(container, fieldId, isArray) {
+        const wrap = container.querySelector(`[data-ml-field="${fieldId}"]`);
+        if (!wrap) return {};
+        const out = {};
+        wrap.querySelectorAll('.ml-input').forEach(inp => {
+            const lang = inp.dataset.langInput, v = inp.value.trim();
+            if (isArray) out[lang] = v ? v.split('\n').map(s => s.trim()).filter(Boolean) : [];
+            else if (v) out[lang] = v;
+        });
+        return out;
+    }
+};
+const FormTabs = {
+    switch(btn, tabName) {
+        const strip = btn.parentElement;
+        strip.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const scope = strip.parentElement;
+        scope.querySelectorAll('[data-tab]').forEach(el => el.classList.toggle('hidden', el.dataset.tab !== tabName));
+    }
+};
+
+// ==================== HOTEL APP (scoped to this owner's hotel(s)) ====================
+const HotelApp = {
+    hotels: [], owned: [], current: null,
+    async init() {
+        try { this.hotels = await GitHubStore.read('data/hotels.json'); }
+        catch (err) { Toast.show(err.message, 'error'); this.hotels = []; }
+        this.owned = isSuperAdminUser ? this.hotels : this.hotels.filter(h => myHotelIds.includes(h.id));
+        if (!this.owned.length) { Toast.show('No hotels are linked to your account yet', 'error'); return; }
+        currentHotelId = this.owned[0].id;
+        this.current = this.owned[0];
+        this.renderHotelSwitcher();
+        this.renderAll();
+    },
+    renderHotelSwitcher() {
+        const wrap = document.getElementById('hotelSwitcherWrap');
+        if (this.owned.length <= 1) { wrap.innerHTML = ''; return; }
+        wrap.innerHTML = `<label class="field-label">Property</label><select onchange="HotelApp.switchHotel(this.value)" class="field-select mb-2">${this.owned.map(h => `<option value="${h.id}" ${h.id === currentHotelId ? 'selected' : ''}>${t(h.name)}</option>`).join('')}</select>`;
+    },
+    switchHotel(id) {
+        currentHotelId = id;
+        this.current = this.owned.find(h => h.id === id);
+        this.renderAll();
+    },
+    renderAll() {
+        this.renderOverview();
+        this.renderDetailsForm();
+        this.renderRoomsSection();
+        Calendar.blocked = (this.current.unavailableDates || []).slice();
+        this.renderAvailabilitySection();
+        this.renderBookingsTable();
+        this.renderReviewsList();
+    },
+    onSectionShow(section) {
+        if (section === 'bookings') this.renderBookingsTable();
+        if (section === 'reviews') this.renderReviewsList();
+    },
+    // Applies a partial update to the current hotel object, saves it, and keeps local state in sync
+    // so edits made in one section (e.g. Rooms) aren't lost if you then save another (e.g. Details).
+    async saveCurrent(partial, message) {
+        const updated = Object.assign({}, this.current, partial);
+        try {
+            await GitHubStore.writeItem('hotels', 'data/hotels.json', this.current.id, updated, message);
+            this.current = updated;
+            const idx = this.owned.findIndex(h => h.id === updated.id); if (idx >= 0) this.owned[idx] = updated;
+            Toast.show('Saved — committed to GitHub', 'success');
+            return true;
+        } catch (err) { Toast.show('Save failed: ' + err.message, 'error'); return false; }
+    },
+
+    async renderOverview() {
+        const h = this.current;
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-icon mb-3" style="background:#f9731622;color:#f97316"><i class="fa-solid fa-star"></i></div><p class="text-2xl font-bold font-display">${h.rating || '—'}</p><p class="text-xs" style="color:#8a80a3">Rating</p></div>
+            <div class="stat-card"><div class="stat-icon mb-3" style="background:#4ade8022;color:#4ade80"><i class="fa-solid fa-bed"></i></div><p class="text-2xl font-bold font-display">${(h.rooms || []).length}</p><p class="text-xs" style="color:#8a80a3">Room Types</p></div>
+            <div class="stat-card" id="statUpcomingCard"><div class="stat-icon mb-3" style="background:#60a5fa22;color:#60a5fa"><i class="fa-solid fa-calendar-check"></i></div><p class="text-2xl font-bold font-display">—</p><p class="text-xs" style="color:#8a80a3">Upcoming Bookings</p></div>
+            <div class="stat-card" id="statReviewsCard"><div class="stat-icon mb-3" style="background:#fbbf2422;color:#fbbf24"><i class="fa-regular fa-comment"></i></div><p class="text-2xl font-bold font-display">—</p><p class="text-xs" style="color:#8a80a3">Reviews</p></div>`;
+        const bookingsSnap = await fbDB.ref('allBookings').once('value');
+        const bookings = objToArray(bookingsSnap.val()).filter(b => b.type === 'hotel' && b.hotelId === h.id);
+        const todayIso = new Date().toISOString().slice(0, 10);
+        const upcoming = bookings.filter(b => (b.checkin || '') >= todayIso);
+        document.querySelector('#statUpcomingCard p').textContent = upcoming.length;
+        bookings.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        document.getElementById('overviewBookings').innerHTML = bookings.length ? bookings.slice(0, 6).map(b => `
+            <div class="flex items-center justify-between text-xs py-2 border-b" style="border-color:#211934">
+                <div><p class="font-semibold">${b.name || 'Guest'}</p><p style="color:#6b6382">${b.checkin || ''} → ${b.checkout || ''}</p></div>
+                <span class="badge badge-gold">EGP ${Math.round(b.total || 0)}</span>
+            </div>`).join('') : '<div class="empty-state">No bookings yet</div>';
+        const reviewsSnap = await fbDB.ref('reviews/hotel/' + h.id).once('value');
+        document.querySelector('#statReviewsCard p').textContent = Object.keys(reviewsSnap.val() || {}).length;
+    },
+
+    renderDetailsForm() {
+        const h = this.current;
+        document.getElementById('section-details').innerHTML = `
+            <div class="card p-5 max-w-3xl">
+                ${mlFieldHtml('name', 'Hotel Name', h.name, { required: true })}
+                ${mlFieldHtml('location', 'Location', h.location)}
+                ${mlFieldHtml('description', 'Short Description', h.description, { textarea: true })}
+                ${mlFieldHtml('fullDescription', 'Full Description', h.fullDescription, { textarea: true })}
+                ${mlFieldHtml('amenities', 'Amenities', h.amenities, { arrayField: true })}
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div><label class="field-label">Category</label><select id="d_category" class="field-select"><option value="luxury" ${h.category === 'luxury' ? 'selected' : ''}>Luxury</option><option value="business" ${h.category === 'business' ? 'selected' : ''}>Business</option><option value="budget" ${h.category === 'budget' ? 'selected' : ''}>Budget</option></select></div>
+                    <div><label class="field-label">Bestseller Badge</label><select id="d_bestseller" class="field-select"><option value="false" ${!h.bestseller ? 'selected' : ''}>No</option><option value="true" ${h.bestseller ? 'selected' : ''}>Yes</option></select></div>
+                </div>
+                <label class="field-label">Main Image URL</label><input id="d_image" class="field-input mb-3" value="${escapeHtml(h.image || '')}">
+                <label class="field-label">Gallery Image URLs (one per line)</label><textarea id="d_images" rows="3" class="field-textarea mb-4">${escapeHtml((h.images || []).join('\n'))}</textarea>
+                <button onclick="HotelApp.saveDetails()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Details</button>
+            </div>`;
+    },
+    async saveDetails() {
+        const body = document.getElementById('section-details');
+        const partial = {
+            name: MlField.collect(body, 'name'),
+            location: MlField.collect(body, 'location'),
+            description: MlField.collect(body, 'description'),
+            fullDescription: MlField.collect(body, 'fullDescription'),
+            amenities: MlField.collect(body, 'amenities', true),
+            category: document.getElementById('d_category').value,
+            bestseller: document.getElementById('d_bestseller').value === 'true',
+            image: document.getElementById('d_image').value.trim(),
+            images: document.getElementById('d_images').value.split('\n').map(s => s.trim()).filter(Boolean)
+        };
+        if (!partial.name.en) { Toast.show('English name is required', 'error'); return; }
+        if (await this.saveCurrent(partial, 'Update hotel details: ' + t(partial.name))) this.renderOverview();
+    },
+
+    renderRoomsSection() {
+        const h = this.current;
+        document.getElementById('section-rooms').innerHTML = `
+            <div class="card p-5 max-w-3xl">
+                <div id="roomsRepeater">${(h.rooms || []).map((r, i) => this.roomRow(r, i)).join('')}</div>
+                <button onclick="HotelApp.addRoom()" class="btn btn-ghost btn-sm mb-4"><i class="fa-solid fa-plus"></i> Add Room Type</button>
+                <div><button onclick="HotelApp.saveRooms()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Rooms</button></div>
+            </div>`;
+        window._roomCount = (h.rooms || []).length;
+    },
+    roomRow(r, i) {
+        r = r || {};
+        return `<div class="repeater-item" data-room-index="${i}">
+            <div class="repeater-remove" onclick="this.closest('[data-room-index]').remove()"><i class="fa-solid fa-xmark"></i></div>
+            ${mlFieldHtml('room_type_' + i, 'Room Type', r.type)}
+            ${mlFieldHtml('room_beds_' + i, 'Beds', r.beds)}
+            ${mlFieldHtml('room_desc_' + i, 'Description', r.description, { textarea: true })}
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div><label class="field-label">Price/Night (EGP)</label><input class="field-input" data-room-field="price" type="number" value="${r.price || ''}"></div>
+                <div><label class="field-label">Size</label><input class="field-input" data-room-field="size" value="${escapeHtml(r.size || '')}" placeholder="35m²"></div>
+                <div><label class="field-label">Max Guests</label><input class="field-input" data-room-field="guests" type="number" value="${r.guests || 2}"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-2">
+                <div><label class="field-label">Base Occupancy</label><input class="field-input" data-room-field="baseOccupancy" type="number" value="${r.baseOccupancy || 2}"></div>
+                <div><label class="field-label">Extra Adult Fee</label><input class="field-input" data-room-field="extraAdultFee" type="number" value="${r.extraAdultFee || 0}"></div>
+                <div><label class="field-label">Free Children/Room</label><input class="field-input" data-room-field="freeChildrenPerRoom" type="number" value="${r.freeChildrenPerRoom != null ? r.freeChildrenPerRoom : 2}"></div>
+            </div>
+            <label class="field-label">Room Image URL</label><input class="field-input" data-room-field="image" value="${escapeHtml(r.image || '')}">
+        </div>`;
+    },
+    addRoom() { const i = window._roomCount++; document.getElementById('roomsRepeater').insertAdjacentHTML('beforeend', this.roomRow({}, i)); },
+    async saveRooms() {
+        const body = document.getElementById('section-rooms');
+        const rooms = [];
+        body.querySelectorAll('[data-room-index]').forEach((roomEl, i) => {
+            const get = f => roomEl.querySelector(`[data-room-field="${f}"]`).value;
+            rooms.push({
+                type: MlField.collect(roomEl, 'room_type_' + i),
+                beds: MlField.collect(roomEl, 'room_beds_' + i),
+                description: MlField.collect(roomEl, 'room_desc_' + i),
+                price: parseFloat(get('price')) || 0,
+                size: get('size'),
+                guests: parseInt(get('guests')) || 2,
+                baseOccupancy: parseInt(get('baseOccupancy')) || 2,
+                extraAdultFee: parseFloat(get('extraAdultFee')) || 0,
+                freeChildrenPerRoom: parseInt(get('freeChildrenPerRoom')) || 0,
+                image: get('image')
+            });
+        });
+        if (await this.saveCurrent({ rooms }, 'Update rooms for ' + t(this.current.name))) this.renderOverview();
+    },
+
+    renderAvailabilitySection() {
+        document.getElementById('section-availability').innerHTML = `
+            <div class="card p-5 max-w-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="Calendar.changeMonth(-1)" class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,.05)"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <h3 class="font-display font-bold" id="calMonthLabel"></h3>
+                    <button onclick="Calendar.changeMonth(1)" class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:rgba(255,255,255,.05)"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                </div>
+                <div class="cal-grid mb-2">${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(w => `<div class="cal-weekday">${w}</div>`).join('')}</div>
+                <div class="cal-grid" id="calGrid"></div>
+                <div class="flex items-center gap-4 mt-4 text-xs" style="color:#8a80a3">
+                    <span class="flex items-center gap-1.5"><span class="cal-legend-dot" style="background:rgba(255,255,255,.08)"></span> Available</span>
+                    <span class="flex items-center gap-1.5"><span class="cal-legend-dot" style="background:rgba(239,68,68,.35)"></span> Blocked</span>
+                </div>
+                <p class="text-xs mt-3 mb-4" style="color:#6b6382">Click a date to toggle it blocked/available. This feeds the check-in/check-out picker on the live site.</p>
+                <button onclick="Calendar.save()" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Availability</button>
+            </div>`;
+        Calendar.viewDate = new Date();
+        Calendar.render();
+    },
+
+    renderBookingsTable() {
+        const sec = document.getElementById('section-bookings');
+        sec.innerHTML = `
+            <div class="flex items-center gap-3 mb-5">
+                <select id="hbStatusFilter" onchange="HotelApp.filterBookings()" class="field-select" style="max-width:180px"><option value="">All Statuses</option><option value="confirmed">Confirmed</option><option value="pending_cash">Pending Cash</option><option value="cancelled">Cancelled</option></select>
+                <input id="hbSearch" oninput="HotelApp.filterBookings()" class="field-input flex-1" placeholder="Search by guest name or email…">
+            </div>
+            <div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Booking ID</th><th>Guest</th><th>Dates</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody id="hbTbody"></tbody></table></div>`;
+        fbDB.ref('allBookings').orderByChild('hotelId').equalTo(this.current.id).on('value', snap => {
+            this._bookings = objToArray(snap.val()).filter(b => b.type === 'hotel');
+            this.filterBookings();
+        });
+    },
+    filterBookings() {
+        const tbody = document.getElementById('hbTbody'); if (!tbody) return;
+        const statusF = document.getElementById('hbStatusFilter').value;
+        const q = (document.getElementById('hbSearch').value || '').toLowerCase();
+        let list = (this._bookings || []).filter(b => (!statusF || b.status === statusF) && (!q || (b.name || '').toLowerCase().includes(q) || (b.email || '').toLowerCase().includes(q)));
+        list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        tbody.innerHTML = list.length ? list.map(b => `
+            <tr>
+                <td class="font-mono text-xs">${b.id}</td>
+                <td>${b.name || '—'}<br><span style="color:#6b6382;font-size:11px">${b.email || ''}</span></td>
+                <td>${b.checkin || ''} → ${b.checkout || ''}</td>
+                <td class="font-semibold">EGP ${Math.round(b.total || 0)}</td>
+                <td>${HotelApp.statusBadge(b.status)}</td>
+                <td class="text-right"><select onchange="HotelApp.updateBookingStatus('${b.id}', this.value)" class="field-select btn-sm" style="width:auto;display:inline-block"><option value="">Change…</option><option value="confirmed">Confirmed</option><option value="pending_cash">Pending Cash</option><option value="cancelled">Cancelled</option></select></td>
+            </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state">No bookings match</div></td></tr>`;
+    },
+    statusBadge(status) {
+        if (status === 'confirmed' || status === 'paid') return '<span class="badge badge-green">Confirmed</span>';
+        if (status === 'cancelled') return '<span class="badge badge-red">Cancelled</span>';
+        if (status === 'pending_cash') return '<span class="badge badge-gold">Pending Cash</span>';
+        return '<span class="badge badge-gray">' + (status || 'Unknown') + '</span>';
+    },
+    async updateBookingStatus(id, status) {
+        if (!status) return;
+        try { await fbDB.ref('allBookings/' + id + '/status').set(status); Toast.show('Booking status updated', 'success'); }
+        catch (err) { Toast.show('Update failed: ' + err.message, 'error'); }
+    },
+
+    renderReviewsList() {
+        const sec = document.getElementById('section-reviews');
+        sec.innerHTML = `<div class="card overflow-x-auto"><table class="data-table"><thead><tr><th>Guest</th><th>Rating</th><th>Comment</th><th>Date</th></tr></thead><tbody id="hrTbody"><tr><td colspan="4"><div class="empty-state">Loading…</div></td></tr></tbody></table></div>`;
+        fbDB.ref('reviews/hotel/' + this.current.id).on('value', snap => {
+            const list = objToArray(snap.val());
+            list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+            const tbody = document.getElementById('hrTbody'); if (!tbody) return;
+            tbody.innerHTML = list.length ? list.map(r => `
+                <tr>
+                    <td class="font-semibold">${r.name || 'Guest'}</td>
+                    <td style="color:#fbbf24">${'★'.repeat(r.rating || 0)}${'☆'.repeat(5 - (r.rating || 0))}</td>
+                    <td class="max-w-xs">${r.comment || ''}</td>
+                    <td class="text-xs" style="color:#6b6382">${(r.createdAt || '').slice(0, 10)}</td>
+                </tr>`).join('') : `<tr><td colspan="4"><div class="empty-state">No reviews yet</div></td></tr>`;
+        });
+    }
+};
+
+// ==================== AVAILABILITY CALENDAR ====================
+const Calendar = {
+    viewDate: new Date(), blocked: [],
+    render() {
+        const y = this.viewDate.getFullYear(), m = this.viewDate.getMonth();
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        document.getElementById('calMonthLabel').textContent = monthNames[m] + ' ' + y;
+        const first = new Date(y, m, 1);
+        const startDay = first.getDay();
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
+        const todayIso = new Date().toISOString().slice(0, 10);
+        let html = '';
+        for (let i = 0; i < startDay; i++) html += `<div class="cal-day empty"></div>`;
+        for (let d = 1; d <= daysInMonth; d++) {
+            const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const isPast = iso < todayIso;
+            const isBlocked = this.blocked.includes(iso);
+            html += `<div class="cal-day ${isPast ? 'past' : ''} ${isBlocked ? 'blocked' : ''}" ${isPast ? '' : `onclick="Calendar.toggle('${iso}')"`}>${d}</div>`;
+        }
+        document.getElementById('calGrid').innerHTML = html;
+    },
+    toggle(iso) {
+        const idx = this.blocked.indexOf(iso);
+        if (idx >= 0) this.blocked.splice(idx, 1); else this.blocked.push(iso);
+        this.render();
+    },
+    changeMonth(delta) { this.viewDate.setMonth(this.viewDate.getMonth() + delta); this.render(); },
+    async save() {
+        const sorted = this.blocked.slice().sort();
+        if (await HotelApp.saveCurrent({ unavailableDates: sorted }, 'Update availability for ' + t(HotelApp.current.name))) this.blocked = sorted;
+    }
+};
+</script>
+</body>
+</html>
