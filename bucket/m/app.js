@@ -1,7 +1,6 @@
 /* ============================================================
-   DISCOVER SHARM — Frontend Application (Full)
-   Integrated with Cloudflare Worker API Gateway
-   Worker URL: https://discover-sharm-api.gm-093.workers.dev
+   DISCOVER SHARM — Frontend Application
+   Integrated with Cloudflare Worker API Gateway (Hotels only)
    ============================================================ */
 
 // ==================== FALLBACK LOGO ====================
@@ -14,8 +13,7 @@ window.FALLBACK_LOGO = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
 <circle cx="32" cy="32" r="4" fill="#fdba74"/>
 </svg>`);
 
-// ==================== WORKER API CONFIG ====================
-// تأكد من استخدام الرابط الصحيح للـ Worker
+// ==================== WORKER API CONFIG (Hotels only) ====================
 const WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev';
 
 // ==================== IMAGE HELPER ====================
@@ -29,9 +27,9 @@ function getImageUrl(item) {
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%232b2140' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%239d94b8' font-size='20' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-// ==================== WORKER API CLIENT ====================
+// ==================== WORKER API CLIENT (Hotels only) ====================
 const API = {
-  // ---------- Hotels ----------
+  // Hotels
   async searchHotels(params) {
     const res = await fetch(`${WORKER_URL}/api/hotels/search`, {
       method: 'POST',
@@ -40,7 +38,7 @@ const API = {
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.error || 'Search failed');
-    return result; // { success: true, data: {...} }
+    return result.data;
   },
 
   async checkRates(rateKey) {
@@ -81,104 +79,6 @@ const API = {
     return result.cancellation;
   },
 
-  // ---------- Activities ----------
-  async searchActivities(params) {
-    const res = await fetch(`${WORKER_URL}/api/activities/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Search failed');
-    return result; // { success: true, data: {...} }
-  },
-
-  async activityDetails(params) {
-    const res = await fetch(`${WORKER_URL}/api/activities/details`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Details failed');
-    return result.data;
-  },
-
-  async bookActivity(bookingData) {
-    const res = await fetch(`${WORKER_URL}/api/activities/book`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookingData),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Booking failed');
-    return result.booking;
-  },
-
-  async getActivityBooking(reference) {
-    const res = await fetch(`${WORKER_URL}/api/activities/booking/${reference}`);
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Booking not found');
-    return result.booking;
-  },
-
-  async cancelActivityBooking(reference) {
-    const res = await fetch(`${WORKER_URL}/api/activities/booking/${reference}`, {
-      method: 'DELETE',
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Cancellation failed');
-    return result.cancellation;
-  },
-
-  // ---------- Transfers ----------
-  async transferAvailability(params) {
-    const res = await fetch(`${WORKER_URL}/api/transfers/availability`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Availability failed');
-    return result; // { success: true, data: {...} }
-  },
-
-  async bookTransfer(bookingData) {
-    const res = await fetch(`${WORKER_URL}/api/transfers/book`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookingData),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Booking failed');
-    return result.booking;
-  },
-
-  async getTransferBooking(reference) {
-    const res = await fetch(`${WORKER_URL}/api/transfers/booking/${reference}`);
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Booking not found');
-    return result.booking;
-  },
-
-  async cancelTransferBooking(reference) {
-    const res = await fetch(`${WORKER_URL}/api/transfers/booking/${reference}`, {
-      method: 'DELETE',
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error || 'Cancellation failed');
-    return result.cancellation;
-  },
-
-  // ---------- Cache ----------
-  async getHotelCache(destinationCodes, language = 'en') {
-    const res = await fetch(
-      `${WORKER_URL}/api/cache/hotels?destinationCodes=${destinationCodes}&language=${language}`
-    );
-    return res.json();
-  },
-
-  // ---------- Health ----------
   async health() {
     const res = await fetch(`${WORKER_URL}/api/health`);
     return res.json();
@@ -220,13 +120,11 @@ const state = {
   flightTripType: 'round',
   transferPax: 2,
   transferDirection: 'Airport to Hotel',
-  // Store API results
-  hotelsCache: [],
-  excursionsCache: [],
-  transfersCache: []
+  // Store API results for hotels
+  hotelsCache: []
 };
 
-// ==================== CATALOG (Fallback only) ====================
+// ==================== CATALOG (Fallback for non-hotel items) ====================
 const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 const JSON_BASELINE = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], articles: [] };
@@ -933,32 +831,26 @@ const nav = {
 const app = {
   enterMainApp() {
     document.getElementById('mainApp').classList.remove('hidden');
-    
-    // عرض مؤشر تحميل
-    document.getElementById('featuredHotels').innerHTML = `<div class="text-center py-10"><div class="spinner-border text-gold-400" role="status"><span class="visually-hidden">Loading...</span></div><p class="text-white/60 text-sm mt-4">جاري تحميل الفنادق...</p></div>`;
-    document.getElementById('featuredExcursions').innerHTML = `<div class="text-center py-10"><div class="spinner-border text-gold-400" role="status"><span class="visually-hidden">Loading...</span></div><p class="text-white/60 text-sm mt-4">جاري تحميل الرحلات...</p></div>`;
-    
+    ui.renderFeaturedHotels();
+    excursionsUi.renderFeatured();
+    transfersUi.render();
     ui.setDefaultDates();
     ui.updateProfileStats();
     const curSel = document.getElementById('currencySelect');
     if (curSel) curSel.value = state.currency;
     if (!fbEnabled) { profileAvatar.render(document.getElementById('profileName').textContent, localStorage.getItem('ds_avatar')); }
-    
     if (!window._flightFormsInitialized) {
       setTimeout(() => {
         initFlightAndTransferForms();
         window._flightFormsInitialized = true;
       }, 300);
     }
-    
-    // تحميل البيانات من الـ API (بدون JSON)
+    // Load hotels from Worker on home page
     loadFeaturedHotels();
-    loadFeaturedExcursions();
-    loadFeaturedTransfers();
   }
 };
 
-// ==================== LOAD FROM API ====================
+// ==================== LOAD FROM WORKER (Hotels only) ====================
 async function loadFeaturedHotels() {
   try {
     const params = {
@@ -971,74 +863,22 @@ async function loadFeaturedHotels() {
       currency: state.currency
     };
     const result = await API.searchHotels(params);
-    if (result && result.data && result.data.hotels) {
-      const hotelsArray = result.data.hotels.hotels || [];
-      state.hotelsCache = hotelsArray;
-      ui.renderFeaturedHotelsFromAPI(hotelsArray.slice(0, 4));
-    } else {
-      throw new Error('No hotels data');
+    if (result && result.hotels) {
+      state.hotelsCache = result.hotels.hotels || [];
+      ui.renderFeaturedHotelsFromAPI(state.hotelsCache.slice(0, 2));
+      // Also update hotels list if on hotels page
+      hotels.render();
     }
   } catch (err) {
-    console.error('Failed to load featured hotels:', err);
-    document.getElementById('featuredHotels').innerHTML = `
-      <div class="text-center py-10 text-red-400">
-        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-        <p class="text-sm mt-2">تعذر تحميل الفنادق. تأكد من اتصال الـ API.</p>
-        <button onclick="loadFeaturedHotels()" class="btn-gold px-4 py-2 rounded-xl text-sm mt-3">إعادة المحاولة</button>
-      </div>
-    `;
-  }
-}
-
-async function loadFeaturedExcursions() {
-  try {
-    const result = await API.searchActivities({
-      destination: 'SSH',
-      language: 'en'
-    });
-    if (result && result.data && result.data.activities) {
-      state.excursionsCache = result.data.activities || [];
-      excursionsUi.renderFeaturedFromAPI(state.excursionsCache.slice(0, 4));
-    } else {
-      throw new Error('No excursions data');
-    }
-  } catch (err) {
-    console.error('Failed to load featured excursions:', err);
-    document.getElementById('featuredExcursions').innerHTML = `
-      <div class="text-center py-10 text-red-400">
-        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
-        <p class="text-sm mt-2">تعذر تحميل الرحلات.</p>
-        <button onclick="loadFeaturedExcursions()" class="btn-gold px-4 py-2 rounded-xl text-sm mt-3">إعادة المحاولة</button>
-      </div>
-    `;
-  }
-}
-
-async function loadFeaturedTransfers() {
-  try {
-    const result = await API.transferAvailability({
-      pickupType: 'IATA',
-      pickupCode: 'SSH',
-      dropoffType: 'ATLAS',
-      dropoffCode: 'SSH001',
-      date: utils.addDays(utils.todayIso(), 2),
-      time: '14:00',
-      passengers: 2
-    });
-    if (result && result.data && result.data.services) {
-      state.transfersCache = result.data.services || [];
-      transfersUi.renderFromAPI(state.transfersCache);
-    }
-  } catch (err) {
-    console.warn('Could not load featured transfers from API:', err);
-    // لا نعرض خطأ في النقل لأنه أقل أهمية
+    console.warn('Could not load featured hotels from API:', err);
+    ui.renderFeaturedHotels();
   }
 }
 
 // ==================== UI ====================
 const ui = {
   renderFeaturedHotels() {
-    // هذه الدالة تستخدم فقط في حالة فشل الـ API (نادراً)
+    // Fallback to local catalog
     const featured = CATALOG.hotels.slice(0, 2);
     const el = document.getElementById('featuredHotels');
     if (el) el.innerHTML = featured.map(h => this.renderHotelCard(h)).join('');
@@ -1632,18 +1472,14 @@ const hotels = {
   render() {
     const list = document.getElementById('hotelsList');
     if (!list) return;
-    
     // Use API cache if available, else fallback to catalog
     let filtered = state.hotelsCache.length ? state.hotelsCache : CATALOG.hotels;
-    
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => (h.category || '').toLowerCase() === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => (h.name || '').toLowerCase().includes(state.searchQuery));
-    
     if (filtered.length === 0) { 
       list.innerHTML = `<div class="text-center py-16"><div class="w-20 h-20 mx-auto mb-3 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-hotel text-2xl text-violet-300"></i></div><p class="font-display text-lg font-bold mb-1" style="color:var(--text-primary)">No hotels found</p><p class="text-sm" style="color:var(--text-secondary)">Try different filters</p></div>`; 
       return; 
     }
-    
     list.innerHTML = filtered.map(h => ui.renderHotelCardFromAPI(h)).join('');
   }
 };
@@ -1654,15 +1490,6 @@ const excursionsUi = {
     const el = document.getElementById('featuredExcursions');
     if (!el) return;
     el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
-  },
-  renderFeaturedFromAPI(activities) {
-    const el = document.getElementById('featuredExcursions');
-    if (!el) return;
-    if (activities && activities.length) {
-      el.innerHTML = activities.map(x => this.renderMiniCardFromAPI(x)).join('');
-    } else {
-      this.renderFeatured();
-    }
   },
   renderMiniCard(x) {
     const imgSrc = getImageUrl(x.image);
@@ -1680,32 +1507,6 @@ const excursionsUi = {
         </div>
         <h4 class="font-display font-bold text-sm line-clamp-2 mb-1" style="color:var(--text-primary)">${x.title}</h4>
         <p class="font-display font-bold text-violet-500 text-sm">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal" style="color:var(--text-secondary)"> /person</span></p>
-      </div>`;
-  },
-  renderMiniCardFromAPI(x) {
-    const activity = {
-      id: x.code || x.id || 'act-' + Math.random().toString(36).substr(2, 6),
-      title: x.name || x.title || 'Activity',
-      category: x.category || x.type || 'Excursion',
-      rating: x.rating || 4.5,
-      price: x.price || x.minPrice || 50,
-      image: x.images && x.images[0] ? x.images[0] : 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-      duration: x.duration || x.durationTime || 'Full Day'
-    };
-    return `
-      <div onclick="showExcursionPage('${activity.id}')" class="flex-shrink-0 w-44 cursor-pointer">
-        <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
-          <img src="${getImageUrl(activity.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-          <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
-            <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
-            <span class="text-[9px] font-bold text-gold-400">${Number(activity.rating).toFixed(1)}</span>
-          </div>
-          <div class="absolute bottom-2 right-2 left-2">
-            <span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${activity.category}</span>
-          </div>
-        </div>
-        <h4 class="font-display font-bold text-sm line-clamp-2 mb-1" style="color:var(--text-primary)">${activity.title}</h4>
-        <p class="font-display font-bold text-violet-500 text-sm">${utils.formatPrice(activity.price)}<span class="text-[10px] font-normal" style="color:var(--text-secondary)"> /person</span></p>
       </div>`;
   },
   renderCard(x) {
@@ -1738,84 +1539,18 @@ const excursionsUi = {
   render() {
     const list = document.getElementById('excursionsList');
     if (!list) return;
-    let filtered = state.excursionsCache.length ? state.excursionsCache : CATALOG.excursions;
-    if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => (x.category || '').toLowerCase() === state.currentExcursionFilter);
+    let filtered = CATALOG.excursions;
+    if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state.currentExcursionFilter);
     if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16"><p style="color:var(--text-secondary)">No excursions found</p></div>`; return; }
-    list.innerHTML = filtered.map(x => {
-      if (x.code || x.id && x.id.startsWith('act-')) {
-        return this.renderCardFromAPI(x);
-      }
-      return this.renderCard(x);
-    }).join('');
-  },
-  renderCardFromAPI(x) {
-    const activity = {
-      id: x.code || x.id,
-      title: x.name || x.title,
-      category: x.category || x.type || 'Excursion',
-      rating: x.rating || 4.5,
-      reviews: x.reviewCount || 0,
-      duration: x.duration || x.durationTime || 'Full Day',
-      image: x.images && x.images[0] ? x.images[0] : 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-      price: x.price || x.minPrice || 50
-    };
-    const imgSrc = getImageUrl(activity.image);
-    return `
-      <div onclick="showExcursionPage('${activity.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
-        <div class="flex">
-          <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-            <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-            <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
-              <span class="text-[9px]" style="color:var(--text-secondary)">(${activity.reviews} reviews)</span>
-              <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
-              <span class="text-[9px] font-bold text-gold-400">${Number(activity.rating).toFixed(1)}</span>
-            </div>
-          </div>
-          <div class="flex-1 p-3 flex flex-col justify-between">
-            <div>
-              <span class="text-[9px] font-bold text-violet-500 mb-1 inline-block">${activity.category}</span>
-              <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1" style="color:var(--text-primary)">${activity.title}</h3>
-              <p class="text-[10px] flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${activity.duration}</p>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-[9px]" style="color:var(--text-secondary)"></span>
-              <p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(activity.price)}<span class="text-[9px] font-normal" style="color:var(--text-secondary)"> /person</span></p>
-            </div>
-          </div>
-        </div>
-      </div>`;
+    list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
   }
 };
 
+// ==================== EXCURSION DETAIL ====================
 function showExcursionPage(excursionId) {
-  // Try cache first
-  let x = state.excursionsCache.find(i => (i.code || i.id) === excursionId);
-  if (!x) x = CATALOG.excursions.find(i => i.id === excursionId);
-  if (!x) {
-    utils.toast('Excursion not found', 'error');
-    return;
-  }
-  
-  const excursion = {
-    id: x.code || x.id,
-    title: x.name || x.title,
-    category: x.category || x.type || 'Excursion',
-    rating: x.rating || 4.5,
-    reviews: x.reviewCount || x.reviews || 0,
-    duration: x.duration || x.durationTime || 'Full Day',
-    image: x.images && x.images[0] ? x.images[0] : x.image,
-    images: x.images || [x.image],
-    price: x.price || x.minPrice || 50,
-    description: x.description || x.shortDescription || 'Amazing excursion experience.',
-    fullDescription: x.description || x.fullDescription || 'Amazing excursion experience.',
-    includes: x.includes || ['Transport', 'Guide', 'Equipment'],
-    excludes: x.excludes || [],
-    whatToBring: x.whatToBring || [],
-    itinerary: x.itinerary || [],
-    meetingPoint: x.meetingPoint || 'Hotel pickup'
-  };
-  
-  state.currentExcursion = excursion;
+  const x = CATALOG.excursions.find(i => i.id === excursionId);
+  if (!x) return;
+  state.currentExcursion = x;
   const old = document.getElementById('excursionDetailPage');
   if (old) old.remove();
   const page = document.createElement('div');
@@ -1825,54 +1560,54 @@ function showExcursionPage(excursionId) {
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-72">
         <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
-          ${(excursion.images || [excursion.image]).map(img => {
+          ${(x.images || [x.image]).map(img => {
             const src = getImageUrl(img);
             return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
           }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
         <button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${excursion.category}</div>
-        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(excursion.images || [excursion.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+        <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${x.category}</div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(x.images || [x.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
       </div>
       <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
         <div>
-          <h2 class="font-display text-2xl font-bold mb-1 leading-tight" style="color:var(--text-primary)">${excursion.title}</h2>
-          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(excursion.rating)}<span class="text-xs" style="color:var(--text-secondary)">${Number(excursion.rating).toFixed(1)} (${excursion.reviews} reviews)</span></div>
-          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500"></i>${excursion.duration} <span class="mx-1">·</span> <i class="fa-solid fa-location-dot text-violet-500"></i>${excursion.meetingPoint || ''}</p>
+          <h2 class="font-display text-2xl font-bold mb-1 leading-tight" style="color:var(--text-primary)">${x.title}</h2>
+          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(x.rating)}<span class="text-xs" style="color:var(--text-secondary)">${Number(x.rating).toFixed(1)} (${x.reviews} reviews)</span></div>
+          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-violet-500"></i>${x.duration} <span class="mx-1">·</span> <i class="fa-solid fa-location-dot text-violet-500"></i>${x.meetingPoint || ''}</p>
         </div>
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionAbout">— ABOUT</p>
           <h3 class="font-display text-lg font-bold mb-2" style="color:var(--text-primary)" data-i18n="excSectionOverview">Overview</h3>
-          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${excursion.fullDescription || excursion.description}</p>
+          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${x.fullDescription || x.description}</p>
         </div>
         <div>
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionIncluded">— INCLUDED</p>
           <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatsIncluded">What's Included</h3>
-          <div class="grid grid-cols-1 gap-2">${(excursion.includes || []).map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
+          <div class="grid grid-cols-1 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
         </div>
-        ${(excursion.excludes || []).length ? `
+        ${(x.excludes || []).length ? `
           <div>
             <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionNotIncluded">— NOT INCLUDED</p>
             <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatsNotIncluded">What's Not Included</h3>
-            <div class="grid grid-cols-1 gap-2">${excursion.excludes.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
+            <div class="grid grid-cols-1 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
-        ${(excursion.whatToBring || []).length ? `
+        ${(x.whatToBring || []).length ? `
           <div>
             <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionBring">— GOOD TO KNOW</p>
             <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excWhatToBring">What to Bring</h3>
-            <div class="grid grid-cols-1 gap-2">${excursion.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
+            <div class="grid grid-cols-1 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm" style="color:var(--text-secondary)"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
           </div>` : ''}
-        ${(excursion.itinerary || []).length ? `
+        ${(x.itinerary || []).length ? `
           <div>
             <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="excSectionItinerary">— SCHEDULE</p>
             <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)" data-i18n="excTripItinerary">Trip Itinerary</h3>
             <div class="space-y-0">
-              ${excursion.itinerary.map((step, i) => `
+              ${x.itinerary.map((step, i) => `
                 <div class="flex gap-3">
                   <div class="flex flex-col items-center flex-shrink-0">
                     <div class="w-8 h-8 rounded-full bg-violet-500/15 text-violet-500 text-[11px] font-bold flex items-center justify-center">${i + 1}</div>
-                    ${i < excursion.itinerary.length - 1 ? '<div class="w-px flex-1 bg-violet-400/20 my-1"></div>' : ''}
+                    ${i < x.itinerary.length - 1 ? '<div class="w-px flex-1 bg-violet-400/20 my-1"></div>' : ''}
                   </div>
                   <div class="pb-4 flex-1">
                     <p class="text-[10px] font-bold text-violet-500 mb-0.5">${step.time || ''}</p>
@@ -1885,22 +1620,22 @@ function showExcursionPage(excursionId) {
         <div class="card rounded-2xl p-4">
           <div class="flex items-center justify-between mb-3">
             <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="sectionReviewsEyebrow">— REVIEWS</p><h3 class="font-display text-lg font-bold" style="color:var(--text-primary)" data-i18n="guestReviewsTitle">Guest Reviews</h3></div>
-            <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="excursionReviewsSummary">${Number(excursion.rating).toFixed(1)}</p><p class="text-[10px]" style="color:var(--text-secondary)"><span id="excursionReviewsSummaryCount">${excursion.reviews || 0}</span> reviews</p></div>
+            <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="excursionReviewsSummary">${Number(x.rating).toFixed(1)}</p><p class="text-[10px]" style="color:var(--text-secondary)"><span id="excursionReviewsSummaryCount">${x.reviews || 0}</span> reviews</p></div>
           </div>
-          <button onclick="reviews.openModal('excursion','${excursion.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> <span data-i18n="writeReview">Write a Review</span></button>
+          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> <span data-i18n="writeReview">Write a Review</span></button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
       </div>
       <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)">
-        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold" style="color:var(--text-secondary)">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(excursion.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)">/person</span></p></div>
-        <button onclick="startExcursionBooking('${excursion.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+        <div><p class="text-[9px] tracking-wider mb-0.5 font-semibold" style="color:var(--text-secondary)">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)">/person</span></p></div>
+        <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
       </div>
     </div>`;
   document.getElementById('mainApp').appendChild(page);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0, 0);
-  reviews.renderList('excursion', excursion.id, 'excursionReviewsList', 'excursionReviewsSummary');
+  reviews.renderList('excursion', x.id, 'excursionReviewsList', 'excursionReviewsSummary');
   I18N.set(I18N.get());
 }
 
@@ -1914,14 +1649,13 @@ function closeExcursionPage() { reviews.detachListeners();
   nav.go('excursions'); }
 
 function startExcursionBooking(excursionId) {
-  const x = state.excursionsCache.find(i => (i.code || i.id) === excursionId) || CATALOG.excursions.find(i => i.id === excursionId);
+  const x = CATALOG.excursions.find(i => i.id === excursionId);
   state.currentExcursion = x;
   const dateField = document.getElementById('excursionDate');
   state.bookingDraft = { name: 'Ahmed Mohamed', email: '', phone: '', participants: 2, payment: 'card', date: (dateField && dateField.dataset.value) || utils.addDays(utils.todayIso(), 1) };
   renderExcursionBookingStep(2);
 }
 
-// ==================== EXCURSION BOOKING FLOW ====================
 function renderExcursionBookingStep(step) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   let existing = document.getElementById('excursionBookingFlowPage');
@@ -2058,21 +1792,6 @@ function payAndConfirmExcursionBooking(subtotal, taxes, total) {
 
 // ==================== TRANSFERS ====================
 const transfersUi = {
-  render() {
-    const list = document.getElementById('transfersList');
-    if (!list) return;
-    const vehicles = state.transfersCache.length ? state.transfersCache : CATALOG.transfers;
-    list.innerHTML = vehicles.map(v => this.renderVehicleCard(v)).join('');
-  },
-  renderFromAPI(services) {
-    const list = document.getElementById('transfersList');
-    if (!list) return;
-    if (services && services.length) {
-      list.innerHTML = services.map(v => this.renderVehicleCardFromAPI(v)).join('');
-    } else {
-      this.render();
-    }
-  },
   renderVehicleCard(v) {
     return `
       <div class="hotel-card rounded-2xl overflow-hidden">
@@ -2091,34 +1810,181 @@ const transfersUi = {
         </div>
       </div>`;
   },
-  renderVehicleCardFromAPI(v) {
-    const vehicle = {
-      id: v.code || v.id || 'trf-' + Math.random().toString(36).substr(2, 6),
-      vehicleType: v.name || v.vehicleType || 'Transfer',
-      capacity: v.capacity || v.passengers || 4,
-      description: v.description || 'Air-conditioned transfer vehicle.',
-      features: v.features || ['Air-conditioned', 'Professional driver'],
-      price: v.price || v.rate || 50,
-      image: v.images && v.images[0] ? v.images[0] : 'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80'
-    };
-    return `
-      <div class="hotel-card rounded-2xl overflow-hidden">
-        <img src="${getImageUrl(vehicle.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-36 object-cover">
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-display font-bold text-base" style="color:var(--text-primary)">${vehicle.vehicleType}</h3>
-            <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group"></i> Up to ${vehicle.capacity}</span>
-          </div>
-          <p class="text-xs mb-3" style="color:var(--text-secondary)">${vehicle.description}</p>
-          <div class="flex flex-wrap gap-1.5 mb-3">${(vehicle.features || []).map(f => `<span class="text-[9px] px-2 py-1 rounded-lg" style="background:var(--bg-field); color:var(--text-secondary)">${f}</span>`).join('')}</div>
-          <div class="flex items-center justify-between">
-            <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(vehicle.price)}<span class="text-xs font-normal" style="color:var(--text-secondary)"> /trip</span></p>
-            <button onclick="startTransferBooking('${vehicle.id}')" class="btn-gold px-6 py-2.5 rounded-2xl font-bold text-ink-900 text-sm">Book</button>
-          </div>
-        </div>
-      </div>`;
+  render() {
+    const list = document.getElementById('transfersList');
+    if (!list) return;
+    list.innerHTML = CATALOG.transfers.map(v => this.renderVehicleCard(v)).join('');
   }
 };
+
+function startTransferBooking(vehicleId) {
+  const v = CATALOG.transfers.find(i => i.id === vehicleId);
+  state.currentTransfer = v;
+  state.bookingDraft = { name: 'Ahmed Mohamed', email: '', phone: '', direction: 'Airport to Hotel', flightNo: '', address: '', passengers: 2, time: '14:00', payment: 'card', date: utils.addDays(utils.todayIso(), 1) };
+  renderTransferBookingStep(2);
+}
+
+function renderTransferBookingStep(step) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  let existing = document.getElementById('transferBookingFlowPage');
+  if (existing) existing.remove();
+  const v = state.currentTransfer;
+  const subtotal = v.price;
+  const taxes = Math.round(subtotal * 0.05);
+  const total = subtotal + taxes;
+  const page = document.createElement('div');
+  page.id = 'transferBookingFlowPage';
+  page.className = 'page';
+  let bodyHtml = '';
+  if (step === 2) {
+    bodyHtml = `
+      <div class="p-5">
+        <div class="card rounded-2xl p-3 flex gap-3 mb-5">
+          <img src="${getImageUrl(v.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+          <div class="flex-1"><h3 class="font-display font-bold text-sm mb-0.5" style="color:var(--text-primary)">${v.vehicleType} Transfer</h3><p class="text-[11px]" style="color:var(--text-secondary)">Up to ${v.capacity} passengers</p></div>
+        </div>
+        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Transfer Details</h3>
+        <form onsubmit="submitTransferDetails(event)" class="space-y-4">
+          <div class="field-box p-1 rounded-2xl flex gap-1">
+            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold" data-i18n="airportPickup">Airport Pickup</button>
+            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold" data-i18n="airportDropoff">Airport Drop-off</button>
+          </div>
+          <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">FULL NAME</label><input type="text" id="tkName" required value="${state.bookingDraft.name}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
+          <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">EMAIL ADDRESS</label><input type="email" id="tkEmail" required placeholder="you@example.com" value="${state.bookingDraft.email}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
+          <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">PHONE NUMBER</label><input type="tel" id="tkPhone" required placeholder="+20 1xx xxx xxxx" value="${state.bookingDraft.phone}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
+          <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">FLIGHT NUMBER (OPTIONAL)</label><input type="text" id="tkFlightNo" placeholder="e.g. MS 0455" value="${state.bookingDraft.flightNo}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
+          <div><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" id="tkAddressLabel">HOTEL NAME & ADDRESS</label><input type="text" id="tkAddress" required placeholder="e.g. Discover Grand Hotel, Naama Bay" value="${state.bookingDraft.address}" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div id="tkDate" class="date-field p-3" data-value="${state.bookingDraft.date}" onclick="datepicker.open('tkDate', { minIso: utils.todayIso() })"><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1">DATE</label><span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">${utils.formatDate(state.bookingDraft.date)}</span></div>
+            <div class="date-field p-3"><label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1">TIME</label><input type="time" id="tkTime" value="${state.bookingDraft.time}" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)"></div>
+          </div>
+          <div class="field-box rounded-2xl p-3 flex items-center justify-between">
+            <div><p class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)">PASSENGERS</p><p class="text-sm font-semibold" style="color:var(--text-primary)" id="tkPassengersLabel">${state.bookingDraft.passengers} People</p></div>
+            <div class="flex items-center gap-3"><button type="button" class="counter-btn" onclick="adjustTransferPassengers(-1)">-</button><button type="button" class="counter-btn" onclick="adjustTransferPassengers(1)">+</button></div>
+          </div>
+          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 mt-2 ripple">Continue <i class="fa-solid fa-arrow-left"></i></button>
+        </form>
+      </div>`;
+  } else if (step === 3) {
+    bodyHtml = `
+      <div class="p-5">
+        <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Payment Method</h3>
+        <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div>
+        <div class="card rounded-2xl p-4 space-y-2 mb-6">
+          <div class="flex justify-between text-sm" style="color:var(--text-secondary)"><span>${v.vehicleType} Transfer</span><span class="font-medium" style="color:var(--text-primary)">${utils.formatPrice(subtotal)}</span></div>
+          <div class="flex justify-between text-sm" style="color:var(--text-secondary)"><span>Taxes & Fees</span><span class="font-medium" style="color:var(--text-primary)">${utils.formatPrice(taxes)}</span></div>
+          <div class="border-t pt-2 flex justify-between" style="border-color:var(--border-card)"><span class="font-bold" style="color:var(--text-primary)">Total Amount</span><span class="font-bold text-violet-500 text-lg font-display">${utils.formatPrice(total)}</span></div>
+        </div>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 ripple"><i class="fa-solid fa-lock"></i> Pay Now</button>
+        <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">Back to Previous</button>
+      </div>`;
+  }
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-body)">
+      <div class="dark-scene px-5 pt-6 pb-6 relative overflow-hidden">
+        <div class="stars-container"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-5">
+            <button onclick="${step === 2 ? 'closeTransferBookingFlow()' : 'renderTransferBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
+            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Transfer Details' : 'Payment'}</h1>
+          </div>
+          ${utils.stepIndicator(step, ['Select', 'Details', 'Payment'])}
+        </div>
+      </div>
+      ${bodyHtml}
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  I18N.set(I18N.get());
+  if (step === 2) setTransferDirection(state.bookingDraft.direction);
+}
+
+function setTransferDirection(dir) {
+  state.bookingDraft.direction = dir;
+  const a = document.getElementById('dirBtnArrival'),
+    d = document.getElementById('dirBtnDeparture'),
+    label = document.getElementById('tkAddressLabel');
+  if (!a || !d) return;
+  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)';
+  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)';
+  if (label) label.textContent = dir === 'Airport to Hotel' ? 'HOTEL NAME & ADDRESS (DROP-OFF)' : 'HOTEL NAME & ADDRESS (PICKUP)';
+}
+
+function setTransferPaymentMethod(m) { state.bookingDraft.payment = m;
+  renderTransferBookingStep(3); }
+
+function closeTransferBookingFlow() { const p = document.getElementById('transferBookingFlowPage'); if (p) p.remove();
+  nav.go('transfers'); }
+
+function adjustTransferPassengers(delta) {
+  const v = state.currentTransfer;
+  const newVal = state.bookingDraft.passengers + delta;
+  if (newVal >= 1 && newVal <= v.capacity) { state.bookingDraft.passengers = newVal;
+    document.getElementById('tkPassengersLabel').textContent = `${newVal} People`; }
+}
+
+function submitTransferDetails(e) {
+  e.preventDefault();
+  state.bookingDraft.name = document.getElementById('tkName').value;
+  state.bookingDraft.email = document.getElementById('tkEmail').value;
+  state.bookingDraft.phone = document.getElementById('tkPhone').value;
+  state.bookingDraft.flightNo = document.getElementById('tkFlightNo').value;
+  state.bookingDraft.address = document.getElementById('tkAddress').value;
+  state.bookingDraft.date = document.getElementById('tkDate').dataset.value;
+  state.bookingDraft.time = document.getElementById('tkTime').value;
+  renderTransferBookingStep(3);
+}
+
+function payAndConfirmTransferBooking(subtotal, taxes, total) {
+  const btn = document.getElementById('transferPayBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Processing…';
+  const orderId = utils.generateId();
+  kashier.pay({
+    amount: total,
+    orderId,
+    method: state.bookingDraft.payment,
+    onSuccess: (result) => {
+      const v = state.currentTransfer;
+      const b = {
+        id: orderId,
+        type: 'transfer',
+        transferId: v.id,
+        vehicleType: v.vehicleType,
+        image: v.image,
+        direction: state.bookingDraft.direction,
+        name: state.bookingDraft.name,
+        email: state.bookingDraft.email,
+        phone: state.bookingDraft.phone,
+        flightNo: state.bookingDraft.flightNo,
+        address: state.bookingDraft.address,
+        date: state.bookingDraft.date,
+        time: state.bookingDraft.time,
+        passengers: state.bookingDraft.passengers,
+        payment: state.bookingDraft.payment,
+        paymentStatus: result.status,
+        transactionRef: result.transactionRef,
+        priceUsd: total,
+        priceFormatted: utils.formatPrice(total),
+        status: 'upcoming',
+        reviewed: false,
+        createdAt: new Date().toISOString(),
+        checkin: state.bookingDraft.date,
+        uid: (fbEnabled && currentUser) ? currentUser.uid : null
+      };
+      persistBooking(b);
+      renderBookingConfirmation(b);
+    },
+    onCancel: () => { btn.disabled = false;
+      btn.innerHTML = orig; }
+  });
+  btn.disabled = false;
+  btn.innerHTML = orig;
+}
 
 // ==================== DESTINATIONS ====================
 const destinationsUi = {
@@ -2143,6 +2009,52 @@ const destinationsUi = {
   }
 };
 
+function showDestinationPage(id) {
+  const d = CATALOG.destinations.find(x => x.id === id);
+  if (!d) return;
+  const old = document.getElementById('destinationDetailPage');
+  if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'destinationDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+      <div class="relative h-72">
+        <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onDestGalleryScroll(this)" id="destGallery">
+          ${(d.images || [d.image]).map(img => {
+            const src = getImageUrl(img);
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+          }).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
+        <button onclick="closeDestinationPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="destGalleryDots">${(d.images || [d.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-5" style="background:var(--bg-card)">
+        <div>
+          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(d.rating)}<span class="text-xs" style="color:var(--text-secondary)">${Number(d.rating).toFixed(1)}</span></div>
+          <h2 class="font-display text-2xl font-bold mb-1 leading-tight" style="color:var(--text-primary)">${d.name}</h2>
+          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${d.location || ''}</p>
+        </div>
+        <div>
+          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold" data-i18n="aboutPlace">— ABOUT</p>
+          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${d.fullDescription || d.description}</p>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  I18N.set(I18N.get());
+}
+
+function onDestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth);
+  document.querySelectorAll('#destGalleryDots .gallery-dot').forEach((dd, i) => dd.classList.toggle('active', i === idx)); }
+
+function closeDestinationPage() { const p = document.getElementById('destinationDetailPage'); if (p) p.remove();
+  nav.go('home'); }
+
 // ==================== RESTAURANTS ====================
 const restaurantsUi = {
   renderCard(r) {
@@ -2164,6 +2076,74 @@ const restaurantsUi = {
   renderRow() { const row = document.getElementById('restaurantsRow'); if (row) row.innerHTML = CATALOG.restaurants.map(r => this.renderCard(r)).join(''); },
   renderFull() { const list = document.getElementById('restaurantsFullList'); if (list) list.innerHTML = `<div class="grid grid-cols-2 gap-3">${CATALOG.restaurants.map(r => this.renderCard(r)).join('')}</div>`; }
 };
+
+function showRestaurantPage(id) {
+  const r = CATALOG.restaurants.find(x => x.id === id);
+  if (!r) return;
+  const old = document.getElementById('restaurantDetailPage');
+  if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'restaurantDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
+      <div class="relative h-80">
+        <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
+          ${(r.images || [r.image]).map(img => {
+            const src = getImageUrl(img);
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+          }).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
+        <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute bottom-5 left-5 right-5 z-10 text-white">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="lux-cuisine-badge">${r.cuisine}</span>
+            <span class="text-gold-400 text-xs font-semibold">${'$'.repeat(r.priceLevel || 2)}</span>
+          </div>
+          <h1 class="font-display text-3xl font-bold leading-tight mb-2" style="text-shadow:0 2px 12px rgba(0,0,0,.5)">${r.name}</h1>
+          <div class="flex items-center gap-2 text-sm">${utils.renderStars(r.rating)}<span class="text-white/80 text-xs">${Number(r.rating).toFixed(1)} (${r.reviews || 0})</span></div>
+        </div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="restGalleryDots">${(r.images || [r.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
+        <div class="flex items-center justify-center gap-5 pb-5 mb-1">
+          <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-gold-500"></i>${r.location}</p>
+          <span class="w-1 h-1 rounded-full" style="background:var(--border-field)"></span>
+          <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-gold-500"></i>${r.openHours || ''}</p>
+        </div>
+        <p class="text-center text-sm leading-relaxed italic font-display" style="color:var(--text-secondary)">"${r.fullDescription || r.description}"</p>
+        <div class="lux-divider"><span class="lux-dot"></span></div>
+        <div>
+          <p class="text-center font-display italic text-2xl mb-6" style="color:var(--text-primary)" data-i18n="theMenu">The Menu</p>
+          ${(r.menu || []).map(section => `
+            <div class="mb-8">
+              <h4 class="menu-category-title">${section.category}</h4>
+              <div>
+                ${section.items.map(it => `
+                  <div class="menu-item-row">
+                    <span class="menu-item-name">${it.name}</span>
+                    <span class="menu-item-leader"></span>
+                    <span class="menu-item-price">${utils.formatPrice(it.price)}</span>
+                  </div>
+                  ${it.description ? `<p class="menu-item-desc">${it.description}</p>` : '<div class="mb-3"></div>'}`).join('')}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  I18N.set(I18N.get());
+}
+
+function onRestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth);
+  document.querySelectorAll('#restGalleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
+
+function closeRestaurantPage() { const p = document.getElementById('restaurantDetailPage'); if (p) p.remove();
+  nav.go('restaurants'); }
 
 // ==================== REVIEWS SLIDER ====================
 const reviewsHomeUi = {
@@ -2198,6 +2178,36 @@ const articlesUi = {
       </div>`).join('');
   }
 };
+
+function showArticlePage(id) {
+  const a = CATALOG.articles.find(x => x.id === id);
+  if (!a) return;
+  const old = document.getElementById('articleDetailPage');
+  if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'articleDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+      <div class="relative h-56">
+        <img src="${getImageUrl(a.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
+        <button onclick="closeArticlePage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div class="p-5 space-y-4">
+        <h1 class="font-display text-2xl font-bold leading-tight" style="color:var(--text-primary)">${a.title}</h1>
+        <p class="text-xs" style="color:var(--text-secondary)"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min ${a.author ? '· ' + a.author : ''}</p>
+        <p class="text-sm leading-relaxed" style="color:var(--text-secondary); white-space:pre-line">${a.content}</p>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function closeArticlePage() { const p = document.getElementById('articleDetailPage'); if (p) p.remove();
+  nav.go('home'); }
 
 // ==================== BOOKINGS LIST ====================
 const bookings = {
@@ -2939,8 +2949,7 @@ function bindTranslationAndSettingsOverlays() {
 
 function refreshCatalogUI() {
   if (!document.getElementById('mainApp') || document.getElementById('mainApp').classList.contains('hidden')) return;
-  // Do NOT render featured hotels here because they are loaded via API
-  // Only render static content
+  // Hotels are loaded via API, not from catalog
   hotels.render();
   excursionsUi.render();
   transfersUi.render();
@@ -3060,41 +3069,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   CurrencyAPI.init().then(() => { refreshCatalogUI();
     bookings.render(); });
   initFirebase();
-  
-  // Test Worker connection
-  try {
-    const health = await API.health();
-    console.log('✅ Worker connected:', health);
-  } catch (err) {
-    console.warn('⚠️ Worker health check failed:', err);
-  }
 });
 
 // Expose API globally for console debugging
 window.API = API;
-window.DiscoverSharm = {
-  hotels: { 
-    search: API.searchHotels, 
-    checkRates: API.checkRates, 
-    book: API.bookHotel, 
-    get: API.getHotelBooking, 
-    cancel: API.cancelHotelBooking 
-  },
-  activities: { 
-    search: API.searchActivities, 
-    details: API.activityDetails, 
-    book: API.bookActivity, 
-    get: API.getActivityBooking, 
-    cancel: API.cancelActivityBooking 
-  },
-  transfers: { 
-    availability: API.transferAvailability, 
-    book: API.bookTransfer, 
-    get: API.getTransferBooking, 
-    cancel: API.cancelTransferBooking 
-  },
-  cache: { 
-    hotels: API.getHotelCache 
-  },
-  health: API.health
-};
