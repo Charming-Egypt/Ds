@@ -166,7 +166,7 @@ tailwind.config = {
 <div id="appShell" class="hidden app-shell">
     <aside class="sidebar" id="sidebar">
         <div class="flex items-center gap-3 px-5 py-5 border-b" style="border-color:rgba(255,255,255,.06)">
-            <img src="https://www.discover-sharm.com/app/test/data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
+            <img src="https://www.discover-sharm.com/m/data/logo.png" onerror="this.style.display='none'" class="w-9 h-9 rounded-xl object-cover" alt="">
             <div>
                 <p class="font-display font-bold text-sm leading-tight">Discover Sharm</p>
                 <p class="text-[10px]" style="color:#fb923c">SUPER ADMIN</p>
@@ -258,7 +258,7 @@ let firebaseConfig = {}, APP_CONFIG = {}, GITHUB_CFG = {};
 let fbApp, fbAuth, fbDB, currentAdminUid = null;
 
 async function loadConfig() {
-    const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
+    const res = await fetch('https://www.discover-sharm.com/m/data/configs.json');
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
     APP_CONFIG = cfg.app || {};
@@ -271,7 +271,7 @@ const GitHubStore = {
     configured() { return !!(GITHUB_CFG.owner && GITHUB_CFG.repo && GITHUB_CFG.proxyEndpoint && GITHUB_CFG.owner.indexOf('YOUR_') !== 0); },
     resolvePath(path) {
         const prefix = GITHUB_CFG.dataPathPrefix;
-        if (prefix && path.indexOf('https://www.discover-sharm.com/app/test/data/') === 0) return prefix + path.slice(4);
+        if (prefix && path.indexOf('https://www.discover-sharm.com/m/data/') === 0) return prefix + path.slice(4);
         return path;
     },
     getSecret() { return localStorage.getItem('ds_admin_proxy_secret') || ''; },
@@ -283,7 +283,7 @@ const GitHubStore = {
         return s || '';
     },
     async read(path) {
-        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/app/test/data/configs.json first.');
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/m/data/configs.json first.');
         const realPath = this.resolvePath(path);
         const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(realPath)}`;
         const res = await fetch(url);
@@ -294,7 +294,7 @@ const GitHubStore = {
         return parsed;
     },
     async write(path, newContent, message) {
-        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/app/test/data/configs.json first.');
+        if (!this.configured()) throw new Error('GitHub isn\'t configured yet — fill in the "github" section of https://www.discover-sharm.com/m/data/configs.json first.');
         const secret = await this.ensureSecret();
         if (!secret) throw new Error('Admin secret is required to save.');
         const realPath = this.resolvePath(path);
@@ -425,8 +425,8 @@ const Dashboard = {
             fbDB.ref('allBookings').once('value'),
             fbDB.ref('users').once('value')
         ]);
-        const jsonHotels = await fetch('https://www.discover-sharm.com/app/test/data/hotels.json').then(r => r.json()).catch(() => []);
-        const jsonExc = await fetch('https://www.discover-sharm.com/app/test/data/excursions.json').then(r => r.json()).catch(() => []);
+        const jsonHotels = await fetch('https://www.discover-sharm.com/m/data/hotels.json').then(r => r.json()).catch(() => []);
+        const jsonExc = await fetch('https://www.discover-sharm.com/m/data/excursions.json').then(r => r.json()).catch(() => []);
         document.getElementById('stat-hotels').textContent = jsonHotels.length;
         document.getElementById('stat-excursions').textContent = jsonExc.length;
         const bookings = objToArray(bookingsSnap.val());
@@ -466,7 +466,7 @@ function generateId() { return 'id_' + Date.now().toString(36) + Math.random().t
 let LANGS = [{ code: 'en', label: 'English' }];
 async function loadLangs() {
     try {
-        const manifest = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json').then(r => r.json());
+        const manifest = await fetch('https://www.discover-sharm.com/m/data/lang/manifest.json').then(r => r.json());
         LANGS = manifest.languages;
     } catch (e) { console.warn('Could not load language manifest', e); }
 }
@@ -520,7 +520,7 @@ const MlField = {
 
 // ==================== SHARED: CRUD HELPERS ====================
 async function loadJsonBaseline(file) {
-    try { return await fetch('https://www.discover-sharm.com/app/test/data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
+    try { return await fetch('https://www.discover-sharm.com/m/data/' + file + '.json').then(r => r.json()); } catch (e) { return []; }
 }
 function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
 function openModal(title, bodyHtml, footerHtml, opts) {
@@ -588,10 +588,10 @@ function makeGitHubCollection(path) {
     };
 }
 function githubNotConfiguredBanner() {
-    return GitHubStore.configured() ? '' : `<div class="card p-4 mb-5" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm font-semibold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> GitHub isn't configured yet</p><p class="text-xs" style="color:#c9c2dd">Fill in the <code>github</code> section of <code>https://www.discover-sharm.com/app/test/data/configs.json</code> (owner, repo, proxyEndpoint) — see <code>admin/github-proxy-worker.js</code> for the one-time Worker setup. Nothing can be saved until this is done.</p></div>`;
+    return GitHubStore.configured() ? '' : `<div class="card p-4 mb-5" style="border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.06)"><p class="text-sm font-semibold text-red-400 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> GitHub isn't configured yet</p><p class="text-xs" style="color:#c9c2dd">Fill in the <code>github</code> section of <code>https://www.discover-sharm.com/m/data/configs.json</code> (owner, repo, proxyEndpoint) — see <code>admin/github-proxy-worker.js</code> for the one-time Worker setup. Nothing can be saved until this is done.</p></div>`;
 }
 
-Modules.hotels = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/hotels.json'), {
+Modules.hotels = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/hotels.json'), {
     async init() {
         document.getElementById('section-hotels').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -732,7 +732,7 @@ const FormTabs = {
 };
 
 // ==================== EXCURSIONS MODULE ====================
-Modules.excursions = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/excursions.json'), {
+Modules.excursions = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/excursions.json'), {
     async init() {
         document.getElementById('section-excursions').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -842,7 +842,7 @@ Modules.excursions = Object.assign(makeGitHubCollection('https://www.discover-sh
 });
 
 // ==================== TRANSFERS MODULE ====================
-Modules.transfers = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/transfers.json'), {
+Modules.transfers = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/transfers.json'), {
     async init() {
         document.getElementById('section-transfers').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -900,7 +900,7 @@ Modules.transfers = Object.assign(makeGitHubCollection('https://www.discover-sha
 });
 
 // ==================== RESTAURANTS MODULE ====================
-Modules.restaurants = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/restaurants.json'), {
+Modules.restaurants = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/restaurants.json'), {
     async init() {
         document.getElementById('section-restaurants').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1021,7 +1021,7 @@ Modules.restaurants = Object.assign(makeGitHubCollection('https://www.discover-s
 });
 
 // ==================== DESTINATIONS MODULE ====================
-Modules.destinations = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/destinations.json'), {
+Modules.destinations = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/destinations.json'), {
     async init() {
         document.getElementById('section-destinations').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1079,7 +1079,7 @@ Modules.destinations = Object.assign(makeGitHubCollection('https://www.discover-
 });
 
 // ==================== ARTICLES MODULE ====================
-Modules.articles = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/app/test/data/articles.json'), {
+Modules.articles = Object.assign(makeGitHubCollection('https://www.discover-sharm.com/m/data/articles.json'), {
     async init() {
         document.getElementById('section-articles').innerHTML = githubNotConfiguredBanner() + `
             <div class="flex items-center justify-between mb-5">
@@ -1407,7 +1407,7 @@ Modules.languages = {
     paths: {},       // { en: 'data/lang/en.json', ... }
     dirty: {},       // { en: true, ar: true } — tracks which dicts have been edited locally
     async init() {
-        LANGS.forEach(l => { this.paths[l.code] = 'https://www.discover-sharm.com/app/test/data/lang/' + l.code + '.json'; });
+        LANGS.forEach(l => { this.paths[l.code] = 'https://www.discover-sharm.com/m/data/lang/' + l.code + '.json'; });
         document.getElementById('section-languages').innerHTML = githubNotConfiguredBanner() + `
             <div class="card p-4 mb-5">
                 <div class="flex flex-wrap items-end gap-3">
@@ -1420,7 +1420,7 @@ Modules.languages = {
                         </div>
                     </div>
                 </div>
-                <p class="text-xs mt-3" style="color:#6b6382">Every save here commits directly to that language's <code>https://www.discover-sharm.com/app/test/data/lang/&lt;code&gt;.json</code> file on GitHub. To add a whole new language: add its JSON file + manifest entry in <code>https://www.discover-sharm.com/app/test/data/lang/manifest.json</code> directly (see README), then reload this page — its keys become editable here too.</p>
+                <p class="text-xs mt-3" style="color:#6b6382">Every save here commits directly to that language's <code>https://www.discover-sharm.com/m/data/lang/&lt;code&gt;.json</code> file on GitHub. To add a whole new language: add its JSON file + manifest entry in <code>https://www.discover-sharm.com/m/data/lang/manifest.json</code> directly (see README), then reload this page — its keys become editable here too.</p>
             </div>
             <div class="flex items-center justify-between mb-3">
                 <input id="langSearch" oninput="Modules.languages.render()" class="field-input" style="max-width:280px" placeholder="Search keys…">
@@ -1571,10 +1571,10 @@ Modules.settings = {
     async load() {
         try {
             if (GitHubStore.configured()) {
-                const full = await GitHubStore.read('https://www.discover-sharm.com/app/test/data/configs.json');
+                const full = await GitHubStore.read('https://www.discover-sharm.com/m/data/configs.json');
                 this.cfg = full;
             } else {
-                const res = await fetch('https://www.discover-sharm.com/app/test/data/configs.json');
+                const res = await fetch('https://www.discover-sharm.com/m/data/configs.json');
                 this.cfg = await res.json();
             }
             this.render();
@@ -1650,7 +1650,7 @@ Modules.settings = {
             </div>
 
             <div class="card p-4 mt-5" style="border-color:rgba(251,191,36,.3); background:rgba(251,191,36,.04)">
-                <p class="text-xs" style="color:#c9c2dd"><i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> <strong>Firebase</strong> and <strong>GitHub</strong> credentials live in <code>https://www.discover-sharm.com/app/test/data/configs.json</code> but are intentionally hidden from this editor for safety. Edit that file directly (or via GitHub) to change them, then reload.</p>
+                <p class="text-xs" style="color:#c9c2dd"><i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i> <strong>Firebase</strong> and <strong>GitHub</strong> credentials live in <code>https://www.discover-sharm.com/m/data/configs.json</code> but are intentionally hidden from this editor for safety. Edit that file directly (or via GitHub) to change them, then reload.</p>
             </div>`;
     },
     async save() {
@@ -1682,7 +1682,7 @@ Modules.settings = {
         };
         this.cfg.app = app;
         try {
-            await GitHubStore.write('https://www.discover-sharm.com/app/test/data/configs.json', this.cfg, 'Update app settings');
+            await GitHubStore.write('https://www.discover-sharm.com/m/data/configs.json', this.cfg, 'Update app settings');
             Toast.show('Settings saved to GitHub', 'success');
         } catch (err) {
             Toast.show('Save failed: ' + err.message, 'error');
