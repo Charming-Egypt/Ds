@@ -1,6 +1,6 @@
 /* ============================================================
-   DISCOVER SHARM — Frontend Application
-   Integrated with Cloudflare Worker API Gateway (Hotels only)
+   DISCOVER SHARM — MAIN APPLICATION LOGIC (FULL)
+   مع دمج Worker API للفنادق فقط
    ============================================================ */
 
 // ==================== FALLBACK LOGO ====================
@@ -13,11 +13,9 @@ window.FALLBACK_LOGO = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
 <circle cx="32" cy="32" r="4" fill="#fdba74"/>
 </svg>`);
 
-// ==================== WORKER API CONFIG (Hotels only) ====================
-const WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev';
-
-// ==================== IMAGE HELPER ====================
+// ==================== IMAGE HELPER (FIXES EXCURSIONS & DESTINATIONS) ====================
 function getImageUrl(item) {
+  // لو الصورة object (مترجمة)، خد اللغة الحالية
   if (item && typeof item === 'object' && !Array.isArray(item)) {
     const lang = I18N.get();
     return item[lang] || item.en || '';
@@ -27,7 +25,9 @@ function getImageUrl(item) {
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%232b2140' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%239d94b8' font-size='20' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-// ==================== WORKER API CLIENT (Hotels only) ====================
+// ==================== WORKER API CONFIG (Hotels only) ====================
+const WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev';
+
 const API = {
   // Hotels
   async searchHotels(params) {
@@ -210,12 +210,12 @@ let I18N_DICT = {};
 
 async function loadI18nDict() {
   try {
-    const manifestRes = await fetch('https://www.discover-sharm.com/app/test/data/lang/manifest.json');
+    const manifestRes = await fetch('data/lang/manifest.json');
     const manifest = await manifestRes.json();
     SUPPORTED_LANGS = manifest.languages.map(l => l.code);
     LANG_LABELS = {};
     manifest.languages.forEach(l => { LANG_LABELS[l.code] = l.label; });
-    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('https://www.discover-sharm.com/app/test/data/lang/' + code + '.json')));
+    const dictResponses = await Promise.all(SUPPORTED_LANGS.map(code => fetch('data/lang/' + code + '.json')));
     const dictJsons = await Promise.all(dictResponses.map(r => r.json()));
     SUPPORTED_LANGS.forEach((code, i) => {
       const langDict = dictJsons[i];
@@ -831,7 +831,9 @@ const nav = {
 const app = {
   enterMainApp() {
     document.getElementById('mainApp').classList.remove('hidden');
-    ui.renderFeaturedHotels();
+    // عرض مؤقت حتى تحميل البيانات من API
+    document.getElementById('featuredHotels').innerHTML = `<div class="text-center py-10 text-white/60">جاري تحميل الفنادق...</div>`;
+    // باقي الأقسام تبقى على البيانات المحلية
     excursionsUi.renderFeatured();
     transfersUi.render();
     ui.setDefaultDates();
@@ -845,7 +847,7 @@ const app = {
         window._flightFormsInitialized = true;
       }, 300);
     }
-    // Load hotels from Worker on home page
+    // تحميل الفنادق من الـ Worker
     loadFeaturedHotels();
   }
 };
@@ -866,11 +868,12 @@ async function loadFeaturedHotels() {
     if (result && result.hotels) {
       state.hotelsCache = result.hotels.hotels || [];
       ui.renderFeaturedHotelsFromAPI(state.hotelsCache.slice(0, 2));
-      // Also update hotels list if on hotels page
+      // تحديث قائمة الفنادق إذا كانت صفحة الفنادق مفتوحة
       hotels.render();
     }
   } catch (err) {
     console.warn('Could not load featured hotels from API:', err);
+    // استخدام البيانات المحلية كحل احتياطي
     ui.renderFeaturedHotels();
   }
 }
@@ -897,7 +900,7 @@ const ui = {
     <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
       <div class="flex">
         <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-          <img src="${getImageUrl(h.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+          <img src="${h.image}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
           ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
           <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
         </div>
@@ -919,7 +922,7 @@ const ui = {
     </div>`;
   },
   renderHotelCardFromAPI(h) {
-    // Map API response to card format
+    // تحويل بيانات API إلى نفس صيغة البطاقة
     const hotel = {
       id: h.code || h.id || 'api-' + Math.random().toString(36).substr(2, 6),
       name: h.name || 'Hotel',
@@ -1373,7 +1376,7 @@ function bookingDetailBody(b) {
   if (b.type === 'excursion') {
     return `
       <div class="card rounded-2xl p-3 flex gap-3 mb-4">
-        <img src="${getImageUrl(b.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+        <img src="${b.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
         <div class="flex-1"><h3 class="font-display font-bold text-sm mb-0.5" style="color:var(--text-primary)">${b.title}</h3><p class="text-[11px]" style="color:var(--text-secondary)">${b.category}</p></div>
       </div>
       <div class="space-y-3 text-sm mb-4">
@@ -1403,7 +1406,7 @@ function bookingDetailBody(b) {
   }
   return `
     <div class="card rounded-2xl p-3 flex gap-3 mb-4">
-      <img src="${getImageUrl(b.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+      <img src="${b.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
       <div class="flex-1"><h3 class="font-display font-bold text-sm mb-0.5" style="color:var(--text-primary)">${b.hotelName}</h3><div class="flex items-center gap-1 mb-1">${utils.renderStars(b.rating || 5)}</div><p class="text-[10px] flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${(b.location || '').split(',')[0]}</p></div>
     </div>
     <div class="space-y-3 text-sm mb-4">
@@ -1484,7 +1487,7 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS ====================
+// ==================== EXCURSIONS (FIXED IMAGES) ====================
 const excursionsUi = {
   renderFeatured() {
     const el = document.getElementById('featuredExcursions');
@@ -1496,7 +1499,12 @@ const excursionsUi = {
     return `
       <div onclick="showExcursionPage('${x.id}')" class="flex-shrink-0 w-44 cursor-pointer">
         <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
-          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+          <img 
+            src="${imgSrc}" 
+            referrerpolicy="no-referrer"
+            onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+            class="w-full h-full object-cover"
+          >
           <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
             <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
             <span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span>
@@ -1515,7 +1523,12 @@ const excursionsUi = {
       <div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
         <div class="flex">
           <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-            <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+            <img 
+              src="${imgSrc}" 
+              referrerpolicy="no-referrer"
+              onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+              class="w-full h-full object-cover"
+            >
             <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1">
               <span class="text-[9px]" style="color:var(--text-secondary)">(${x.reviews} reviews)</span>
               <i class="fa-solid fa-star text-gold-400 text-[8px]"></i>
@@ -1546,7 +1559,6 @@ const excursionsUi = {
   }
 };
 
-// ==================== EXCURSION DETAIL ====================
 function showExcursionPage(excursionId) {
   const x = CATALOG.excursions.find(i => i.id === excursionId);
   if (!x) return;
@@ -1562,7 +1574,7 @@ function showExcursionPage(excursionId) {
         <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
           ${(x.images || [x.image]).map(img => {
             const src = getImageUrl(img);
-            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
           }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
@@ -1675,7 +1687,7 @@ function renderExcursionBookingStep(step) {
     bodyHtml = `
       <div class="p-5">
         <div class="card rounded-2xl p-3 flex gap-3 mb-5">
-          <img src="${getImageUrl(x.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+          <img src="${x.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
           <div class="flex-1"><h3 class="font-display font-bold text-sm mb-0.5" style="color:var(--text-primary)">${x.title}</h3><p class="text-[11px]" style="color:var(--text-secondary)">${x.category} · ${x.duration}</p></div>
         </div>
         <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Booking Information</h3>
@@ -1795,7 +1807,7 @@ const transfersUi = {
   renderVehicleCard(v) {
     return `
       <div class="hotel-card rounded-2xl overflow-hidden">
-        <img src="${getImageUrl(v.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-36 object-cover">
+        <img src="${v.image}" class="w-full h-36 object-cover">
         <div class="p-4">
           <div class="flex items-center justify-between mb-2">
             <h3 class="font-display font-bold text-base" style="color:var(--text-primary)">${v.vehicleType}</h3>
@@ -1840,7 +1852,7 @@ function renderTransferBookingStep(step) {
     bodyHtml = `
       <div class="p-5">
         <div class="card rounded-2xl p-3 flex gap-3 mb-5">
-          <img src="${getImageUrl(v.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+          <img src="${v.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
           <div class="flex-1"><h3 class="font-display font-bold text-sm mb-0.5" style="color:var(--text-primary)">${v.vehicleType} Transfer</h3><p class="text-[11px]" style="color:var(--text-secondary)">Up to ${v.capacity} passengers</p></div>
         </div>
         <h3 class="font-display text-lg font-bold mb-3" style="color:var(--text-primary)">Transfer Details</h3>
@@ -1986,7 +1998,7 @@ function payAndConfirmTransferBooking(subtotal, taxes, total) {
   btn.innerHTML = orig;
 }
 
-// ==================== DESTINATIONS ====================
+// ==================== DESTINATIONS (FIXED IMAGES) ====================
 const destinationsUi = {
   render() {
     const row = document.getElementById('destinationsRow');
@@ -1995,7 +2007,12 @@ const destinationsUi = {
       const imgSrc = getImageUrl(d.image);
       return `
         <div onclick="showDestinationPage('${d.id}')" class="destination-card">
-          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
+          <img 
+            src="${imgSrc}" 
+            referrerpolicy="no-referrer"
+            onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'"
+            class="w-full h-full object-cover absolute inset-0"
+          >
           <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
           <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full">
             <span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span>
@@ -2023,7 +2040,7 @@ function showDestinationPage(id) {
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onDestGalleryScroll(this)" id="destGallery">
           ${(d.images || [d.image]).map(img => {
             const src = getImageUrl(img);
-            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
           }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
@@ -2062,7 +2079,7 @@ const restaurantsUi = {
     return `
       <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card">
         <div class="relative h-28">
-          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
           <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
           <div class="absolute top-2 left-2 bg-ink-950/70 text-white text-[9px] font-bold px-2 py-1 rounded-full capitalize">${r.category}</div>
         </div>
@@ -2091,7 +2108,7 @@ function showRestaurantPage(id) {
         <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
           ${(r.images || [r.image]).map(img => {
             const src = getImageUrl(img);
-            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
+            return `<img src="${src}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`;
           }).join('')}
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
@@ -2169,7 +2186,7 @@ const articlesUi = {
     if (!row) return;
     row.innerHTML = CATALOG.articles.map(a => `
       <div onclick="showArticlePage('${a.id}')" class="article-card">
-        <img src="${getImageUrl(a.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0">
+        <img src="${a.image}" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0">
         <div class="flex-1 min-w-0 py-1">
           <p class="font-display font-bold text-sm mb-1 leading-snug" style="color:var(--text-primary)">${a.title}</p>
           <p class="text-[11px] mb-1.5" style="color:var(--text-secondary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${a.excerpt}</p>
@@ -2190,7 +2207,7 @@ function showArticlePage(id) {
   page.innerHTML = `
     <div class="min-h-screen pb-28" style="background:var(--bg-card)">
       <div class="relative h-56">
-        <img src="${getImageUrl(a.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+        <img src="${a.image}" class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
         <button onclick="closeArticlePage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
       </div>
@@ -2235,7 +2252,7 @@ const bookings = {
       const icons = { hotel: 'fa-hotel', excursion: 'fa-umbrella-beach', transfer: 'fa-shuttle-van' };
       const title = b.type === 'hotel' ? b.hotelName : b.type === 'excursion' ? b.title : `${b.vehicleType} Transfer`;
       const dateStr = b.type === 'hotel' ? b.checkin : b.date;
-      const img = b.image ? `<img src="${getImageUrl(b.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-20 h-20 rounded-lg object-cover flex-shrink-0">` : `<div class="w-20 h-20 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid ${icons[b.type]} text-violet-500 text-2xl"></i></div>`;
+      const img = b.image ? `<img src="${b.image}" class="w-20 h-20 rounded-lg object-cover flex-shrink-0">` : `<div class="w-20 h-20 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid ${icons[b.type]} text-violet-500 text-2xl"></i></div>`;
       return `
         <div onclick="showBookingDetails('${b.id}')" class="hotel-card rounded-xl p-3 flex gap-3 cursor-pointer">
           ${img}
@@ -2782,6 +2799,10 @@ function localizeCatalog(lang) {
 
 function objToArray(obj) { return obj ? Object.keys(obj).map(k => Object.assign({ id: k }, obj[k])) : []; }
 
+function arrayToKeyedObject(arr) { const o = {}; arr.forEach(item => { const copy = Object.assign({}, item);
+    delete copy.id;
+    o[item.id] = copy; }); return o; }
+
 function mergeCatalogWithOverrides(baseArray, firebaseObj) {
   const byId = {};
   (baseArray || []).forEach(item => { byId[item.id] = item; });
@@ -2797,6 +2818,7 @@ function mergeCatalogWithOverrides(baseArray, firebaseObj) {
 
 async function loadCatalogJson() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+  // Try loading each file individually so failure of one doesn't break the others
   for (const f of files) {
     try {
       const res = await fetch('data/' + f + '.json');
