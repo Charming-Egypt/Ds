@@ -225,36 +225,29 @@ async function loadConfig() {
     GITHUB_CFG = cfg.github || {};
 }
 
-// ==================== GITHUB STORE (shared pattern with Super Admin) ====================
+// ==================== GITHUB STORE (updated for Worker v5) ====================
 const GitHubStore = {
     cache: {},
     configured() { return !!(GITHUB_CFG.owner && GITHUB_CFG.repo && GITHUB_CFG.proxyEndpoint && GITHUB_CFG.owner.indexOf('YOUR_') !== 0); },
-    resolvePath(path) {
-        const prefix = GITHUB_CFG.dataPathPrefix;
-        if (prefix && path.indexOf('data/') === 0) return prefix + path.slice(4);
-        return path;
-    },
     async getIdToken() {
         if (!fbAuth.currentUser) throw new Error('You are not signed in.');
         return await fbAuth.currentUser.getIdToken();
     },
-    async read(path) {
+    async read(file) {
         if (!this.configured()) throw new Error('GitHub isn\'t configured yet — ask your Super Admin to finish setup in data/configs.json.');
-        const realPath = this.resolvePath(path);
-        const url = `${GITHUB_CFG.proxyEndpoint}/file?owner=${encodeURIComponent(GITHUB_CFG.owner)}&repo=${encodeURIComponent(GITHUB_CFG.repo)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}&path=${encodeURIComponent(realPath)}`;
+        const url = `${GITHUB_CFG.proxyEndpoint}/file?file=${encodeURIComponent(file)}&branch=${encodeURIComponent(GITHUB_CFG.branch || 'main')}`;
         const res = await fetch(url);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Read failed (' + res.status + ')');
-        this.cache[path] = { sha: data.sha };
+        this.cache[file] = { sha: data.sha };
         return JSON.parse(data.content);
     },
-    async writeItem(collection, path, itemId, itemData, message) {
+    async writeItem(collection, file, itemId, itemData, message) {
         if (!this.configured()) throw new Error('GitHub isn\'t configured yet — ask your Super Admin to finish setup in data/configs.json.');
         const idToken = await this.getIdToken();
-        const realPath = this.resolvePath(path);
         const res = await fetch(`${GITHUB_CFG.proxyEndpoint}/catalog-item`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ owner: GITHUB_CFG.owner, repo: GITHUB_CFG.repo, branch: GITHUB_CFG.branch || 'main', dataPath: realPath, collection, itemId, itemData, idToken, message })
+            body: JSON.stringify({ file, collection, itemId, itemData, idToken, message })
         });
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || 'Save failed (' + res.status + ')');
@@ -273,7 +266,7 @@ const Toast = {
     }
 };
 
-// ==================== AUTH (gated by owners/hotels/{uid} or admins/{uid}) ====================
+// ==================== AUTH (gated by owners/hotels/{uid} — array directly) ====================
 const Auth = {
     async login() {
         const email = document.getElementById('loginEmail').value.trim();
@@ -303,10 +296,11 @@ async function handleAuthState(user) {
     try {
         const [adminSnap, ownerSnap] = await Promise.all([
             fbDB.ref('admins/' + user.uid).once('value'),
-            fbDB.ref('owners/hotels/' + user.uid).once('value')
+            fbDB.ref('owners/hotels/' + user.uid).once('value')   // changed: no /itemIds
         ]);
         isSuperAdminUser = adminSnap.val() === true;
-        myHotelIds = ownerSnap.val() || [];
+        const ownerVal = ownerSnap.val();
+        myHotelIds = Array.isArray(ownerVal) ? ownerVal : [];      // ensure array
         if (!isSuperAdminUser && !myHotelIds.length) { showScreen('unauthorized'); return; }
     } catch (err) { showScreen('unauthorized'); return; }
     currentUid = user.uid;
@@ -351,7 +345,7 @@ const Router = {
     fbAuth.onAuthStateChanged(handleAuthState);
 })();
 
-// ==================== LANGUAGES + MULTI-LANGUAGE FIELD (same pattern as Super Admin) ====================
+// ==================== LANGUAGES + MULTI-LANGUAGE FIELD ====================
 let LANGS = [{ code: 'en', label: 'English' }];
 async function loadLangs() {
     try { LANGS = (await fetch('../data/lang/manifest.json').then(r => r.json())).languages; }
@@ -414,7 +408,7 @@ const FormTabs = {
 const HotelApp = {
     hotels: [], owned: [], current: null,
     async init() {
-        try { this.hotels = await GitHubStore.read('data/hotels.json'); }
+        try { this.hotels = await GitHubStore.read('hotels.json'); }
         catch (err) { Toast.show(err.message, 'error'); this.hotels = []; }
         this.owned = isSuperAdminUser ? this.hotels : this.hotels.filter(h => myHotelIds.includes(h.id));
         if (!this.owned.length) { Toast.show('No hotels are linked to your account yet', 'error'); return; }
@@ -446,12 +440,10 @@ const HotelApp = {
         if (section === 'bookings') this.renderBookingsTable();
         if (section === 'reviews') this.renderReviewsList();
     },
-    // Applies a partial update to the current hotel object, saves it, and keeps local state in sync
-    // so edits made in one section (e.g. Rooms) aren't lost if you then save another (e.g. Details).
     async saveCurrent(partial, message) {
         const updated = Object.assign({}, this.current, partial);
         try {
-            await GitHubStore.writeItem('hotels', 'data/hotels.json', this.current.id, updated, message);
+            await GitHubStore.writeItem('hotels', 'hotels.json', this.current.id, updated, message);
             this.current = updated;
             const idx = this.owned.findIndex(h => h.id === updated.id); if (idx >= 0) this.owned[idx] = updated;
             Toast.show('Saved — committed to GitHub', 'success');
