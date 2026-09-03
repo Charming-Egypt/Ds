@@ -206,35 +206,6 @@
     </div>
   </div>
 
-  <!-- Flight passengers modal -->
-  <div id="flightPaxModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="passengersClass">Passengers & Class</h3>
-        <button onclick="flightSearch.closePaxModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)">Age 12+</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('adults',-1)">-</button><span id="fpAdults" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="flightSearch.adjust('adults',1)">+</button></div>
-        </div>
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)">Age 2-11</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('children',-1)">-</button><span id="fpChildren" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('children',1)">+</button></div>
-        </div>
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)">Under 2</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('infants',-1)">-</button><span id="fpInfants" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('infants',1)">+</button></div>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="cabinClass">CABIN CLASS</label>
-          <select id="fpCabin" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"><option>Economy</option><option>Business</option><option>First</option></select>
-        </div>
-      </div>
-      <button onclick="flightSearch.applyPax()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
-    </div>
-  </div>
-
   <!-- hidden avatar file input -->
   <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="profileAvatar.handleFile(event)" />
 
@@ -262,7 +233,6 @@
         <div class="drawer-link" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
         <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
         <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
-        <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
         <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
         <div class="drawer-link" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
         <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
@@ -327,7 +297,6 @@
           <div class="flex gap-1 field-box p-1 rounded-2xl">
             <button onclick="search.switchTab('hotels')" id="searchTabHotels" title="Hotels" aria-label="Hotels" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-hotel text-lg"></i></button>
             <button onclick="search.switchTab('excursions')" id="searchTabExcursions" title="Excursions" aria-label="Excursions" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-umbrella-beach text-lg"></i></button>
-            <button onclick="search.switchTab('flights')" id="searchTabFlights" title="Flights" aria-label="Flights" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-plane text-lg"></i></button>
             <button onclick="search.switchTab('transfers')" id="searchTabTransfers" title="Transfers" aria-label="Transfers" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-lg"></i></button>
           </div>
 
@@ -370,42 +339,6 @@
               <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
             </div>
             <button onclick="search.applyExcursionSearch()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchExcursions">Search Excursions</span></button>
-          </div>
-
-          <!-- Flight search form -->
-          <div id="flightSearchForm" class="space-y-4 hidden">
-            <div class="field-box p-1 rounded-2xl flex gap-1">
-              <button type="button" onclick="flightSearch.setTripType('round')" id="flightTripRound" class="flex-1 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-rotate-left ml-1"></i><span data-i18n="roundTrip">Round Trip</span></button>
-              <button type="button" onclick="flightSearch.setTripType('oneway')" id="flightTripOneway" class="flex-1 py-2.5 rounded-xl text-xs font-bold"><i class="fa-solid fa-arrow-right-long ml-1"></i><span data-i18n="oneWay">One Way</span></button>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="field-box p-3">
-                <div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-plane-departure text-violet-600 text-xs"></i><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="flightFrom">FROM</span></div>
-                <input type="text" id="flightFrom" maxlength="60" placeholder="City or airport" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)" />
-              </div>
-              <div class="field-box p-3">
-                <div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-plane-arrival text-violet-600 text-xs"></i><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="flightTo">TO</span></div>
-                <input type="text" id="flightTo" maxlength="60" placeholder="City or airport" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)" />
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div id="flightDepartDate" class="date-field p-3" data-value="" onclick="datepicker.open('flightDepartDate', { minIso: utils.todayIso() })">
-                <div class="flex items-center gap-2 mb-1.5"><div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-plane-departure text-violet-600 text-xs"></i></div><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="departureDate">DEPARTURE</span></div>
-                <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
-              </div>
-              <div id="flightReturnDate" class="date-field p-3" data-value="" onclick="datepicker.open('flightReturnDate', { minIso: document.getElementById('flightDepartDate').dataset.value || utils.todayIso() })">
-                <div class="flex items-center gap-2 mb-1.5"><div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-solid fa-plane-arrival text-violet-600 text-xs"></i></div><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="returnDate">RETURN</span></div>
-                <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
-              </div>
-            </div>
-            <div class="field-box p-3 flex items-center justify-between cursor-pointer" onclick="flightSearch.openPaxModal()">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid fa-user-group text-violet-600"></i></div>
-                <div><p class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="passengersClass">PASSENGERS & CLASS</p><p class="text-sm font-semibold" style="color:var(--text-primary)" id="flightPaxDisplay">1 Adult · Economy</p></div>
-              </div>
-              <i class="fa-solid fa-chevron-down text-gray-300"></i>
-            </div>
-            <button onclick="flightSearch.apply()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchFlights">Search Flights</span></button>
           </div>
 
           <!-- Transfer search form -->
@@ -487,41 +420,12 @@
           </div>
         </div>
 
-        <!-- Restaurants & Cafes -->
-        <div class="px-5 mb-8">
-          <div class="flex items-center justify-between mb-4">
-            <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h3 class="section-title" data-i18n="restaurantsTitle">Restaurants & Cafes</h3></div>
-            <button onclick="nav.go('restaurants')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
-          </div>
-          <div id="restaurantsRow" class="horizontal-scroll"></div>
-        </div>
-
-        <!-- Promo banner 20% off -->
-        <div class="px-5 mb-8">
-          <div class="banner-creative rounded-[26px] relative overflow-hidden" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1000&q=80')">
-            <div class="relative z-10 p-6 text-white max-w-[75%]">
-              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-3 border border-white/20"><i class="fa-solid fa-gift text-orange-300 ml-1"></i><span data-i18n="limitedOffer">LIMITED OFFER</span></div>
-              <p class="font-display text-2xl font-bold mb-1"><span data-i18n="getOff">Get</span> <span class="text-orange-300">20% OFF</span></p>
-              <p class="text-sm text-white/80 mb-4" data-i18n="firstBooking">on your first booking</p>
-              <button onclick="nav.go('hotels')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm ripple" data-i18n="bookNow">Book Now</button>
-            </div>
-          </div>
-        </div>
-
         <!-- Guest Reviews -->
         <div class="mb-8">
           <div class="px-5 flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="storiesEyebrow">— GUEST STORIES</p><h3 class="section-title" data-i18n="whatGuestsSay">What Our Guests Say</h3></div>
           </div>
           <div class="horizontal-scroll px-5" id="reviewsRow"></div>
-        </div>
-
-        <!-- Articles -->
-        <div class="px-5 mb-8">
-          <div class="flex items-center justify-between mb-4">
-            <div><p class="section-subtitle" data-i18n="journalEyebrow">— JOURNAL</p><h3 class="section-title" data-i18n="articlesTitle">Travel Guides & Tips</h3></div>
-          </div>
-          <div id="articlesRow" class="space-y-4"></div>
         </div>
 
         <!-- Payment Methods -->
@@ -599,19 +503,6 @@
           <p class="text-xs leading-relaxed mt-2" style="color:var(--text-secondary)" data-i18n="transfersSubtitle">Choose a vehicle for your ride between Sharm El Sheikh International Airport (SSH) and your hotel.</p>
         </div>
         <div class="px-5 pt-4 space-y-4 pb-28" id="transfersList"></div>
-      </div>
-    </div>
-
-    <!-- RESTAURANTS PAGE -->
-    <div id="restaurantsPage" class="page">
-      <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
-          <div class="flex items-center gap-3 mb-2">
-            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
-            <div><p class="section-subtitle" data-i18n="diningEyebrow">— EAT & DRINK</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="restaurantsTitle">Restaurants & Cafes</h1></div>
-          </div>
-        </div>
-        <div class="px-5 pt-4 pb-28" id="restaurantsFullList"></div>
       </div>
     </div>
 
