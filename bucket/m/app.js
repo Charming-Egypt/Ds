@@ -18,8 +18,8 @@ function getImageUrl(item) {
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%232b2140' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%239d94b8' font-size='20' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 // ====== WORKER URLS ======
-const WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev'; // Worker الخاص بالحجز والدفع (كاشير)
-const CONTENT_WORKER_URL = 'https://gh.gm-093.workers.dev'; // Worker الجديد لقراءة المحتوى من GitHub
+const WORKER_URL = 'https://gh.gm-093.workers.dev'; 
+const CONTENT_WORKER_URL = 'https://gh.gm-093.workers.dev';
 
 const API = {
   async searchHotels(params) {
@@ -2535,7 +2535,7 @@ async function loadAppConfig() {
     const res = await fetch('data/configs.json');
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
-    KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '' }, cfg.kashier || {});
+    KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/' }, cfg.kashier || {});
     KASHIER_CONFIG.merchantRedirect = window.location.origin + window.location.pathname + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
     APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
     document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
