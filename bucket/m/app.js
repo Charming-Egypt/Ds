@@ -2523,30 +2523,26 @@ async function loadCatalogJson() {
 
 async function loadAppConfig() {
   try {
-    // محاولة تحميل الإعدادات من الـ Worker أولاً
-    const configRes = await fetch(`${CONTENT_WORKER_URL}/config`);
-    if (configRes.ok) {
-      const cfg = await configRes.json();
-      firebaseConfig = cfg.firebase || {};
-      KASHIER_CONFIG.hashEndpoint = 'https://discover-sharm-hash.gm-093.workers.dev/hash';
-      KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash' }, cfg.kashier || {});
-      KASHIER_CONFIG.merchantRedirect = window.location.origin + window.location.pathname + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
-      APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
-      document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
-      document.documentElement.style.setProperty('--brand-primary-dark', APP_CONFIG.brandColorPrimaryDark);
-      return;
-    }
-    // fallback للـ data/configs.json
-    const res = await fetch('data/configs.json');
+    const res = await fetch(CONTENT_WORKER_URL + '/config');
+    if (!res.ok) throw new Error('Config fetch failed');
     const cfg = await res.json();
+
     firebaseConfig = cfg.firebase || {};
-    KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash' }, cfg.kashier || {});
-    KASHIER_CONFIG.merchantRedirect = window.location.origin + window.location.pathname + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
+    KASHIER_CONFIG = Object.assign(
+      { merchantId: '', mode: 'test', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash', merchantRedirect: window.location.href.split('?')[0] + '?kashier_callback=1' },
+      cfg.kashier || {}
+    );
+    KASHIER_CONFIG.merchantRedirect = window.location.href.split('?')[0] + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
+
     APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
     document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
     document.documentElement.style.setProperty('--brand-primary-dark', APP_CONFIG.brandColorPrimaryDark);
   } catch (err) {
-    console.warn('Could not load config — falling back to safe defaults (Guest mode, EGP only).', err);
+    console.error('Could not load config from Worker:', err);
+    // لا يوجد fallback محلي — نعرض رسالة خطأ واضحة
+    document.getElementById('loginError').textContent = 'Configuration error — please reload.';
+    document.getElementById('loginError').classList.remove('hidden');
+    throw err;
   }
 }
 
