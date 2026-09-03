@@ -1,7 +1,7 @@
 [
   {
     "id": "h1",
-    "category": "Budget",
+    "category": "budget",
     "name": {
       "en": "Cataract Layalina",
       "ar": "كاتاراكت ليالينا",
@@ -11,7 +11,7 @@
       "tr": "Cataract Layalina"
     },
     "description": {
-      "en": " 4-star hotel with sea view",
+      "en": "4-star hotel with sea view",
       "ar": "فندق 4 نجوم بإطلالة على البحر",
       "ru": "Роскошный 5-звездочный отель с видом на море",
       "de": "Luxus-5-Sterne-Hotel mit Meerblick",
@@ -303,5 +303,5 @@
       "2026-09-14",
       "2026-09-15"
     ]
-  }        
+  }
 ]
