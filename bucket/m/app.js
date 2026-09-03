@@ -683,17 +683,25 @@ const search = {
   },
   switchTab(tab) {
     state.activeSearchTab = tab;
-    document.getElementById('hotelSearchForm').classList.toggle('hidden', tab !== 'hotels');
-    document.getElementById('excursionSearchForm').classList.toggle('hidden', tab !== 'excursions');
-    document.getElementById('transferSearchForm').classList.toggle('hidden', tab !== 'transfers');
+    const hotelForm = document.getElementById('hotelSearchForm');
+    const excursionForm = document.getElementById('excursionSearchForm');
+    const transferForm = document.getElementById('transferSearchForm');
+    if (hotelForm) hotelForm.classList.toggle('hidden', tab !== 'hotels');
+    if (excursionForm) excursionForm.classList.toggle('hidden', tab !== 'excursions');
+    if (transferForm) transferForm.classList.toggle('hidden', tab !== 'transfers');
     const tabs = { hotels: 'searchTabHotels', excursions: 'searchTabExcursions', transfers: 'searchTabTransfers' };
     Object.keys(tabs).forEach(t => {
       const btn = document.getElementById(tabs[t]);
       if (!btn) return;
-      btn.style.background = t === tab ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
-      btn.style.color = t === tab ? '#fff' : 'var(--text-secondary)';
+      if (t === tab) {
+        btn.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        btn.style.color = '#fff';
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--text-secondary)';
+      }
     });
-  }
+}
 };
 
 // ===================== HOTELS =====================
