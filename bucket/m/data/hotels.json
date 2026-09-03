@@ -262,7 +262,7 @@
         "Concierge"
       ]
     },
-    "bestseller": false,
+    "bestseller": true,
     "rooms": [
       {
         "type": {
