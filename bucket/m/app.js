@@ -2524,8 +2524,8 @@ async function loadAppConfig() {
     if (configRes.ok) {
       const cfg = await configRes.json();
       firebaseConfig = cfg.firebase || {};
-      KASHIER_CONFIG.hashEndpoint = 'https://discover-sharm-hash.gm-093.workers.dev/';
-      KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/' }, cfg.kashier || {});
+      KASHIER_CONFIG.hashEndpoint = 'https://discover-sharm-hash.gm-093.workers.dev/hash';
+      KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash' }, cfg.kashier || {});
       KASHIER_CONFIG.merchantRedirect = window.location.origin + window.location.pathname + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
       APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
       document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
@@ -2536,7 +2536,7 @@ async function loadAppConfig() {
     const res = await fetch('data/configs.json');
     const cfg = await res.json();
     firebaseConfig = cfg.firebase || {};
-    KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/' }, cfg.kashier || {});
+    KASHIER_CONFIG = Object.assign({ merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: 'https://discover-sharm-hash.gm-093.workers.dev/hash' }, cfg.kashier || {});
     KASHIER_CONFIG.merchantRedirect = window.location.origin + window.location.pathname + (cfg.kashier && cfg.kashier.merchantRedirectPath || '?kashier_callback=1');
     APP_CONFIG = Object.assign(APP_CONFIG, cfg.app || {});
     document.documentElement.style.setProperty('--brand-primary', APP_CONFIG.brandColorPrimary);
