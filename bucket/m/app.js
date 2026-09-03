@@ -10,7 +10,7 @@ window.FALLBACK_LOGO = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%232b2140' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' fill='%239d94b8' font-size='20' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 // ===================== CONFIG & STATE =====================
-let WORKER_URL = 'https://discover-sharm-api.gm-093.workers.dev'; // ضع رابط الـ Worker الخاص بك هنا
+let WORKER_URL = 'https://gh.gm-093.workers.dev'; // ضع رابط الـ Worker الخاص بك هنا
 let firebaseConfig = {};
 let KASHIER_CONFIG = { merchantId: '', mode: 'live', currency: 'EGP', hashEndpoint: '', merchantRedirect: '' };
 let APP_CONFIG = {
