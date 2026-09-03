@@ -478,23 +478,27 @@ const kashier = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId, amount, currency: KASHIER_CONFIG.currency })
       });
-      const data = await resp.json();
+            const data = await resp.json();
       if (!data.success || !data.hash) {
         utils.toast('Payment server error: ' + (data.error || 'No hash returned'), 'error');
         return;
       }
       const paymentMethods = method === 'instapay' ? 'wallet' : 'card';
+      const merchantId = data.merchantId || KASHIER_CONFIG.merchantId;
+      const currency = data.currency || KASHIER_CONFIG.currency || 'EGP';
+      const mode = KASHIER_CONFIG.mode || 'test'; // أو 'live' لو مضبوط في الإعدادات
       const kashierUrl = new URL('https://checkout.kashier.io/');
-      kashierUrl.searchParams.append('merchantId', KASHIER_CONFIG.merchantId);
+      kashierUrl.searchParams.append('merchantId', merchantId);
       kashierUrl.searchParams.append('orderId', orderId);
       kashierUrl.searchParams.append('amount', amount);
-      kashierUrl.searchParams.append('currency', KASHIER_CONFIG.currency);
+      kashierUrl.searchParams.append('currency', currency);
       kashierUrl.searchParams.append('hash', data.hash);
-      kashierUrl.searchParams.append('mode', KASHIER_CONFIG.mode);
+      kashierUrl.searchParams.append('mode', mode);
       kashierUrl.searchParams.append('paymentMethods', paymentMethods);
-      kashierUrl.searchParams.append('merchantRedirect', KASHIER_CONFIG.merchantRedirect || 'https://www.discover-sharm.com');
+      kashierUrl.searchParams.append('merchantRedirect', KASHIER_CONFIG.merchantRedirect || window.location.href.split('?')[0] + '?kashier_callback=1');
       kashierUrl.searchParams.append('display', 'en');
       kashierUrl.searchParams.append('allowedMethods', 'card,wallet');
+    
       this.showModal(`
         <iframe src="${kashierUrl.toString()}" style="width:100%; height:600px; border:0; border-radius:16px;" allow="payment" title="Kashier Payment"></iframe>
       `, onCancel);
