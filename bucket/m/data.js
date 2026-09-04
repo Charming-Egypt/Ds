@@ -59,6 +59,14 @@ function getImageUrl(item) {
   return item || '';
 }
 
+function localizeText(value) {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const lang = I18N.get();
+    return value[lang] || value.en || '';
+  }
+  return value || '';
+}
+
 const utils = {
   todayIso() { return new Date().toISOString().slice(0, 10); },
   addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); },
