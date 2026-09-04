@@ -73,13 +73,13 @@
         <p class="text-white/50 text-sm mt-1" data-i18n="authSubtitle">Sign in to manage your bookings</p>
       </div>
       <div class="card-strong rounded-3xl p-6" style="background:#171029; border:1px solid #2b2140;">
-        <button onclick="auth.googleSignIn()" class="w-full py-3.5 rounded-2xl font-semibold text-sm mb-4 flex items-center justify-center gap-3 btn-white">
+        <button type="button" onclick="handleGoogleSignIn()" class="w-full py-3.5 rounded-2xl font-semibold text-sm mb-4 flex items-center justify-center gap-3 btn-white">
           <i class="fa-brands fa-google text-base" style="color:#EA4335"></i> <span data-i18n="continueGoogle">Continue with Google</span>
         </button>
         <div class="flex items-center gap-3 mb-4">
           <div class="flex-1 h-px bg-white/10"></div><span class="text-white/30 text-[10px] font-semibold" data-i18n="orDivider">OR</span><div class="flex-1 h-px bg-white/10"></div>
         </div>
-        <form onsubmit="auth.submit(event)" class="space-y-4">
+        <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
           <div id="authNameWrap" class="hidden space-y-4">
             <div>
               <label class="block text-[10px] tracking-widest text-violet-400 font-semibold mb-1.5" data-i18n="fullNameLabel">FULL NAME</label>
