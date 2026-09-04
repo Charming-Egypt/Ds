@@ -278,6 +278,47 @@ async function handleAuthSubmit(e) {
   if (user) enterApp();
 }
 
+async function handleGoogleSignIn() {
+  try {
+    // استخدام Google Identity Services (GIS) للحصول على id_token
+    const googleUser = await getGoogleIdToken();
+    if (!googleUser) return;
+
+    const data = await apiFetch('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken: googleUser.credential }),
+    });
+    if (data.success) {
+      authToken = data.idToken;
+      currentUser = data.user;
+      localStorage.setItem('ds_auth_token', authToken);
+      localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      enterApp();
+    }
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+function getGoogleIdToken() {
+  return new Promise((resolve, reject) => {
+    if (window.google) {
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // ضع معرف العميل الصحيح
+        scope: 'profile email',
+        callback: (response) => {
+          if (response.error) reject(response.error);
+          else resolve(response);
+        },
+      });
+      client.requestAccessToken();
+    } else {
+      reject('Google Sign-In غير متاح');
+    }
+  });
+}
+
+
 function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
