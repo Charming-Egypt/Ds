@@ -50,6 +50,7 @@ const sidebar = {
   }
 };
 
+// ==================== GUESTS MODAL ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -90,6 +91,7 @@ function applyGuests() {
   toast('Guests updated', 'info');
 }
 
+// ==================== DATEPICKER (اليوم غير متاح) ====================
 function setDateFieldValue(fieldId, iso) {
   const field = document.getElementById(fieldId);
   if (!field) return;
@@ -118,7 +120,7 @@ const datepicker = {
   unavailable: [],
   open(fieldId, opts = {}) {
     this.target = fieldId;
-    this.minIso = opts.minIso || utils.todayIso();
+    this.minIso = opts.minIso || utils.addDays(utils.todayIso(), 1); // اليوم مغلق
     this.unavailable = opts.unavailableIso || [];
     const field = document.getElementById(fieldId);
     const cur = field ? field.dataset.value : '';
@@ -157,6 +159,7 @@ const datepicker = {
   select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
 };
 
+// ==================== SEARCH ====================
 const search = {
   switchTab(tab) {
     state.activeSearchTab = tab;
@@ -175,6 +178,7 @@ const search = {
   applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); }
 };
 
+// ==================== ROOM PREVIEW ====================
 function showRoomPreview(hotelId, roomIndex) {
   const h = CATALOG.hotels.find(x => x.id === hotelId);
   const r = h?.rooms?.[roomIndex];
@@ -199,6 +203,7 @@ function showRoomPreview(hotelId, roomIndex) {
 }
 function closeRoomPreview() { document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
+// ==================== UI RENDERERS ====================
 const ui = {
   renderHotelCard(h) {
     const img = getImageUrl(h.image);
@@ -409,7 +414,10 @@ const articlesUi = {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadI18nDict();
   I18N.init();
+  THEME.init();
+  initCurrency();
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+  search.switchTab('excursions'); // ✅ default excursions
   setTimeout(hideSplash, 3000);
 });
 
