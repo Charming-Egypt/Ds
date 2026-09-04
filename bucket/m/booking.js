@@ -437,7 +437,6 @@ function setTransferDirection(dir) {
   a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)';
   d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
   d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)';
-  // لا حاجة لتغيير الحقل لأننا نعرض دائمًا حقل الفندق
 }
 
 function setTransferPaymentMethod(m) { state.bookingDraft.payment = m; renderTransferBookingStep(3); }
