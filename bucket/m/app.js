@@ -34,12 +34,19 @@ const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [
 
 // ==================== UTILITIES ====================
 function toast(msg, type = 'success') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;';
+    document.body.appendChild(container);
+  }
   const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-violet-600' };
   const icons = { success: 'fa-check', error: 'fa-xmark', info: 'fa-info' };
   const t = document.createElement('div');
   t.className = `${colors[type]} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 toast`;
   t.innerHTML = `<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid ${icons[type]} text-sm"></i></div><span class="text-sm font-medium">${msg}</span>`;
-  document.getElementById('toastContainer').appendChild(t);
+  container.appendChild(t);
   setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-20px)'; setTimeout(() => t.remove(), 400); }, 3000);
 }
 
