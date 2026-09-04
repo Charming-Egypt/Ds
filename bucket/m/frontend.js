@@ -6,21 +6,21 @@ function enterApp() {
   document.getElementById('mainApp').classList.remove('hidden');
   loadCatalogFromWorker();
   ui.setDefaultDates();
+
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   } else {
     updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
   }
-  // ✅ لا تستدعي هذه إلا عند تسجيل الدخول
+
   if (auth.isLoggedIn()) {
     favorites.load();
     bookings.load();
     notifications.load();
   } else {
-    // للضيف: عرض فارغ بدون استدعاء Worker
-    if (document.getElementById('favoritesList')) favorites.render();
-    if (document.getElementById('bookingsList')) bookings.render();
-    if (document.getElementById('notificationsList')) notifications.render();
+    favorites.render();
+    bookings.render();
+    notifications.render();
   }
 }
 
@@ -99,7 +99,7 @@ function applyGuests() {
   toast('Guests updated', 'info');
 }
 
-// ==================== DATEPICKER (اليوم غير متاح) ====================
+// ==================== DATEPICKER ====================
 function setDateFieldValue(fieldId, iso) {
   const field = document.getElementById(fieldId);
   if (!field) return;
@@ -128,7 +128,7 @@ const datepicker = {
   unavailable: [],
   open(fieldId, opts = {}) {
     this.target = fieldId;
-    this.minIso = opts.minIso || utils.addDays(utils.todayIso(), 1); // اليوم مغلق
+    this.minIso = opts.minIso || utils.addDays(utils.todayIso(), 1);
     this.unavailable = opts.unavailableIso || [];
     const field = document.getElementById(fieldId);
     const cur = field ? field.dataset.value : '';
@@ -185,6 +185,18 @@ const search = {
   filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
   applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); }
 };
+
+// ==================== CURRENCY CHANGE ====================
+function changeCurrency(c) {
+  if (!currencyAvailable) c = 'EGP';
+  state.currency = c;
+  localStorage.setItem('ds_display_currency', c);
+  applyCurrencyAvailability();
+  refreshCatalogUI();
+  bookings.render();
+  favorites.render();
+  toast('Currency updated', 'info');
+}
 
 // ==================== ROOM PREVIEW ====================
 function showRoomPreview(hotelId, roomIndex) {
@@ -352,7 +364,7 @@ const restaurantsUi = {
     if (list) list.innerHTML = `<div class="grid grid-cols-2 gap-3">${CATALOG.restaurants.map(r => this.renderCard(r)).join('')}</div>`;
   },
   renderCard(r) {
-    return `<div class="restaurant-card">
+    return `<div onclick="showRestaurantPage('${r.id}')" class="restaurant-card">
       <div class="relative h-28">
         <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
         <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
@@ -425,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   THEME.init();
   initCurrency();
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('excursions'); // ✅ default excursions
+  search.switchTab('excursions');
   setTimeout(hideSplash, 3000);
 });
 
