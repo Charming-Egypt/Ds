@@ -30,8 +30,15 @@ const state = {
 
 const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
-const MULTILANG_FIELDS = ['name', 'title', 'description', 'fullDescription', 'location', 'vehicleType', 'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content', 'openHours', 'category', 'type', 'beds', 'size'];
+
+// ==================== MULTILANG FIELDS ====================
+const MULTILANG_FIELDS = [
+  'name', 'title', 'description', 'fullDescription', 'location', 'vehicleType',
+  'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content',
+  'openHours', 'category', 'type', 'beds', 'size'
+];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images'];
+
 // ==================== UTILITIES ====================
 function toast(msg, type = 'success') {
   let container = document.getElementById('toastContainer');
@@ -52,20 +59,64 @@ function toast(msg, type = 'success') {
 
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-function getImageUrl(item) {
-  if (item && typeof item === 'object' && !Array.isArray(item)) {
-    const lang = I18N.get();
-    return item[lang] || item.en || '';
-  }
-  return item || '';
-}
-
-function localizeText(value) {
+function localizeValue(value, lang) {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
-    const lang = I18N.get();
     return value[lang] || value.en || '';
   }
   return value || '';
+}
+
+function getImageUrl(item) {
+  return localizeValue(item, I18N.get());
+}
+
+function localizeItem(raw, lang) {
+  const out = Object.assign({}, raw);
+  MULTILANG_FIELDS.forEach(f => {
+    if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang);
+  });
+  MULTILANG_ARRAY_FIELDS.forEach(f => {
+    if (raw[f] !== undefined) {
+      out[f] = Array.isArray(raw[f]) ? raw[f].map(v => localizeValue(v, lang)) : localizeValue(raw[f], lang);
+    }
+  });
+  if (Array.isArray(raw.rooms)) {
+    out.rooms = raw.rooms.map(room => ({
+      ...room,
+      type: localizeValue(room.type, lang),
+      beds: localizeValue(room.beds, lang),
+      description: localizeValue(room.description, lang),
+      amenities: Array.isArray(room.amenities) ? room.amenities.map(a => localizeValue(a, lang)) : [],
+    }));
+  }
+  if (Array.isArray(raw.menu)) {
+    out.menu = raw.menu.map(section => ({
+      category: localizeValue(section.category, lang),
+      items: (section.items || []).map(item => ({
+        ...item,
+        name: localizeValue(item.name, lang),
+        description: localizeValue(item.description, lang),
+      })),
+    }));
+  }
+  if (Array.isArray(raw.itinerary)) {
+    out.itinerary = raw.itinerary.map(step => ({
+      ...step,
+      title: localizeValue(step.title, lang),
+      description: localizeValue(step.description, lang),
+    }));
+  }
+  return out;
+}
+
+function localizeCatalog(lang) {
+  CATALOG.hotels = CATALOG_RAW.hotels.map(item => localizeItem(item, lang));
+  CATALOG.excursions = CATALOG_RAW.excursions.map(item => localizeItem(item, lang));
+  CATALOG.transfers = CATALOG_RAW.transfers.map(item => localizeItem(item, lang));
+  CATALOG.destinations = CATALOG_RAW.destinations.map(item => localizeItem(item, lang));
+  CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
+  CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
+  CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
 }
 
 const utils = {
@@ -205,67 +256,6 @@ async function loadCatalogFromWorker() {
   }
   localizeCatalog(I18N.get());
   refreshCatalogUI();
-}
-
-function localizeValue(value, lang) {
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    return value[lang] || value.en || '';
-  }
-  return value || '';
-}
-
-function localizeCatalog(lang) {
-  CATALOG.hotels = CATALOG_RAW.hotels.map(item => localizeItem(item, lang));
-  CATALOG.excursions = CATALOG_RAW.excursions.map(item => localizeItem(item, lang));
-  CATALOG.transfers = CATALOG_RAW.transfers.map(item => localizeItem(item, lang));
-  CATALOG.destinations = CATALOG_RAW.destinations.map(item => localizeItem(item, lang));
-  CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
-  CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
-  CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
-}
-
-function localizeItem(raw, lang) {
-  const out = Object.assign({}, raw);
-  // توطين الحقول النصية
-  MULTILANG_FIELDS.forEach(f => {
-    if (raw[f] !== undefined) out[f] = localizeValue(raw[f], lang);
-  });
-  // توطين الحقول المصفوفية
-  MULTILANG_ARRAY_FIELDS.forEach(f => {
-    if (raw[f] !== undefined) {
-      out[f] = Array.isArray(raw[f]) ? raw[f].map(v => localizeValue(v, lang)) : localizeValue(raw[f], lang);
-    }
-  });
-  // توطين الحقول المتداخلة في الغرف
-  if (Array.isArray(raw.rooms)) {
-    out.rooms = raw.rooms.map(room => ({
-      ...room,
-      type: localizeValue(room.type, lang),
-      beds: localizeValue(room.beds, lang),
-      description: localizeValue(room.description, lang),
-      amenities: Array.isArray(room.amenities) ? room.amenities.map(a => localizeValue(a, lang)) : (room.amenities ? localizeValue(room.amenities, lang) : []),
-    }));
-  }
-  // توطين عناصر القائمة في المطاعم
-  if (Array.isArray(raw.menu)) {
-    out.menu = raw.menu.map(section => ({
-      category: localizeValue(section.category, lang),
-      items: (section.items || []).map(item => ({
-        ...item,
-        name: localizeValue(item.name, lang),
-        description: localizeValue(item.description, lang),
-      })),
-    }));
-  }
-  // توطين خط سير الرحلة
-  if (Array.isArray(raw.itinerary)) {
-    out.itinerary = raw.itinerary.map(step => ({
-      ...step,
-      title: localizeValue(step.title, lang),
-      description: localizeValue(step.description, lang),
-    }));
-  }
-  return out;
 }
 
 function refreshCatalogUI() {
