@@ -18,7 +18,7 @@ const state = {
   currentExcursion: null,
   currentTransfer: null,
   currentBookingTab: 'upcoming',
-  activeSearchTab: 'excursions', // ✅ Default is excursions
+  activeSearchTab: 'excursions',
   guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
   pageHistory: ['home'],
   bookingDraft: {},
@@ -92,7 +92,7 @@ function formatPrice(egpAmount) {
   return `${symbol}${converted.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
 }
 
-// استبدل utils.formatPrice بالنسخة الجديدة
+// ==================== UTILITIES ====================
 const utils = {
   todayIso() { return new Date().toISOString().slice(0, 10); },
   addDays(iso, n) { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); },
@@ -145,6 +145,25 @@ const utils = {
   }
 };
 
+function toast(msg, type = 'success') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;';
+    document.body.appendChild(container);
+  }
+  const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-violet-600' };
+  const icons = { success: 'fa-check', error: 'fa-xmark', info: 'fa-info' };
+  const t = document.createElement('div');
+  t.className = `${colors[type]} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 toast`;
+  t.innerHTML = `<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid ${icons[type]} text-sm"></i></div><span class="text-sm font-medium">${msg}</span>`;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-20px)'; setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
 function hideSplash() {
   const splash = document.getElementById('splashPage');
   if (splash) {
@@ -172,7 +191,18 @@ const THEME = {
 async function apiFetch(endpoint, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
   const res = await fetch(`${WORKER_URL}${endpoint}`, { ...options, headers });
+
+  if (res.status === 401) {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('ds_auth_token');
+    localStorage.removeItem('ds_current_user');
+    nav.showAuth();
+    throw new Error('Session expired. Please login again.');
+  }
+
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Request failed');
   return data;
@@ -230,22 +260,7 @@ const I18N = {
   init() { this.set(this.get()); }
 };
 
-// ==================== CATALOG LOADING ====================
-async function loadCatalogFromWorker() {
-  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
-  for (const f of files) {
-    try {
-      const data = await apiFetch(`/file?file=${f}.json`);
-      CATALOG_RAW[f] = JSON.parse(data.content);
-    } catch (e) {
-      console.warn(`Failed to load ${f}:`, e);
-      CATALOG_RAW[f] = [];
-    }
-  }
-  localizeCatalog(I18N.get());
-  refreshCatalogUI();
-}
-
+// ==================== LOCALIZATION ====================
 function localizeValue(value, lang) {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return value[lang] || value.en || '';
@@ -304,6 +319,22 @@ function localizeCatalog(lang) {
   CATALOG.restaurants = CATALOG_RAW.restaurants.map(item => localizeItem(item, lang));
   CATALOG.reviews = CATALOG_RAW.reviews.map(item => localizeItem(item, lang));
   CATALOG.articles = CATALOG_RAW.articles.map(item => localizeItem(item, lang));
+}
+
+// ==================== CATALOG LOADING ====================
+async function loadCatalogFromWorker() {
+  const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
+  for (const f of files) {
+    try {
+      const data = await apiFetch(`/file?file=${f}.json`);
+      CATALOG_RAW[f] = JSON.parse(data.content);
+    } catch (e) {
+      console.warn(`Failed to load ${f}:`, e);
+      CATALOG_RAW[f] = [];
+    }
+  }
+  localizeCatalog(I18N.get());
+  refreshCatalogUI();
 }
 
 function refreshCatalogUI() {
@@ -503,7 +534,11 @@ async function submitReview(e) {
 
 // ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
 const favorites = {
-  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/user/favorites'); state.favorites = data.favorites || []; } catch (e) { state.favorites = []; } this.render(); },
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try { const data = await apiFetch('/api/user/favorites'); state.favorites = data.favorites || []; } catch (e) { state.favorites = []; }
+    this.render();
+  },
   async toggle(id) {
     try {
       await apiFetch('/api/user/favorites', { method: 'POST', body: JSON.stringify({ itemId: id }) });
@@ -523,7 +558,11 @@ const favorites = {
 };
 
 const bookings = {
-  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/user/bookings'); state.bookings = data.bookings || []; } catch (e) { state.bookings = []; } this.render(); },
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try { const data = await apiFetch('/api/user/bookings'); state.bookings = data.bookings || []; } catch (e) { state.bookings = []; }
+    this.render();
+  },
   render() {
     const list = document.getElementById('bookingsList'); if (!list) return;
     const filtered = state.bookings.filter(b => {
@@ -542,12 +581,32 @@ const bookings = {
         </div>
       </div>`).join('');
   },
-  switchTab(tab) { state.currentBookingTab = tab; this.render(); }
+  switchTab(tab) {
+    state.currentBookingTab = tab;
+    const up = document.getElementById('tabUpcoming');
+    const past = document.getElementById('tabHistory');
+    if (up && past) {
+      if (tab === 'upcoming') {
+        up.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg';
+        past.className = 'flex-1 py-3 rounded-xl text-sm font-medium';
+        past.style.color = 'var(--text-secondary)';
+      } else {
+        past.className = 'flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-500 to-violet-700 text-white text-sm font-bold shadow-lg';
+        up.className = 'flex-1 py-3 rounded-xl text-sm font-medium';
+        up.style.color = 'var(--text-secondary)';
+      }
+    }
+    this.render();
+  }
 };
 
 const notifications = {
   list: [],
-  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; } catch (e) { this.list = []; } this.render(); },
+  async load() {
+    if (!authToken) { this.render(); return; }
+    try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; } catch (e) { this.list = []; }
+    this.render();
+  },
   render() {
     const list = document.getElementById('notificationsList'); if (!list) return;
     if (!this.list.length) { list.innerHTML = '<p class="text-center py-10">No notifications yet</p>'; return; }
