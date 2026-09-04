@@ -112,6 +112,22 @@ const utils = {
   }
 };
 
+
+
+function hideSplash() {
+  const splash = document.getElementById('splashPage');
+  if (splash) {
+    splash.style.transition = 'opacity .5s ease';
+    splash.style.opacity = '0';
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 500);
+  }
+}
+
+
+
+
 // ==================== API HELPER ====================
 async function apiFetch(endpoint, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
@@ -263,6 +279,7 @@ async function handleAuthSubmit(e) {
 }
 
 function enterApp() {
+  hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
   loadCatalogFromWorker();
@@ -289,7 +306,11 @@ const nav = {
     if (page === 'notifications') notifications.render();
   },
   goBack() { state.pageHistory.pop(); this.go(state.pageHistory[state.pageHistory.length - 1] || 'home'); },
-  showAuth() { document.getElementById('authPage').classList.remove('hidden'); document.getElementById('mainApp').classList.add('hidden'); }
+  showAuth() {
+  hideSplash();   // ← أضف هذا السطر
+  document.getElementById('authPage').classList.remove('hidden');
+  document.getElementById('mainApp').classList.add('hidden');
+}
 };
 
 // ==================== UI COMPONENTS ====================
