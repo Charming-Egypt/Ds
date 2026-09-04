@@ -679,7 +679,7 @@
           <div class="card rounded-2xl p-4 space-y-5">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-3"><div class="w-10 h-10 bg-gold-400/15 rounded-xl flex items-center justify-center"><i class="fa-solid fa-coins text-gold-500"></i></div><span class="text-sm font-medium" style="color:var(--text-primary)" data-i18n="currency">Currency</span></div>
-              <select onchange="settings.changeCurrency(this.value)" id="currencySelect" class="rounded-xl px-3 py-2 text-sm outline-none"><option value="EGP">EGP (ج.م)</option></select>
+              <select id="currencySelect" onchange="changeCurrency(this.value)" class="rounded-xl px-3 py-2 text-sm outline-none"><option value="EGP">EGP (ج.م)</option></select>
             </div>
             <p id="currencyAvailabilityNote" class="text-[11px] hidden" style="color:var(--text-secondary)" data-i18n="currencyEgpOnly">Showing EGP — live rates unavailable</p>
             <div class="flex justify-between items-center">
