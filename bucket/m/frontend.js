@@ -6,13 +6,21 @@ function enterApp() {
   document.getElementById('mainApp').classList.remove('hidden');
   loadCatalogFromWorker();
   ui.setDefaultDates();
-  favorites.load();
-  bookings.load();
-  notifications.load();
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   } else {
     updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
+  }
+  // ✅ لا تستدعي هذه إلا عند تسجيل الدخول
+  if (auth.isLoggedIn()) {
+    favorites.load();
+    bookings.load();
+    notifications.load();
+  } else {
+    // للضيف: عرض فارغ بدون استدعاء Worker
+    if (document.getElementById('favoritesList')) favorites.render();
+    if (document.getElementById('bookingsList')) bookings.render();
+    if (document.getElementById('notificationsList')) notifications.render();
   }
 }
 
