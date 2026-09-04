@@ -104,7 +104,7 @@ function showHotelPage(hotelId) {
           <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ${(h.category || '').toUpperCase()} HOTEL</p>
           <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${h.name}</h2>
           <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(h.rating)}<span class="text-xs">${Number(h.rating).toFixed(1)} (${h.reviews} reviews)</span></div>
-          <p class="text-xs flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${h.location}</p>
+          <p class="text-xs flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${localizeText(h.location)}</p>
         </div>
         <div class="grid grid-cols-3 gap-2">
           ${(h.amenities || []).slice(0, 6).map(a => `<div class="field-box rounded-xl p-2.5 flex flex-col items-center gap-1.5 text-center"><i class="fa-solid ${amenityIcon(a)} text-violet-500"></i><span class="text-[9px] leading-tight">${a}</span></div>`).join('')}
