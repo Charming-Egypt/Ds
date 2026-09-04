@@ -35,7 +35,7 @@ const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [
 const MULTILANG_FIELDS = [
   'name', 'title', 'description', 'fullDescription', 'location', 'vehicleType',
   'duration', 'tagline', 'cuisine', 'text', 'itemName', 'excerpt', 'content',
-  'openHours', 'category', 'type', 'beds', 'size'
+  'openHours', 'category', 'type', 'beds', 'size', 'meetingPoint'
 ];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images'];
 
@@ -280,6 +280,7 @@ const auth = {
       currentUser = data.user;
       localStorage.setItem('ds_auth_token', authToken);
       localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
       return data.user;
     } catch (e) {
       toast(e.message, 'error');
@@ -293,6 +294,7 @@ const auth = {
       currentUser = data.user;
       localStorage.setItem('ds_auth_token', authToken);
       localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
       return data.user;
     } catch (e) {
       toast(e.message, 'error');
@@ -337,12 +339,81 @@ async function handleGoogleSignIn() {
           currentUser = data.user;
           localStorage.setItem('ds_auth_token', authToken);
           localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+          updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
           enterApp();
         } catch (e) { toast(e.message, 'error'); }
       },
     });
     client.requestAccessToken();
   } catch (e) { toast(e.message, 'error'); }
+}
+
+// ==================== USER PROFILE & AVATAR ====================
+const profileAvatar = {
+  currentPhoto: null,
+  render(name, photoURL) {
+    this.currentPhoto = photoURL || null;
+    const letter = (name || 'G').charAt(0).toUpperCase();
+    const wrap = document.getElementById('profileAvatarWrap');
+    const drawerAv = document.getElementById('drawerAvatar');
+    const navAv = document.getElementById('navProfileAvatar');
+    if (wrap) wrap.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : `<span class="font-display text-5xl font-bold text-violet-600" id="profileAvatarLetter">${letter}</span>`;
+    if (drawerAv) drawerAv.innerHTML = photoURL ? `<img src="${photoURL}" class="w-full h-full object-cover">` : letter;
+    if (navAv) navAv.innerHTML = photoURL ? `<img src="${photoURL}" alt="">` : letter;
+  },
+  handleFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 240;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2;
+        const sy = (img.height - minSide) / 2;
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+        this.save(dataUrl);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  },
+  async save(dataUrl) {
+    toast('Updating photo…', 'info');
+    if (currentUser) {
+      try {
+        await apiFetch('/api/profile', { method: 'POST', body: JSON.stringify({ profile: { photoURL: dataUrl } }) });
+        currentUser.photoURL = dataUrl;
+        localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+        this.render(currentUser.displayName || currentUser.email, dataUrl);
+        toast('Profile photo updated', 'success');
+      } catch (e) {
+        toast('Could not save photo: ' + e.message, 'error');
+      }
+    } else {
+      localStorage.setItem('ds_avatar', dataUrl);
+      this.render(document.getElementById('profileName').textContent, dataUrl);
+      toast('Profile photo updated', 'success');
+    }
+  }
+};
+
+function updateDrawerUser(name, email, photoURL) {
+  const n = document.getElementById('drawerName');
+  if (n) n.textContent = name || 'Guest';
+  const e = document.getElementById('drawerEmail');
+  if (e) e.textContent = email || '';
+  const pn = document.getElementById('profileName');
+  if (pn) pn.textContent = name || 'Guest';
+  const pe = document.getElementById('profileEmail');
+  if (pe) pe.textContent = email || '';
+  profileAvatar.render(name, photoURL);
 }
 
 // ==================== REVIEWS ====================
@@ -478,5 +549,13 @@ const notifications = {
         <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center"><i class="fa-solid ${n.icon || 'fa-bell'}"></i></div>
         <div class="flex-1"><h3 class="font-semibold text-sm">${n.title}</h3><p class="text-xs">${n.msg}</p><p class="text-[9px] text-gray-400">${new Date(n.createdAt).toLocaleString()}</p></div>
       </div>`).join('');
+  },
+  markAllRead() {
+    this.list.forEach(n => n.read = true);
+    this.render();
+  },
+  markRead(id) {
+    const n = this.list.find(x => x.id === id);
+    if (n && !n.read) { n.read = true; this.render(); }
   }
 };
