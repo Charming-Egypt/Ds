@@ -9,6 +9,11 @@ function enterApp() {
   favorites.load();
   bookings.load();
   notifications.load();
+  if (currentUser) {
+    updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+  } else {
+    updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
+  }
 }
 
 const nav = {
@@ -33,6 +38,166 @@ const nav = {
     document.getElementById('mainApp').classList.add('hidden');
   }
 };
+
+const sidebar = {
+  open() {
+    document.getElementById('sideDrawer').classList.add('open');
+    document.getElementById('sideDrawerOverlay').classList.add('open');
+  },
+  close() {
+    document.getElementById('sideDrawer').classList.remove('open');
+    document.getElementById('sideDrawerOverlay').classList.remove('open');
+  }
+};
+
+function openGuestsModal() {
+  document.getElementById('guestsModal').classList.remove('hidden');
+  document.getElementById('adultsCount').textContent = state.guests.adults;
+  document.getElementById('childrenCount').textContent = state.guests.children;
+  document.getElementById('infantsCount').textContent = state.guests.infants;
+  document.getElementById('roomsCount').textContent = state.guests.rooms;
+}
+function closeGuestsModal() { document.getElementById('guestsModal').classList.add('hidden'); }
+function adjustGuestCount(type, delta) {
+  const limits = { adults: { min: 1, max: 10 }, children: { min: 0, max: 6 }, infants: { min: 0, max: 4 }, rooms: { min: 1, max: 5 } };
+  const newValue = state.guests[type] + delta;
+  if (type === 'rooms' && delta < 0) {
+    const maxOcc = (state.currentRoom && state.currentRoom.guests) || 2;
+    const required = Math.ceil((state.guests.adults + state.guests.children) / maxOcc);
+    if (newValue < required) { toast('Reduce guests first', 'error'); return; }
+  }
+  if (newValue >= limits[type].min && newValue <= limits[type].max) state.guests[type] = newValue;
+  if (type === 'adults' || type === 'children') {
+    const maxOcc = (state.currentRoom && state.currentRoom.guests) || 2;
+    const required = Math.ceil((state.guests.adults + state.guests.children) / maxOcc);
+    if (required > state.guests.rooms && required <= limits.rooms.max) {
+      state.guests.rooms = required;
+      toast('Room count increased to fit your party', 'info');
+    }
+  }
+  document.getElementById('adultsCount').textContent = state.guests.adults;
+  document.getElementById('childrenCount').textContent = state.guests.children;
+  document.getElementById('infantsCount').textContent = state.guests.infants;
+  document.getElementById('roomsCount').textContent = state.guests.rooms;
+}
+function applyGuests() {
+  const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
+  const disp = document.getElementById('guestsDisplay');
+  if (disp) disp.textContent = text;
+  const bdisp = document.getElementById('bookingGuestsDisplay');
+  if (bdisp) bdisp.textContent = text;
+  closeGuestsModal();
+  toast('Guests updated', 'info');
+}
+
+function setDateFieldValue(fieldId, iso) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+  field.dataset.value = iso;
+  const valueEl = field.querySelector('.date-field-value');
+  if (valueEl) valueEl.textContent = utils.formatDate(iso);
+}
+function onDateFieldChange(fieldId, iso) {
+  if (fieldId === 'checkinDate') {
+    const co = document.getElementById('checkoutDate');
+    if (co && (!co.dataset.value || co.dataset.value <= iso)) setDateFieldValue('checkoutDate', utils.addDays(iso, 1));
+  }
+  if (fieldId === 'bkCheckin') {
+    state.bookingDraft.checkin = iso;
+    const coField = document.getElementById('bkCheckout');
+    if (coField && (!coField.dataset.value || coField.dataset.value <= iso)) { const newCo = utils.addDays(iso, 1); setDateFieldValue('bkCheckout', newCo); state.bookingDraft.checkout = newCo; }
+  }
+  if (fieldId === 'bkCheckout') state.bookingDraft.checkout = iso;
+  if (fieldId === 'ekDate') state.bookingDraft.date = iso;
+  if (fieldId === 'tkDate') state.bookingDraft.date = iso;
+}
+const datepicker = {
+  target: null,
+  viewDate: new Date(),
+  minIso: null,
+  unavailable: [],
+  open(fieldId, opts = {}) {
+    this.target = fieldId;
+    this.minIso = opts.minIso || utils.todayIso();
+    this.unavailable = opts.unavailableIso || [];
+    const field = document.getElementById(fieldId);
+    const cur = field ? field.dataset.value : '';
+    this.viewDate = new Date((cur || this.minIso) + 'T00:00:00');
+    this.render();
+    document.getElementById('datepickerModal').classList.remove('hidden');
+  },
+  close() { document.getElementById('datepickerModal').classList.add('hidden'); },
+  changeMonth(delta) { this.viewDate.setMonth(this.viewDate.getMonth() + delta); this.render(); },
+  render() {
+    const lang = I18N.get();
+    const monthNamesEn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const monthNamesAr = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    const weekdaysEn = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const weekdaysAr = ['ح','ن','ث','ر','خ','ج','س'];
+    const y = this.viewDate.getFullYear(), m = this.viewDate.getMonth();
+    document.getElementById('dpMonthLabel').textContent = (lang === 'ar' ? monthNamesAr[m] : monthNamesEn[m]) + ' ' + y;
+    document.getElementById('dpWeekdays').innerHTML = (lang === 'ar' ? weekdaysAr : weekdaysEn).map(w => `<span class="text-[10px] font-semibold" style="color:var(--text-secondary)">${w}</span>`).join('');
+    const first = new Date(y, m, 1);
+    const startDay = first.getDay();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const field = document.getElementById(this.target);
+    const cur = field ? field.dataset.value : '';
+    let html = '';
+    for (let i = 0; i < startDay; i++) html += '<div></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const isBeforeMin = iso < this.minIso;
+      const isUnavailable = this.unavailable.includes(iso);
+      const isDisabled = isBeforeMin || isUnavailable;
+      const isSelected = cur === iso;
+      html += `<button type="button" ${isDisabled ? 'disabled' : ''} onclick="datepicker.select('${iso}')" class="w-9 h-9 rounded-xl text-xs font-semibold ${isSelected ? 'bg-gradient-to-br from-violet-500 to-violet-700 text-white' : isDisabled ? 'text-gray-400 opacity-40 line-through' : ''}" style="${isSelected ? '' : 'color:var(--text-primary)'}">${d}</button>`;
+    }
+    document.getElementById('dpGrid').innerHTML = html;
+  },
+  select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
+};
+
+const search = {
+  switchTab(tab) {
+    state.activeSearchTab = tab;
+    document.getElementById('hotelSearchForm').classList.toggle('hidden', tab !== 'hotels');
+    document.getElementById('excursionSearchForm').classList.toggle('hidden', tab !== 'excursions');
+    document.getElementById('transferSearchForm').classList.toggle('hidden', tab !== 'transfers');
+    const tabs = { hotels: 'searchTabHotels', excursions: 'searchTabExcursions', transfers: 'searchTabTransfers' };
+    Object.keys(tabs).forEach(t => {
+      const btn = document.getElementById(tabs[t]);
+      if (btn) { btn.style.background = t === tab ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent'; btn.style.color = t === tab ? '#fff' : 'var(--text-secondary)'; }
+    });
+  },
+  handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
+  filterCategory(cat) { state.currentFilter = cat; document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); },
+  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
+  applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); }
+};
+
+function showRoomPreview(hotelId, roomIndex) {
+  const h = CATALOG.hotels.find(x => x.id === hotelId);
+  const r = h?.rooms?.[roomIndex];
+  if (!r) return;
+  document.getElementById('roomPreviewContent').innerHTML = `
+    <div class="relative h-52">
+      <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+      <button onclick="closeRoomPreview()" class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900"><i class="fa-solid fa-xmark"></i></button>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+      <p class="absolute bottom-3 right-3 left-3 text-white font-display font-bold text-lg">${r.type}</p>
+    </div>
+    <div class="p-5" style="background:var(--bg-card)">
+      <div class="flex items-center gap-3 text-xs mb-3" style="color:var(--text-secondary)">
+        <span><i class="fa-solid fa-user-group text-violet-500"></i> ${r.guests || 2} Guests</span>
+        <span><i class="fa-solid fa-ruler-combined text-violet-500"></i> ${r.size || '25m²'}</span>
+        <span><i class="fa-solid fa-bed text-violet-500"></i> ${r.beds || '1 Queen Bed'}</span>
+      </div>
+      <p class="text-sm leading-relaxed mb-4" style="color:var(--text-secondary)">${r.description || ''}</p>
+      <button onclick="selectRoomOnDetail('${hotelId}', ${roomIndex}, { closeModal: true })" class="btn-gold w-full py-3 rounded-2xl font-bold text-ink-900">Select This Room</button>
+    </div>`;
+  document.getElementById('roomPreviewModal').classList.remove('hidden');
+}
+function closeRoomPreview() { document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
 const ui = {
   renderHotelCard(h) {
