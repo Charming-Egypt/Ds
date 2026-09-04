@@ -503,7 +503,7 @@ async function submitReview(e) {
 
 // ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
 const favorites = {
-  async load() { try { const data = await apiFetch('/api/user/favorites'); state.favorites = data.favorites || []; } catch (e) { state.favorites = []; } this.render(); },
+  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/user/favorites'); state.favorites = data.favorites || []; } catch (e) { state.favorites = []; } this.render(); },
   async toggle(id) {
     try {
       await apiFetch('/api/user/favorites', { method: 'POST', body: JSON.stringify({ itemId: id }) });
@@ -523,7 +523,7 @@ const favorites = {
 };
 
 const bookings = {
-  async load() { try { const data = await apiFetch('/api/user/bookings'); state.bookings = data.bookings || []; } catch (e) { state.bookings = []; } this.render(); },
+  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/user/bookings'); state.bookings = data.bookings || []; } catch (e) { state.bookings = []; } this.render(); },
   render() {
     const list = document.getElementById('bookingsList'); if (!list) return;
     const filtered = state.bookings.filter(b => {
@@ -547,7 +547,7 @@ const bookings = {
 
 const notifications = {
   list: [],
-  async load() { try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; } catch (e) { this.list = []; } this.render(); },
+  async load() { if (!authToken) { this.render(); return; } try { const data = await apiFetch('/api/notifications'); this.list = data.notifications || []; } catch (e) { this.list = []; } this.render(); },
   render() {
     const list = document.getElementById('notificationsList'); if (!list) return;
     if (!this.list.length) { list.innerHTML = '<p class="text-center py-10">No notifications yet</p>'; return; }
