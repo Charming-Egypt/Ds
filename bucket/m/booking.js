@@ -324,32 +324,122 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
 }
 
-// ==================== TRANSFER BOOKING (FULL) ====================
+// ==================== TRANSFER BOOKING (UPDATED) ====================
 function startTransferBooking(id) {
   const v = CATALOG.transfers.find(i => i.id === id);
   if (!v) return toast('Transfer not found', 'error');
   state.currentTransfer = v;
-  state.bookingDraft = { name: currentUser?.displayName || '', email: currentUser?.email || '', phone: '', direction: 'Airport to Hotel', flightNo: '', address: '', passengers: 2, time: '14:00', payment: 'card', date: utils.addDays(utils.todayIso(), 1), };
+  state.bookingDraft = {
+    name: currentUser?.displayName || '',
+    email: currentUser?.email || '',
+    phone: '',
+    direction: 'Airport to Hotel',
+    flightNo: '',
+    address: '',
+    passengers: 2,
+    time: '14:00',
+    payment: 'card',
+    date: utils.addDays(utils.todayIso(), 1),
+  };
   renderTransferBookingStep(2);
 }
 
 function renderTransferBookingStep(step) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const existing = document.getElementById('transferBookingFlowPage'); if (existing) existing.remove();
-  const v = state.currentTransfer; const subtotal = v.price; const taxes = Math.round(subtotal * 0.05); const total = subtotal + taxes;
-  const page = document.createElement('div'); page.id = 'transferBookingFlowPage'; page.className = 'page';
+  const v = state.currentTransfer;
+  const subtotal = v.price;
+  const taxes = Math.round(subtotal * 0.05);
+  const total = subtotal + taxes;
+  const page = document.createElement('div');
+  page.id = 'transferBookingFlowPage';
+  page.className = 'page';
   let bodyHtml = '';
   if (step === 2) {
-    bodyHtml = `<div class="p-5"><div class="card rounded-2xl p-3 flex gap-3 mb-5"><img src="${getImageUrl(v.image)}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><div><h3 class="font-display font-bold text-sm">${v.vehicleType} Transfer</h3><p class="text-[10px]">Up to ${v.capacity} passengers</p></div></div><h3 class="font-display text-lg font-bold mb-3">Transfer Details</h3><form onsubmit="submitTransferDetails(event)" class="space-y-4"><div class="field-box p-1 rounded-2xl flex gap-1"><button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Pickup</button><button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Drop-off</button></div><input type="text" id="tkName" required value="${state.bookingDraft.name}" placeholder="Full Name" class="input-field w-full px-3 py-2.5 text-sm"><input type="email" id="tkEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm"><input type="tel" id="tkPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm"><input type="text" id="tkFlightNo" value="${state.bookingDraft.flightNo}" placeholder="Flight number (optional)" class="input-field w-full px-3 py-2.5 text-sm"><input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm"><div class="grid grid-cols-2 gap-3"><div id="tkDate" class="date-field p-3" data-value="${state.bookingDraft.date}"><label class="text-[10px]">Date</label><span class="text-sm">${utils.formatDate(state.bookingDraft.date)}</span></div><div class="date-field p-3"><label class="text-[10px]">Time</label><input type="time" id="tkTime" value="${state.bookingDraft.time}" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0"></div></div><div class="field-box rounded-2xl p-3 flex items-center justify-between"><div><p class="text-[10px]">Passengers</p><p class="text-sm font-semibold" id="tkPassengersLabel">${state.bookingDraft.passengers} People</p></div><div class="flex items-center gap-3"><button type="button" class="counter-btn" onclick="adjustTransferPassengers(-1)">-</button><button type="button" class="counter-btn" onclick="adjustTransferPassengers(1)">+</button></div></div><button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">Continue</button></form></div>`;
+    bodyHtml = `
+      <div class="p-5">
+        <div class="card rounded-2xl p-3 flex gap-3 mb-5">
+          <img src="${getImageUrl(v.image)}" class="w-16 h-16 rounded-xl object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+          <div><h3 class="font-display font-bold text-sm">${v.vehicleType} Transfer</h3><p class="text-[10px]">Up to ${v.capacity} passengers</p></div>
+        </div>
+        <h3 class="font-display text-lg font-bold mb-3">Transfer Details</h3>
+        <form onsubmit="submitTransferDetails(event)" class="space-y-4">
+          <div class="field-box p-1 rounded-2xl flex gap-1">
+            <button type="button" onclick="setTransferDirection('Airport to Hotel')" id="dirBtnArrival" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Pickup</button>
+            <button type="button" onclick="setTransferDirection('Hotel to Airport')" id="dirBtnDeparture" class="flex-1 py-2.5 rounded-xl text-xs font-bold">Airport Drop-off</button>
+          </div>
+          <input type="text" id="tkName" required value="${state.bookingDraft.name}" placeholder="Full Name" class="input-field w-full px-3 py-2.5 text-sm">
+          <input type="email" id="tkEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
+          <input type="tel" id="tkPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm">
+          <input type="text" id="tkFlightNo" value="${state.bookingDraft.flightNo}" placeholder="Flight number (optional)" class="input-field w-full px-3 py-2.5 text-sm">
+          <div id="hotelField" class="field-box p-3">
+            <label class="text-[10px]">Hotel Name &amp; Address</label>
+            <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div id="tkDate" class="date-field p-3" data-value="${state.bookingDraft.date}">
+              <label class="text-[10px]">Date</label>
+              <span class="text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
+            </div>
+            <div class="date-field p-3">
+              <label class="text-[10px]">Time</label>
+              <input type="time" id="tkTime" value="${state.bookingDraft.time}" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0">
+            </div>
+          </div>
+          <div class="field-box rounded-2xl p-3 flex items-center justify-between">
+            <div><p class="text-[10px]">Passengers</p><p class="text-sm font-semibold" id="tkPassengersLabel">${state.bookingDraft.passengers} People</p></div>
+            <div class="flex items-center gap-3">
+              <button type="button" class="counter-btn" onclick="adjustTransferPassengers(-1)">-</button>
+              <button type="button" class="counter-btn" onclick="adjustTransferPassengers(1)">+</button>
+            </div>
+          </div>
+          <button type="submit" class="btn-violet w-full py-4 rounded-2xl font-bold">Continue</button>
+        </form>
+      </div>`;
   } else if (step === 3) {
-    bodyHtml = `<div class="p-5"><h3 class="font-display text-lg font-bold mb-3">Payment Method</h3><div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div><div class="card rounded-2xl p-4 space-y-2 mb-6"><div class="flex justify-between"><span>${v.vehicleType} Transfer</span><span>${utils.formatPrice(subtotal)}</span></div><div class="flex justify-between"><span>Taxes & Fees</span><span>${utils.formatPrice(taxes)}</span></div><div class="border-t pt-2 flex justify-between"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${utils.formatPrice(total)}</span></div></div><button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">Pay Now</button><button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">Back</button></div>`;
+    bodyHtml = `
+      <div class="p-5">
+        <h3 class="font-display text-lg font-bold mb-3">Payment Method</h3>
+        <div class="space-y-3 mb-5">${paymentMethodsBlock(state.bookingDraft.payment, 'setTransferPaymentMethod')}</div>
+        <div class="card rounded-2xl p-4 space-y-2 mb-6">
+          <div class="flex justify-between"><span>${v.vehicleType} Transfer</span><span>${utils.formatPrice(subtotal)}</span></div>
+          <div class="flex justify-between"><span>Taxes & Fees</span><span>${utils.formatPrice(taxes)}</span></div>
+          <div class="border-t pt-2 flex justify-between"><span class="font-bold">Total</span><span class="font-bold text-violet-500">${utils.formatPrice(total)}</span></div>
+        </div>
+        <button onclick="payAndConfirmTransferBooking(${subtotal}, ${taxes}, ${total})" id="transferPayBtn" class="btn-violet w-full py-4 rounded-2xl font-bold">Pay Now</button>
+        <button onclick="renderTransferBookingStep(2)" class="w-full text-center text-violet-500 text-sm font-semibold mt-4">Back</button>
+      </div>`;
   }
-  page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-body)"><div class="dark-scene px-5 pt-6 pb-6 relative overflow-hidden"><div class="stars-container"></div><div class="relative z-10"><div class="flex items-center gap-3 mb-5"><button onclick="${step === 2 ? 'closeTransferBookingFlow()' : 'renderTransferBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Transfer Details' : 'Payment'}</h1></div>${utils.stepIndicator(step, ['Select', 'Details', 'Payment'])}</div></div>${bodyHtml}</div>`;
-  document.getElementById('mainApp').appendChild(page); page.classList.add('active'); window.scrollTo(0,0);
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-body)">
+      <div class="dark-scene px-5 pt-6 pb-6 relative overflow-hidden">
+        <div class="stars-container"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-5">
+            <button onclick="${step === 2 ? 'closeTransferBookingFlow()' : 'renderTransferBookingStep(2)'}" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
+            <h1 class="text-lg font-bold font-display text-white">${step === 2 ? 'Transfer Details' : 'Payment'}</h1>
+          </div>
+          ${utils.stepIndicator(step, ['Select', 'Details', 'Payment'])}
+        </div>
+      </div>
+      ${bodyHtml}
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  page.classList.add('active'); window.scrollTo(0,0);
   if (step === 2) setTransferDirection(state.bookingDraft.direction);
 }
 
-function setTransferDirection(dir) { state.bookingDraft.direction = dir; const a = document.getElementById('dirBtnArrival'), d = document.getElementById('dirBtnDeparture'); if (!a || !d) return; a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent'; a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)'; d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent'; d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)'; }
+function setTransferDirection(dir) {
+  state.bookingDraft.direction = dir;
+  const a = document.getElementById('dirBtnArrival'), d = document.getElementById('dirBtnDeparture');
+  if (!a || !d) return;
+  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)';
+  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)';
+  // لا حاجة لتغيير الحقل لأننا نعرض دائمًا حقل الفندق
+}
+
 function setTransferPaymentMethod(m) { state.bookingDraft.payment = m; renderTransferBookingStep(3); }
 function closeTransferBookingFlow() { const p = document.getElementById('transferBookingFlowPage'); if (p) p.remove(); nav.go('transfers'); }
 function adjustTransferPassengers(delta) { const v = state.currentTransfer; const newVal = state.bookingDraft.passengers + delta; if (newVal >= 1 && newVal <= v.capacity) { state.bookingDraft.passengers = newVal; document.getElementById('tkPassengersLabel').textContent = `${newVal} People`; } }
@@ -373,14 +463,143 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
 }
 
+// ==================== RESTAURANT DETAILS (FULL) ====================
+function showRestaurantPage(id) {
+  const r = CATALOG.restaurants.find(x => x.id === id);
+  if (!r) return;
+  const old = document.getElementById('restaurantDetailPage'); if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'restaurantDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28 restaurant-lux" style="background:var(--bg-card)">
+      <div class="relative h-80">
+        <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onRestGalleryScroll(this)" id="restGallery">
+          ${(r.images || [r.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/25 pointer-events-none"></div>
+        <button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute bottom-5 left-5 right-5 z-10 text-white">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="lux-cuisine-badge">${r.cuisine}</span>
+            <span class="text-gold-400 text-xs font-semibold">${'$'.repeat(r.priceLevel || 2)}</span>
+          </div>
+          <h1 class="font-display text-3xl font-bold leading-tight mb-2" style="text-shadow:0 2px 12px rgba(0,0,0,.5)">${r.name}</h1>
+          <div class="flex items-center gap-2 text-sm">${utils.renderStars(r.rating)}<span class="text-white/80 text-xs">${Number(r.rating).toFixed(1)} (${r.reviews || 0})</span></div>
+        </div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="restGalleryDots">${(r.images || [r.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-2" style="background:var(--bg-card)">
+        <div class="flex items-center justify-center gap-5 pb-5 mb-1">
+          <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-gold-500"></i>${r.location}</p>
+          <span class="w-1 h-1 rounded-full" style="background:var(--border-field)"></span>
+          <p class="text-xs flex items-center gap-1.5" style="color:var(--text-secondary)"><i class="fa-regular fa-clock text-gold-500"></i>${r.openHours || ''}</p>
+        </div>
+        <p class="text-center text-sm leading-relaxed italic font-display" style="color:var(--text-secondary)">"${r.fullDescription || r.description}"</p>
+        <div class="lux-divider"><span class="lux-dot"></span></div>
+        <div>
+          <p class="text-center font-display italic text-2xl mb-6" style="color:var(--text-primary)">The Menu</p>
+          ${(r.menu || []).map(section => `
+            <div class="mb-8">
+              <h4 class="menu-category-title">${section.category}</h4>
+              <div>
+                ${section.items.map(it => `
+                  <div class="menu-item-row">
+                    <span class="menu-item-name">${it.name}</span>
+                    <span class="menu-item-leader"></span>
+                    <span class="menu-item-price">${utils.formatPrice(it.price)}</span>
+                  </div>
+                  ${it.description ? `<p class="menu-item-desc">${it.description}</p>` : '<div class="mb-3"></div>'}`).join('')}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  I18N.set(I18N.get());
+}
+
+function onRestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#restGalleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
+function closeRestaurantPage() { const p = document.getElementById('restaurantDetailPage'); if (p) p.remove(); nav.go('restaurants'); }
+
+// ==================== DESTINATION DETAILS (FULL) ====================
+function showDestinationPage(id) {
+  const d = CATALOG.destinations.find(x => x.id === id);
+  if (!d) return;
+  const old = document.getElementById('destinationDetailPage'); if (old) old.remove();
+  const page = document.createElement('div');
+  page.id = 'destinationDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+      <div class="relative h-72">
+        <div class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onDestGalleryScroll(this)" id="destGallery">
+          ${(d.images || [d.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
+        <button onclick="closeDestinationPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="destGalleryDots">${(d.images || [d.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-5" style="background:var(--bg-card)">
+        <div>
+          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(d.rating)}<span class="text-xs" style="color:var(--text-secondary)">${Number(d.rating).toFixed(1)}</span></div>
+          <h2 class="font-display text-2xl font-bold mb-1 leading-tight" style="color:var(--text-primary)">${d.name}</h2>
+          <p class="text-xs flex items-center gap-1" style="color:var(--text-secondary)"><i class="fa-solid fa-location-dot text-violet-500"></i>${d.location || ''}</p>
+        </div>
+        <div>
+          <p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— ABOUT</p>
+          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${d.fullDescription || d.description}</p>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0, 0);
+  I18N.set(I18N.get());
+}
+
+function onDestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#destGalleryDots .gallery-dot').forEach((dd, i) => dd.classList.toggle('active', i === idx)); }
+function closeDestinationPage() { const p = document.getElementById('destinationDetailPage'); if (p) p.remove(); nav.go('home'); }
+
+// ==================== ARTICLE DETAILS ====================
+function showArticlePage(id) { const a = CATALOG.articles.find(x => x.id === id); if (!a) return; const page = document.createElement('div'); page.id = 'articleDetailPage'; page.className = 'page'; page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-card)"><div class="relative h-56"><img src="${a.image}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><button onclick="closeArticlePage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button></div><div class="p-5 space-y-4"><h1 class="font-display text-2xl font-bold">${a.title}</h1><p class="text-xs"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min ${a.author ? '· ' + a.author : ''}</p><p class="text-sm leading-relaxed" style="white-space:pre-line">${a.content}</p></div></div>`; document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0); }
+function closeArticlePage() { const p = document.getElementById('articleDetailPage'); if (p) p.remove(); nav.go('home'); }
+
 // ==================== BOOKING DETAILS & CANCEL ====================
 function showBookingDetails(bookingId) {
   const b = state.bookings.find(x => x.id === bookingId);
   if (!b) return toast('Booking not found', 'error');
   const isUpcoming = new Date(b.checkin || b.date) >= new Date();
   const page = document.createElement('div'); page.id = 'bookingDetailsPage'; page.className = 'page';
-  page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-body)"><div class="dark-scene px-5 pt-6 pb-8 relative overflow-hidden"><div class="stars-container"></div><div class="relative z-10"><div class="flex items-center justify-between mb-5"><button onclick="closeBookingDetails()" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button><h1 class="text-lg font-bold font-display text-white">Booking Details</h1><div class="w-10"></div></div><div class="text-center"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${isUpcoming ? 'bg-green-500/20 text-green-400 border border-green-400/30' : 'bg-white/10 text-white/50 border border-white/20'}">${isUpcoming ? 'UPCOMING' : 'COMPLETED'}</span></div></div></div><div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">${bookingDetailBody(b)}${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="closeBookingDetails(); openReviewModal('${b.type}','${b.hotelId || b.excursionId}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}</div></div>`;
-  document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0);
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-body)">
+      <div class="dark-scene px-5 pt-6 pb-8 relative overflow-hidden">
+        <div class="stars-container"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-5">
+            <button onclick="closeBookingDetails()" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-arrow-right"></i></button>
+            <h1 class="text-lg font-bold font-display text-white">Booking Details</h1>
+            <div class="w-10"></div>
+          </div>
+          <div class="text-center">
+            <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${isUpcoming ? 'bg-green-500/20 text-green-400 border border-green-400/30' : 'bg-white/10 text-white/50 border border-white/20'}">${isUpcoming ? 'UPCOMING' : 'COMPLETED'}</span>
+          </div>
+        </div>
+      </div>
+      <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
+        ${bookingDetailBody(b)}
+        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="openReviewModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
+        ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function bookingDetailBody(b) {
@@ -392,16 +611,6 @@ function bookingDetailBody(b) {
 }
 function closeBookingDetails() { const p = document.getElementById('bookingDetailsPage'); if (p) p.remove(); nav.go('bookings'); }
 async function cancelBooking(bookingId) { if (!confirm('Cancel this booking?')) return; try { await apiFetch(`/api/hotels/booking/${bookingId}`, { method: 'DELETE' }); toast('Booking cancelled', 'info'); bookings.load(); closeBookingDetails(); } catch (e) { toast('Cancellation failed: ' + e.message, 'error'); } }
-
-// ==================== DESTINATION / RESTAURANT / ARTICLE ====================
-function showDestinationPage(id) { const d = CATALOG.destinations.find(x => x.id === id); if (!d) return; const page = document.createElement('div'); page.id = 'destinationDetailPage'; page.className = 'page'; page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-card)"><div class="relative h-72"><img src="${getImageUrl(d.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><button onclick="closeDestinationPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button></div><div class="relative -mt-6 rounded-t-[28px] p-5 space-y-5" style="background:var(--bg-card)"><div><h2 class="font-display text-2xl font-bold mb-1">${d.name}</h2><p class="text-xs"><i class="fa-solid fa-location-dot text-violet-500"></i>${d.location || ''}</p></div><p class="text-sm leading-relaxed">${d.fullDescription || d.description}</p></div></div>`; document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0); }
-function closeDestinationPage() { const p = document.getElementById('destinationDetailPage'); if (p) p.remove(); nav.go('home'); }
-
-function showRestaurantPage(id) { const r = CATALOG.restaurants.find(x => x.id === id); if (!r) return; const page = document.createElement('div'); page.id = 'restaurantDetailPage'; page.className = 'page'; page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-card)"><div class="relative h-80"><img src="${getImageUrl(r.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><button onclick="closeRestaurantPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button><div class="absolute bottom-5 left-5 right-5 z-10 text-white"><span class="lux-cuisine-badge">${r.cuisine}</span><h1 class="font-display text-3xl font-bold mt-2">${r.name}</h1><div class="flex items-center gap-2 text-sm">${utils.renderStars(r.rating)}<span>${r.rating} (${r.reviews})</span></div></div></div><div class="relative -mt-6 rounded-t-[28px] p-6" style="background:var(--bg-card)"><div class="flex items-center justify-center gap-5 pb-5"><p class="text-xs"><i class="fa-solid fa-location-dot text-gold-500"></i>${r.location}</p><span class="w-1 h-1 rounded-full"></span><p class="text-xs"><i class="fa-regular fa-clock text-gold-500"></i>${r.openHours || ''}</p></div><p class="text-center text-sm italic">"${r.fullDescription || r.description}"</p><div class="mt-6"><p class="text-center font-display italic text-2xl mb-6">The Menu</p>${(r.menu || []).map(section => `<div class="mb-8"><h4 class="menu-category-title">${section.category}</h4>${section.items.map(it => `<div class="menu-item-row"><span>${it.name}</span><span class="menu-item-leader"></span><span>${utils.formatPrice(it.price)}</span></div>${it.description ? `<p class="menu-item-desc">${it.description}</p>` : ''}`).join('')}</div>`).join('')}</div></div></div>`; document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0); }
-function closeRestaurantPage() { const p = document.getElementById('restaurantDetailPage'); if (p) p.remove(); nav.go('restaurants'); }
-
-function showArticlePage(id) { const a = CATALOG.articles.find(x => x.id === id); if (!a) return; const page = document.createElement('div'); page.id = 'articleDetailPage'; page.className = 'page'; page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-card)"><div class="relative h-56"><img src="${a.image}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'"><button onclick="closeArticlePage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button></div><div class="p-5 space-y-4"><h1 class="font-display text-2xl font-bold">${a.title}</h1><p class="text-xs"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min ${a.author ? '· ' + a.author : ''}</p><p class="text-sm leading-relaxed" style="white-space:pre-line">${a.content}</p></div></div>`; document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0); }
-function closeArticlePage() { const p = document.getElementById('articleDetailPage'); if (p) p.remove(); nav.go('home'); }
 
 // ==================== EXPOSE GLOBALLY ====================
 window.showDestinationPage = showDestinationPage;
