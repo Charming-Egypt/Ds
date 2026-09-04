@@ -1,5 +1,4 @@
 // ==================== PAYMENT & BOOKING ====================
-
 function paymentMethodsBlock(currentMethod, onchangeFn) {
   const methods = [
     { id: 'card', label: 'Credit/Debit Card', icon: 'fa-credit-card' },
@@ -205,15 +204,81 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
 }
 
-// ==================== EXCURSION BOOKING ====================
+// ==================== EXCURSION DETAILS & BOOKING (FULL) ====================
 function showExcursionPage(excursionId) {
   const x = CATALOG.excursions.find(i => i.id === excursionId);
   if (!x) return toast('Excursion not found', 'error');
   state.currentExcursion = x;
   const old = document.getElementById('excursionDetailPage'); if (old) old.remove();
   const page = document.createElement('div'); page.id = 'excursionDetailPage'; page.className = 'page';
-  page.innerHTML = `<div class="min-h-screen pb-28" style="background:var(--bg-card)"><div class="relative h-72"><div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">${(x.images || [x.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}</div><div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div><button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button><div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${x.category}</div><div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(x.images || [x.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div></div><div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)"><div><h2 class="font-display text-2xl font-bold mb-1">${x.title}</h2><div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(x.rating)}<span class="text-xs">${Number(x.rating).toFixed(1)} (${x.reviews} reviews)</span></div><p class="text-xs"><i class="fa-regular fa-clock text-violet-500"></i>${x.duration} · <i class="fa-solid fa-location-dot text-violet-500"></i>${x.meetingPoint || ''}</p></div><div><h3 class="font-display text-lg font-bold mb-2">Overview</h3><p class="text-sm leading-relaxed">${x.fullDescription || x.description}</p></div><div><h3 class="font-display text-lg font-bold mb-3">What's Included</h3><div class="grid grid-cols-1 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div></div>${(x.itinerary || []).length ? `<div><h3 class="font-display text-lg font-bold mb-3">Trip Itinerary</h3><div class="space-y-0">${x.itinerary.map((step, i) => `<div class="flex gap-3"><div class="flex flex-col items-center flex-shrink-0"><div class="w-8 h-8 rounded-full bg-violet-500/15 text-violet-500 text-[11px] font-bold flex items-center justify-center">${i+1}</div>${i < x.itinerary.length - 1 ? '<div class="w-px flex-1 bg-violet-400/20 my-1"></div>' : ''}</div><div class="pb-4 flex-1"><p class="text-[10px] font-bold text-violet-500 mb-0.5">${step.time || ''}</p><p class="text-sm font-semibold mb-0.5">${step.title || ''}</p><p class="text-xs leading-relaxed">${step.description || ''}</p></div></div>`).join('')}</div></div>` : ''}<div class="card rounded-2xl p-4"><h3 class="font-display text-lg font-bold mb-3">Reviews</h3><button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button><div class="space-y-3" id="excursionReviewsList"></div></div></div><div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)"><div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div><button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button></div></div>`;
-  document.getElementById('mainApp').appendChild(page); document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); page.classList.add('active'); window.scrollTo(0,0);
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+      <div class="relative h-72">
+        <div id="excursionGallery" class="gallery-track w-full h-full flex overflow-x-auto snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none" onscroll="onExcursionGalleryScroll(this)">
+          ${(x.images || [x.image]).map(img => `<img src="${getImageUrl(img)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover flex-shrink-0 snap-center" style="min-width:100%">`).join('')}
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
+        <button onclick="closeExcursionPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute top-4 left-4 bg-violet-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full z-10">${x.category}</div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" id="excursionGalleryDots">${(x.images || [x.image]).map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-5 space-y-6 pb-32" style="background:var(--bg-card)">
+        <div>
+          <h2 class="font-display text-2xl font-bold mb-1 leading-tight">${x.title}</h2>
+          <div class="flex items-center gap-2 text-sm mb-1">${utils.renderStars(x.rating)}<span class="text-xs">${Number(x.rating).toFixed(1)} (${x.reviews} reviews)</span></div>
+          <p class="text-xs"><i class="fa-regular fa-clock text-violet-500"></i>${x.duration} · <i class="fa-solid fa-location-dot text-violet-500"></i>${x.meetingPoint || ''}</p>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold mb-2">Overview</h3>
+          <p class="text-sm leading-relaxed">${x.fullDescription || x.description}</p>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold mb-3">What's Included</h3>
+          <div class="grid grid-cols-1 gap-2">${(x.includes || []).map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-check text-green-500"></i>${i}</div>`).join('')}</div>
+        </div>
+        ${(x.excludes || []).length ? `
+          <div>
+            <h3 class="font-display text-lg font-bold mb-3">What's Not Included</h3>
+            <div class="grid grid-cols-1 gap-2">${x.excludes.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-circle-xmark text-red-400"></i>${i}</div>`).join('')}</div>
+          </div>` : ''}
+        ${(x.whatToBring || []).length ? `
+          <div>
+            <h3 class="font-display text-lg font-bold mb-3">What to Bring</h3>
+            <div class="grid grid-cols-1 gap-2">${x.whatToBring.map(i => `<div class="flex items-center gap-2 text-sm"><i class="fa-solid fa-suitcase-rolling text-violet-500"></i>${i}</div>`).join('')}</div>
+          </div>` : ''}
+        ${(x.itinerary || []).length ? `
+          <div>
+            <h3 class="font-display text-lg font-bold mb-3">Trip Itinerary</h3>
+            <div class="space-y-0">
+              ${x.itinerary.map((step, i) => `
+                <div class="flex gap-3">
+                  <div class="flex flex-col items-center flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-violet-500/15 text-violet-500 text-[11px] font-bold flex items-center justify-center">${i+1}</div>
+                    ${i < x.itinerary.length - 1 ? '<div class="w-px flex-1 bg-violet-400/20 my-1"></div>' : ''}
+                  </div>
+                  <div class="pb-4 flex-1">
+                    <p class="text-[10px] font-bold text-violet-500 mb-0.5">${step.time || ''}</p>
+                    <p class="text-sm font-semibold mb-0.5">${step.title || ''}</p>
+                    <p class="text-xs leading-relaxed">${step.description || ''}</p>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
+        <div class="card rounded-2xl p-4">
+          <h3 class="font-display text-lg font-bold mb-3">Reviews</h3>
+          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
+          <div class="space-y-3" id="excursionReviewsList"></div>
+        </div>
+      </div>
+      <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto backdrop-blur-xl border-t p-4 flex items-center justify-between z-10" style="background:var(--bg-card); border-color:var(--border-card)">
+        <div><p class="text-[9px]">FROM</p><p class="text-xl font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-xs">/person</span></p></div>
+        <button onclick="startExcursionBooking('${x.id}')" class="btn-gold px-7 py-3 rounded-2xl font-bold text-ink-900">Book Now</button>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0,0);
   loadReviews('excursion', x.id, 'excursionReviewsList', null);
 }
 
@@ -259,7 +324,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
 }
 
-// ==================== TRANSFER BOOKING ====================
+// ==================== TRANSFER BOOKING (FULL) ====================
 function startTransferBooking(id) {
   const v = CATALOG.transfers.find(i => i.id === id);
   if (!v) return toast('Transfer not found', 'error');
