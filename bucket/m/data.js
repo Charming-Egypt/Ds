@@ -256,6 +256,9 @@ const I18N = {
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
+    // ✅ أعد توطين الكتالوج وتحديث الواجهة
+    localizeCatalog(lang);
+    refreshCatalogUI();
   },
   init() { this.set(this.get()); }
 };
