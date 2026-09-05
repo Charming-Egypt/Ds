@@ -188,7 +188,7 @@ const THEME = {
 };
 
 // ==================== API HELPER ====================
-async function apiFetch(endpoint, options = {}) {
+async function apiFetch(endpoint, options = {}, skipAuthRedirect = false) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
 
@@ -199,7 +199,9 @@ async function apiFetch(endpoint, options = {}) {
     currentUser = null;
     localStorage.removeItem('ds_auth_token');
     localStorage.removeItem('ds_current_user');
-    nav.showAuth();
+    if (!skipAuthRedirect && endpoint !== '/api/auth/signin' && endpoint !== '/api/auth/signup' && endpoint !== '/api/auth/google') {
+      nav.showAuth();
+    }
     throw new Error('Session expired. Please login again.');
   }
 
@@ -256,6 +258,7 @@ const I18N = {
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
+    // إعادة توطين الكتالوج
     localizeCatalog(lang);
     refreshCatalogUI();
   },
@@ -328,7 +331,7 @@ async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
     try {
-      const data = await apiFetch(`/file?file=${f}.json`);
+      const data = await apiFetch(`/file?file=${f}.json`, {}, true); // لا توجيه للمصادقة هنا
       CATALOG_RAW[f] = JSON.parse(data.content);
     } catch (e) {
       console.warn(`Failed to load ${f}:`, e);
@@ -356,7 +359,7 @@ function refreshCatalogUI() {
 const auth = {
   async signIn(email, password) {
     try {
-      const data = await apiFetch('/api/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) });
+      const data = await apiFetch('/api/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) }, true);
       authToken = data.idToken;
       currentUser = data.user;
       localStorage.setItem('ds_auth_token', authToken);
@@ -367,7 +370,7 @@ const auth = {
   },
   async signUp(name, email, password) {
     try {
-      const data = await apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ name, email, password }) });
+      const data = await apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ name, email, password }) }, true);
       authToken = data.idToken;
       currentUser = data.user;
       localStorage.setItem('ds_auth_token', authToken);
@@ -406,14 +409,13 @@ async function handleGoogleSignIn() {
 
     let clientId;
     try {
-      const config = await apiFetch('/api/google-config');
+      const config = await apiFetch('/api/google-config', {}, true); // skip auth redirect
       clientId = config.clientId;
     } catch (e) {
       toast('Could not load Google Sign-In configuration.', 'error');
       return;
     }
 
-    // تهيئة Google Identity Services للحصول على ID Token
     google.accounts.id.initialize({
       client_id: clientId,
       callback: async (response) => {
@@ -425,7 +427,7 @@ async function handleGoogleSignIn() {
           const data = await apiFetch('/api/auth/google', {
             method: 'POST',
             body: JSON.stringify({ idToken: response.credential }),
-          });
+          }, true); // skip auth redirect
           authToken = data.idToken;
           currentUser = data.user;
           localStorage.setItem('ds_auth_token', authToken);
@@ -438,7 +440,6 @@ async function handleGoogleSignIn() {
       },
     });
 
-    // إظهار نافذة اختيار الحساب
     google.accounts.id.prompt();
   } catch (e) {
     toast(e.message, 'error');
@@ -507,7 +508,7 @@ function updateDrawerUser(name, email, photoURL) {
 // ==================== REVIEWS ====================
 async function loadReviews(type, id, listElId, summaryElId) {
   try {
-    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`);
+    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
     const reviews = data.reviews || [];
     const listEl = document.getElementById(listElId);
     if (listEl) {
