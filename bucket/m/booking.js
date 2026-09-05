@@ -25,10 +25,18 @@ function showKashierModal(kashierUrl, orderId, bookingData) {
     if (ev.origin !== 'https://checkout.kashier.io') return;
     if (ev.data?.event === 'kashier.paymentSuccess') {
       modal.remove();
+      if (!authToken) {
+        toast('Please login to complete booking', 'error');
+        return;
+      }
       bookingData.paymentStatus = 'paid';
       bookingData.transactionRef = ev.data.transactionId || orderId;
-      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-      renderBookingConfirmation(res.booking);
+      try {
+        const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+        renderBookingConfirmation(res.booking);
+      } catch (e) {
+        toast('Booking save failed: ' + e.message, 'error');
+      }
     }
     if (ev.data?.event === 'kashier.paymentFailure') {
       modal.remove();
@@ -160,7 +168,27 @@ function onGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientW
 function amenityIcon(a) { const map = { 'Free WiFi':'fa-wifi','Breakfast':'fa-mug-saucer','Pool':'fa-water-ladder','Spa':'fa-spa','Gym':'fa-dumbbell','Beach Access':'fa-umbrella-beach','Parking':'fa-square-parking','Business Center':'fa-briefcase','Meeting Rooms':'fa-users-rectangle','Concierge':'fa-bell-concierge','24/7 Reception':'fa-clock' }; return map[a] || 'fa-check'; }
 function selectRoomOnDetail(hotelId, roomIndex) { const h = CATALOG.hotels.find(x => x.id === hotelId); const r = h?.rooms?.[roomIndex]; if (!r) return; const priceEl = document.getElementById('hotelBottomPriceAmount'); if (priceEl) priceEl.innerHTML = `${utils.formatPrice(r.price)}<span class="text-xs"> / Night</span>`; const btn = document.querySelector('#hotelDetailPage [onclick^="startBooking"]'); if (btn) btn.setAttribute('onclick', `startBooking('${hotelId}', ${roomIndex})`); document.querySelectorAll('#hotelRoomsList .room-option-card').forEach((card, i) => card.classList.toggle('room-selected', i === roomIndex)); }
 
-function startBooking(hotelId, roomIndex) { const h = CATALOG.hotels.find(x => x.id === hotelId); const r = h?.rooms?.[roomIndex]; if (!h || !r) return; state.currentHotel = h; state.currentRoom = r; state.bookingDraft = { name: currentUser?.displayName || '', email: currentUser?.email || '', phone: '', requests: '', payment: 'card', checkin: document.getElementById('checkinDate')?.dataset.value || utils.addDays(utils.todayIso(),1), checkout: document.getElementById('checkoutDate')?.dataset.value || utils.addDays(utils.todayIso(),3), }; renderBookingStep(2); }
+function startBooking(hotelId, roomIndex) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
+  const h = CATALOG.hotels.find(x => x.id === hotelId);
+  const r = h?.rooms?.[roomIndex];
+  if (!h || !r) return;
+  state.currentHotel = h;
+  state.currentRoom = r;
+  state.bookingDraft = {
+    name: currentUser?.displayName || '',
+    email: currentUser?.email || '',
+    phone: '',
+    requests: '',
+    payment: 'card',
+    checkin: document.getElementById('checkinDate')?.dataset.value || utils.addDays(utils.todayIso(),1),
+    checkout: document.getElementById('checkoutDate')?.dataset.value || utils.addDays(utils.todayIso(),3),
+  };
+  renderBookingStep(2);
+}
 
 function renderBookingStep(step) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -187,6 +215,10 @@ function submitGuestDetails(e) { e.preventDefault(); state.bookingDraft.name = d
 function computeRoomPricing(room, guests, roomsCount, nights) { const baseOcc = room.baseOccupancy || 2; const freeChildren = room.freeChildrenPerRoom ?? 2; const extraAdultFee = room.extraAdultFee || 0; const extraChildFee = room.extraChildFee || 0; const adultsPerRoom = Math.ceil(guests.adults / roomsCount); const childrenPerRoom = Math.ceil(guests.children / roomsCount); const extraAdults = Math.max(0, adultsPerRoom - baseOcc); const extraChildren = Math.max(0, childrenPerRoom - freeChildren); const perRoomPerNight = room.price + (extraAdults * extraAdultFee) + (extraChildren * extraChildFee); return { roomTotal: perRoomPerNight * roomsCount * nights, extraFeesTotal: (extraAdults * extraAdultFee + extraChildren * extraChildFee) * roomsCount * nights, baseRoomTotal: room.price * roomsCount * nights }; }
 
 async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
   const btn = document.getElementById('hotelPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -199,6 +231,8 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
     }
     const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    state.bookings.unshift(res.booking);
+    bookings.render();
     renderBookingConfirmation(res.booking);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
@@ -284,7 +318,17 @@ function showExcursionPage(excursionId) {
 
 function closeExcursionPage() { const p = document.getElementById('excursionDetailPage'); if (p) p.remove(); nav.go('excursions'); }
 function onExcursionGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.clientWidth); document.querySelectorAll('#excursionGalleryDots .gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
-function startExcursionBooking(id) { const x = CATALOG.excursions.find(i => i.id === id); if (!x) return; state.currentExcursion = x; state.bookingDraft = { name: currentUser?.displayName || '', email: currentUser?.email || '', phone: '', participants: 2, payment: 'card', date: utils.addDays(utils.todayIso(), 1) }; renderExcursionBookingStep(2); }
+function startExcursionBooking(id) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
+  const x = CATALOG.excursions.find(i => i.id === id);
+  if (!x) return;
+  state.currentExcursion = x;
+  state.bookingDraft = { name: currentUser?.displayName || '', email: currentUser?.email || '', phone: '', participants: 2, payment: 'card', date: utils.addDays(utils.todayIso(), 1) };
+  renderExcursionBookingStep(2);
+}
 
 function renderExcursionBookingStep(step) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -307,6 +351,10 @@ function adjustParticipants(delta) { const newVal = state.bookingDraft.participa
 function submitExcursionDetails(e) { e.preventDefault(); state.bookingDraft.name = document.getElementById('ekName').value; state.bookingDraft.email = document.getElementById('ekEmail').value; state.bookingDraft.phone = document.getElementById('ekPhone').value; state.bookingDraft.date = document.getElementById('ekDate').dataset.value; renderExcursionBookingStep(3); }
 
 async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
   const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -319,6 +367,8 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
     }
     const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    state.bookings.unshift(res.booking);
+    bookings.render();
     renderBookingConfirmation(res.booking);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
@@ -326,6 +376,10 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
 
 // ==================== TRANSFER BOOKING (UPDATED) ====================
 function startTransferBooking(id) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
   const v = CATALOG.transfers.find(i => i.id === id);
   if (!v) return toast('Transfer not found', 'error');
   state.currentTransfer = v;
@@ -445,6 +499,10 @@ function adjustTransferPassengers(delta) { const v = state.currentTransfer; cons
 function submitTransferDetails(e) { e.preventDefault(); state.bookingDraft.name = document.getElementById('tkName').value; state.bookingDraft.email = document.getElementById('tkEmail').value; state.bookingDraft.phone = document.getElementById('tkPhone').value; state.bookingDraft.flightNo = document.getElementById('tkFlightNo').value; state.bookingDraft.address = document.getElementById('tkAddress').value; state.bookingDraft.date = document.getElementById('tkDate').dataset.value; state.bookingDraft.time = document.getElementById('tkTime').value; renderTransferBookingStep(3); }
 
 async function payAndConfirmTransferBooking(subtotal, taxes, total) {
+  if (!authToken) {
+    toast('Please login to book', 'error');
+    return;
+  }
   const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
@@ -457,6 +515,8 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
     }
     const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    state.bookings.unshift(res.booking);
+    bookings.render();
     renderBookingConfirmation(res.booking);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
   } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
