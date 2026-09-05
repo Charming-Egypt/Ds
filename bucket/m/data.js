@@ -404,7 +404,6 @@ async function handleGoogleSignIn() {
       return;
     }
 
-    // جلب Client ID من Worker (آمن)
     let clientId;
     try {
       const config = await apiFetch('/api/google-config');
@@ -414,12 +413,12 @@ async function handleGoogleSignIn() {
       return;
     }
 
-    const client = google.accounts.oauth2.initTokenClient({
+    // تهيئة Google Identity Services للحصول على ID Token
+    google.accounts.id.initialize({
       client_id: clientId,
-      scope: 'profile email',
       callback: async (response) => {
-        if (response.error) {
-          toast('Google Sign-In failed: ' + response.error, 'error');
+        if (!response.credential) {
+          toast('Google did not return an ID token.', 'error');
           return;
         }
         try {
@@ -438,7 +437,9 @@ async function handleGoogleSignIn() {
         }
       },
     });
-    client.requestAccessToken();
+
+    // إظهار نافذة اختيار الحساب
+    google.accounts.id.prompt();
   } catch (e) {
     toast(e.message, 'error');
   }
