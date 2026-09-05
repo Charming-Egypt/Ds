@@ -194,15 +194,19 @@ async function apiFetch(endpoint, options = {}, skipAuthRedirect = false) {
 
   const res = await fetch(`${WORKER_URL}${endpoint}`, { ...options, headers });
 
+  // إذا كانت الاستجابة 401
   if (res.status === 401) {
-    authToken = null;
-    currentUser = null;
-    localStorage.removeItem('ds_auth_token');
-    localStorage.removeItem('ds_current_user');
-    if (!skipAuthRedirect && endpoint !== '/api/auth/signin' && endpoint !== '/api/auth/signup' && endpoint !== '/api/auth/google') {
+    if (!skipAuthRedirect) {
+      // فقط عند عدم التخطي نمسح التوكن ونعيد التوجيه
+      authToken = null;
+      currentUser = null;
+      localStorage.removeItem('ds_auth_token');
+      localStorage.removeItem('ds_current_user');
       nav.showAuth();
     }
-    throw new Error('Session expired. Please login again.');
+    // نرمي الخطأ الفعلي من الخادم (مثل invalid_client) بدلاً من رسالة الجلسة
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Authentication failed');
   }
 
   const data = await res.json().catch(() => ({}));
