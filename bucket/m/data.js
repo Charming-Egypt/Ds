@@ -256,7 +256,7 @@ const I18N = {
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
-    // ✅ أعد توطين الكتالوج وتحديث الواجهة
+    // تحديث الكتالوج والواجهة
     localizeCatalog(lang);
     refreshCatalogUI();
   },
@@ -563,15 +563,30 @@ const favorites = {
 const bookings = {
   async load() {
     if (!authToken) { this.render(); return; }
-    try { const data = await apiFetch('/api/user/bookings'); state.bookings = data.bookings || []; } catch (e) { state.bookings = []; }
+    try {
+      const data = await apiFetch('/api/user/bookings');
+      state.bookings = data.bookings || [];
+      console.log('Bookings loaded:', state.bookings); // للفحص المؤقت
+    } catch (e) {
+      console.error('Failed to load bookings:', e);
+      state.bookings = [];
+    }
     this.render();
   },
   render() {
     const list = document.getElementById('bookingsList'); if (!list) return;
-    const filtered = state.bookings.filter(b => {
-      const d = b.type === 'hotel' ? b.checkin : b.date;
-      return (state.currentBookingTab === 'upcoming') ? new Date(d) >= new Date() : new Date(d) < new Date();
+    const upcoming = state.bookings.filter(b => {
+      const d = b.checkin || b.date;
+      if (!d) return false;
+      return new Date(d) >= new Date();
     });
+    const past = state.bookings.filter(b => {
+      const d = b.checkin || b.date;
+      if (!d) return false;
+      return new Date(d) < new Date();
+    });
+    const filtered = state.currentBookingTab === 'upcoming' ? upcoming : past;
+
     if (filtered.length === 0) { list.innerHTML = ''; document.getElementById('emptyBookings').classList.remove('hidden'); return; }
     document.getElementById('emptyBookings').classList.add('hidden');
     list.innerHTML = filtered.map(b => `
