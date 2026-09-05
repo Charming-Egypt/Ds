@@ -1,0 +1,293 @@
+/* ===================================================================
+   DISCOVER SHARM — DESKTOP LAYOUT & ENHANCEMENTS
+   يُستخدم للشاشات من 1024px فأعلى (كمبيوتر / لابتوب / شاشات كبيرة)
+   =================================================================== */
+
+/* ---------- المتغيرات الأساسية ---------- */
+:root {
+  --desktop-max-width: 1280px;
+  --desktop-gutter: 32px;
+  --desktop-card-radius: 20px;
+  --desktop-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 1024px) {
+
+  /* ===== عام ===== */
+  body {
+    font-size: 15px;
+    background: var(--bg-body, #0c0918);
+  }
+
+  /* إخفاء التنقل السفلي نهائيًا */
+  .bottom-nav {
+    display: none !important;
+  }
+
+  /* ===== الحاوية الرئيسية ===== */
+  .main-area {
+    max-width: var(--desktop-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--desktop-gutter);
+    min-height: 100vh;
+  }
+
+  /* ===== الشريط الجانبي ===== */
+  .sidebar {
+    width: 280px;
+    transform: translateX(0) !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* زر فتح/إغلاق الشريط (إذا وجد) */
+  #sidebarToggle {
+    display: none !important;
+  }
+
+  .side-link {
+    font-size: 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .side-link i {
+    font-size: 16px;
+    width: 22px;
+  }
+
+  /* ===== الهيدر العلوي ===== */
+  .topbar {
+    height: 76px;
+    padding: 0 var(--desktop-gutter);
+    border-bottom: 1px solid var(--border-card, #2b2140);
+  }
+
+  .topbar h1 {
+    font-size: 24px;
+  }
+
+  /* ===== المحتوى العام ===== */
+  .content {
+    padding: 32px var(--desktop-gutter);
+  }
+
+  /* ===== عناوين الأقسام ===== */
+  .section-title {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  /* ===== بطاقات البحث ===== */
+  .search-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
+    border-radius: 28px;
+    box-shadow: var(--desktop-shadow);
+  }
+
+  .search-card .grid {
+    display: flex;
+    gap: 20px;
+  }
+
+  .search-card .grid > * {
+    flex: 1;
+  }
+
+  /* ===== شبكات البطاقات ===== */
+  /* تطبيق 3 أعمدة على جميع القوائم */
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  /* ===== بطاقات الفنادق والرحلات ===== */
+  .hotel-card,
+  .restaurant-card,
+  .excursion-card,
+  .transfer-card {
+    border-radius: var(--desktop-card-radius);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: var(--bg-card, #171029);
+    border: 1px solid var(--border-card, #2b2140);
+  }
+
+  .hotel-card:hover,
+  .restaurant-card:hover,
+  .excursion-card:hover,
+  .transfer-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--desktop-shadow);
+  }
+
+  /* تحسين الصور داخل البطاقات */
+  .hotel-card img,
+  .restaurant-card img,
+  .excursion-card img,
+  .transfer-card img {
+    transition: transform 0.4s ease;
+  }
+
+  .hotel-card:hover img,
+  .restaurant-card:hover img,
+  .excursion-card:hover img,
+  .transfer-card:hover img {
+    transform: scale(1.05);
+  }
+
+  /* ===== بطاقة أفقية للفنادق (اختياري) ===== */
+  /* إذا كانت بطاقات الفنادق أفقية (صورة على اليسار ومحتوى على اليمين) */
+  .hotel-card .flex {
+    flex-direction: column;
+  }
+
+  .hotel-card .w-32.h-32,
+  .hotel-card .md\:w-36.md\:h-36 {
+    width: 100% !important;
+    height: 220px !important;
+  }
+
+  .hotel-card .flex-1 {
+    padding: 20px;
+  }
+
+  /* ===== بطاقات الوجهات ===== */
+  .destination-card {
+    height: 200px;
+  }
+
+  /* ===== حقول الإدخال والأزرار ===== */
+  .field-input,
+  .field-select,
+  .field-textarea {
+    padding: 14px 18px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* ===== المودالات ===== */
+  .modal-overlay {
+    padding: 60px 20px;
+  }
+
+  .modal-panel {
+    max-width: 900px;
+    border-radius: 28px;
+  }
+
+  .modal-content {
+    max-width: 700px;
+    border-radius: 24px;
+    padding: 32px;
+  }
+
+  /* ===== صفحات التفاصيل ===== */
+  .hotel-detail-page,
+  .excursion-detail-page,
+  .restaurant-detail-page,
+  .destination-detail-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 0;
+  }
+
+  /* المعرض (معرض الصور) */
+  .gallery-track {
+    height: 480px;
+  }
+
+  /* ===== الجداول ===== */
+  table.data-table {
+    font-size: 14px;
+  }
+
+  table.data-table th {
+    padding: 14px 18px;
+    font-size: 12px;
+  }
+
+  table.data-table td {
+    padding: 16px 18px;
+  }
+
+  /* ===== صفحة الحجوزات ===== */
+  .bookings-list .hotel-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .bookings-list .hotel-card img {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* ===== نموذج الحجز ===== */
+  .booking-flow-page .card,
+  .excursion-booking-flow-page .card,
+  .transfer-booking-flow-page .card {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+  }
+
+  /* ===== شريط التمرير ===== */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #382a54;
+    border-radius: 10px;
+  }
+
+}
+
+/* ===== تحسينات إضافية للشاشات الكبيرة جدًا (من 1440px) ===== */
+@media (min-width: 1440px) {
+  .main-area {
+    max-width: 1400px;
+  }
+
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .hotel-card .w-32.h-32,
+  .hotel-card .md\:w-36.md\:h-36 {
+    height: 260px !important;
+  }
+}
