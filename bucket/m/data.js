@@ -256,7 +256,6 @@ const I18N = {
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
-    // تحديث الكتالوج والواجهة
     localizeCatalog(lang);
     refreshCatalogUI();
   },
@@ -566,9 +565,7 @@ const bookings = {
     try {
       const data = await apiFetch('/api/user/bookings');
       state.bookings = data.bookings || [];
-      console.log('Bookings loaded:', state.bookings); // للفحص المؤقت
     } catch (e) {
-      console.error('Failed to load bookings:', e);
       state.bookings = [];
     }
     this.render();
