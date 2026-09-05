@@ -399,25 +399,49 @@ async function handleAuthSubmit(e) {
 
 async function handleGoogleSignIn() {
   try {
-    if (!window.google?.accounts?.id) { toast('Google Sign-In is not available. Please use email login.', 'error'); return; }
+    if (!window.google?.accounts?.id) {
+      toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
+      return;
+    }
+
+    // جلب Client ID من Worker (آمن)
+    let clientId;
+    try {
+      const config = await apiFetch('/api/google-config');
+      clientId = config.clientId;
+    } catch (e) {
+      toast('Could not load Google Sign-In configuration.', 'error');
+      return;
+    }
+
     const client = google.accounts.oauth2.initTokenClient({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+      client_id: clientId,
       scope: 'profile email',
       callback: async (response) => {
-        if (response.error) { toast('Google Sign-In failed', 'error'); return; }
+        if (response.error) {
+          toast('Google Sign-In failed: ' + response.error, 'error');
+          return;
+        }
         try {
-          const data = await apiFetch('/api/auth/google', { method: 'POST', body: JSON.stringify({ idToken: response.credential }) });
+          const data = await apiFetch('/api/auth/google', {
+            method: 'POST',
+            body: JSON.stringify({ idToken: response.credential }),
+          });
           authToken = data.idToken;
           currentUser = data.user;
           localStorage.setItem('ds_auth_token', authToken);
           localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
           updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
           enterApp();
-        } catch (e) { toast(e.message, 'error'); }
+        } catch (e) {
+          toast(e.message, 'error');
+        }
       },
     });
     client.requestAccessToken();
-  } catch (e) { toast(e.message, 'error'); }
+  } catch (e) {
+    toast(e.message, 'error');
+  }
 }
 
 // ==================== USER PROFILE & AVATAR ====================
