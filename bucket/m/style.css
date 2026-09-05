@@ -1402,10 +1402,349 @@ html[data-theme="light"] .theme-switch .knob {
   }
 }
 
-/* شاشات كبيرة جدًا (4 أعمدة) */
+/* ============================================================
+   ULTRA PREMIUM DESKTOP LAYOUT (>= 1024px)
+   ============================================================ */
+@media (min-width: 1024px) {
+
+  /* ---------- الخلفية العامة ---------- */
+  body {
+    background:
+      radial-gradient(circle at 20% 10%, rgba(124, 58, 237, .08), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(251, 191, 36, .06), transparent 40%),
+      var(--bg-body);
+  }
+
+  /* ---------- الحاوية الرئيسية ---------- */
+  .main-area {
+    max-width: 1360px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 40px;
+  }
+
+  /* ---------- إخفاء العناصر الخاصة بالجوال ---------- */
+  .bottom-nav,
+  .sticky-home-header {
+    display: none !important;
+  }
+
+  /* ---------- الشريط الجانبي ---------- */
+  .sidebar {
+    width: 300px;
+    background: linear-gradient(180deg, #171029 0%, #0c0918 100%);
+    border-right: 1px solid rgba(255,255,255,.06);
+    box-shadow: 10px 0 30px rgba(0,0,0,.3);
+    padding-top: 20px;
+  }
+
+  .sidebar .side-link {
+    margin: 4px 12px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 15px;
+    letter-spacing: .2px;
+    transition: all .25s cubic-bezier(.16,1,.3,1);
+  }
+
+  .sidebar .side-link:hover {
+    background: rgba(255,255,255,.05);
+    transform: translateX(-4px);
+  }
+
+  .sidebar .side-link.active {
+    background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(249,115,22,.06));
+    box-shadow: inset 3px 0 0 #f97316;
+  }
+
+  /* ---------- الهيدر العلوي ---------- */
+  .topbar {
+    height: 80px;
+    background: rgba(23,16,41,.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    padding: 0 40px;
+  }
+
+  .topbar h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+  }
+
+  /* ---------- المحتوى ---------- */
+  .content {
+    padding: 40px;
+  }
+
+  /* ---------- عناوين الأقسام ---------- */
+  .section-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    letter-spacing: 3px;
+  }
+
+  /* ---------- بطاقة البحث ---------- */
+  .search-card {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 32px;
+    background: rgba(23,16,41,.8);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,.5);
+  }
+
+  .search-card .grid {
+    display: flex;
+    gap: 24px;
+  }
+
+  .search-card .grid > * {
+    flex: 1;
+  }
+
+  /* ---------- شبكات البطاقات ---------- */
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 30px !important;
+  }
+
+  /* ---------- بطاقات فخمة ---------- */
+  .hotel-card,
+  .restaurant-card,
+  .excursion-card,
+  .transfer-card {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    transition: transform .35s cubic-bezier(.16,1,.3,1),
+                box-shadow .35s cubic-bezier(.16,1,.3,1),
+                border-color .35s;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,.2);
+  }
+
+  .hotel-card:hover,
+  .restaurant-card:hover,
+  .excursion-card:hover,
+  .transfer-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 24px 50px -12px rgba(0,0,0,.4);
+    border-color: rgba(249,115,22,.5);
+  }
+
+  .hotel-card::after,
+  .restaurant-card::after,
+  .excursion-card::after,
+  .transfer-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(249,115,22,.12), transparent 70%);
+    opacity: 0;
+    transition: opacity .35s;
+    pointer-events: none;
+  }
+
+  .hotel-card:hover::after,
+  .restaurant-card:hover::after,
+  .excursion-card:hover::after,
+  .transfer-card:hover::after {
+    opacity: 1;
+  }
+
+  /* صور البطاقات */
+  .hotel-card img,
+  .restaurant-card img,
+  .excursion-card img,
+  .transfer-card img {
+    transition: transform .6s cubic-bezier(.16,1,.3,1);
+  }
+
+  .hotel-card:hover img,
+  .restaurant-card:hover img,
+  .excursion-card:hover img,
+  .transfer-card:hover img {
+    transform: scale(1.08);
+  }
+
+  /* جعل بطاقات الفنادق عمودية */
+  .hotel-card .flex {
+    flex-direction: column;
+  }
+
+  .hotel-card .w-32.h-32,
+  .hotel-card .md\:w-36.md\:h-36 {
+    width: 100% !important;
+    height: 240px !important;
+  }
+
+  .hotel-card .flex-1 {
+    padding: 24px;
+  }
+
+  /* بطاقات الوجهات */
+  .destination-card {
+    height: 220px;
+    border-radius: 24px;
+  }
+
+  /* ---------- حقول الإدخال والأزرار ---------- */
+  .field-input,
+  .field-select,
+  .field-textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="time"],
+  textarea,
+  select {
+    padding: 16px 20px;
+    font-size: 16px;
+    border-radius: 16px;
+    background: var(--bg-field);
+    border: 1.5px solid var(--border-field);
+    transition: border-color .3s, box-shadow .3s;
+  }
+
+  .field-input:focus,
+  .field-select:focus,
+  .field-textarea:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 4px rgba(249,115,22,.1);
+  }
+
+  .btn {
+    padding: 14px 28px;
+    font-size: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+  }
+
+  .btn-sm {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* ---------- المودالات ---------- */
+  .modal-overlay {
+    padding: 80px 40px;
+  }
+
+  .modal-panel {
+    max-width: 960px;
+    border-radius: 32px;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,.6);
+  }
+
+  .modal-content {
+    max-width: 720px;
+    border-radius: 28px;
+    padding: 40px;
+  }
+
+  /* ---------- صفحات التفاصيل ---------- */
+  .hotel-detail-page,
+  .excursion-detail-page,
+  .restaurant-detail-page,
+  .destination-detail-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 0;
+  }
+
+  .gallery-track {
+    height: 520px;
+    border-radius: 28px;
+    overflow: hidden;
+  }
+
+  /* ---------- الجداول ---------- */
+  table.data-table {
+    font-size: 15px;
+  }
+
+  table.data-table th {
+    padding: 16px 20px;
+    font-size: 13px;
+    letter-spacing: .5px;
+  }
+
+  table.data-table td {
+    padding: 18px 20px;
+  }
+
+  /* ---------- صفحة الحجوزات ---------- */
+  .bookings-list .hotel-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .bookings-list .hotel-card img {
+    width: 110px;
+    height: 110px;
+  }
+
+  /* ---------- نماذج الحجز ---------- */
+  .booking-flow-page .card,
+  .excursion-booking-flow-page .card,
+  .transfer-booking-flow-page .card {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 36px;
+    border-radius: 28px;
+  }
+
+  /* ---------- أزرار التنقل الداخلية ---------- */
+  .drawer-link {
+    font-size: 15px;
+    padding: 14px 20px;
+  }
+
+  /* ---------- شريط التمرير ---------- */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #382a54;
+    border-radius: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(0,0,0,.05);
+  }
+}
+
+/* ============================================================
+   شاشات فائقة الاتساع (>= 1440px) — 4 أعمدة
+   ============================================================ */
 @media (min-width: 1440px) {
   .main-area {
-    max-width: 1400px;
+    max-width: 1500px;
   }
 
   #featuredHotels,
@@ -1416,10 +1755,15 @@ html[data-theme="light"] .theme-switch .knob {
   #favoritesList,
   #bookingsList {
     grid-template-columns: repeat(4, 1fr) !important;
+    gap: 36px !important;
   }
 
   .hotel-card .w-32.h-32,
   .hotel-card .md\:w-36.md\:h-36 {
-    height: 260px !important;
+    height: 280px !important;
+  }
+
+  .search-card {
+    max-width: 1100px;
   }
 }
