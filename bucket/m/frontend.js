@@ -22,6 +22,8 @@ function enterApp() {
     bookings.render();
     notifications.render();
   }
+
+  applyDesktopLayout();
 }
 
 const nav = {
@@ -38,6 +40,7 @@ const nav = {
     if (page === 'bookings') bookings.render();
     if (page === 'favorites') favorites.render();
     if (page === 'notifications') notifications.render();
+    applyDesktopLayout();
   },
   goBack() { state.pageHistory.pop(); this.go(state.pageHistory[state.pageHistory.length - 1] || 'home'); },
   showAuth() {
@@ -229,33 +232,34 @@ const ui = {
     const img = getImageUrl(h.image);
     const isFav = state.favorites.includes(h.id);
     return `
-      <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
-        <div class="flex">
-          <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-            <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-            ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
-            <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
+      <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
+        <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+          ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
+          <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
+        </div>
+        <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between mb-1">
+              <h3 class="font-display font-bold text-sm md:text-base line-clamp-1">${h.name}</h3>
+              <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base ${isFav ? 'text-red-500' : 'text-gray-300'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
+            </div>
+            <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}<span class="text-[9px] mr-1">(${h.reviews})</span></div>
+            <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${(h.location || '').split(',')[0]}</p>
           </div>
-          <div class="flex-1 p-3 flex flex-col justify-between">
-            <div>
-              <div class="flex items-start justify-between mb-1">
-                <h3 class="font-display font-bold text-sm md:text-base line-clamp-1">${h.name}</h3>
-                <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base ${isFav ? 'text-red-500' : 'text-gray-300'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
-              </div>
-              <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}<span class="text-[9px] mr-1">(${h.reviews})</span></div>
-              <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${(h.location || '').split(',')[0]}</p>
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1 text-[8px]">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded">${a}</span>`).join('')}</div>
-              <div class="text-left"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
-            </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1 text-[8px]">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
+            <div class="text-left"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
           </div>
         </div>
       </div>`;
   },
   renderFeaturedHotels() {
     const el = document.getElementById('featuredHotels');
-    if (el) el.innerHTML = CATALOG.hotels.slice(0, 2).map(h => this.renderHotelCard(h)).join('');
+    if (el) {
+      el.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+      el.innerHTML = CATALOG.hotels.slice(0, 3).map(h => this.renderHotelCard(h)).join('');
+    }
   },
   setDefaultDates() {
     const tomorrow = utils.addDays(utils.todayIso(), 1);
@@ -278,7 +282,11 @@ const hotels = {
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
-    if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">No hotels found</div>`; return; }
+    list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="text-center py-16">No hotels found</div>`;
+      return;
+    }
     list.innerHTML = filtered.map(h => ui.renderHotelCard(h)).join('');
   }
 };
@@ -305,25 +313,24 @@ const excursionsUi = {
     if (!list) return;
     let filtered = CATALOG.excursions;
     if (state.currentExcursionFilter !== 'all') filtered = filtered.filter(x => x.category === state.currentExcursionFilter);
+    list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
     if (filtered.length === 0) { list.innerHTML = `<div class="text-center py-16">No excursions found</div>`; return; }
     list.innerHTML = filtered.map(x => this.renderCard(x)).join('');
   },
   renderCard(x) {
     const img = getImageUrl(x.image);
-    return `<div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer">
-      <div class="flex">
-        <div class="relative w-32 h-32 md:w-36 md:h-36 flex-shrink-0 overflow-hidden">
-          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+    return `<div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
+      <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
+        <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+      </div>
+      <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
+        <div>
+          <span class="text-[9px] font-bold text-violet-500">${x.category}</span>
+          <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1">${x.title}</h3>
+          <p class="text-[10px]"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${x.duration}</p>
         </div>
-        <div class="flex-1 p-3 flex flex-col justify-between">
-          <div>
-            <span class="text-[9px] font-bold text-violet-500">${x.category}</span>
-            <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1">${x.title}</h3>
-            <p class="text-[10px]"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${x.duration}</p>
-          </div>
-          <div class="flex items-center justify-between">
-            <p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-[9px] font-normal"> /person</span></p>
-          </div>
+        <div class="flex items-center justify-between">
+          <p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-[9px] font-normal"> /person</span></p>
         </div>
       </div>
     </div>`;
@@ -333,7 +340,10 @@ const excursionsUi = {
 const transfersUi = {
   render() {
     const list = document.getElementById('transfersList');
-    if (list) list.innerHTML = CATALOG.transfers.map(v => this.renderCard(v)).join('');
+    if (list) {
+      list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+      list.innerHTML = CATALOG.transfers.map(v => this.renderCard(v)).join('');
+    }
   },
   renderCard(v) {
     return `<div class="hotel-card rounded-2xl overflow-hidden">
@@ -344,7 +354,7 @@ const transfersUi = {
           <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group"></i> Up to ${v.capacity}</span>
         </div>
         <p class="text-xs mb-3">${v.description}</p>
-        <div class="flex flex-wrap gap-1.5 mb-3">${(v.features || []).map(f => `<span class="text-[9px] px-2 py-1 rounded-lg">${f}</span>`).join('')}</div>
+        <div class="flex flex-wrap gap-1.5 mb-3">${(v.features || []).map(f => `<span class="text-[9px] px-2 py-1 rounded-lg" style="background:var(--bg-field)">${f}</span>`).join('')}</div>
         <div class="flex items-center justify-between">
           <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}<span class="text-xs font-normal"> /trip</span></p>
           <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-6 py-2.5 rounded-2xl font-bold text-ink-900 text-sm">Book</button>
@@ -361,10 +371,13 @@ const restaurantsUi = {
   },
   renderFull() {
     const list = document.getElementById('restaurantsFullList');
-    if (list) list.innerHTML = `<div class="grid grid-cols-2 gap-3">${CATALOG.restaurants.map(r => this.renderCard(r)).join('')}</div>`;
+    if (list) {
+      list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+      list.innerHTML = CATALOG.restaurants.map(r => this.renderCard(r)).join('');
+    }
   },
   renderCard(r) {
-    return `<div onclick="showRestaurantPage('${r.id}')" class="restaurant-card">
+    return `<div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full">
       <div class="relative h-28">
         <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
         <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
@@ -430,6 +443,22 @@ const articlesUi = {
   }
 };
 
+// ==================== DESKTOP LAYOUT HELPER ====================
+function applyDesktopLayout() {
+  const isDesktop = window.innerWidth >= 1024;
+  document.querySelectorAll('.bottom-nav, .sticky-home-header').forEach(el => {
+    el.style.display = isDesktop ? 'none' : '';
+  });
+  document.querySelectorAll('.section-title').forEach(el => {
+    el.className = 'section-title ' + (isDesktop ? 'text-4xl font-bold' : 'text-2xl font-bold');
+  });
+  if (isDesktop) {
+    document.querySelector('.search-card')?.classList.add('max-w-4xl', 'mx-auto', 'p-8');
+  } else {
+    document.querySelector('.search-card')?.classList.remove('max-w-4xl', 'mx-auto', 'p-8');
+  }
+}
+
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
   await loadI18nDict();
@@ -439,6 +468,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
   search.switchTab('excursions');
   setTimeout(hideSplash, 3000);
+  window.addEventListener('resize', applyDesktopLayout);
+  applyDesktopLayout();
 });
 
 document.addEventListener('submit', (e) => {
