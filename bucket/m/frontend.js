@@ -44,10 +44,14 @@ const nav = {
   },
   goBack() { state.pageHistory.pop(); this.go(state.pageHistory[state.pageHistory.length - 1] || 'home'); },
   showAuth() {
-    hideSplash();
-    document.getElementById('authPage').classList.remove('hidden');
-    document.getElementById('mainApp').classList.add('hidden');
+  hideSplash();
+  document.getElementById('authPage').classList.remove('hidden');
+  document.getElementById('mainApp').classList.add('hidden');
+  // إعادة رسم زر Google إذا لم يكن قد رُسم بعد
+  if (typeof initGoogleButton === 'function') {
+    initGoogleButton();
   }
+}
 };
 
 const sidebar = {
