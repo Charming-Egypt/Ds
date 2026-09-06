@@ -403,7 +403,7 @@ async function handleAuthSubmit(e) {
 
 let googleSignInInitialized = false;
 
-async function handleGoogleSignIn() {
+async function initGoogleButton() {
   try {
     if (!window.google?.accounts?.id) {
       toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
@@ -427,24 +427,24 @@ async function handleGoogleSignIn() {
       google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleCredentialResponse,
-        ux_mode: 'popup',          // ← استخدام popup بدلاً من FedCM
-        auto_select: false,
       });
       googleSignInInitialized = true;
     }
 
-    // عرض نافذة الاختيار (popup)
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        console.warn('Google prompt not displayed. Trying alternative...');
-        // بديل: استخدام renderButton أو فتح نافذة OAuth يدويًا
-        // لكن نكتفي بالتنبيه
-        toast('Google sign-in popup blocked. Please allow popups.', 'error');
-      }
-    });
+    // رسم زر Google الرسمي داخل الحاوية
+    const container = document.getElementById('googleButtonContainer');
+    if (container) {
+      google.accounts.id.renderButton(container, {
+        theme: 'outline',
+        size: 'large',
+        width: '100%',
+      });
+    } else {
+      console.warn('Google button container not found.');
+    }
   } catch (e) {
-    console.error('handleGoogleSignIn error:', e);
-    toast(e.message || 'Google Sign-In failed.', 'error');
+    console.error('initGoogleButton error:', e);
+    toast(e.message || 'Google Sign-In initialization failed.', 'error');
   }
 }
 
