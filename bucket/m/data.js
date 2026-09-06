@@ -404,7 +404,7 @@ async function handleAuthSubmit(e) {
 // ==================== GOOGLE SIGN-IN ====================
 let googleSignInInitialized = false;
 
-async function initGoogleButton() {
+async function handleGoogleSignIn() {
   try {
     if (!window.google?.accounts?.id) {
       toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
@@ -432,20 +432,16 @@ async function initGoogleButton() {
       googleSignInInitialized = true;
     }
 
-    // رسم زر Google الرسمي داخل الحاوية
-    const container = document.getElementById('googleButtonContainer');
-    if (container) {
-      google.accounts.id.renderButton(container, {
-        theme: 'outline',
-        size: 'large',
-        width: '100%',
-      });
-    } else {
-      console.warn('Google button container not found.');
-    }
+    // استدعاء prompt مباشرة من حدث النقر (يتجنب popup block و FedCM)
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+        console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
+        toast('Google sign-in prompt was blocked. Please allow popups or try again.', 'error');
+      }
+    });
   } catch (e) {
-    console.error('initGoogleButton error:', e);
-    toast(e.message || 'Google Sign-In initialization failed.', 'error');
+    console.error('handleGoogleSignIn error:', e);
+    toast(e.message || 'Google Sign-In failed.', 'error');
   }
 }
 
@@ -477,6 +473,8 @@ async function handleGoogleCredentialResponse(response) {
     toast(e.message || 'Google Sign-In failed.', 'error');
   }
 }
+
+
 
 // ==================== USER PROFILE & AVATAR ====================
 const profileAvatar = {
