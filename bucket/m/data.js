@@ -332,7 +332,7 @@ async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
     try {
-      const data = await apiFetch(`/file?file=${f}.json`, {}, true); // لا توجيه للمصادقة هنا
+      const data = await apiFetch(`/file?file=${f}.json`, {}, true); // no auth redirect
       CATALOG_RAW[f] = JSON.parse(data.content);
     } catch (e) {
       console.warn(`Failed to load ${f}:`, e);
@@ -401,6 +401,7 @@ async function handleAuthSubmit(e) {
   if (user) enterApp();
 }
 
+// ==================== GOOGLE SIGN-IN ====================
 let googleSignInInitialized = false;
 
 async function initGoogleButton() {
@@ -476,6 +477,7 @@ async function handleGoogleCredentialResponse(response) {
     toast(e.message || 'Google Sign-In failed.', 'error');
   }
 }
+
 // ==================== USER PROFILE & AVATAR ====================
 const profileAvatar = {
   currentPhoto: null,
