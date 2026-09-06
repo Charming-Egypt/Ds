@@ -406,20 +406,24 @@ async function handleAuthSubmit(e) {
 
 async function handleGoogleSignIn() {
   try {
+    // 1. تحقق من توفر مكتبة Google Identity Services
     if (!window.google?.accounts?.id) {
       toast('Google Sign-In library not loaded. Please refresh the page.', 'error');
       return;
     }
 
+    // 2. جلب Client ID من الـ Worker (Secret)
     let clientId;
     try {
       const config = await apiFetch('/api/google-config', {}, true); // skip auth redirect
       clientId = config.clientId;
     } catch (e) {
+      console.error('Failed to fetch Google Client ID:', e);
       toast('Could not load Google Sign-In configuration.', 'error');
       return;
     }
 
+    // 3. تهيئة Google Identity Services للحصول على ID Token
     google.accounts.id.initialize({
       client_id: clientId,
       callback: async (response) => {
@@ -427,29 +431,42 @@ async function handleGoogleSignIn() {
           toast('Google did not return an ID token.', 'error');
           return;
         }
+
         try {
-          const data = await apiFetch('/api/auth/google', {
-            method: 'POST',
-            body: JSON.stringify({ idToken: response.credential }),
-          }, true); // skip auth redirect
+          // 4. إرسال الـ ID Token إلى Worker للتحقق وإنشاء الجلسة
+          const data = await apiFetch(
+            '/api/auth/google',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idToken: response.credential }),
+            },
+            true // skip auth redirect حتى لا يتم مسح الجلسة الحالية أثناء المحاولة
+          );
+
+          // 5. حفظ التوكن وبيانات المستخدم
           authToken = data.idToken;
           currentUser = data.user;
           localStorage.setItem('ds_auth_token', authToken);
           localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+
+          // 6. تحديث واجهة المستخدم
           updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
           enterApp();
         } catch (e) {
-          toast(e.message, 'error');
+          console.error('Google Sign-In API error:', e);
+          toast(e.message || 'Google Sign-In failed.', 'error');
         }
       },
     });
 
+    // 7. إظهار نافذة اختيار الحساب
     google.accounts.id.prompt();
   } catch (e) {
-    toast(e.message, 'error');
+    console.error('handleGoogleSignIn error:', e);
+    toast(e.message || 'Google Sign-In failed.', 'error');
   }
 }
-
 // ==================== USER PROFILE & AVATAR ====================
 const profileAvatar = {
   currentPhoto: null,
