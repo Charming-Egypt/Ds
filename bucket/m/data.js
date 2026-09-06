@@ -424,21 +424,32 @@ async function handleGoogleSignIn() {
 
     const clientId = window._googleClientId;
 
+    // تهيئة المكتبة إذا لم تكن مهيأة
     if (!googleSignInInitialized) {
       google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleCredentialResponse,
       });
       googleSignInInitialized = true;
+
+      // رسم زر Google الرسمي داخل الحاوية المخفية
+      const container = document.getElementById('googleButtonContainer');
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          width: '100%',
+        });
+      }
     }
 
-    // استدعاء prompt مباشرة من حدث النقر (يتجنب popup block و FedCM)
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
-        toast('Google sign-in prompt was blocked. Please allow popups or try again.', 'error');
-      }
-    });
+    // بعد التأكد من رسم الزر المخفي، نحاكي النقر عليه
+    const hiddenBtn = document.querySelector('#googleButtonContainer [role="button"]');
+    if (hiddenBtn) {
+      hiddenBtn.click();
+    } else {
+      toast('Google button not ready, please try again.', 'error');
+    }
   } catch (e) {
     console.error('handleGoogleSignIn error:', e);
     toast(e.message || 'Google Sign-In failed.', 'error');
