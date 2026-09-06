@@ -194,17 +194,14 @@ async function apiFetch(endpoint, options = {}, skipAuthRedirect = false) {
 
   const res = await fetch(`${WORKER_URL}${endpoint}`, { ...options, headers });
 
-  // إذا كانت الاستجابة 401
   if (res.status === 401) {
     if (!skipAuthRedirect) {
-      // فقط عند عدم التخطي نمسح التوكن ونعيد التوجيه
       authToken = null;
       currentUser = null;
       localStorage.removeItem('ds_auth_token');
       localStorage.removeItem('ds_current_user');
       nav.showAuth();
     }
-    // نرمي الخطأ الفعلي من الخادم (مثل invalid_client) بدلاً من رسالة الجلسة
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Authentication failed');
   }
