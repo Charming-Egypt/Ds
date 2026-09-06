@@ -474,6 +474,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setTimeout(hideSplash, 3000);
   window.addEventListener('resize', applyDesktopLayout);
   applyDesktopLayout();
+  if (!auth.isLoggedIn()) {
+    initGoogleButton();
+  }
 });
 
 document.addEventListener('submit', (e) => {
