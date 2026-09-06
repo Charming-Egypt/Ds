@@ -410,7 +410,7 @@ async function handleGoogleSignIn() {
       return;
     }
 
-    // جلب Client ID من الـ Worker مرة واحدة فقط
+    // جلب Client ID من الـ Worker (مرة واحدة)
     if (!window._googleClientId) {
       try {
         const config = await apiFetch('/api/google-config', {}, true);
@@ -423,17 +423,25 @@ async function handleGoogleSignIn() {
 
     const clientId = window._googleClientId;
 
-    // تجنب التهيئة المتكررة
     if (!googleSignInInitialized) {
       google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleCredentialResponse,
+        ux_mode: 'popup',          // ← استخدام popup بدلاً من FedCM
+        auto_select: false,
       });
       googleSignInInitialized = true;
     }
 
-    // استدعاء prompt لعرض نافذة اختيار الحساب
-    google.accounts.id.prompt();
+    // عرض نافذة الاختيار (popup)
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        console.warn('Google prompt not displayed. Trying alternative...');
+        // بديل: استخدام renderButton أو فتح نافذة OAuth يدويًا
+        // لكن نكتفي بالتنبيه
+        toast('Google sign-in popup blocked. Please allow popups.', 'error');
+      }
+    });
   } catch (e) {
     console.error('handleGoogleSignIn error:', e);
     toast(e.message || 'Google Sign-In failed.', 'error');
