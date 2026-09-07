@@ -1,5 +1,5 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-const SHOW_HOTELS = false; // اجعلها true لإعادة عرض الفنادق
+const SHOW_HOTELS = true; // تم التفعيل
 
 function enterApp() {
   hideSplash();
@@ -20,7 +20,7 @@ function enterApp() {
   if (auth.isLoggedIn()) {
     bookings.load();
     notifications.load();
-    loadUserProfile(); // تحديث المستوى والإحصائيات
+    loadUserProfile();
   } else {
     bookings.render();
     notifications.render();
@@ -206,7 +206,6 @@ const datepicker = {
   unavailable: [],
   open(fieldId, opts = {}) {
     this.target = fieldId;
-    // دائمًا الحد الأدنى هو الغد
     this.minIso = utils.addDays(utils.todayIso(), 1);
     this.unavailable = opts.unavailableIso || [];
     const field = document.getElementById(fieldId);
@@ -249,21 +248,24 @@ const datepicker = {
 // ==================== SEARCH ====================
 const search = {
   switchTab(tab) {
-    if (!SHOW_HOTELS && tab !== 'excursions') tab = 'excursions'; // إجبار الرحلات
+    // السماح فقط بـ hotels و excursions
+    if (tab !== 'hotels' && tab !== 'excursions') tab = 'excursions';
     state.activeSearchTab = tab;
-    document.getElementById('hotelSearchForm').classList.toggle('hidden', tab !== 'hotels');
-    document.getElementById('excursionSearchForm').classList.toggle('hidden', tab !== 'excursions');
-    document.getElementById('transferSearchForm').classList.toggle('hidden', tab !== 'transfers');
-    const tabs = { hotels: 'searchTabHotels', excursions: 'searchTabExcursions', transfers: 'searchTabTransfers' };
-    Object.keys(tabs).forEach(t => {
-      const btn = document.getElementById(tabs[t]);
-      if (btn) { btn.style.background = t === tab ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent'; btn.style.color = t === tab ? '#fff' : 'var(--text-secondary)'; }
-    });
+
+    const hotelForm = document.getElementById('hotelSearchForm');
+    const excursionForm = document.getElementById('excursionSearchForm');
+    if (hotelForm) hotelForm.classList.toggle('active', tab === 'hotels');
+    if (excursionForm) excursionForm.classList.toggle('active', tab === 'excursions');
+
+    const hotelBtn = document.getElementById('searchTabHotels');
+    const excursionBtn = document.getElementById('searchTabExcursions');
+    if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
+    if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
   },
-  handle(q) { state.searchQuery = q.toLowerCase(); if (SHOW_HOTELS && document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
-  filterCategory(cat) { state.currentFilter = cat; if (SHOW_HOTELS) { document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); } },
+  handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
+  filterCategory(cat) { state.currentFilter = cat; document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); },
   filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
-  applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); }
+  applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); }
 };
 
 // ==================== CURRENCY CHANGE ====================
@@ -281,14 +283,66 @@ function changeCurrency(c) {
 // ==================== ROOM PREVIEW ====================
 function showRoomPreview(hotelId, roomIndex) {
   if (!SHOW_HOTELS) return;
-  // ... existing code
+  const h = CATALOG.hotels.find(x => x.id === hotelId);
+  const r = h?.rooms?.[roomIndex];
+  if (!r) return;
+  document.getElementById('roomPreviewContent').innerHTML = `
+    <div class="relative h-52">
+      <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+      <button onclick="closeRoomPreview()" class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900"><i class="fa-solid fa-xmark"></i></button>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+      <p class="absolute bottom-3 right-3 left-3 text-white font-display font-bold text-lg">${r.type}</p>
+    </div>
+    <div class="p-5" style="background:var(--bg-card)">
+      <div class="flex items-center gap-3 text-xs mb-3" style="color:var(--text-secondary)">
+        <span><i class="fa-solid fa-user-group text-violet-500"></i> ${r.guests || 2} Guests</span>
+        <span><i class="fa-solid fa-ruler-combined text-violet-500"></i> ${r.size || '25m²'}</span>
+        <span><i class="fa-solid fa-bed text-violet-500"></i> ${r.beds || '1 Queen Bed'}</span>
+      </div>
+      <p class="text-sm leading-relaxed mb-4" style="color:var(--text-secondary)">${r.description || ''}</p>
+      <button onclick="selectRoomOnDetail('${hotelId}', ${roomIndex}, { closeModal: true })" class="btn-gold w-full py-3 rounded-2xl font-bold text-ink-900">Select This Room</button>
+    </div>`;
+  document.getElementById('roomPreviewModal').classList.remove('hidden');
 }
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
 // ==================== UI RENDERERS ====================
 const ui = {
-  renderHotelCard(h) { if (!SHOW_HOTELS) return ''; /* ... */ },
-  renderFeaturedHotels() { if (!SHOW_HOTELS) return; /* ... */ },
+  renderHotelCard(h) {
+    if (!SHOW_HOTELS) return '';
+    const img = getImageUrl(h.image);
+    const isFav = state.favorites.includes(h.id);
+    return `
+      <div onclick="showHotelPage('${h.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
+        <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+          ${h.bestseller ? '<div class="absolute top-2 right-2 badge-bestseller text-[8px] font-black px-2 py-0.5 rounded-md">BEST SELLER</div>' : ''}
+          <div class="absolute bottom-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${h.rating}</span></div>
+        </div>
+        <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between mb-1">
+              <h3 class="font-display font-bold text-sm md:text-base line-clamp-1">${h.name}</h3>
+              <button onclick="event.stopPropagation(); favorites.toggle('${h.id}')" class="text-base ${isFav ? 'text-red-500' : 'text-gray-300'}"><i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i></button>
+            </div>
+            <div class="flex items-center gap-1 mb-1">${utils.renderStars(h.rating)}<span class="text-[9px] mr-1">(${h.reviews})</span></div>
+            <p class="text-[10px] mb-1.5"><i class="fa-solid fa-location-dot text-violet-500 text-[8px]"></i>${(h.location || '').split(',')[0]}</p>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1 text-[8px]">${(h.amenities || []).slice(0, 2).map(a => `<span class="px-1.5 py-0.5 rounded" style="background:var(--bg-field)">${a}</span>`).join('')}</div>
+            <div class="text-left"><p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(h.price)}</p><p class="text-[8px]">/ Night</p></div>
+          </div>
+        </div>
+      </div>`;
+  },
+  renderFeaturedHotels() {
+    if (!SHOW_HOTELS) return;
+    const el = document.getElementById('featuredHotels');
+    if (el) {
+      el.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+      el.innerHTML = CATALOG.hotels.slice(0, 3).map(h => this.renderHotelCard(h)).join('');
+    }
+  },
   setDefaultDates() {
     const tomorrow = utils.addDays(utils.todayIso(), 1);
     const dayAfter = utils.addDays(utils.todayIso(), 2);
@@ -309,7 +363,22 @@ const ui = {
   }
 };
 
-const hotels = { render() { if (!SHOW_HOTELS) return; /* ... */ } };
+const hotels = {
+  render() {
+    if (!SHOW_HOTELS) return;
+    const list = document.getElementById('hotelsList');
+    if (!list) return;
+    let filtered = CATALOG.hotels;
+    if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
+    if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
+    list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="text-center py-16">No hotels found</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(h => ui.renderHotelCard(h)).join('');
+  }
+};
 
 const excursionsUi = {
   renderFeatured() {
@@ -490,7 +559,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('excursions');
+  search.switchTab('hotels'); // افتراضي الفنادق
   setTimeout(hideSplash, 3000);
 });
 
