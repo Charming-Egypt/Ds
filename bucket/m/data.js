@@ -75,7 +75,7 @@ function populateCountryCodeSelect() {
   const sel = document.getElementById('authCountryCode');
   if (!sel) return;
   sel.innerHTML = COUNTRY_CODES.map(c =>
-    `<option value="${c.dial}">${countryFlagEmoji(c.code)} ${c.dial} ${c.name}</option>`
+    `<option value="${c.dial}">${countryFlagEmoji(c.code)} ${c.dial}</option>`
   ).join('');
   sel.value = '+20'; // افتراضي مصر
 }
@@ -84,7 +84,7 @@ function populateNationalitySelect() {
   const sel = document.getElementById('reviewNationality');
   if (!sel) return;
   sel.innerHTML = COUNTRY_CODES.map(c =>
-    `<option value="${c.code}">${countryFlagEmoji(c.code)} ${c.name}</option>`
+    `<option value="${c.code}">${countryFlagEmoji(c.code)} ${c.name} (${c.code})</option>`
   ).join('');
   sel.value = 'EG';
 }
