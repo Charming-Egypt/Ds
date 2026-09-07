@@ -2,6 +2,7 @@
 const WORKER_URL = 'https://gh.gm-093.workers.dev';
 let authToken = localStorage.getItem('ds_auth_token') || null;
 let currentUser = JSON.parse(localStorage.getItem('ds_current_user') || 'null');
+let authMode = 'login'; // 'login' أو 'signup'
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
 
@@ -27,7 +28,7 @@ const state = {
   hotelsCache: [],
   reviewTarget: null,
 };
-const SHOW_HOTELS = false;
+
 const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 
@@ -331,7 +332,6 @@ function localizeCatalog(lang) {
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
-    if (f === 'hotels' && !SHOW_HOTELS) continue; // تخطي تحميل الفنادق
     try {
       const data = await apiFetch(`/file?file=${f}.json`, {}, true);
       CATALOG_RAW[f] = JSON.parse(data.content);
@@ -344,17 +344,13 @@ async function loadCatalogFromWorker() {
   refreshCatalogUI();
 }
 
-
 function refreshCatalogUI() {
-  if (SHOW_HOTELS) {
-    if (document.getElementById('hotelsList')) hotels.render();
-    if (document.getElementById('featuredHotels')) ui.renderFeaturedHotels();
-    if (document.getElementById('favoritesList')) favorites.render();
-  }
+  if (document.getElementById('hotelsList')) hotels.render();
   if (document.getElementById('excursionsList')) excursionsUi.render();
   if (document.getElementById('transfersList')) transfersUi.render();
   if (document.getElementById('restaurantsFullList')) restaurantsUi.renderFull();
   if (document.getElementById('destinationsRow')) destinationsUi.render();
+  if (document.getElementById('featuredHotels')) ui.renderFeaturedHotels();
   if (document.getElementById('featuredExcursions')) excursionsUi.renderFeatured();
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
@@ -395,15 +391,31 @@ const auth = {
   isLoggedIn() { return !!authToken; }
 };
 
+function switchAuthMode(mode) {
+  authMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('authTitle').textContent = isLogin ? 'Welcome Back' : 'Create Account';
+  document.getElementById('authNameWrap').classList.toggle('hidden', isLogin);
+  document.getElementById('authSubmitBtn').textContent = isLogin ? 'Log In' : 'Sign Up';
+  document.getElementById('authSwitchText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('authSwitchLink').textContent = isLogin ? 'Sign Up' : 'Log In';
+}
+
 async function handleAuthSubmit(e) {
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   const nameField = document.getElementById('authName');
-  const name = nameField ? nameField.value.trim() : '';
-  if (auth.isLoggedIn()) auth.logout();
-  const user = name ? await auth.signUp(name, email, password) : await auth.signIn(email, password);
-  if (user) enterApp();
+  const name = nameField && nameField.value.trim() ? nameField.value.trim() : '';
+
+  if (authMode === 'signup') {
+    if (!name) { toast('Please enter your full name', 'error'); return; }
+    const user = await auth.signUp(name, email, password);
+    if (user) enterApp();
+  } else {
+    const user = await auth.signIn(email, password);
+    if (user) enterApp();
+  }
 }
 
 // ==================== GOOGLE SIGN-IN ====================
@@ -416,7 +428,6 @@ async function handleGoogleSignIn() {
       return;
     }
 
-    // جلب Client ID من الـ Worker (مرة واحدة)
     if (!window._googleClientId) {
       try {
         const config = await apiFetch('/api/google-config', {}, true);
@@ -429,32 +440,20 @@ async function handleGoogleSignIn() {
 
     const clientId = window._googleClientId;
 
-    // تهيئة المكتبة إذا لم تكن مهيأة
     if (!googleSignInInitialized) {
       google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleCredentialResponse,
       });
       googleSignInInitialized = true;
+    }
 
-      // رسم زر Google الرسمي داخل الحاوية المخفية
-      const container = document.getElementById('googleButtonContainer');
-      if (container) {
-        google.accounts.id.renderButton(container, {
-          theme: 'outline',
-          size: 'large',
-          width: '100%',
-        });
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+        console.warn('Google prompt not displayed:', notification.getNotDisplayedReason());
+        toast('Google sign-in prompt was blocked. Please allow popups or try again.', 'error');
       }
-    }
-
-    // بعد التأكد من رسم الزر المخفي، نحاكي النقر عليه
-    const hiddenBtn = document.querySelector('#googleButtonContainer [role="button"]');
-    if (hiddenBtn) {
-      hiddenBtn.click();
-    } else {
-      toast('Google button not ready, please try again.', 'error');
-    }
+    });
   } catch (e) {
     console.error('handleGoogleSignIn error:', e);
     toast(e.message || 'Google Sign-In failed.', 'error');
@@ -470,11 +469,7 @@ async function handleGoogleCredentialResponse(response) {
   try {
     const data = await apiFetch(
       '/api/auth/google',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken: response.credential }),
-      },
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: response.credential }) },
       true
     );
 
@@ -489,8 +484,6 @@ async function handleGoogleCredentialResponse(response) {
     toast(e.message || 'Google Sign-In failed.', 'error');
   }
 }
-
-
 
 // ==================== USER PROFILE & AVATAR ====================
 const profileAvatar = {
