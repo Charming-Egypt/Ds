@@ -40,7 +40,7 @@ const MULTILANG_FIELDS = [
 ];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images', 'menu', 'itinerary'];
 
-// ==================== COUNTRY CODES ====================
+// ==================== COUNTRY CODES with flags ====================
 const COUNTRY_CODES = [
   { code: 'EG', dial: '+20', name: 'Egypt' },
   { code: 'SA', dial: '+966', name: 'Saudi Arabia' },
@@ -59,20 +59,33 @@ const COUNTRY_CODES = [
   { code: 'RU', dial: '+7', name: 'Russia' },
   { code: 'TR', dial: '+90', name: 'Turkey' },
   { code: 'IN', dial: '+91', name: 'India' },
-  { code: 'CN', dial: '+86', name: 'China' }
+  { code: 'CN', dial: '+86', name: 'China' },
+  { code: 'JP', dial: '+81', name: 'Japan' },
+  { code: 'BR', dial: '+55', name: 'Brazil' },
+  { code: 'CA', dial: '+1', name: 'Canada' },
+  { code: 'AU', dial: '+61', name: 'Australia' }
 ];
+
+function countryFlagEmoji(isoCode) {
+  if (!isoCode || isoCode.length !== 2) return '';
+  return String.fromCodePoint(...[...isoCode.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+}
 
 function populateCountryCodeSelect() {
   const sel = document.getElementById('authCountryCode');
   if (!sel) return;
-  sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.dial}">${c.dial} ${c.code}</option>`).join('');
+  sel.innerHTML = COUNTRY_CODES.map(c =>
+    `<option value="${c.dial}">${countryFlagEmoji(c.code)} ${c.dial} ${c.name}</option>`
+  ).join('');
   sel.value = '+20'; // افتراضي مصر
 }
 
 function populateNationalitySelect() {
   const sel = document.getElementById('reviewNationality');
   if (!sel) return;
-  sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+  sel.innerHTML = COUNTRY_CODES.map(c =>
+    `<option value="${c.code}">${countryFlagEmoji(c.code)} ${c.name}</option>`
+  ).join('');
   sel.value = 'EG';
 }
 
