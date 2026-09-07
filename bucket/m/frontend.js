@@ -1,5 +1,5 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-
+const SHOW_HOTELS = false; // اجعلها true لإعادة عرض الفنادق
 
 function enterApp() {
   hideSplash();
@@ -54,6 +54,7 @@ const nav = {
     hideSplash();
     document.getElementById('authPage').classList.remove('hidden');
     document.getElementById('mainApp').classList.add('hidden');
+    switchAuthMode('login'); // العودة لوضع تسجيل الدخول
   }
 };
 
@@ -209,23 +210,17 @@ function changeCurrency(c) {
   toast('Currency updated', 'info');
 }
 
-// ==================== ROOM PREVIEW (only if hotels) ====================
+// ==================== ROOM PREVIEW ====================
 function showRoomPreview(hotelId, roomIndex) {
   if (!SHOW_HOTELS) return;
-  // ... existing code
+  // ... كود العرض كما في النسخة الكاملة السابقة
 }
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
 // ==================== UI RENDERERS ====================
 const ui = {
-  renderHotelCard(h) {
-    if (!SHOW_HOTELS) return '';
-    // ... existing code
-  },
-  renderFeaturedHotels() {
-    if (!SHOW_HOTELS) return;
-    // ... existing code
-  },
+  renderHotelCard(h) { if (!SHOW_HOTELS) return ''; /* ... */ },
+  renderFeaturedHotels() { if (!SHOW_HOTELS) return; /* ... */ },
   setDefaultDates() {
     const tomorrow = utils.addDays(utils.todayIso(), 1);
     const dayAfter = utils.addDays(utils.todayIso(), 3);
@@ -240,9 +235,7 @@ const ui = {
   }
 };
 
-const hotels = {
-  render() { if (!SHOW_HOTELS) return; /* ... existing code */ }
-};
+const hotels = { render() { if (!SHOW_HOTELS) return; /* ... */ } };
 
 const excursionsUi = {
   renderFeatured() {
