@@ -263,7 +263,7 @@
       </div>
       <div class="space-y-1 flex-1 overflow-y-auto">
         <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center"></i><span data-i18n="navHome">Home</span></div>
-        <div class="drawer-link" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
+       <!-- <div class="drawer-link" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>-->
         <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
         <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
         <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
@@ -329,10 +329,8 @@
         <div class="search-card rounded-[26px] p-5 space-y-4">
           <!-- Search tabs (icon only) -->
           <div class="flex gap-1 field-box p-1 rounded-2xl">
-            <button onclick="search.switchTab('hotels')" id="searchTabHotels" title="Hotels" aria-label="Hotels" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-hotel text-lg"></i></button>
-            <button onclick="search.switchTab('excursions')" id="searchTabExcursions" title="Excursions" aria-label="Excursions" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-umbrella-beach text-lg"></i></button>
-            <button onclick="search.switchTab('transfers')" id="searchTabTransfers" title="Transfers" aria-label="Transfers" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-lg"></i></button>
-          </div>
+  <button onclick="search.switchTab('excursions')" id="searchTabExcursions" ...>...</button>
+</div>
 
           <!-- Hotel search form -->
           <div id="hotelSearchForm" class="space-y-4">
@@ -716,7 +714,7 @@
     <!-- ============ BOTTOM NAVIGATION (icon-only) ============ -->
     <nav class="bottom-nav">
       <div class="flex items-center justify-around relative">
-        <button onclick="nav.go('hotels')" data-page="hotels" title="Hotels" aria-label="Hotels" class="nav-item flex items-center justify-center"><i class="fa-solid fa-hotel text-[22px]"></i></button>
+      <!--  <button onclick="nav.go('hotels')" data-page="hotels" title="Hotels" aria-label="Hotels" class="nav-item flex items-center justify-center"><i class="fa-solid fa-hotel text-[22px]"></i></button> -->
         <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center"><i class="fa-regular fa-calendar-check text-[22px]"></i></button>
         <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
           <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover" /></span>
