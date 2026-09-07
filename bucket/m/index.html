@@ -111,10 +111,10 @@
           <button type="submit" id="authSubmitBtn" class="btn-gold w-full py-3.5 rounded-2xl font-bold text-ink-900 mt-2" data-i18n="loginBtn">Log In</button>
         </form>
         <p class="text-center text-white/50 text-xs mt-5">
-          <span id="authSwitchText" data-i18n="noAccount">Don't have an account?</span>
-          <a href="javascript:void(0)" onclick="auth.switchMode(auth.mode==='login'?'signup':'login')" id="authSwitchLink" class="text-gold-400 font-semibold" data-i18n="signupBtn">Sign Up</a>
-        </p>
-        <button onclick="auth.continueAsGuest()" class="w-full mt-4 py-3 rounded-2xl text-white/60 text-xs font-medium border border-white/10" data-i18n="continueAsGuest">Continue as Guest</button>
+  <span id="authSwitchText" data-i18n="noAccount">Don't have an account?</span>
+  <a href="javascript:void(0)" onclick="switchAuthMode(authMode === 'login' ? 'signup' : 'login')" id="authSwitchLink" class="text-gold-400 font-semibold" data-i18n="signupBtn">Sign Up</a>
+</p>
+        
       </div>
     </div>
   </div>
