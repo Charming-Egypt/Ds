@@ -40,6 +40,42 @@ const MULTILANG_FIELDS = [
 ];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images', 'menu', 'itinerary'];
 
+// ==================== COUNTRY CODES ====================
+const COUNTRY_CODES = [
+  { code: 'EG', dial: '+20', name: 'Egypt' },
+  { code: 'SA', dial: '+966', name: 'Saudi Arabia' },
+  { code: 'AE', dial: '+971', name: 'UAE' },
+  { code: 'KW', dial: '+965', name: 'Kuwait' },
+  { code: 'QA', dial: '+974', name: 'Qatar' },
+  { code: 'BH', dial: '+973', name: 'Bahrain' },
+  { code: 'OM', dial: '+968', name: 'Oman' },
+  { code: 'JO', dial: '+962', name: 'Jordan' },
+  { code: 'GB', dial: '+44', name: 'United Kingdom' },
+  { code: 'US', dial: '+1', name: 'United States' },
+  { code: 'DE', dial: '+49', name: 'Germany' },
+  { code: 'FR', dial: '+33', name: 'France' },
+  { code: 'IT', dial: '+39', name: 'Italy' },
+  { code: 'ES', dial: '+34', name: 'Spain' },
+  { code: 'RU', dial: '+7', name: 'Russia' },
+  { code: 'TR', dial: '+90', name: 'Turkey' },
+  { code: 'IN', dial: '+91', name: 'India' },
+  { code: 'CN', dial: '+86', name: 'China' }
+];
+
+function populateCountryCodeSelect() {
+  const sel = document.getElementById('authCountryCode');
+  if (!sel) return;
+  sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.dial}">${c.dial} ${c.code}</option>`).join('');
+  sel.value = '+20'; // افتراضي مصر
+}
+
+function populateNationalitySelect() {
+  const sel = document.getElementById('reviewNationality');
+  if (!sel) return;
+  sel.innerHTML = COUNTRY_CODES.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+  sel.value = 'EG';
+}
+
 // ==================== CURRENCY ====================
 const CURRENCY_SYMBOLS = { EGP: 'ج.م', USD: '$', EUR: '€', GBP: '£', SAR: 'ر.س', RUB: '₽' };
 const DISPLAY_CURRENCIES = ['EGP', 'USD', 'EUR', 'GBP', 'SAR', 'RUB'];
@@ -407,9 +443,12 @@ async function handleAuthSubmit(e) {
   const password = document.getElementById('authPassword').value;
   const nameField = document.getElementById('authName');
   const name = nameField && nameField.value.trim() ? nameField.value.trim() : '';
+  const countryCode = document.getElementById('authCountryCode')?.value || '';
+  const phone = document.getElementById('authPhone')?.value.trim() || '';
 
   if (authMode === 'signup') {
     if (!name) { toast('Please enter your full name', 'error'); return; }
+    if (!phone) { toast('Please enter your phone number', 'error'); return; }
     const user = await auth.signUp(name, email, password);
     if (user) enterApp();
   } else {
@@ -699,3 +738,15 @@ const notifications = {
   markAllRead() { this.list.forEach(n => n.read = true); this.render(); },
   markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
 };
+
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadI18nDict();
+  I18N.init();
+  THEME.init();
+  initCurrency();
+  populateCountryCodeSelect();
+  populateNationalitySelect();
+  if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+  setTimeout(hideSplash, 3000);
+});
