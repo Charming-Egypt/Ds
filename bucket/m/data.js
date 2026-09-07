@@ -419,9 +419,18 @@ const auth = {
       return data.user;
     } catch (e) { toast(e.message, 'error'); return null; }
   },
-  async signUp(name, email, password) {
+  async signUp(name, email, password, extra = {}) {
     try {
-      const data = await apiFetch('/api/auth/signup', { method: 'POST', body: JSON.stringify({ name, email, password }) }, true);
+      const data = await apiFetch('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone: extra.phone || '',
+          countryCode: extra.countryCode || '',
+        }),
+      }, true);
       authToken = data.idToken;
       currentUser = data.user;
       localStorage.setItem('ds_auth_token', authToken);
@@ -462,7 +471,7 @@ async function handleAuthSubmit(e) {
   if (authMode === 'signup') {
     if (!name) { toast('Please enter your full name', 'error'); return; }
     if (!phone) { toast('Please enter your phone number', 'error'); return; }
-    const user = await auth.signUp(name, email, password);
+    const user = await auth.signUp(name, email, password, { phone, countryCode });
     if (user) enterApp();
   } else {
     const user = await auth.signIn(email, password);
