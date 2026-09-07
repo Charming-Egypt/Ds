@@ -27,6 +27,8 @@ const state = {
   transferDirection: 'Airport to Hotel',
   hotelsCache: [],
   reviewTarget: null,
+  userTier: 0,          // 0=standard, 1=Level1, 2=Level2, 3=Level3
+  userStats: { completedBookings: 0, totalSpent: 0 },
 };
 
 const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
@@ -309,7 +311,6 @@ const I18N = {
       if (val) { if (el.tagName === 'OPTION') el.textContent = val; else el.innerHTML = val; }
     });
     document.querySelectorAll('.lang-select').forEach(sel => { sel.value = lang; });
-    // إعادة توطين الكتالوج
     localizeCatalog(lang);
     refreshCatalogUI();
   },
@@ -412,7 +413,7 @@ const auth = {
     try {
       const data = await apiFetch('/api/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) }, true);
       authToken = data.idToken;
-      currentUser = { ...data.user, uid: data.user.uid }; // ✅ تحديث uid
+      currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
       localStorage.setItem('ds_auth_token', authToken);
       localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
       updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -432,7 +433,7 @@ const auth = {
         }),
       }, true);
       authToken = data.idToken;
-      currentUser = { ...data.user, uid: data.user.uid }; // ✅ تحديث uid
+      currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
       localStorage.setItem('ds_auth_token', authToken);
       localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
       updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -535,7 +536,7 @@ async function handleGoogleCredentialResponse(response) {
     );
 
     authToken = data.idToken;
-    currentUser = { ...data.user, uid: data.user.uid }; // ✅ تحديث uid
+    currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
     localStorage.setItem('ds_auth_token', authToken);
     localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -586,11 +587,10 @@ const profileAvatar = {
         const res = await apiFetch('/api/profile', {
           method: 'POST',
           body: JSON.stringify({
-            uid: currentUser?.uid, // ✅ إرسال UID الحالي
+            uid: currentUser?.uid,
             profile: { photoURL: dataUrl },
           }),
         });
-        // تحديث currentUser.photoURL
         if (currentUser) {
           currentUser.photoURL = dataUrl;
           localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
@@ -614,6 +614,18 @@ function updateDrawerUser(name, email, photoURL) {
   const pn = document.getElementById('profileName'); if (pn) pn.textContent = name || 'Guest';
   const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = email || '';
   profileAvatar.render(name, photoURL);
+
+  // عرض شارة المستوى
+  const badge = document.getElementById('drawerTierBadge');
+  if (badge) {
+    const level = currentUser?.geniusLevel || 0;
+    if (level > 0) {
+      badge.classList.remove('hidden');
+      badge.textContent = `Genius Lv${level}`;
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
 }
 
 // ==================== REVIEWS ====================
