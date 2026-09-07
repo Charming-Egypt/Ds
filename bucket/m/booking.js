@@ -25,18 +25,9 @@ function showKashierModal(kashierUrl, orderId, bookingData) {
     if (ev.origin !== 'https://checkout.kashier.io') return;
     if (ev.data?.event === 'kashier.paymentSuccess') {
       modal.remove();
-      if (!authToken) {
-        toast('Please login to complete booking', 'error');
-        return;
-      }
-      bookingData.paymentStatus = 'paid';
-      bookingData.transactionRef = ev.data.transactionId || orderId;
-      try {
-        const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-        renderBookingConfirmation(res.booking);
-      } catch (e) {
-        toast('Booking save failed: ' + e.message, 'error');
-      }
+      toast('Payment successful! Your booking is confirmed.', 'success');
+      // Webhook will update status automatically; just show confirmation
+      renderBookingConfirmation(bookingData);
     }
     if (ev.data?.event === 'kashier.paymentFailure') {
       modal.remove();
@@ -263,20 +254,75 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
   const btn = document.getElementById('hotelPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
-    const bookingData = { id: orderId, type: 'hotel', hotelId: state.currentHotel.id, hotelName: state.currentHotel.name, image: getImageUrl(state.currentHotel.image), location: state.currentHotel.location, rating: state.currentHotel.rating, name: state.bookingDraft.name, email: state.bookingDraft.email, phone: state.bookingDraft.phone, requests: state.bookingDraft.requests, checkin: state.bookingDraft.checkin, checkout: state.bookingDraft.checkout, guests: state.guests.adults + state.guests.children, rooms: state.guests.rooms, roomType: state.currentRoom.type, nights, payment: state.bookingDraft.payment, paymentStatus: state.bookingDraft.payment === 'cash' ? 'pending_cash' : 'pending', total, priceFormatted: utils.formatPrice(total), status: 'upcoming', reviewed: false, createdAt: new Date().toISOString(), };
-    if (state.bookingDraft.payment !== 'cash') {
-      const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-      const kashierUrl = new URL('https://checkout.kashier.io/');
-      kashierUrl.searchParams.append('merchantId', hashData.merchantId); kashierUrl.searchParams.append('orderId', orderId); kashierUrl.searchParams.append('amount', total); kashierUrl.searchParams.append('currency', hashData.currency || 'EGP'); kashierUrl.searchParams.append('hash', hashData.hash); kashierUrl.searchParams.append('mode', 'test'); kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card'); kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
-      showKashierModal(kashierUrl.toString(), orderId, bookingData);
-      btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
+    const bookingData = {
+      id: orderId,
+      type: 'hotel',
+      hotelId: state.currentHotel.id,
+      hotelName: state.currentHotel.name,
+      image: getImageUrl(state.currentHotel.image),
+      location: state.currentHotel.location,
+      rating: state.currentHotel.rating,
+      name: state.bookingDraft.name,
+      email: state.bookingDraft.email,
+      phone: state.bookingDraft.phone,
+      requests: state.bookingDraft.requests,
+      checkin: state.bookingDraft.checkin,
+      checkout: state.bookingDraft.checkout,
+      guests: state.guests.adults + state.guests.children,
+      rooms: state.guests.rooms,
+      roomType: state.currentRoom.type,
+      nights,
+      payment: state.bookingDraft.payment,
+      total,
+      currency: 'EGP',
+      priceFormatted: utils.formatPrice(total),
+      status: 'pending_payment',
+      reviewed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (state.bookingDraft.payment === 'cash') {
+      bookingData.paymentStatus = 'pending_cash';
+      bookingData.status = 'pending_cash';
+      const res = await apiFetch('/api/user/bookings', {
+        method: 'POST',
+        body: JSON.stringify({ booking: bookingData })
+      });
+      state.bookings.unshift(res.booking);
+      bookings.render();
+      renderBookingConfirmation(res.booking);
+      btn.disabled = false; btn.innerHTML = 'Pay Now';
+      return;
     }
-    const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    state.bookings.unshift(res.booking);
-    bookings.render();
-    renderBookingConfirmation(res.booking);
+
+    // حفظ الحجز بحالة pending_payment
+    const saveRes = await apiFetch('/api/user/bookings', {
+      method: 'POST',
+      body: JSON.stringify({ booking: bookingData })
+    });
+
+    // الحصول على hash من كاشير
+    const hashData = await apiFetch('/api/kashier/hash', {
+      method: 'POST',
+      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
+    });
+
+    const kashierUrl = new URL('https://checkout.kashier.io/');
+    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
+    kashierUrl.searchParams.append('orderId', orderId);
+    kashierUrl.searchParams.append('amount', total);
+    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
+    kashierUrl.searchParams.append('hash', hashData.hash);
+    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
+    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+
+    showKashierModal(kashierUrl.toString(), orderId, bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
-  } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
+  } catch (e) {
+    toast('Payment error: ' + e.message, 'error');
+    btn.disabled = false; btn.innerHTML = 'Pay Now';
+  }
 }
 
 // ==================== EXCURSION DETAILS & BOOKING ====================
@@ -441,20 +487,67 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
   const btn = document.getElementById('excursionPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
-    const bookingData = { id: orderId, type: 'excursion', excursionId: state.currentExcursion.id, title: state.currentExcursion.title, image: getImageUrl(state.currentExcursion.image), category: state.currentExcursion.category, name: state.bookingDraft.name, email: state.bookingDraft.email, phone: state.bookingDraft.phone, date: state.bookingDraft.date, participants: state.bookingDraft.participants, payment: state.bookingDraft.payment, paymentStatus: state.bookingDraft.payment === 'cash' ? 'pending_cash' : 'pending', total, priceFormatted: utils.formatPrice(total), status: 'upcoming', reviewed: false, createdAt: new Date().toISOString(), };
-    if (state.bookingDraft.payment !== 'cash') {
-      const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-      const kashierUrl = new URL('https://checkout.kashier.io/');
-      kashierUrl.searchParams.append('merchantId', hashData.merchantId); kashierUrl.searchParams.append('orderId', orderId); kashierUrl.searchParams.append('amount', total); kashierUrl.searchParams.append('currency', hashData.currency || 'EGP'); kashierUrl.searchParams.append('hash', hashData.hash); kashierUrl.searchParams.append('mode', 'test'); kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card'); kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
-      showKashierModal(kashierUrl.toString(), orderId, bookingData);
-      btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
+    const bookingData = {
+      id: orderId,
+      type: 'excursion',
+      excursionId: state.currentExcursion.id,
+      title: state.currentExcursion.title,
+      image: getImageUrl(state.currentExcursion.image),
+      category: state.currentExcursion.category,
+      name: state.bookingDraft.name,
+      email: state.bookingDraft.email,
+      phone: state.bookingDraft.phone,
+      date: state.bookingDraft.date,
+      participants: state.bookingDraft.participants,
+      payment: state.bookingDraft.payment,
+      total,
+      currency: 'EGP',
+      priceFormatted: utils.formatPrice(total),
+      status: 'pending_payment',
+      reviewed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (state.bookingDraft.payment === 'cash') {
+      bookingData.paymentStatus = 'pending_cash';
+      bookingData.status = 'pending_cash';
+      const res = await apiFetch('/api/user/bookings', {
+        method: 'POST',
+        body: JSON.stringify({ booking: bookingData })
+      });
+      state.bookings.unshift(res.booking);
+      bookings.render();
+      renderBookingConfirmation(res.booking);
+      btn.disabled = false; btn.innerHTML = 'Pay Now';
+      return;
     }
-    const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    state.bookings.unshift(res.booking);
-    bookings.render();
-    renderBookingConfirmation(res.booking);
+
+    const saveRes = await apiFetch('/api/user/bookings', {
+      method: 'POST',
+      body: JSON.stringify({ booking: bookingData })
+    });
+
+    const hashData = await apiFetch('/api/kashier/hash', {
+      method: 'POST',
+      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
+    });
+
+    const kashierUrl = new URL('https://checkout.kashier.io/');
+    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
+    kashierUrl.searchParams.append('orderId', orderId);
+    kashierUrl.searchParams.append('amount', total);
+    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
+    kashierUrl.searchParams.append('hash', hashData.hash);
+    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
+    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+
+    showKashierModal(kashierUrl.toString(), orderId, bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
-  } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
+  } catch (e) {
+    toast('Payment error: ' + e.message, 'error');
+    btn.disabled = false; btn.innerHTML = 'Pay Now';
+  }
 }
 
 // ==================== TRANSFER BOOKING ====================
@@ -583,20 +676,70 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
   const btn = document.getElementById('transferPayBtn'); btn.disabled = true; btn.innerHTML = 'Processing…';
   const orderId = utils.generateId();
   try {
-    const bookingData = { id: orderId, type: 'transfer', transferId: state.currentTransfer.id, vehicleType: state.currentTransfer.vehicleType, image: getImageUrl(state.currentTransfer.image), direction: state.bookingDraft.direction, name: state.bookingDraft.name, email: state.bookingDraft.email, phone: state.bookingDraft.phone, flightNo: state.bookingDraft.flightNo, address: state.bookingDraft.address, date: state.bookingDraft.date, time: state.bookingDraft.time, passengers: state.bookingDraft.passengers, payment: state.bookingDraft.payment, paymentStatus: state.bookingDraft.payment === 'cash' ? 'pending_cash' : 'pending', total, priceFormatted: utils.formatPrice(total), status: 'upcoming', reviewed: false, createdAt: new Date().toISOString(), };
-    if (state.bookingDraft.payment !== 'cash') {
-      const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
-      const kashierUrl = new URL('https://checkout.kashier.io/');
-      kashierUrl.searchParams.append('merchantId', hashData.merchantId); kashierUrl.searchParams.append('orderId', orderId); kashierUrl.searchParams.append('amount', total); kashierUrl.searchParams.append('currency', hashData.currency || 'EGP'); kashierUrl.searchParams.append('hash', hashData.hash); kashierUrl.searchParams.append('mode', 'test'); kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card'); kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
-      showKashierModal(kashierUrl.toString(), orderId, bookingData);
-      btn.disabled = false; btn.innerHTML = 'Pay Now'; return;
+    const bookingData = {
+      id: orderId,
+      type: 'transfer',
+      transferId: state.currentTransfer.id,
+      vehicleType: state.currentTransfer.vehicleType,
+      image: getImageUrl(state.currentTransfer.image),
+      direction: state.bookingDraft.direction,
+      name: state.bookingDraft.name,
+      email: state.bookingDraft.email,
+      phone: state.bookingDraft.phone,
+      flightNo: state.bookingDraft.flightNo,
+      address: state.bookingDraft.address,
+      date: state.bookingDraft.date,
+      time: state.bookingDraft.time,
+      passengers: state.bookingDraft.passengers,
+      payment: state.bookingDraft.payment,
+      total,
+      currency: 'EGP',
+      priceFormatted: utils.formatPrice(total),
+      status: 'pending_payment',
+      reviewed: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (state.bookingDraft.payment === 'cash') {
+      bookingData.paymentStatus = 'pending_cash';
+      bookingData.status = 'pending_cash';
+      const res = await apiFetch('/api/user/bookings', {
+        method: 'POST',
+        body: JSON.stringify({ booking: bookingData })
+      });
+      state.bookings.unshift(res.booking);
+      bookings.render();
+      renderBookingConfirmation(res.booking);
+      btn.disabled = false; btn.innerHTML = 'Pay Now';
+      return;
     }
-    const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
-    state.bookings.unshift(res.booking);
-    bookings.render();
-    renderBookingConfirmation(res.booking);
+
+    const saveRes = await apiFetch('/api/user/bookings', {
+      method: 'POST',
+      body: JSON.stringify({ booking: bookingData })
+    });
+
+    const hashData = await apiFetch('/api/kashier/hash', {
+      method: 'POST',
+      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
+    });
+
+    const kashierUrl = new URL('https://checkout.kashier.io/');
+    kashierUrl.searchParams.append('merchantId', hashData.merchantId);
+    kashierUrl.searchParams.append('orderId', orderId);
+    kashierUrl.searchParams.append('amount', total);
+    kashierUrl.searchParams.append('currency', hashData.currency || 'EGP');
+    kashierUrl.searchParams.append('hash', hashData.hash);
+    kashierUrl.searchParams.append('mode', 'test');
+    kashierUrl.searchParams.append('paymentMethods', state.bookingDraft.payment === 'instapay' ? 'wallet' : 'card');
+    kashierUrl.searchParams.append('merchantRedirect', window.location.href.split('?')[0] + '?kashier_callback=1');
+
+    showKashierModal(kashierUrl.toString(), orderId, bookingData);
     btn.disabled = false; btn.innerHTML = 'Pay Now';
-  } catch (e) { toast('Payment error: ' + e.message, 'error'); btn.disabled = false; btn.innerHTML = 'Pay Now'; }
+  } catch (e) {
+    toast('Payment error: ' + e.message, 'error');
+    btn.disabled = false; btn.innerHTML = 'Pay Now';
+  }
 }
 
 // ==================== RESTAURANT DETAILS ====================
