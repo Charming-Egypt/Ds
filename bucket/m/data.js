@@ -27,7 +27,7 @@ const state = {
   transferDirection: 'Airport to Hotel',
   hotelsCache: [],
   reviewTarget: null,
-  userTier: 0,          // 0=standard, 1=Level1, 2=Level2, 3=Level3
+  userTier: 0,
   userStats: { completedBookings: 0, totalSpent: 0 },
 };
 
@@ -447,7 +447,14 @@ const auth = {
     localStorage.removeItem('ds_current_user');
     nav.showAuth();
   },
-  isLoggedIn() { return !!authToken; }
+  isLoggedIn() { return !!authToken; },
+  continueAsGuest() {  // إضافة دالة الضيف
+    localStorage.removeItem('ds_auth_token');
+    localStorage.removeItem('ds_current_user');
+    authToken = null;
+    currentUser = null;
+    enterApp();
+  }
 };
 
 function switchAuthMode(mode) {
@@ -615,7 +622,6 @@ function updateDrawerUser(name, email, photoURL) {
   const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = email || '';
   profileAvatar.render(name, photoURL);
 
-  // عرض شارة المستوى
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
     const level = currentUser?.geniusLevel || 0;
@@ -629,59 +635,48 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
-async function loadReviews(type, id, listElId, summaryElId) {
-  try {
-    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
-    const reviews = data.reviews || [];
-    const listEl = document.getElementById(listElId);
-    if (listEl) {
-      listEl.innerHTML = reviews.length ? reviews.slice().reverse().map(r => `
-        <div class="field-box rounded-xl p-3">
-          <div class="flex items-center justify-between mb-1">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 bg-violet-50 rounded-full flex items-center justify-center font-bold">${(r.name || '?').charAt(0)}</div>
-              <div><p class="text-xs font-semibold">${r.name}</p><div class="flex">${utils.renderStars(r.rating)}</div></div>
-            </div>
-            <span class="text-[9px]">${utils.formatDate(r.createdAt)}</span>
-          </div>
-          <p class="text-xs">${r.comment}</p>
-        </div>`).join('') : '<p class="text-xs text-center py-4">No reviews yet</p>';
-    }
-    if (summaryElId) {
-      const avg = utils.avgRating(reviews);
-      const el = document.getElementById(summaryElId);
-      if (el) el.textContent = avg ? avg.toFixed(1) : '—';
-    }
-  } catch (e) { console.warn('Failed to load reviews', e); }
-}
-
-function openReviewModal(type, id, bookingId = '') {
-  state.reviewTarget = { type, id, bookingId };
-  document.getElementById('reviewBookingId').value = bookingId;
-  document.getElementById('reviewName').value = currentUser?.displayName || '';
-  document.getElementById('reviewComment').value = '';
-  const rating = document.getElementById('reviewRating');
-  if (rating) rating.value = 5;
-  document.getElementById('reviewModal').classList.remove('hidden');
-}
-
-async function submitReview(e) {
-  e.preventDefault();
-  const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
-  const name = document.getElementById('reviewName').value.trim();
-  const comment = document.getElementById('reviewComment').value.trim();
-  const rating = document.getElementById('reviewRating')?.value || 5;
-  if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
-  try {
-    await apiFetch('/api/reviews', {
-      method: 'POST',
-      body: JSON.stringify({ type: state.reviewTarget.type, id: state.reviewTarget.id, bookingId, name, comment, rating }),
-    });
+const reviews = {
+  currentTarget: null,
+  selectedStars: 0,
+  async submit(e) {
+    e.preventDefault();
+    const bookingId = document.getElementById('reviewBookingId').value.trim().toUpperCase();
+    const name = document.getElementById('reviewName').value.trim();
+    const comment = document.getElementById('reviewComment').value.trim();
+    const rating = this.selectedStars || 5;
+    if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
+    try {
+      await apiFetch('/api/reviews', {
+        method: 'POST',
+        body: JSON.stringify({ type: this.currentTarget.type, id: this.currentTarget.id, bookingId, name, comment, rating }),
+      });
+      document.getElementById('reviewModal').classList.add('hidden');
+      toast('Review submitted!', 'success');
+      loadReviews(this.currentTarget.type, this.currentTarget.id, this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList', null);
+    } catch (e) { toast(e.message, 'error'); }
+  },
+  openModal(type, id, bookingId = '') {
+    this.currentTarget = { type, id, bookingId };
+    this.selectedStars = 0;
+    document.getElementById('reviewBookingId').value = bookingId;
+    document.getElementById('reviewName').value = currentUser?.displayName || '';
+    document.getElementById('reviewComment').value = '';
+    this.paintStars(0);
+    document.getElementById('reviewModal').classList.remove('hidden');
+  },
+  closeModal() {
     document.getElementById('reviewModal').classList.add('hidden');
-    toast('Review submitted!', 'success');
-    loadReviews(state.reviewTarget.type, state.reviewTarget.id, state.reviewTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList', null);
-  } catch (e) { toast(e.message, 'error'); }
-}
+  },
+  setStars(n) {
+    this.selectedStars = n;
+    this.paintStars(n);
+  },
+  paintStars(n) {
+    document.querySelectorAll('#reviewStarInput i').forEach(el => {
+      el.classList.toggle('active', Number(el.dataset.star) <= n);
+    });
+  }
+};
 
 // ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
 const favorites = {
@@ -792,6 +787,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCurrency();
   populateCountryCodeSelect();
   populateNationalitySelect();
+  applyDesktopLayout();
+  window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+  search.switchTab('excursions');
   setTimeout(hideSplash, 3000);
 });
