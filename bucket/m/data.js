@@ -580,21 +580,35 @@ const profileAvatar = {
     reader.readAsDataURL(file);
   },
   async save(dataUrl) {
-    toast('Updating photo…', 'info');
-    if (currentUser) {
-      try {
-        await apiFetch('/api/profile', { method: 'POST', body: JSON.stringify({ uid: currentUser.uid, profile: { photoURL: dataUrl } }) });
+  toast('Updating photo…', 'info');
+  if (authToken) {
+    try {
+      const res = await apiFetch('/api/profile', {
+        method: 'POST',
+        body: JSON.stringify({ profile: { photoURL: dataUrl } }),
+      });
+
+      // تحديث currentUser بناءً على uid المستخرج من التوكن (من الاستجابة إن وُجد)
+      if (res.uid && currentUser) {
+        currentUser.uid = res.uid;
         currentUser.photoURL = dataUrl;
         localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
-        this.render(currentUser.displayName || currentUser.email, dataUrl);
-        toast('Profile photo updated', 'success');
-      } catch (e) { toast('Could not save photo: ' + e.message, 'error'); }
-    } else {
-      localStorage.setItem('ds_avatar', dataUrl);
-      this.render(document.getElementById('profileName').textContent, dataUrl);
+      } else if (currentUser) {
+        currentUser.photoURL = dataUrl;
+        localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
+      }
+
+      this.render(currentUser?.displayName || currentUser?.email || '', dataUrl);
       toast('Profile photo updated', 'success');
+    } catch (e) {
+      toast('Could not save photo: ' + e.message, 'error');
     }
+  } else {
+    localStorage.setItem('ds_avatar', dataUrl);
+    this.render(document.getElementById('profileName').textContent, dataUrl);
+    toast('Profile photo updated', 'success');
   }
+}
 };
 
 function updateDrawerUser(name, email, photoURL) {
