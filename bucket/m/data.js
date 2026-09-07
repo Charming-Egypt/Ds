@@ -27,7 +27,7 @@ const state = {
   hotelsCache: [],
   reviewTarget: null,
 };
-
+const SHOW_HOTELS = false;
 const CATALOG = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 const CATALOG_RAW = { hotels: [], excursions: [], transfers: [], destinations: [], restaurants: [], reviews: [], articles: [] };
 
@@ -331,8 +331,9 @@ function localizeCatalog(lang) {
 async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
+    if (f === 'hotels' && !SHOW_HOTELS) continue; // تخطي تحميل الفنادق
     try {
-      const data = await apiFetch(`/file?file=${f}.json`, {}, true); // no auth redirect
+      const data = await apiFetch(`/file?file=${f}.json`, {}, true);
       CATALOG_RAW[f] = JSON.parse(data.content);
     } catch (e) {
       console.warn(`Failed to load ${f}:`, e);
@@ -343,13 +344,17 @@ async function loadCatalogFromWorker() {
   refreshCatalogUI();
 }
 
+
 function refreshCatalogUI() {
-  if (document.getElementById('hotelsList')) hotels.render();
+  if (SHOW_HOTELS) {
+    if (document.getElementById('hotelsList')) hotels.render();
+    if (document.getElementById('featuredHotels')) ui.renderFeaturedHotels();
+    if (document.getElementById('favoritesList')) favorites.render();
+  }
   if (document.getElementById('excursionsList')) excursionsUi.render();
   if (document.getElementById('transfersList')) transfersUi.render();
   if (document.getElementById('restaurantsFullList')) restaurantsUi.renderFull();
   if (document.getElementById('destinationsRow')) destinationsUi.render();
-  if (document.getElementById('featuredHotels')) ui.renderFeaturedHotels();
   if (document.getElementById('featuredExcursions')) excursionsUi.renderFeatured();
   if (document.getElementById('restaurantsRow')) restaurantsUi.renderRow();
   if (document.getElementById('reviewsRow')) reviewsHomeUi.render();
