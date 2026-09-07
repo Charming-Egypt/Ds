@@ -383,7 +383,7 @@ async function loadCatalogFromWorker() {
   const files = ['hotels', 'excursions', 'transfers', 'destinations', 'restaurants', 'reviews', 'articles'];
   for (const f of files) {
     try {
-      const data = await apiFetch(`/file?file=${f}.json`, {}, true);
+      const data = await apiFetch(`/api/file?file=${f}.json`, {}, true);
       CATALOG_RAW[f] = JSON.parse(data.content);
     } catch (e) {
       console.warn(`Failed to load ${f}:`, e);
