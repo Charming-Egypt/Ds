@@ -333,41 +333,88 @@
       </div>
 
       <div class="relative z-20 px-5 -mt-[8rem]">
-        <div class="search-card rounded-[26px] p-5 space-y-4">
-          <!-- Search tabs: excursions only -->
-          <div class="flex gap-1 field-box p-1 rounded-2xl">
-            <button onclick="search.switchTab('excursions')" id="searchTabExcursions" title="Excursions" aria-label="Excursions" class="search-tab flex-1 py-3 rounded-xl flex items-center justify-center"><i class="fa-solid fa-umbrella-beach text-lg"></i></button>
-          </div>
+        <!-- ============ SEARCH SYSTEM (Hotels + Excursions) ============ -->
+<div class="search-card premium-search">
+  <!-- Tabs -->
+  <div class="search-tabs">
+    <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-btn active">
+      <i class="fa-solid fa-hotel"></i>
+      <span data-i18n="navHotels">Hotels</span>
+    </button>
+    <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-btn">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <span data-i18n="navExcursions">Excursions</span>
+    </button>
+  </div>
 
-          <!-- Hotel search form (hidden) -->
-          <div id="hotelSearchForm" class="space-y-4 hidden">
-            <!-- محتوى الفنادق موجود لكنه مخفي -->
-          </div>
-
-          <!-- Excursion search form -->
-          <div id="excursionSearchForm" class="space-y-4">
-            <div class="field-box p-3">
-              <div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-layer-group text-violet-600 text-xs"></i><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="category">CATEGORY</span></div>
-              <select id="excursionCategorySelect" class="w-full bg-transparent text-sm font-semibold outline-none border-0 p-0" style="color:var(--text-primary)">
-                <option value="all" data-i18n="all">All</option>
-                <option value="Diving" data-i18n="catDiving">Diving & Snorkeling</option>
-                <option value="Desert Safari" data-i18n="catDesert">Desert Safari</option>
-                <option value="Boat Trip" data-i18n="catBoat">Boat Trip</option>
-                <option value="City Tour" data-i18n="catCity">City Tour</option>
-              </select>
-            </div>
-            <div id="excursionDate" class="date-field p-3" data-value="" onclick="datepicker.open('excursionDate', { minIso: utils.addDays(utils.todayIso(), 1) })">
-              <div class="flex items-center gap-2 mb-1.5"><div class="w-6 h-6 bg-violet-50 rounded-lg flex items-center justify-center"><i class="fa-regular fa-calendar text-violet-600 text-xs"></i></div><span class="text-[10px] tracking-wider font-semibold" style="color:var(--text-secondary)" data-i18n="excursionDate">EXCURSION DATE</span></div>
-              <span class="date-field-value text-sm font-semibold" style="color:var(--text-primary)">—</span>
-            </div>
-            <button onclick="search.applyExcursionSearch()" class="btn-violet w-full py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 text-base ripple"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="searchExcursions">Search Excursions</span></button>
-          </div>
-
-          <!-- Transfer search form (hidden) -->
-          <div id="transferSearchForm" class="space-y-4 hidden">
-            <!-- محتوى الترانسفير موجود لكنه مخفي -->
-          </div>
+  <!-- Hotel Search Form -->
+  <div id="hotelSearchForm" class="search-form active">
+    <div class="search-fields-grid">
+      <!-- Check-in -->
+      <div id="checkinDate" class="search-field date-field" data-date-field="checkinDate" data-value="">
+        <div class="field-icon"><i class="fa-regular fa-calendar"></i></div>
+        <div class="field-content">
+          <span class="field-label">Check-in</span>
+          <span class="field-value date-field-value">Select date</span>
         </div>
+      </div>
+      <!-- Check-out -->
+      <div id="checkoutDate" class="search-field date-field" data-date-field="checkoutDate" data-value="">
+        <div class="field-icon"><i class="fa-regular fa-calendar-check"></i></div>
+        <div class="field-content">
+          <span class="field-label">Check-out</span>
+          <span class="field-value date-field-value">Select date</span>
+        </div>
+      </div>
+      <!-- Guests -->
+      <div class="search-field" onclick="openGuestsModal()">
+        <div class="field-icon"><i class="fa-solid fa-user-group"></i></div>
+        <div class="field-content">
+          <span class="field-label">Guests & Rooms</span>
+          <span class="field-value" id="guestsDisplay">2 Adults, 1 Room</span>
+        </div>
+      </div>
+      <!-- Search Button -->
+      <button onclick="nav.go('hotels')" class="search-submit-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Excursion Search Form -->
+  <div id="excursionSearchForm" class="search-form">
+    <div class="search-fields-grid">
+      <!-- Category -->
+      <div class="search-field">
+        <div class="field-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="field-content">
+          <span class="field-label">Category</span>
+          <select id="excursionCategorySelect" class="field-select-clean">
+            <option value="all">All Categories</option>
+            <option value="Diving">Diving & Snorkeling</option>
+            <option value="Desert Safari">Desert Safari</option>
+            <option value="Boat Trip">Boat Trip</option>
+            <option value="City Tour">City Tour</option>
+          </select>
+        </div>
+      </div>
+      <!-- Date -->
+      <div id="excursionDate" class="search-field date-field" data-date-field="excursionDate" data-value="">
+        <div class="field-icon"><i class="fa-regular fa-calendar"></i></div>
+        <div class="field-content">
+          <span class="field-label">Excursion Date</span>
+          <span class="field-value date-field-value">Select date</span>
+        </div>
+      </div>
+      <!-- Search Button -->
+      <button onclick="search.applyExcursionSearch()" class="search-submit-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+    </div>
+  </div>
+</div>
       </div>
 
       <!-- بقية أقسام الهوم -->
