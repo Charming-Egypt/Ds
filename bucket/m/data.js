@@ -19,7 +19,7 @@ const state = {
   currentExcursion: null,
   currentTransfer: null,
   currentBookingTab: 'upcoming',
-  activeSearchTab: 'excursions',
+  activeSearchTab: 'hotels', // افتراضي الفنادق
   guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
   pageHistory: ['home'],
   bookingDraft: {},
@@ -42,7 +42,7 @@ const MULTILANG_FIELDS = [
 ];
 const MULTILANG_ARRAY_FIELDS = ['amenities', 'includes', 'features', 'excludes', 'whatToBring', 'images', 'menu', 'itinerary'];
 
-// ==================== COUNTRY CODES with flags ====================
+// ==================== COUNTRY CODES ====================
 const COUNTRY_CODES = [
   { code: 'EG', dial: '+20', name: 'Egypt' },
   { code: 'SA', dial: '+966', name: 'Saudi Arabia' },
@@ -79,7 +79,7 @@ function populateCountryCodeSelect() {
   sel.innerHTML = COUNTRY_CODES.map(c =>
     `<option value="${c.dial}">${countryFlagEmoji(c.code)} ${c.dial}</option>`
   ).join('');
-  sel.value = '+20'; // افتراضي مصر
+  sel.value = '+20';
 }
 
 function populateNationalitySelect() {
@@ -448,7 +448,7 @@ const auth = {
     nav.showAuth();
   },
   isLoggedIn() { return !!authToken; },
-  continueAsGuest() {  // إضافة دالة الضيف
+  continueAsGuest() {
     localStorage.removeItem('ds_auth_token');
     localStorage.removeItem('ds_current_user');
     authToken = null;
@@ -779,6 +779,77 @@ const notifications = {
   markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
 };
 
+// ==================== TRANSFER SEARCH (stub if not defined elsewhere) ====================
+const transferSearch = {
+  setDirection(dir) {
+    state.transferDirection = dir;
+    const arrival = document.getElementById('tsDirArrival');
+    const departure = document.getElementById('tsDirDeparture');
+    if (arrival && departure) {
+      if (dir === 'Airport to Hotel') {
+        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        arrival.style.color = '#fff';
+        departure.style.background = 'transparent';
+        departure.style.color = 'var(--text-secondary)';
+      } else {
+        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        departure.style.color = '#fff';
+        arrival.style.background = 'transparent';
+        arrival.style.color = 'var(--text-secondary)';
+      }
+    }
+  },
+  adjustPax(delta) {
+    const newVal = state.transferPax + delta;
+    if (newVal >= 1 && newVal <= 15) {
+      state.transferPax = newVal;
+      const label = document.getElementById('tsPassengersLabel');
+      if (label) label.textContent = `${newVal} People`;
+    }
+  },
+  apply() {
+    const pickup = document.getElementById('tsPickup')?.value || '';
+    const dropoff = document.getElementById('tsDropoff')?.value || '';
+    const date = document.getElementById('tsDate')?.dataset.value || '';
+    if (!pickup || !dropoff || !date) {
+      toast('Please fill all transfer fields', 'error');
+      return;
+    }
+    nav.go('transfers');
+  },
+};
+
+// ==================== FLIGHT SEARCH (stub) ====================
+const flightSearch = {
+  closePaxModal() { document.getElementById('flightPaxModal').classList.add('hidden'); },
+  adjust(type, delta) {
+    const limits = { adults: { min: 1, max: 9 }, children: { min: 0, max: 6 }, infants: { min: 0, max: 4 } };
+    const newVal = (state.flightPax?.[type] || 0) + delta;
+    if (newVal >= limits[type].min && newVal <= limits[type].max) {
+      if (!state.flightPax) state.flightPax = { adults: 1, children: 0, infants: 0, cabin: 'Economy' };
+      state.flightPax[type] = newVal;
+      const id = 'fp' + type.charAt(0).toUpperCase() + type.slice(1);
+      const el = document.getElementById(id);
+      if (el) el.textContent = newVal;
+    }
+  },
+  applyPax() {
+    flightSearch.closePaxModal();
+    toast('Passengers updated', 'info');
+  },
+};
+
+// ==================== EVENT DELEGATION FOR DATE FIELDS ====================
+document.addEventListener('click', function(e) {
+  const dateField = e.target.closest('[data-date-field]');
+  if (!dateField) return;
+
+  const fieldId = dateField.dataset.dateField;
+  const unavailable = dateField.dataset.unavailable ? dateField.dataset.unavailable.split(',') : [];
+
+  datepicker.open(fieldId, { unavailableIso: unavailable });
+});
+
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', async () => {
   await loadI18nDict();
@@ -790,6 +861,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('excursions');
+  search.switchTab('hotels'); // افتراضي الفنادق
   setTimeout(hideSplash, 3000);
 });
