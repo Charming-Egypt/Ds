@@ -583,7 +583,7 @@ const profileAvatar = {
     toast('Updating photo…', 'info');
     if (currentUser) {
       try {
-        await apiFetch('/api/profile', { method: 'POST', body: JSON.stringify({ profile: { photoURL: dataUrl } }) });
+        await apiFetch('/api/profile', { method: 'POST', body: JSON.stringify({ uid: currentUser.uid, profile: { photoURL: dataUrl } }) });
         currentUser.photoURL = dataUrl;
         localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
         this.render(currentUser.displayName || currentUser.email, dataUrl);
