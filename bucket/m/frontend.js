@@ -5,6 +5,8 @@ function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('drawerFavoritesLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
@@ -488,10 +490,20 @@ const ui = {
 };
 
 const hotels = {
+  renderFilterChips() {
+    const chipsEl = document.getElementById('hotelFilterChips');
+    if (!chipsEl) return;
+    const categories = [...new Set(CATALOG.hotels.map(h => h.category).filter(Boolean))];
+    chipsEl.innerHTML = [
+      `<button onclick="search.filterCategory('all')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === 'all' ? 'active' : ''}"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>`,
+      ...categories.map(cat => `<button onclick="search.filterCategory('${cat}')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === cat ? 'active' : ''}"><i class="fa-solid fa-hotel"></i> ${esc(cat)}</button>`)
+    ].join('');
+  },
   render() {
     if (!SHOW_HOTELS) return;
     const list = document.getElementById('hotelsList');
     if (!list) return;
+    this.renderFilterChips();
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
