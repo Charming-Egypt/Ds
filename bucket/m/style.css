@@ -1544,3 +1544,62 @@ html[data-theme="light"] .theme-switch .knob {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* تعديل تخطيط نظام البحث */
+.ds-bkg-top-bar {
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.ds-bkg-row-2col {
+  display: flex;
+  gap: 8px;
+}
+
+.ds-bkg-row-2col .ds-bkg-field {
+  flex: 1;
+  border-right: 1px solid var(--border-field);
+  border-bottom: none;
+  background: var(--bg-field);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.ds-bkg-row-2col .ds-bkg-field:last-child {
+  border-right: none;
+}
+
+.ds-bkg-field-full {
+  background: var(--bg-field);
+  border: 1px solid var(--border-field);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.ds-bkg-search-btn-full {
+  width: 100%;
+  justify-content: center;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 15px;
+}
+
+/* استجابة الجوال */
+@media (max-width: 480px) {
+  .ds-bkg-row-2col {
+    flex-direction: column;
+  }
+  .ds-bkg-row-2col .ds-bkg-field {
+    border-right: none;
+    border-bottom: 1px solid var(--border-field);
+    border-radius: 16px;
+  }
+  .ds-bkg-row-2col .ds-bkg-field:last-child {
+    border-bottom: none;
+  }
+}
