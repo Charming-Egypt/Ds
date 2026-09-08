@@ -1141,35 +1141,9 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 /* ============================================================
-   SEARCH SYSTEM — MATCHING SITE THEME (Violet/Orange)
+   SEARCH SYSTEM (New Clean Design)
    ============================================================ */
-
-/* ============ SEARCH SYSTEM (CLEAN) ============ */
-.ds-search-wrapper {
-  padding: 20px !important;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: 24px;
-  box-shadow: 0 25px 60px -18px rgba(20, 10, 45, .35);
-}
-
-/* Tabs */
-.search-tabs {
-  display: flex;
-  gap: 8px;
-  background: var(--bg-field);
-  border-radius: 16px;
-  padding: 5px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border-field);
-}
-
-.search-tab-btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.search-tab-new {
   padding: 12px 16px;
   border-radius: 12px;
   font-size: 13px;
@@ -1179,142 +1153,41 @@ html[data-theme="light"] .theme-switch .knob {
   border: none;
   cursor: pointer;
   transition: all .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.search-tab-btn.active {
+.search-tab-new.active {
   background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
   box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
 }
 
-/* Top bar */
-.ds-bkg-top-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-.ds-bkg-fields-row {
-  display: flex;
-  gap: 8px;
-}
-
-.ds-bkg-field {
-  flex: 1;
-  padding: 14px 16px;
-  cursor: pointer;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 16px;
-  transition: background .2s;
-}
-
-.ds-bkg-field:hover {
-  background: rgba(249, 115, 22, 0.04);
-}
-
-.ds-bkg-field-guest {
-  flex: none;
-}
-
-.ds-bkg-field-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.ds-bkg-field-value {
-  font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ds-bkg-search-btn {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #171029;
-  border: none;
-  padding: 14px 22px;
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
+.ds-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: 16px;
-  transition: all .3s;
-  width: 100%;
+  padding: 20px;
 }
 
-.ds-bkg-search-btn:hover {
-  filter: brightness(1.05);
-}
-
-/* Dropdowns */
-.ds-bkg-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
+.ds-modal-content {
   background: var(--bg-card);
-  border: 1px solid var(--border-card);
   border-radius: 20px;
   padding: 20px;
-  z-index: 100;
-  display: none;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--border-card);
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
-.ds-bkg-dropdown.ds-open {
-  display: block;
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 1000 !important;
-  margin-top: 0 !important;
-}
-
-.ds-bkg-date-dropdown.ds-open {
-  width: 660px !important;
-  max-width: 90vw !important;
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-}
-
-.ds-bkg-guest-dropdown.ds-open {
-  width: 400px !important;
-  max-width: 90vw !important;
-  max-height: 80vh !important;
-  overflow-y: auto !important;
-}
-
-/* Calendar */
-.ds-desk-cal-inline {
+.ds-modal-nav-btn {
   background: var(--bg-field);
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid var(--border-field);
-}
-
-.ds-desk-cal-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.ds-desk-cal-nav button {
-  background: var(--bg-card);
   border: 1px solid var(--border-field);
   color: var(--text-secondary);
   width: 32px;
@@ -1328,82 +1201,12 @@ html[data-theme="light"] .theme-switch .knob {
   transition: all .2s;
 }
 
-.ds-desk-cal-nav button:hover {
+.ds-modal-nav-btn:hover {
   background: rgba(249, 115, 22, 0.15);
   color: #f97316;
 }
 
-.ds-desk-cal-nav h4 {
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.ds-cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-}
-
-.ds-cal-hdr {
-  text-align: center;
-  padding: 8px 2px;
-  font-size: 11px;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-.ds-cal-day {
-  padding: 10px 2px;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-primary);
-  font-weight: 500;
-  transition: all 0.15s;
-}
-
-.ds-cal-day:hover:not(.ds-unavailable):not(.ds-empty) {
-  background: rgba(249, 115, 22, 0.15);
-  color: #f97316;
-}
-
-.ds-cal-day.ds-selected {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: white;
-  font-weight: 700;
-}
-
-.ds-cal-day.ds-today {
-  border: 2px solid #f97316;
-  font-weight: 700;
-  background: rgba(249, 115, 22, 0.1);
-}
-
-.ds-cal-day.ds-unavailable {
-  color: var(--text-secondary);
-  opacity: 0.4;
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-
-.ds-cal-day.ds-inrange {
-  background: rgba(249, 115, 22, 0.08);
-}
-
-/* Rows */
-.ds-bkg-row {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.ds-bkg-col {
-  flex: 1;
-}
-
-.ds-desk-label-sm {
+.ds-modal-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -1413,7 +1216,7 @@ html[data-theme="light"] .theme-switch .knob {
   letter-spacing: 0.5px;
 }
 
-.ds-desk-input {
+.ds-modal-input {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg-field);
@@ -1423,12 +1226,19 @@ html[data-theme="light"] .theme-switch .knob {
   font-size: 14px;
 }
 
-.ds-desk-input:focus {
-  outline: none;
-  border-color: #f97316;
+.ds-modal-apply {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #fb923c, #c2410c);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 16px;
 }
 
-/* Guests */
 .ds-guest-row {
   display: flex;
   justify-content: space-between;
@@ -1442,81 +1252,99 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .ds-guest-info-label {
-  font-size: 13px;
-  color: var(--text-primary);
+  font-size: 16px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .ds-guest-info-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 .ds-guest-counter {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
-.ds-guest-counter button {
-  width: 32px;
-  height: 32px;
+.ds-guest-btn {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid rgba(249, 115, 22, 0.4);
   background: transparent;
   color: #f97316;
   font-size: 18px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   transition: all .2s;
 }
 
-.ds-guest-counter button:hover {
+.ds-guest-btn:hover {
   background: rgba(249, 115, 22, 0.15);
 }
 
-.ds-guest-counter span {
-  font-size: 15px;
+.ds-guest-value {
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
   min-width: 24px;
   text-align: center;
 }
 
-/* Apply button */
-.ds-desk-btn {
+.ds-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
   text-align: center;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 700;
-  font-size: 15px;
+  margin-top: 10px;
+}
+
+.ds-cal-hdr {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding-bottom: 8px;
+}
+
+.ds-cal-day {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 8px;
   cursor: pointer;
-  display: inline-block;
-  width: auto;
-  transition: all .3s;
+  user-select: none;
+  color: var(--text-primary);
 }
 
-.ds-desk-btn:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
+.ds-cal-day.muted {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  cursor: default;
 }
 
-/* Mobile */
-@media (max-width: 480px) {
-  .ds-bkg-fields-row {
-    flex-direction: column;
-  }
-  .ds-bkg-field {
-    border-radius: 16px;
-  }
+.ds-cal-day.today {
+  border: 2px solid #f97316;
+  border-radius: 12px;
 }
 
+.ds-cal-day.selected {
+  background: linear-gradient(135deg, #fb923c, #c2410c);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: bold;
+}
 
+.ds-cal-day.in-range {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
+  border-radius: 4px;
+}
 
 /* Forms visibility */
 .search-form {
@@ -1531,4 +1359,90 @@ html[data-theme="light"] .theme-switch .knob {
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.15rem;
+  }
+  .bottom-nav {
+    bottom: .7rem;
+    padding: .5rem .7rem;
+  }
+  .ds-search-wrapper {
+    padding: 16px !important;
+  }
+  .ds-bkg-top-bar {
+    flex-direction: column;
+  }
+  .ds-bkg-field {
+    border-right: none;
+    border-bottom: 1px solid var(--border-field);
+  }
+  .ds-bkg-field:last-child {
+    border-bottom: none;
+  }
+  .ds-bkg-search-btn {
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   DESKTOP LAYOUT & ENHANCEMENTS
+   ============================================================ */
+@media (min-width: 1024px) {
+  .main-area {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 32px;
+  }
+  .bottom-nav {
+    display: none !important;
+  }
+  .section-title {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+  }
+  .section-subtitle {
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+  .search-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+  }
+  .hotel-card .flex {
+    flex-direction: column;
+  }
+  .hotel-card .w-32.h-32,
+  .hotel-card .md\:w-36.md\:h-36 {
+    width: 100% !important;
+    height: 220px !important;
+  }
+  .hotel-card .flex-1 {
+    padding: 20px;
+  }
+  .destination-card {
+    height: 200px;
+  }
+  .modal-overlay {
+    padding: 60px 20px;
+  }
+  .modal-content {
+    max-width: 700px;
+  }
 }
