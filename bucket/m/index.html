@@ -333,119 +333,120 @@
       </div>
 
       <div class="relative z-20 px-5 -mt-[8rem]">
-        <!-- ============ SEARCH SYSTEM (New Design) ============ -->
-        <div class="search-card premium-search ds-search-wrapper">
-          <!-- Tabs -->
-          <div class="search-tabs">
-            <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-btn active">
-              <i class="fa-solid fa-hotel"></i>
-              <span data-i18n="navHotels">Hotels</span>
-            </button>
-            <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-btn">
-              <i class="fa-solid fa-umbrella-beach"></i>
-              <span data-i18n="navExcursions">Excursions</span>
-            </button>
-          </div>
-
-          <!-- Hotel Search Form -->
-          <div id="hotelSearchForm" class="search-form active">
-            <div class="ds-bkg-top-bar">
-  <div class="ds-bkg-row-2col">
-    <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
-      <div class="ds-bkg-field-label">Check-in</div>
-      <div class="ds-bkg-field-value" id="checkinDisplay">Select date</div>
-    </div>
-    <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
-      <div class="ds-bkg-field-label">Check-out</div>
-      <div class="ds-bkg-field-value" id="checkoutDisplay">Select date</div>
-    </div>
+        <!-- ============ SEARCH SYSTEM ============ -->
+<div class="search-card premium-search ds-search-wrapper">
+  <!-- Tabs -->
+  <div class="search-tabs">
+    <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-btn active">
+      <i class="fa-solid fa-hotel"></i>
+      <span data-i18n="navHotels">Hotels</span>
+    </button>
+    <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-btn">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <span data-i18n="navExcursions">Excursions</span>
+    </button>
   </div>
-  <div class="ds-bkg-field ds-bkg-field-full" onclick="search.openGuestDropdown()">
-    <div class="ds-bkg-field-label">Guests</div>
-    <div class="ds-bkg-field-value" id="guestsDisplay">2 Adults, 1 Room</div>
-  </div>
-  <button class="ds-bkg-search-btn ds-bkg-search-btn-full" onclick="nav.go('hotels')">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span>Search</span>
-  </button>
-</div>
-            <!-- Date Dropdown -->
-            <div class="ds-bkg-dropdown ds-bkg-date-dropdown" id="searchDateDropdown">
-              <div class="ds-desk-cal-inline">
-                <div class="ds-desk-cal-nav">
-                  <button onclick="search.changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                  <h4 id="searchCalMonth">June 2026</h4>
-                  <button onclick="search.changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-                <div class="ds-cal-grid" id="searchCalGrid"></div>
-              </div>
-              <div class="ds-bkg-row">
-                <div class="ds-bkg-col">
-                  <label class="ds-desk-label-sm">Check-in</label>
-                  <input type="text" id="searchCheckInInput" readonly class="ds-desk-input" placeholder="Select">
-                </div>
-                <div class="ds-bkg-col">
-                  <label class="ds-desk-label-sm">Check-out</label>
-                  <input type="text" id="searchCheckOutInput" readonly class="ds-desk-input" placeholder="Select">
-                </div>
-              </div>
-              <button class="ds-desk-btn" onclick="search.closeDateDropdown()">Apply Dates</button>
-            </div>
-            <!-- Guest Dropdown -->
-            <div class="ds-bkg-dropdown ds-bkg-guest-dropdown" id="searchGuestDropdown">
-              <div class="ds-guest-row">
-                <div><div class="ds-guest-info-label">Adults</div></div>
-                <div class="ds-guest-counter">
-                  <button onclick="search.adjustGuest('adults', -1)">−</button>
-                  <span id="searchAdultCount">2</span>
-                  <button onclick="search.adjustGuest('adults', 1)">+</button>
-                </div>
-              </div>
-              <div class="ds-guest-row">
-                <div><div class="ds-guest-info-label">Children</div><div class="ds-guest-info-sub">Ages 0-11</div></div>
-                <div class="ds-guest-counter">
-                  <button onclick="search.adjustGuest('children', -1)">−</button>
-                  <span id="searchChildCount">0</span>
-                  <button onclick="search.adjustGuest('children', 1)">+</button>
-                </div>
-              </div>
-              <div class="ds-guest-row">
-                <div><div class="ds-guest-info-label">Rooms</div></div>
-                <div class="ds-guest-counter">
-                  <button onclick="search.adjustGuest('rooms', -1)">−</button>
-                  <span id="searchRoomCount">1</span>
-                  <button onclick="search.adjustGuest('rooms', 1)">+</button>
-                </div>
-              </div>
-              <button class="ds-desk-btn" onclick="search.closeGuestDropdown()">Apply</button>
-            </div>
-          </div>
 
-          <!-- Excursion Search Form -->
-          <div id="excursionSearchForm" class="search-form">
-            <div class="ds-bkg-top-bar" style="grid-template-columns:1fr 1fr auto;">
-              <div class="ds-bkg-field">
-                <div class="ds-bkg-field-label">Category</div>
-                <select id="excursionCategorySelect" class="field-select-clean ds-bkg-field-value">
-                  <option value="all">All Categories</option>
-                  <option value="Diving">Diving & Snorkeling</option>
-                  <option value="Desert Safari">Desert Safari</option>
-                  <option value="Boat Trip">Boat Trip</option>
-                  <option value="City Tour">City Tour</option>
-                </select>
-              </div>
-              <div class="ds-bkg-field" onclick="search.openDateDropdown(true)">
-                <div class="ds-bkg-field-label">Excursion Date</div>
-                <div class="ds-bkg-field-value" id="excursionDateDisplay">Select date</div>
-              </div>
-              <button class="ds-bkg-search-btn" onclick="search.applyExcursionSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <span>Search</span>
-              </button>
-            </div>
-          </div>
+  <!-- Hotel Search Form -->
+  <div id="hotelSearchForm" class="search-form active">
+    <div class="ds-bkg-top-bar">
+      <div class="ds-bkg-fields-row">
+        <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+          <div class="ds-bkg-field-label">Check-in</div>
+          <div class="ds-bkg-field-value" id="checkinDisplay">Select date</div>
+        </div>
+        <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+          <div class="ds-bkg-field-label">Check-out</div>
+          <div class="ds-bkg-field-value" id="checkoutDisplay">Select date</div>
         </div>
       </div>
+      <div class="ds-bkg-field ds-bkg-field-guest" onclick="search.openGuestDropdown()">
+        <div class="ds-bkg-field-label">Guests</div>
+        <div class="ds-bkg-field-value" id="guestsDisplay">2 Adults, 1 Room</div>
+      </div>
+      <button class="ds-bkg-search-btn" onclick="nav.go('hotels')">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+    </div>
+    <!-- Date Dropdown -->
+    <div class="ds-bkg-dropdown ds-bkg-date-dropdown" id="searchDateDropdown">
+      <div class="ds-desk-cal-inline">
+        <div class="ds-desk-cal-nav">
+          <button onclick="search.changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <h4 id="searchCalMonth">June 2026</h4>
+          <button onclick="search.changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="ds-cal-grid" id="searchCalGrid"></div>
+      </div>
+      <div class="ds-bkg-row">
+        <div class="ds-bkg-col">
+          <label class="ds-desk-label-sm">Check-in</label>
+          <input type="text" id="searchCheckInInput" readonly class="ds-desk-input" placeholder="Select">
+        </div>
+        <div class="ds-bkg-col">
+          <label class="ds-desk-label-sm">Check-out</label>
+          <input type="text" id="searchCheckOutInput" readonly class="ds-desk-input" placeholder="Select">
+        </div>
+      </div>
+      <button class="ds-desk-btn" onclick="search.closeDateDropdown()">Apply Dates</button>
+    </div>
+    <!-- Guest Dropdown -->
+    <div class="ds-bkg-dropdown ds-bkg-guest-dropdown" id="searchGuestDropdown">
+      <div class="ds-guest-row">
+        <div><div class="ds-guest-info-label">Adults</div></div>
+        <div class="ds-guest-counter">
+          <button onclick="search.adjustGuest('adults', -1)">−</button>
+          <span id="searchAdultCount">2</span>
+          <button onclick="search.adjustGuest('adults', 1)">+</button>
+        </div>
+      </div>
+      <div class="ds-guest-row">
+        <div><div class="ds-guest-info-label">Children</div><div class="ds-guest-info-sub">Ages 0-11</div></div>
+        <div class="ds-guest-counter">
+          <button onclick="search.adjustGuest('children', -1)">−</button>
+          <span id="searchChildCount">0</span>
+          <button onclick="search.adjustGuest('children', 1)">+</button>
+        </div>
+      </div>
+      <div class="ds-guest-row">
+        <div><div class="ds-guest-info-label">Rooms</div></div>
+        <div class="ds-guest-counter">
+          <button onclick="search.adjustGuest('rooms', -1)">−</button>
+          <span id="searchRoomCount">1</span>
+          <button onclick="search.adjustGuest('rooms', 1)">+</button>
+        </div>
+      </div>
+      <button class="ds-desk-btn" onclick="search.closeGuestDropdown()">Apply</button>
+    </div>
+  </div>
+
+  <!-- Excursion Search Form -->
+  <div id="excursionSearchForm" class="search-form">
+    <div class="ds-bkg-top-bar">
+      <div class="ds-bkg-fields-row">
+        <div class="ds-bkg-field">
+          <div class="ds-bkg-field-label">Category</div>
+          <select id="excursionCategorySelect" class="field-select-clean ds-bkg-field-value">
+            <option value="all">All Categories</option>
+            <option value="Diving">Diving & Snorkeling</option>
+            <option value="Desert Safari">Desert Safari</option>
+            <option value="Boat Trip">Boat Trip</option>
+            <option value="City Tour">City Tour</option>
+          </select>
+        </div>
+        <div class="ds-bkg-field" onclick="search.openDateDropdown(true)">
+          <div class="ds-bkg-field-label">Excursion Date</div>
+          <div class="ds-bkg-field-value" id="excursionDateDisplay">Select date</div>
+        </div>
+      </div>
+      <button class="ds-bkg-search-btn" onclick="search.applyExcursionSearch()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Search</span>
+      </button>
+    </div>
+  </div>
+</div>
 
       <!-- بقية أقسام الهوم -->
       <div class="relative z-20 pt-8">
