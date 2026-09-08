@@ -138,7 +138,7 @@ function showHotelPage(hotelId) {
             <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold">Guest Reviews</h3></div>
             <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="hotelReviewsSummary">${Number(h.rating).toFixed(1)}</p><p class="text-[10px]"><span id="hotelReviewsSummaryCount">${h.reviews || 0}</span> reviews</p></div>
           </div>
-          <button onclick="openReviewModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
+          <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
           <div class="space-y-3" id="hotelReviewsList"></div>
         </div>
       </div>
@@ -172,8 +172,8 @@ function startBooking(hotelId, roomIndex) {
     phone: '',
     requests: '',
     payment: 'card',
-    checkin: document.getElementById('checkinDate')?.dataset.value || utils.addDays(utils.todayIso(),1),
-    checkout: document.getElementById('checkoutDate')?.dataset.value || utils.addDays(utils.todayIso(),3),
+    checkin: search.selectedCheckIn ? search.selectedCheckIn.toISOString().slice(0, 10) : utils.addDays(utils.todayIso(), 1),
+    checkout: search.selectedCheckOut ? search.selectedCheckOut.toISOString().slice(0, 10) : utils.addDays(utils.todayIso(), 3),
   };
   renderBookingStep(2);
 }
@@ -200,11 +200,11 @@ function renderBookingStep(step) {
           <input type="email" id="bkEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="tel" id="bkPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm">
           <div class="grid grid-cols-2 gap-3">
-            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}">
+            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}" onclick="datepicker.open('bkCheckin')">
               <label class="text-[10px]">Check-in</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkin)}</span>
             </div>
-            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}">
+            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}" onclick="datepicker.open('bkCheckout')">
               <label class="text-[10px]">Check-out</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkout)}</span>
             </div>
@@ -387,7 +387,7 @@ function showExcursionPage(excursionId) {
           </div>` : ''}
         <div class="card rounded-2xl p-4">
           <h3 class="font-display text-lg font-bold mb-3">Reviews</h3>
-          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
+          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
       </div>
@@ -432,7 +432,7 @@ function renderExcursionBookingStep(step) {
           <input type="text" id="ekName" required value="${state.bookingDraft.name}" placeholder="Full Name" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="email" id="ekEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="tel" id="ekPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm">
-          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}">
+          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('ekDate')">
             <label class="text-[10px]">Date</label>
             <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
           </div>
@@ -604,7 +604,7 @@ function renderTransferBookingStep(step) {
             <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}">
+            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('tkDate')">
               <label class="text-[10px]">Date</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
             </div>
@@ -893,7 +893,7 @@ function showBookingDetails(bookingId) {
       </div>
       <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
-        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="openReviewModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
+        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
         ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}
       </div>
     </div>`;
