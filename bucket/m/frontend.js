@@ -1,5 +1,5 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-const SHOW_HOTELS = true; // تم التفعيل
+const SHOW_HOTELS = true;
 
 function enterApp() {
   hideSplash();
@@ -7,6 +7,7 @@ function enterApp() {
   document.getElementById('mainApp').classList.remove('hidden');
   loadCatalogFromWorker();
   ui.setDefaultDates();
+  search.init();
 
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -136,7 +137,7 @@ function getGeniusBenefitsHtml(level) {
   `;
 }
 
-// ==================== GUESTS MODAL ====================
+// ==================== GUESTS MODAL (legacy) ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -166,18 +167,15 @@ function adjustGuestCount(type, delta) {
   document.getElementById('childrenCount').textContent = state.guests.children;
   document.getElementById('infantsCount').textContent = state.guests.infants;
   document.getElementById('roomsCount').textContent = state.guests.rooms;
+  search.updateGuestDisplay();
 }
 function applyGuests() {
-  const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
-  const disp = document.getElementById('guestsDisplay');
-  if (disp) disp.textContent = text;
-  const bdisp = document.getElementById('bookingGuestsDisplay');
-  if (bdisp) bdisp.textContent = text;
   closeGuestsModal();
+  search.updateGuestDisplay();
   toast('Guests updated', 'info');
 }
 
-// ==================== DATEPICKER ====================
+// ==================== DATEPICKER (legacy) ====================
 function setDateFieldValue(fieldId, iso) {
   const field = document.getElementById(fieldId);
   if (!field) return;
@@ -245,27 +243,153 @@ const datepicker = {
   select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
 };
 
-// ==================== SEARCH ====================
+// ==================== SEARCH (NEW) ====================
 const search = {
+  activeTab: 'hotels',
+  viewMonth: new Date().getMonth(),
+  viewYear: new Date().getFullYear(),
+  selectedCheckIn: null,
+  selectedCheckOut: null,
+  isExcursionDate: false,
+
   switchTab(tab) {
-    // السماح فقط بـ hotels و excursions
     if (tab !== 'hotels' && tab !== 'excursions') tab = 'excursions';
-    state.activeSearchTab = tab;
-
-    const hotelForm = document.getElementById('hotelSearchForm');
-    const excursionForm = document.getElementById('excursionSearchForm');
-    if (hotelForm) hotelForm.classList.toggle('active', tab === 'hotels');
-    if (excursionForm) excursionForm.classList.toggle('active', tab === 'excursions');
-
-    const hotelBtn = document.getElementById('searchTabHotels');
-    const excursionBtn = document.getElementById('searchTabExcursions');
-    if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
-    if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
+    this.activeTab = tab;
+    document.getElementById('hotelSearchForm').classList.toggle('active', tab === 'hotels');
+    document.getElementById('excursionSearchForm').classList.toggle('active', tab === 'excursions');
+    document.getElementById('searchTabHotels').classList.toggle('active', tab === 'hotels');
+    document.getElementById('searchTabExcursions').classList.toggle('active', tab === 'excursions');
+    if (tab === 'excursions') this.updateDateDisplays();
   },
+
+  openDateDropdown(isExcursion = false) {
+    this.closeAllDropdowns();
+    document.getElementById('searchDateDropdown').classList.add('ds-open');
+    this.isExcursionDate = isExcursion;
+    this.renderCalendar();
+  },
+
+  closeDateDropdown() {
+    document.getElementById('searchDateDropdown').classList.remove('ds-open');
+    this.updateDateDisplays();
+  },
+
+  openGuestDropdown() {
+    this.closeAllDropdowns();
+    document.getElementById('searchGuestDropdown').classList.add('ds-open');
+    this.updateGuestDisplay();
+  },
+
+  closeGuestDropdown() {
+    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
+    this.updateGuestDisplay();
+  },
+
+  closeAllDropdowns() {
+    document.getElementById('searchDateDropdown').classList.remove('ds-open');
+    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
+  },
+
+  changeMonth(delta) {
+    this.viewMonth += delta;
+    if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
+    if (this.viewMonth > 11) { this.viewMonth = 0; this.viewYear++; }
+    this.renderCalendar();
+  },
+
+  renderCalendar() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
+    const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
+    const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+    const today = new Date(); today.setHours(0,0,0,0);
+    let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="ds-cal-hdr">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day ds-empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(this.viewYear, this.viewMonth, d);
+      const past = date < today;
+      let cls = ['ds-cal-day'];
+      if (date.getTime() === today.getTime()) cls.push('ds-today');
+      if (past) cls.push('ds-unavailable');
+      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('ds-selected');
+      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('ds-selected');
+      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('ds-inrange');
+      html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
+    }
+    document.getElementById('searchCalGrid').innerHTML = html;
+  },
+
+  selectDate(day) {
+    const d = new Date(this.viewYear, this.viewMonth, day);
+    d.setHours(0,0,0,0);
+    if (this.isExcursionDate) {
+      this.selectedCheckIn = d;
+      this.selectedCheckOut = null;
+      this.updateDateDisplays();
+      return;
+    }
+    if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
+      this.selectedCheckIn = d;
+      this.selectedCheckOut = null;
+    } else if (d > this.selectedCheckIn) {
+      this.selectedCheckOut = d;
+    } else {
+      this.selectedCheckIn = d;
+      this.selectedCheckOut = null;
+    }
+    this.renderCalendar();
+    this.updateDateDisplays();
+  },
+
+  updateDateDisplays() {
+    const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
+    const ci = document.getElementById('searchCheckInInput');
+    const co = document.getElementById('searchCheckOutInput');
+    if (ci) ci.value = fmt(this.selectedCheckIn);
+    if (co) co.value = fmt(this.selectedCheckOut);
+    if (this.activeTab === 'hotels') {
+      document.getElementById('checkinDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+      document.getElementById('checkoutDisplay').textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
+    } else {
+      document.getElementById('excursionDateDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    }
+  },
+
+  adjustGuest(type, delta) {
+    const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
+    const newVal = (state.guests[type] || 0) + delta;
+    if (newVal >= limits[type].min && newVal <= limits[type].max) {
+      state.guests[type] = newVal;
+    }
+    document.getElementById('searchAdultCount').textContent = state.guests.adults;
+    document.getElementById('searchChildCount').textContent = state.guests.children;
+    document.getElementById('searchRoomCount').textContent = state.guests.rooms;
+    this.updateGuestDisplay();
+  },
+
+  updateGuestDisplay() {
+    const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
+    document.getElementById('guestsDisplay').textContent = text;
+  },
+
+  applyExcursionSearch() {
+    const cat = document.getElementById('excursionCategorySelect').value;
+    state.currentExcursionFilter = cat;
+    this.closeAllDropdowns();
+    nav.go('excursions');
+  },
+
   handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
   filterCategory(cat) { state.currentFilter = cat; document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); },
   filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
-  applyExcursionSearch() { const cat = document.getElementById('excursionCategorySelect').value; state.currentExcursionFilter = cat; nav.go('excursions'); }
+
+  // تهيئة عند التحميل
+  init() {
+    this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
+    this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
+    this.updateDateDisplays();
+    this.updateGuestDisplay();
+  }
 };
 
 // ==================== CURRENCY CHANGE ====================
