@@ -270,12 +270,12 @@
       <div class="space-y-1 flex-1 overflow-y-auto">
         <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center"></i><span data-i18n="navHome">Home</span></div>
         <!-- الفنادق مخفية -->
-        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
         <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
         <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
         <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
         <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
-        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
+        <div class="drawer-link" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
         <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
       </div>
       <div class="pt-4 border-t border-white/10 space-y-4">
@@ -455,6 +455,15 @@
           <div class="horizontal-scroll px-5" id="destinationsRow"></div>
         </div>
 
+        <!-- Featured Hotels -->
+        <div class="px-5 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <div><p class="section-subtitle" data-i18n="stayEyebrow">— STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
+            <button onclick="nav.go('hotels')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
+          </div>
+          <div id="featuredHotels" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
         <!-- Featured Excursions -->
         <div class="px-5 mb-8">
           <div class="flex items-center justify-between mb-4">
@@ -519,6 +528,42 @@
     </div> <!-- end homePage -->
 
     <!-- EXCURSIONS PAGE -->
+    <div id="hotelsPage" class="page">
+      <div class="min-h-screen">
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center justify-between mb-5">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div class="text-center"><p class="section-subtitle" data-i18n="stayEyebrow">— STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
+            <div class="w-11"></div>
+          </div>
+          <div class="horizontal-scroll !px-0" id="hotelFilterChips">
+            <button onclick="search.filterCategory('all')" class="filter-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
+          </div>
+        </div>
+        <div class="px-5 pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28" id="hotelsList"></div>
+      </div>
+    </div>
+
+    <!-- FAVORITES PAGE -->
+    <div id="favoritesPage" class="page">
+      <div class="min-h-screen">
+        <div class="px-5 pt-6 pb-4 header-light">
+          <div class="flex items-center justify-between mb-5">
+            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
+            <div class="text-center"><p class="section-subtitle" data-i18n="savedEyebrow">— SAVED</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="favoritesTitle">Favorites</h1></div>
+            <div class="w-11"></div>
+          </div>
+        </div>
+        <div class="px-5 pt-4">
+          <div id="emptyFavorites" class="hidden text-center py-16">
+            <i class="fa-regular fa-heart text-4xl mb-3" style="color:var(--text-secondary)"></i>
+            <p style="color:var(--text-secondary)" data-i18n="noFavorites">No favorites yet. Tap the heart on any hotel to save it here.</p>
+          </div>
+          <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="excursionsPage" class="page">
       <div class="min-h-screen">
         <div class="px-5 pt-6 pb-4 header-light">
