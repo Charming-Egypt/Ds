@@ -65,7 +65,7 @@
     <div class="ambient-orb orb-2"></div>
     <div class="relative z-10 min-h-full flex flex-col justify-center px-6 py-14">
       <div class="text-center mb-8">
-        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-gem text-2xl text-ink-900"></i></div>
+        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gold-300 via-gold-400 to-gold-600 rounded-2xl flex items-center justify-center shadow-2xl"><i class="fa-solid fa-compass text-2xl text-ink-900"></i></div>
         <h1 class="font-display text-2xl font-bold text-white" id="authTitle" data-i18n="welcomeBack">Welcome Back</h1>
         <p class="text-white/50 text-sm mt-1" data-i18n="authSubtitle">Sign in to manage your bookings</p>
       </div>
@@ -270,13 +270,13 @@
       <div class="space-y-1 flex-1 overflow-y-auto">
         <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center"></i><span data-i18n="navHome">Home</span></div>
         <!-- الفنادق مخفية -->
-        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-building-columns w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
-        <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-sailboat w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
-        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-car-side w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
-        <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-champagne-glasses w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
-        <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-solid fa-ticket-alt w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
-        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-solid fa-heart-circle-check w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
-        <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-sliders w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
+        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
+        <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
+        <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
+        <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
+        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
+        <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
       </div>
       <div class="pt-4 border-t border-white/10 space-y-4">
         <div class="flex items-center justify-between">
@@ -333,88 +333,116 @@
       </div>
 
       <div class="relative z-20 px-5 -mt-[8rem]">
-        <!-- ============ SEARCH SYSTEM (Hotels + Excursions) ============ -->
-<div class="search-card premium-search">
-  <!-- Tabs -->
-  <div class="search-tabs">
-    <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-btn active">
-      <i class="fa-solid fa-building-columns"></i>
-      <span data-i18n="navHotels">Hotels</span>
-    </button>
-    <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-btn">
-      <i class="fa-solid fa-sailboat"></i>
-      <span data-i18n="navExcursions">Excursions</span>
-    </button>
-  </div>
+        <!-- ============ SEARCH SYSTEM (New Design) ============ -->
+        <div class="search-card premium-search ds-search-wrapper">
+          <!-- Tabs -->
+          <div class="search-tabs">
+            <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-btn active">
+              <i class="fa-solid fa-hotel"></i>
+              <span data-i18n="navHotels">Hotels</span>
+            </button>
+            <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-btn">
+              <i class="fa-solid fa-umbrella-beach"></i>
+              <span data-i18n="navExcursions">Excursions</span>
+            </button>
+          </div>
 
-  <!-- Hotel Search Form -->
-  <div id="hotelSearchForm" class="search-form active">
-    <div class="search-fields-grid">
-      <!-- Check-in -->
-      <div id="checkinDate" class="search-field date-field" data-date-field="checkinDate" data-value="">
-        <div class="field-icon"><i class="fa-regular fa-calendar"></i></div>
-        <div class="field-content">
-          <span class="field-label">Check-in</span>
-          <span class="field-value date-field-value">Select date</span>
-        </div>
-      </div>
-      <!-- Check-out -->
-      <div id="checkoutDate" class="search-field date-field" data-date-field="checkoutDate" data-value="">
-        <div class="field-icon"><i class="fa-regular fa-calendar-check"></i></div>
-        <div class="field-content">
-          <span class="field-label">Check-out</span>
-          <span class="field-value date-field-value">Select date</span>
-        </div>
-      </div>
-      <!-- Guests -->
-      <div class="search-field" onclick="openGuestsModal()">
-        <div class="field-icon"><i class="fa-solid fa-user-group"></i></div>
-        <div class="field-content">
-          <span class="field-label">Guests & Rooms</span>
-          <span class="field-value" id="guestsDisplay">2 Adults, 1 Room</span>
-        </div>
-      </div>
-      <!-- Search Button -->
-      <button onclick="nav.go('hotels')" class="search-submit-btn">
-        <i class="fa-solid fa-magnifying-glass-location"></i>
-        <span>Search</span>
-      </button>
-    </div>
-  </div>
+          <!-- Hotel Search Form -->
+          <div id="hotelSearchForm" class="search-form active">
+            <div class="ds-bkg-top-bar">
+              <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+                <div class="ds-bkg-field-label">Check-in</div>
+                <div class="ds-bkg-field-value" id="checkinDisplay">Select date</div>
+              </div>
+              <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+                <div class="ds-bkg-field-label">Check-out</div>
+                <div class="ds-bkg-field-value" id="checkoutDisplay">Select date</div>
+              </div>
+              <div class="ds-bkg-field" onclick="search.openGuestDropdown()">
+                <div class="ds-bkg-field-label">Guests</div>
+                <div class="ds-bkg-field-value" id="guestsDisplay">2 Adults, 1 Room</div>
+              </div>
+              <button class="ds-bkg-search-btn" onclick="nav.go('hotels')">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+              </button>
+            </div>
+            <!-- Date Dropdown -->
+            <div class="ds-bkg-dropdown ds-bkg-date-dropdown" id="searchDateDropdown">
+              <div class="ds-desk-cal-inline">
+                <div class="ds-desk-cal-nav">
+                  <button onclick="search.changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                  <h4 id="searchCalMonth">June 2026</h4>
+                  <button onclick="search.changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="ds-cal-grid" id="searchCalGrid"></div>
+              </div>
+              <div class="ds-bkg-row">
+                <div class="ds-bkg-col">
+                  <label class="ds-desk-label-sm">Check-in</label>
+                  <input type="text" id="searchCheckInInput" readonly class="ds-desk-input" placeholder="Select">
+                </div>
+                <div class="ds-bkg-col">
+                  <label class="ds-desk-label-sm">Check-out</label>
+                  <input type="text" id="searchCheckOutInput" readonly class="ds-desk-input" placeholder="Select">
+                </div>
+              </div>
+              <button class="ds-desk-btn" onclick="search.closeDateDropdown()">Apply Dates</button>
+            </div>
+            <!-- Guest Dropdown -->
+            <div class="ds-bkg-dropdown ds-bkg-guest-dropdown" id="searchGuestDropdown">
+              <div class="ds-guest-row">
+                <div><div class="ds-guest-info-label">Adults</div></div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('adults', -1)">−</button>
+                  <span id="searchAdultCount">2</span>
+                  <button onclick="search.adjustGuest('adults', 1)">+</button>
+                </div>
+              </div>
+              <div class="ds-guest-row">
+                <div><div class="ds-guest-info-label">Children</div><div class="ds-guest-info-sub">Ages 0-11</div></div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('children', -1)">−</button>
+                  <span id="searchChildCount">0</span>
+                  <button onclick="search.adjustGuest('children', 1)">+</button>
+                </div>
+              </div>
+              <div class="ds-guest-row">
+                <div><div class="ds-guest-info-label">Rooms</div></div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('rooms', -1)">−</button>
+                  <span id="searchRoomCount">1</span>
+                  <button onclick="search.adjustGuest('rooms', 1)">+</button>
+                </div>
+              </div>
+              <button class="ds-desk-btn" onclick="search.closeGuestDropdown()">Apply</button>
+            </div>
+          </div>
 
-  <!-- Excursion Search Form -->
-  <div id="excursionSearchForm" class="search-form">
-    <div class="search-fields-grid">
-      <!-- Category -->
-      <div class="search-field">
-        <div class="field-icon"><i class="fa-solid fa-layer-group"></i></div>
-        <div class="field-content">
-          <span class="field-label">Category</span>
-          <select id="excursionCategorySelect" class="field-select-clean">
-            <option value="all">All Categories</option>
-            <option value="Diving">Diving & Snorkeling</option>
-            <option value="Desert Safari">Desert Safari</option>
-            <option value="Boat Trip">Boat Trip</option>
-            <option value="City Tour">City Tour</option>
-          </select>
+          <!-- Excursion Search Form -->
+          <div id="excursionSearchForm" class="search-form">
+            <div class="ds-bkg-top-bar" style="grid-template-columns:1fr 1fr auto;">
+              <div class="ds-bkg-field">
+                <div class="ds-bkg-field-label">Category</div>
+                <select id="excursionCategorySelect" class="field-select-clean ds-bkg-field-value">
+                  <option value="all">All Categories</option>
+                  <option value="Diving">Diving & Snorkeling</option>
+                  <option value="Desert Safari">Desert Safari</option>
+                  <option value="Boat Trip">Boat Trip</option>
+                  <option value="City Tour">City Tour</option>
+                </select>
+              </div>
+              <div class="ds-bkg-field" onclick="search.openDateDropdown(true)">
+                <div class="ds-bkg-field-label">Excursion Date</div>
+                <div class="ds-bkg-field-value" id="excursionDateDisplay">Select date</div>
+              </div>
+              <button class="ds-bkg-search-btn" onclick="search.applyExcursionSearch()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <!-- Date -->
-      <div id="excursionDate" class="search-field date-field" data-date-field="excursionDate" data-value="">
-        <div class="field-icon"><i class="fa-regular fa-calendar"></i></div>
-        <div class="field-content">
-          <span class="field-label">Excursion Date</span>
-          <span class="field-value date-field-value">Select date</span>
-        </div>
-      </div>
-      <!-- Search Button -->
-      <button onclick="search.applyExcursionSearch()" class="search-submit-btn">
-        <i class="fa-solid fa-magnifying-glass-location"></i>
-        <span>Search</span>
-      </button>
-    </div>
-  </div>
-</div>
       </div>
 
       <!-- بقية أقسام الهوم -->
@@ -440,7 +468,7 @@
         <div class="px-5 mb-8">
           <div class="banner-creative rounded-[26px] relative overflow-hidden cursor-pointer" onclick="nav.go('transfers')" style="background-image:linear-gradient(120deg,rgba(23,16,41,.88),rgba(23,16,41,.35) 60%,rgba(23,16,41,.1)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80')">
             <div class="relative z-10 p-6 text-white max-w-[75%]">
-              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-3 border border-white/20"><i class="fa-solid fa-car-side text-orange-300 ml-1"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
+              <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold mb-3 border border-white/20"><i class="fa-solid fa-shuttle-van text-orange-300 ml-1"></i><span data-i18n="airportTransferBadge">AIRPORT TRANSFERS</span></div>
               <p class="font-display text-2xl font-bold mb-1" data-i18n="transferPromoTitle">Land & Go</p>
               <p class="text-sm text-white/80 mb-4" data-i18n="transferPromoSubtitle">Book your ride to the hotel in advance</p>
               <button onclick="event.stopPropagation(); nav.go('transfers')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm ripple" data-i18n="bookTransfer">Book a Transfer</button>
@@ -550,7 +578,7 @@
         </div>
         <div class="px-5 py-4 space-y-3 pb-28" id="bookingsList"></div>
         <div id="emptyBookings" class="hidden text-center py-20 px-6">
-          <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-ticket-alt text-4xl text-violet-300"></i></div>
+          <div class="w-28 h-28 mx-auto mb-6 field-box rounded-full flex items-center justify-center"><i class="fa-solid fa-ticket text-4xl text-violet-300"></i></div>
           <p class="font-display text-xl font-bold mb-2" style="color:var(--text-primary)" data-i18n="noBookingsYet">No bookings yet</p>
           <p class="text-sm mb-6" style="color:var(--text-secondary)" data-i18n="startJourney">Start your luxury journey</p>
           <button onclick="nav.go('excursions')" class="btn-gold px-8 py-3 rounded-2xl text-ink-900 font-bold text-sm ripple" data-i18n="browseHotels">Browse Excursions</button>
@@ -588,11 +616,11 @@
         </div>
         <div class="px-5 mt-6 space-y-3">
           <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="nav.go('bookings')">
-            <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-600"><i class="fa-solid fa-ticket-alt"></i></div>
+            <div class="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center text-violet-600"><i class="fa-solid fa-ticket"></i></div>
             <span class="flex-1 font-medium" style="color:var(--text-primary)" data-i18n="myBookings">My Bookings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs"></i>
           </div>
           <div class="card rounded-2xl p-4 flex items-center gap-4 cursor-pointer" onclick="nav.go('settings')">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-gray-500" style="background:var(--bg-field)"><i class="fa-solid fa-sliders"></i></div>
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-gray-500" style="background:var(--bg-field)"><i class="fa-solid fa-gear"></i></div>
             <span class="flex-1 font-medium" style="color:var(--text-primary)" data-i18n="settingsTitle">Settings</span><i class="fa-solid fa-chevron-left text-gray-300 text-xs"></i>
           </div>
           <button onclick="auth.logout()" class="w-full card rounded-2xl p-4 flex items-center gap-4 text-red-500 mt-6">
@@ -651,12 +679,12 @@
     <!-- ============ BOTTOM NAVIGATION ============ -->
     <nav class="bottom-nav">
       <div class="flex items-center justify-around relative">
-        <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center"><i class="fa-solid fa-sailboat text-[22px]"></i></button>
-        <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center"><i class="fa-solid fa-ticket-alt text-[22px]"></i></button>
+        <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center"><i class="fa-solid fa-umbrella-beach text-[22px]"></i></button>
+        <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center"><i class="fa-regular fa-calendar-check text-[22px]"></i></button>
         <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
           <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover" /></span>
         </button>
-        <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center"><i class="fa-solid fa-car-side text-[22px]"></i></button>
+        <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-[22px]"></i></button>
         <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="nav-item flex items-center justify-center">
           <span class="nav-avatar-circle" id="navProfileAvatar"></span>
         </button>
