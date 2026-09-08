@@ -1,8 +1,8 @@
 // ==================== CONFIG ====================
-const API_BASE = '';
+const API_BASE = ''; // يترك فارغاً للعمل على نفس النطاق (discover-sharm.com)
 let authToken = localStorage.getItem('ds_auth_token') || null;
 let currentUser = JSON.parse(localStorage.getItem('ds_current_user') || 'null');
-let authMode = 'login'; 
+let authMode = 'login'; // 'login' أو 'signup'
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
 
@@ -19,7 +19,7 @@ const state = {
   currentExcursion: null,
   currentTransfer: null,
   currentBookingTab: 'upcoming',
-  activeSearchTab: 'hotels',
+  activeSearchTab: 'hotels', // افتراضي الفنادق
   guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
   pageHistory: ['home'],
   bookingDraft: {},
@@ -635,6 +635,42 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
+async function loadReviews(type, id, listElId, summaryElId) {
+  const listEl = document.getElementById(listElId);
+  if (!listEl) return;
+  try {
+    const data = await apiFetch(`/api/reviews?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {}, true);
+    const items = data.reviews || [];
+    if (items.length === 0) {
+      listEl.innerHTML = `<p class="text-xs text-center py-4" style="color:var(--text-secondary)">No reviews yet. Be the first!</p>`;
+    } else {
+      listEl.innerHTML = items
+        .slice()
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+        .map(r => `
+          <div class="p-3 rounded-xl border" style="border-color:var(--border-color)">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-sm">${esc(r.name)}</span>
+              <span class="text-gold-400 text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+            </div>
+            <p class="text-xs" style="color:var(--text-secondary)">${esc(r.comment)}</p>
+          </div>
+        `).join('');
+    }
+    if (summaryElId) {
+      const summaryEl = document.getElementById(summaryElId);
+      if (summaryEl && items.length > 0) {
+        const avg = items.reduce((s, r) => s + Number(r.rating || 0), 0) / items.length;
+        summaryEl.textContent = avg.toFixed(1);
+      }
+      const countEl = document.getElementById(summaryElId + 'Count');
+      if (countEl) countEl.textContent = items.length;
+    }
+  } catch (e) {
+    listEl.innerHTML = '';
+  }
+}
+
 const reviews = {
   currentTarget: null,
   selectedStars: 0,
