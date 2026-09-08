@@ -350,23 +350,25 @@
           <!-- Hotel Search Form -->
           <div id="hotelSearchForm" class="search-form active">
             <div class="ds-bkg-top-bar">
-              <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
-                <div class="ds-bkg-field-label">Check-in</div>
-                <div class="ds-bkg-field-value" id="checkinDisplay">Select date</div>
-              </div>
-              <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
-                <div class="ds-bkg-field-label">Check-out</div>
-                <div class="ds-bkg-field-value" id="checkoutDisplay">Select date</div>
-              </div>
-              <div class="ds-bkg-field" onclick="search.openGuestDropdown()">
-                <div class="ds-bkg-field-label">Guests</div>
-                <div class="ds-bkg-field-value" id="guestsDisplay">2 Adults, 1 Room</div>
-              </div>
-              <button class="ds-bkg-search-btn" onclick="nav.go('hotels')">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <span>Search</span>
-              </button>
-            </div>
+  <div class="ds-bkg-row-2col">
+    <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+      <div class="ds-bkg-field-label">Check-in</div>
+      <div class="ds-bkg-field-value" id="checkinDisplay">Select date</div>
+    </div>
+    <div class="ds-bkg-field" onclick="search.openDateDropdown(false)">
+      <div class="ds-bkg-field-label">Check-out</div>
+      <div class="ds-bkg-field-value" id="checkoutDisplay">Select date</div>
+    </div>
+  </div>
+  <div class="ds-bkg-field ds-bkg-field-full" onclick="search.openGuestDropdown()">
+    <div class="ds-bkg-field-label">Guests</div>
+    <div class="ds-bkg-field-value" id="guestsDisplay">2 Adults, 1 Room</div>
+  </div>
+  <button class="ds-bkg-search-btn ds-bkg-search-btn-full" onclick="nav.go('hotels')">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span>Search</span>
+  </button>
+</div>
             <!-- Date Dropdown -->
             <div class="ds-bkg-dropdown ds-bkg-date-dropdown" id="searchDateDropdown">
               <div class="ds-desk-cal-inline">
