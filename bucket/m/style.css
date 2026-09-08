@@ -1144,6 +1144,7 @@ html[data-theme="light"] .theme-switch .knob {
    SEARCH SYSTEM — MATCHING SITE THEME (Violet/Orange)
    ============================================================ */
 
+/* ============ SEARCH SYSTEM (CLEAN) ============ */
 .ds-search-wrapper {
   padding: 20px !important;
   background: var(--bg-card);
@@ -1152,7 +1153,7 @@ html[data-theme="light"] .theme-switch .knob {
   box-shadow: 0 25px 60px -18px rgba(20, 10, 45, .35);
 }
 
-/* التبويبات */
+/* Tabs */
 .search-tabs {
   display: flex;
   gap: 8px;
@@ -1177,11 +1178,7 @@ html[data-theme="light"] .theme-switch .knob {
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all .3s cubic-bezier(.16, 1, .3, 1);
-}
-
-.search-tab-btn i {
-  font-size: 15px;
+  transition: all .3s;
 }
 
 .search-tab-btn.active {
@@ -1190,23 +1187,29 @@ html[data-theme="light"] .theme-switch .knob {
   box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
 }
 
-/* شبكة الحقول العلوية */
+/* Top bar */
 .ds-bkg-top-bar {
   display: flex;
-  align-items: stretch;
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 0;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.ds-bkg-fields-row {
+  display: flex;
+  gap: 8px;
 }
 
 .ds-bkg-field {
   flex: 1;
   padding: 14px 16px;
   cursor: pointer;
-  border-right: 1px solid var(--border-field);
-  min-width: 0;
+  background: var(--bg-field);
+  border: 1px solid var(--border-field);
+  border-radius: 16px;
   transition: background .2s;
 }
 
@@ -1214,8 +1217,8 @@ html[data-theme="light"] .theme-switch .knob {
   background: rgba(249, 115, 22, 0.04);
 }
 
-.ds-bkg-field:last-child {
-  border-right: none;
+.ds-bkg-field-guest {
+  flex: none;
 }
 
 .ds-bkg-field-label {
@@ -1247,20 +1250,18 @@ html[data-theme="light"] .theme-switch .knob {
   white-space: nowrap;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  border-radius: 16px;
   transition: all .3s;
+  width: 100%;
 }
 
 .ds-bkg-search-btn:hover {
   filter: brightness(1.05);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
-.ds-bkg-search-btn i {
-  font-size: 15px;
-}
-
-/* القوائم المنسدلة */
+/* Dropdowns */
 .ds-bkg-dropdown {
   position: absolute;
   top: calc(100% + 4px);
@@ -1297,7 +1298,7 @@ html[data-theme="light"] .theme-switch .knob {
   overflow-y: auto !important;
 }
 
-/* التقويم */
+/* Calendar */
 .ds-desk-cal-inline {
   background: var(--bg-field);
   border-radius: 16px;
@@ -1391,7 +1392,7 @@ html[data-theme="light"] .theme-switch .knob {
   background: rgba(249, 115, 22, 0.08);
 }
 
-/* صفوف الإدخال */
+/* Rows */
 .ds-bkg-row {
   display: flex;
   gap: 14px;
@@ -1427,7 +1428,7 @@ html[data-theme="light"] .theme-switch .knob {
   border-color: #f97316;
 }
 
-/* عدادات الضيوف */
+/* Guests */
 .ds-guest-row {
   display: flex;
   justify-content: space-between;
@@ -1484,7 +1485,7 @@ html[data-theme="light"] .theme-switch .knob {
   text-align: center;
 }
 
-/* زر التأكيد */
+/* Apply button */
 .ds-desk-btn {
   text-align: center;
   padding: 14px 28px;
@@ -1505,101 +1506,29 @@ html[data-theme="light"] .theme-switch .knob {
   box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
 }
 
-/* استجابة الجوال */
+/* Mobile */
 @media (max-width: 480px) {
-  .ds-search-wrapper {
-    padding: 16px !important;
-  }
-  .ds-bkg-top-bar {
+  .ds-bkg-fields-row {
     flex-direction: column;
   }
   .ds-bkg-field {
-    border-right: none;
-    border-bottom: 1px solid var(--border-field);
-  }
-  .ds-bkg-field:last-child {
-    border-bottom: none;
-  }
-  .ds-bkg-search-btn {
-    justify-content: center;
+    border-radius: 16px;
   }
 }
 
 
 
-/* ===== Search Forms Visibility ===== */
+/* Forms visibility */
 .search-form {
   display: none;
-  opacity: 0;
-  transition: opacity .3s;
 }
 
 .search-form.active {
   display: block;
-  opacity: 1;
   animation: fadeInUp .4s ease;
 }
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-/* تعديل تخطيط نظام البحث */
-.ds-bkg-top-bar {
-  flex-direction: column;
-  gap: 8px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-.ds-bkg-row-2col {
-  display: flex;
-  gap: 8px;
-}
-
-.ds-bkg-row-2col .ds-bkg-field {
-  flex: 1;
-  border-right: 1px solid var(--border-field);
-  border-bottom: none;
-  background: var(--bg-field);
-  border-radius: 16px;
-  padding: 14px 16px;
-}
-
-.ds-bkg-row-2col .ds-bkg-field:last-child {
-  border-right: none;
-}
-
-.ds-bkg-field-full {
-  background: var(--bg-field);
-  border: 1px solid var(--border-field);
-  border-radius: 16px;
-  padding: 14px 16px;
-}
-
-.ds-bkg-search-btn-full {
-  width: 100%;
-  justify-content: center;
-  border-radius: 16px;
-  padding: 16px;
-  font-size: 15px;
-}
-
-/* استجابة الجوال */
-@media (max-width: 480px) {
-  .ds-bkg-row-2col {
-    flex-direction: column;
-  }
-  .ds-bkg-row-2col .ds-bkg-field {
-    border-right: none;
-    border-bottom: 1px solid var(--border-field);
-    border-radius: 16px;
-  }
-  .ds-bkg-row-2col .ds-bkg-field:last-child {
-    border-bottom: none;
-  }
 }
