@@ -26,7 +26,6 @@ function showKashierModal(kashierUrl, orderId, bookingData) {
     if (ev.data?.event === 'kashier.paymentSuccess') {
       modal.remove();
       toast('Payment successful! Your booking is confirmed.', 'success');
-      // Webhook will update status automatically; just show confirmation
       renderBookingConfirmation(bookingData);
     }
     if (ev.data?.event === 'kashier.paymentFailure') {
@@ -138,7 +137,7 @@ function showHotelPage(hotelId) {
             <div><p class="text-violet-400 text-[10px] tracking-widest mb-1 font-semibold">— REVIEWS</p><h3 class="font-display text-lg font-bold">Guest Reviews</h3></div>
             <div class="text-center"><p class="text-3xl font-bold text-violet-500 font-display" id="hotelReviewsSummary">${Number(h.rating).toFixed(1)}</p><p class="text-[10px]"><span id="hotelReviewsSummaryCount">${h.reviews || 0}</span> reviews</p></div>
           </div>
-          <button onclick="reviews.openModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
+          <button onclick="openReviewModal('hotel','${h.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3"><i class="fa-solid fa-pen"></i> Write a Review</button>
           <div class="space-y-3" id="hotelReviewsList"></div>
         </div>
       </div>
@@ -172,8 +171,8 @@ function startBooking(hotelId, roomIndex) {
     phone: '',
     requests: '',
     payment: 'card',
-    checkin: search.selectedCheckIn ? search.selectedCheckIn.toISOString().slice(0, 10) : utils.addDays(utils.todayIso(), 1),
-    checkout: search.selectedCheckOut ? search.selectedCheckOut.toISOString().slice(0, 10) : utils.addDays(utils.todayIso(), 3),
+    checkin: document.getElementById('checkinDate')?.dataset.value || utils.addDays(utils.todayIso(),1),
+    checkout: document.getElementById('checkoutDate')?.dataset.value || utils.addDays(utils.todayIso(),3),
   };
   renderBookingStep(2);
 }
@@ -200,11 +199,11 @@ function renderBookingStep(step) {
           <input type="email" id="bkEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="tel" id="bkPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm">
           <div class="grid grid-cols-2 gap-3">
-            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}" onclick="datepicker.open('bkCheckin')">
+            <div id="bkCheckin" class="date-field p-3" data-date-field="bkCheckin" data-value="${state.bookingDraft.checkin}">
               <label class="text-[10px]">Check-in</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkin)}</span>
             </div>
-            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}" onclick="datepicker.open('bkCheckout')">
+            <div id="bkCheckout" class="date-field p-3" data-date-field="bkCheckout" data-value="${state.bookingDraft.checkout}">
               <label class="text-[10px]">Check-out</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.checkout)}</span>
             </div>
@@ -284,10 +283,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
     if (state.bookingDraft.payment === 'cash') {
       bookingData.paymentStatus = 'pending_cash';
       bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', {
-        method: 'POST',
-        body: JSON.stringify({ booking: bookingData })
-      });
+      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
       state.bookings.unshift(res.booking);
       bookings.render();
       renderBookingConfirmation(res.booking);
@@ -295,18 +291,8 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
       return;
     }
 
-    // حفظ الحجز بحالة pending_payment
-    const saveRes = await apiFetch('/api/user/bookings', {
-      method: 'POST',
-      body: JSON.stringify({ booking: bookingData })
-    });
-
-    // الحصول على hash من كاشير
-    const hashData = await apiFetch('/api/kashier/hash', {
-      method: 'POST',
-      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
-    });
-
+    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
     const kashierUrl = new URL('https://checkout.kashier.io/');
     kashierUrl.searchParams.append('merchantId', hashData.merchantId);
     kashierUrl.searchParams.append('orderId', orderId);
@@ -387,7 +373,7 @@ function showExcursionPage(excursionId) {
           </div>` : ''}
         <div class="card rounded-2xl p-4">
           <h3 class="font-display text-lg font-bold mb-3">Reviews</h3>
-          <button onclick="reviews.openModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
+          <button onclick="openReviewModal('excursion','${x.id}')" class="w-full py-2.5 rounded-xl text-xs font-bold border border-violet-400/40 text-violet-500 mb-3">Write a Review</button>
           <div class="space-y-3" id="excursionReviewsList"></div>
         </div>
       </div>
@@ -432,7 +418,7 @@ function renderExcursionBookingStep(step) {
           <input type="text" id="ekName" required value="${state.bookingDraft.name}" placeholder="Full Name" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="email" id="ekEmail" required value="${state.bookingDraft.email}" placeholder="Email" class="input-field w-full px-3 py-2.5 text-sm">
           <input type="tel" id="ekPhone" required value="${state.bookingDraft.phone}" placeholder="Phone" class="input-field w-full px-3 py-2.5 text-sm">
-          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('ekDate')">
+          <div id="ekDate" class="date-field p-3" data-date-field="ekDate" data-value="${state.bookingDraft.date}">
             <label class="text-[10px]">Date</label>
             <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
           </div>
@@ -511,10 +497,7 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
     if (state.bookingDraft.payment === 'cash') {
       bookingData.paymentStatus = 'pending_cash';
       bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', {
-        method: 'POST',
-        body: JSON.stringify({ booking: bookingData })
-      });
+      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
       state.bookings.unshift(res.booking);
       bookings.render();
       renderBookingConfirmation(res.booking);
@@ -522,16 +505,8 @@ async function payAndConfirmExcursionBooking(subtotal, taxes, total) {
       return;
     }
 
-    const saveRes = await apiFetch('/api/user/bookings', {
-      method: 'POST',
-      body: JSON.stringify({ booking: bookingData })
-    });
-
-    const hashData = await apiFetch('/api/kashier/hash', {
-      method: 'POST',
-      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
-    });
-
+    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
     const kashierUrl = new URL('https://checkout.kashier.io/');
     kashierUrl.searchParams.append('merchantId', hashData.merchantId);
     kashierUrl.searchParams.append('orderId', orderId);
@@ -604,7 +579,7 @@ function renderTransferBookingStep(step) {
             <input type="text" id="tkAddress" required value="${state.bookingDraft.address}" placeholder="Hotel name & address" class="input-field w-full px-3 py-2.5 text-sm">
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}" onclick="datepicker.open('tkDate')">
+            <div id="tkDate" class="date-field p-3" data-date-field="tkDate" data-value="${state.bookingDraft.date}">
               <label class="text-[10px]">Date</label>
               <span class="date-field-value text-sm">${utils.formatDate(state.bookingDraft.date)}</span>
             </div>
@@ -660,9 +635,9 @@ function setTransferDirection(dir) {
   state.bookingDraft.direction = dir;
   const a = document.getElementById('dirBtnArrival'), d = document.getElementById('dirBtnDeparture');
   if (!a || !d) return;
-  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#a78bfa,#6d28d9)' : 'transparent';
+  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
   a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)';
-  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#a78bfa,#6d28d9)' : 'transparent';
+  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
   d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)';
 }
 
@@ -703,10 +678,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
     if (state.bookingDraft.payment === 'cash') {
       bookingData.paymentStatus = 'pending_cash';
       bookingData.status = 'pending_cash';
-      const res = await apiFetch('/api/user/bookings', {
-        method: 'POST',
-        body: JSON.stringify({ booking: bookingData })
-      });
+      const res = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
       state.bookings.unshift(res.booking);
       bookings.render();
       renderBookingConfirmation(res.booking);
@@ -714,16 +686,8 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
       return;
     }
 
-    const saveRes = await apiFetch('/api/user/bookings', {
-      method: 'POST',
-      body: JSON.stringify({ booking: bookingData })
-    });
-
-    const hashData = await apiFetch('/api/kashier/hash', {
-      method: 'POST',
-      body: JSON.stringify({ orderId, amount: total, currency: 'EGP' })
-    });
-
+    const saveRes = await apiFetch('/api/user/bookings', { method: 'POST', body: JSON.stringify({ booking: bookingData }) });
+    const hashData = await apiFetch('/api/kashier/hash', { method: 'POST', body: JSON.stringify({ orderId, amount: total, currency: 'EGP' }) });
     const kashierUrl = new URL('https://checkout.kashier.io/');
     kashierUrl.searchParams.append('merchantId', hashData.merchantId);
     kashierUrl.searchParams.append('orderId', orderId);
@@ -893,7 +857,7 @@ function showBookingDetails(bookingId) {
       </div>
       <div class="relative -mt-4 rounded-t-[28px] p-5" style="background:var(--bg-card)">
         ${bookingDetailBody(b)}
-        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="reviews.openModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
+        ${b.type !== 'transfer' ? (b.reviewed ? `<div class="text-center text-xs py-2 mb-2"><i class="fa-solid fa-circle-check text-green-500"></i> You've reviewed this booking</div>` : (!isUpcoming ? `<button onclick="openReviewModal('${b.type}','${b.hotelId || b.excursionId}', '${b.id}')" class="w-full py-3.5 rounded-2xl font-bold border border-violet-400/40 text-violet-500 mb-2"><i class="fa-solid fa-pen"></i> Write a Review</button>` : '')) : ''}
         ${isUpcoming ? `<button onclick="cancelBooking('${b.id}')" class="w-full py-4 rounded-2xl font-bold text-red-500 border border-red-400/30 mt-2">Cancel Booking</button>` : ''}
       </div>
     </div>`;
@@ -919,9 +883,11 @@ window.showRestaurantPage = showRestaurantPage;
 window.showArticlePage = showArticlePage;
 window.showHotelPage = showHotelPage;
 window.showExcursionPage = showExcursionPage;
+window.showTransferPage = showTransferPage;
 window.showBookingDetails = showBookingDetails;
 window.closeDestinationPage = closeDestinationPage;
 window.closeRestaurantPage = closeRestaurantPage;
 window.closeArticlePage = closeArticlePage;
 window.closeHotelPage = closeHotelPage;
 window.closeExcursionPage = closeExcursionPage;
+window.closeTransferPage = closeTransferPage;
