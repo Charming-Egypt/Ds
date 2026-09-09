@@ -1726,3 +1726,13 @@ html[data-theme="light"] .theme-switch .knob {
     max-width: 700px;
   }
 }
+
+/* ============ FIX Z-INDEX FOR MODALS ============ */
+.modal-overlay,
+.ds-modal-overlay,
+#datepickerModal,
+#searchDateDropdown,
+#searchGuestDropdown,
+#searchCategoryDropdown {
+  z-index: 99999 !important;
+}
