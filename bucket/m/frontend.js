@@ -1,5 +1,5 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-const DS_CONFIG = window.DS_CONFIG || {
+window.DS_CONFIG = window.DS_CONFIG || {
   SHOW_HOTELS: false,
   SHOW_EXCURSIONS: true,
   SHOW_TRANSFERS: true,
@@ -7,13 +7,11 @@ const DS_CONFIG = window.DS_CONFIG || {
   SHOW_DESTINATIONS: true
 };
 
-const SHOW_HOTELS = DS_CONFIG.SHOW_HOTELS;
-const SHOW_EXCURSIONS = DS_CONFIG.SHOW_EXCURSIONS;
-const SHOW_TRANSFERS = DS_CONFIG.SHOW_TRANSFERS;
-const SHOW_RESTAURANTS = DS_CONFIG.SHOW_RESTAURANTS;
-const SHOW_DESTINATIONS = DS_CONFIG.SHOW_DESTINATIONS;
-
-// ==================== FRONTEND UI & NAVIGATION ====================
+const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
+const SHOW_EXCURSIONS = window.DS_CONFIG.SHOW_EXCURSIONS;
+const SHOW_TRANSFERS = window.DS_CONFIG.SHOW_TRANSFERS;
+const SHOW_RESTAURANTS = window.DS_CONFIG.SHOW_RESTAURANTS;
+const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 
 function enterApp() {
   hideSplash();
@@ -156,7 +154,7 @@ function getGeniusBenefitsHtml(level) {
   `;
 }
 
-// ==================== GUESTS MODAL (legacy) ====================
+// ==================== GUESTS MODAL ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -409,17 +407,29 @@ const search = {
     this.updateDateDisplays();
   },
   updateDateDisplays() {
-    const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
+    const toDate = (d) => {
+      if (!d) return null;
+      if (d instanceof Date) return d;
+      if (typeof d === 'string' && d.includes('-')) return new Date(d + 'T00:00:00');
+      return new Date(d);
+    };
+    const ci = toDate(this.selectedCheckIn);
+    const co = toDate(this.selectedCheckOut);
+    const fmt = (d) => {
+      if (!d) return '';
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${d.getDate()} ${months[d.getMonth()]}`;
+    };
     const checkInInput = document.getElementById('searchCheckInInput');
     const checkOutInput = document.getElementById('searchCheckOutInput');
-    if (checkInInput) checkInInput.value = fmt(this.selectedCheckIn);
-    if (checkOutInput) checkOutInput.value = fmt(this.selectedCheckOut);
+    if (checkInInput) checkInInput.value = fmt(ci);
+    if (checkOutInput) checkOutInput.value = fmt(co);
     const checkinDisplay = document.getElementById('checkinDisplay');
     const checkoutDisplay = document.getElementById('checkoutDisplay');
     const excursionDateDisplay = document.getElementById('excursionDateDisplay');
-    if (checkinDisplay) checkinDisplay.textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
-    if (checkoutDisplay) checkoutDisplay.textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
-    if (excursionDateDisplay) excursionDateDisplay.textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    if (checkinDisplay) checkinDisplay.textContent = fmt(ci);
+    if (checkoutDisplay) checkoutDisplay.textContent = fmt(co);
+    if (excursionDateDisplay) excursionDateDisplay.textContent = fmt(ci);
   },
   adjustGuest(type, delta) {
     const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
@@ -456,8 +466,14 @@ const search = {
   filterCategory(cat) { state.currentFilter = cat; },
   filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
   init() {
-    this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
-    this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
+    const tomorrow = new Date();
+    tomorrow.setHours(0,0,0,0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayAfter = new Date(tomorrow);
+    dayAfter.setDate(dayAfter.getDate() + 1);
+
+    this.selectedCheckIn = tomorrow;
+    this.selectedCheckOut = dayAfter;
     this.selectedCategory = 'all';
     this.updateDateDisplays();
     this.updateGuestDisplay();
@@ -637,7 +653,6 @@ const excursionsUi = {
     const stars = utils.renderStars(x.rating || 0);
     const price = utils.formatPrice(x.price);
     const duration = x.duration || 'Full day';
-    const meetingPoint = x.meetingPoint || 'Sharm El Sheikh';
     const category = x.category || 'Activity';
     const reviewCount = x.reviews || 0;
 
