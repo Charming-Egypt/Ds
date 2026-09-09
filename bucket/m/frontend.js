@@ -13,7 +13,8 @@ function enterApp() {
   ui.setDefaultDates();
   search.init();
 
-  if (currentUser) {
+  // استعادة بيانات المستخدم من localStorage (موجودة في data.js)
+  if (authToken && currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   } else {
     updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
@@ -94,7 +95,7 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
-    // حتى لو فشل، استخدم البيانات المحلية
+    // استخدم البيانات المحلية
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   }
 }
@@ -147,7 +148,7 @@ function getGeniusBenefitsHtml(level) {
   `;
 }
 
-// ==================== GUESTS MODAL (legacy) ====================
+// ==================== GUESTS MODAL ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -310,7 +311,6 @@ const search = {
     document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
     document.getElementById('heroTitleText').innerHTML = data.title;
     document.getElementById('heroSubtitleText').textContent = data.subtitle;
-    // بدء تدوير الخلفيات الخاصة بالتبويب
     startHeroBackgroundRotation(tab);
   },
 
@@ -321,28 +321,22 @@ const search = {
     this.renderCalendar();
     document.getElementById('searchDateDropdown').style.display = 'flex';
   },
-
   closeDateDropdown() {
     document.getElementById('searchDateDropdown').style.display = 'none';
   },
-
   openGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
-
   closeGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
   },
-
   openCategoryDropdown() {
     document.getElementById('searchCategoryDropdown').style.display = 'flex';
   },
-
   closeCategoryDropdown() {
     document.getElementById('searchCategoryDropdown').style.display = 'none';
   },
-
   setCategory(category) {
     this.selectedCategory = category;
     const displayEl = document.getElementById('excursionCategoryDisplay');
@@ -360,28 +354,22 @@ const search = {
       btn.classList.toggle('active', btn.dataset.category === category);
     });
   },
-
   changeMonth(delta) {
     this.viewMonth += delta;
     if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
     if (this.viewMonth > 11) { this.viewMonth = 0; this.viewYear++; }
     this.renderCalendar();
   },
-
   renderCalendar() {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
-    
     const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
     const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
     const today = new Date(); today.setHours(0,0,0,0);
-    
     let html = '';
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
-    
     for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
-    
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(this.viewYear, this.viewMonth, d);
       const past = date < today;
@@ -393,21 +381,17 @@ const search = {
       if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
       html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
     }
-    
     document.getElementById('searchCalGrid').innerHTML = html;
   },
-
   selectDate(day) {
     const d = new Date(this.viewYear, this.viewMonth, day);
     d.setHours(0,0,0,0);
-    
     if (this.isExcursionDate) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
       this.updateDateDisplays();
       return;
     }
-    
     if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
@@ -417,11 +401,9 @@ const search = {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
     }
-    
     this.renderCalendar();
     this.updateDateDisplays();
   },
-
   updateDateDisplays() {
     const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
     const checkInInput = document.getElementById('searchCheckInInput');
@@ -435,7 +417,6 @@ const search = {
     if (checkoutDisplay) checkoutDisplay.textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
     if (excursionDateDisplay) excursionDateDisplay.textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
   },
-
   adjustGuest(type, delta) {
     const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
     const newVal = (state.guests[type] || 0) + delta;
@@ -447,13 +428,11 @@ const search = {
     document.getElementById('searchRoomCount').textContent = state.guests.rooms;
     this.updateGuestDisplay();
   },
-
   updateGuestDisplay() {
     const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
     const el = document.getElementById('guestsDisplay');
     if (el) el.textContent = text;
   },
-
   performSearch() {
     if (this.activeTab === 'hotels') {
       if (!this.selectedCheckIn || !this.selectedCheckOut) {
@@ -465,16 +444,13 @@ const search = {
       this.applyExcursionSearch();
     }
   },
-
   applyExcursionSearch() {
     state.currentExcursionFilter = this.selectedCategory;
     nav.go('excursions');
   },
-
   handle(q) { state.searchQuery = q.toLowerCase(); },
   filterCategory(cat) { state.currentFilter = cat; },
   filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
-
   init() {
     this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
     this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
@@ -515,22 +491,14 @@ function startHeroBackgroundRotation(tab) {
     setHeroImage(backgrounds[heroBgIndex]);
   }, 5000);
 }
-
 function stopHeroBackgroundRotation() {
-  if (heroBgInterval) {
-    clearInterval(heroBgInterval);
-    heroBgInterval = null;
-  }
+  if (heroBgInterval) { clearInterval(heroBgInterval); heroBgInterval = null; }
 }
-
 function setHeroImage(src) {
   const bgImg = document.getElementById('heroBgImage');
   if (!bgImg) return;
   bgImg.style.opacity = '0';
-  setTimeout(() => {
-    bgImg.src = src;
-    bgImg.style.opacity = '1';
-  }, 500);
+  setTimeout(() => { bgImg.src = src; bgImg.style.opacity = '1'; }, 500);
 }
 
 // ==================== CURRENCY CHANGE ====================
@@ -646,7 +614,7 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS RENDERER (سلايدر كامل العرض) ====================
+// ==================== EXCURSIONS RENDERER (سلايدر كامل العرض للرئيسية) ====================
 const excursionsUi = {
   renderFeatured() {
     if (!SHOW_EXCURSIONS) return;
@@ -654,7 +622,6 @@ const excursionsUi = {
     if (el) {
       el.className = 'hero-slider';
       el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
-      // إضافة خصائص التمرير
       el.querySelectorAll('.hero-slide-card').forEach(card => {
         card.style.scrollSnapAlign = 'center';
       });
@@ -714,7 +681,7 @@ const excursionsUi = {
   }
 };
 
-// ==================== TRANSFERS RENDERER (صفحة تفاصيل مثل الرحلة) ====================
+// ==================== TRANSFERS RENDERER (صفحة تفاصيل) ====================
 const transfersUi = {
   render() {
     if (!SHOW_TRANSFERS) return;
@@ -740,7 +707,7 @@ const transfersUi = {
           </div>
           <p class="text-sm text-gray-500 mb-4 line-clamp-2">${v.description}</p>
           <div class="flex flex-wrap gap-2 mb-4">
-            ${(v.features || []).slice(0,3).map(f => `<span class="text-xs px-3 py-1 rounded-lg bg-field border border-field" style="background:var(--bg-field);border-color:var(--border-field);color:var(--text-secondary)">${f}</span>`).join('')}
+            ${(v.features || []).slice(0,3).map(f => `<span class="text-xs px-3 py-1 rounded-lg" style="background:var(--bg-field);border:1px solid var(--border-field);color:var(--text-secondary)">${f}</span>`).join('')}
           </div>
           <div class="flex items-center justify-between border-t pt-3" style="border-color:var(--border-card)">
             <div>
@@ -754,7 +721,7 @@ const transfersUi = {
   }
 };
 
-// ==================== SHOW TRANSFER PAGE (تفاصيل مثل صفحة الرحلة) ====================
+// ==================== SHOW TRANSFER PAGE ====================
 function showTransferPage(id) {
   const v = CATALOG.transfers.find(t => t.id === id);
   if (!v) return toast('Transfer not found', 'error');
@@ -926,23 +893,13 @@ function applyCategoryVisibility() {
     destinations: document.getElementById('destinationsRow'),
   };
 
-  if (!SHOW_HOTELS && homeSections.hotels) {
-    homeSections.hotels.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  }
-  if (!SHOW_EXCURSIONS && homeSections.excursions) {
-    homeSections.excursions.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  }
-  if (!SHOW_RESTAURANTS && homeSections.restaurants) {
-    homeSections.restaurants.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  }
-  if (!SHOW_DESTINATIONS && homeSections.destinations) {
-    homeSections.destinations.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  }
+  if (!SHOW_HOTELS && homeSections.hotels) homeSections.hotels.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  if (!SHOW_EXCURSIONS && homeSections.excursions) homeSections.excursions.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  if (!SHOW_RESTAURANTS && homeSections.restaurants) homeSections.restaurants.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  if (!SHOW_DESTINATIONS && homeSections.destinations) homeSections.destinations.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
   if (!SHOW_TRANSFERS) {
     document.querySelectorAll('.banner-creative').forEach(el => {
-      if (el.getAttribute('onclick')?.includes('transfers')) {
-        el.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-      }
+      if (el.getAttribute('onclick')?.includes('transfers')) el.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
     });
   }
 
@@ -978,7 +935,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // إخفاء النماذج فوراً ثم إظهار الصحيح
+  // إخفاء النماذج فوراً ثم إظهار الصحيح عبر search.init
   document.getElementById('hotelSearchForm').style.display = 'none';
   document.getElementById('excursionSearchForm').style.display = 'none';
   search.init();
