@@ -154,7 +154,7 @@ const utils = {
   renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#453f5c"></i>'; return s; },
   avgRating(list) { return list.length ? list.reduce((s, r) => s + Number(r.rating || 0), 0) / list.length : null; },
   confetti() {
-    const colors = ['#fbbf24', '#fcd34d', '#f97316', '#c2410c', '#fb7185', '#ffffff'];
+    const colors = ['#fbbf24', '#fcd34d', '#8b5cf6', '#6d28d9', '#fb7185', '#ffffff'];
     for (let i = 0; i < 60; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
@@ -823,12 +823,12 @@ const transferSearch = {
     const departure = document.getElementById('tsDirDeparture');
     if (arrival && departure) {
       if (dir === 'Airport to Hotel') {
-        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        arrival.style.background = 'linear-gradient(135deg,#a78bfa,#6d28d9)';
         arrival.style.color = '#fff';
         departure.style.background = 'transparent';
         departure.style.color = 'var(--text-secondary)';
       } else {
-        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        departure.style.background = 'linear-gradient(135deg,#a78bfa,#6d28d9)';
         departure.style.color = '#fff';
         arrival.style.background = 'transparent';
         arrival.style.color = 'var(--text-secondary)';
