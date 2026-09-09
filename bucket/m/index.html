@@ -265,7 +265,7 @@
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
             <p class="text-white text-sm font-semibold truncate" id="drawerName">Guest</p>
-            <span id="drawerTierBadge" class="hidden ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold-400/20 text-gold-400 border border-gold-400/40">Genius Lv1</span>
+            <span id="drawerTierBadge" class="hidden ml-2 text-base" title="Sharmawy Level"></span>
           </div>
           <p class="text-white/40 text-[11px] truncate" id="drawerEmail"></p>
         </div>
@@ -550,8 +550,10 @@
           </div>
           <h2 class="font-display text-2xl font-bold mt-4" style="color:var(--text-primary)" id="profileName">Guest</h2>
           <p class="text-sm" style="color:var(--text-secondary)" id="profileEmail"></p>
-          <span id="profileTierBadge" class="hidden mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> Genius Level 1</span>
-          <div id="geniusBenefitsCard" class="hidden mt-4 card rounded-2xl p-4 w-80 max-w-full"></div>
+          <span id="profileTierBadge" class="hidden mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-crown"></i> <span id="profileTierText">Sharmawy Level 1</span>
+          </span>
+          <div id="sharmawyBenefitsCard" class="hidden mt-4 card rounded-2xl p-4 w-80 max-w-full"></div>
         </div>
         <div class="px-5 mt-8">
           <div class="grid grid-cols-3 gap-3">
