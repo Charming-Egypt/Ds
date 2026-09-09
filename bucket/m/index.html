@@ -14,6 +14,19 @@
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer data-use_fedcm_for_prompt="false"></script>
 
+  <!-- ============ EARLY CONFIG & FLASH PREVENTION ============ -->
+  <script>
+    window.DS_CONFIG = {
+      SHOW_HOTELS: false,
+      SHOW_EXCURSIONS: true,
+      SHOW_TRANSFERS: true,
+      SHOW_RESTAURANTS: true,
+      SHOW_DESTINATIONS: true
+    };
+    // إخفاء العناصر فورًا قبل تحميل CSS/JS لتجنب الوميض
+    document.documentElement.classList.add('ds-config-loaded');
+  </script>
+
   <!-- ============ TAILWIND CONFIG ============ -->
   <script>
     tailwind.config = {
@@ -333,10 +346,9 @@
       <div class="relative z-20 px-5 -mt-[8rem]">
         <!-- ============ SEARCH SYSTEM ============ -->
         <div class="search-card premium-search" style="padding:4px; border-radius:20px;">
-          <!-- Main Fields Container -->
           <div style="border:1px solid var(--border-card); border-radius:18px; overflow:hidden;">
             <!-- Tabs -->
-            <div id="searchTabsContainer" style="display:flex; gap:4px; padding:8px; border-bottom:1px solid var(--border-card);">
+            <div id="searchTabsContainer" style="display:none; gap:4px; padding:8px; border-bottom:1px solid var(--border-card);">
               <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-new active" style="flex:1;">
                 <i class="fa-solid fa-hotel"></i>
                 <span data-i18n="navHotels">Hotels</span>
@@ -348,31 +360,31 @@
             </div>
 
             <!-- Hotels Form -->
-            <div id="hotelSearchForm" class="search-form">
+            <div id="hotelSearchForm" class="search-form" style="display:none;">
               <div style="display:flex; border-bottom:1px solid var(--border-card);">
-                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openDateDropdown(false)">
+                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openDateDropdown(false)">
                   <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-IN</div>
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkinDisplay">Select date</div>
                 </div>
-                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(false)">
+                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(false)">
                   <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-OUT</div>
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkoutDisplay">Select date</div>
                 </div>
               </div>
-              <div class="ds-search-field" style="padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openGuestDropdown()">
+              <div style="padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openGuestDropdown()">
                 <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">GUESTS</div>
                 <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="guestsDisplay">2 Adults, 1 Room</div>
               </div>
             </div>
 
             <!-- Excursions Form -->
-            <div id="excursionSearchForm" class="search-form" active>
+            <div id="excursionSearchForm" class="search-form" style="display:none;">
               <div style="display:flex; border-bottom:1px solid var(--border-card);">
-                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openCategoryDropdown()">
+                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openCategoryDropdown()">
                   <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CATEGORY</div>
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionCategoryDisplay">All Categories</div>
                 </div>
-                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(true)">
+                <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(true)">
                   <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">EXCURSION DATE</div>
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionDateDisplay">Select date</div>
                 </div>
@@ -380,10 +392,8 @@
             </div>
           </div>
 
-          <!-- Search Button -->
           <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#171029; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            Check Availability
+            <i class="fa-solid fa-magnifying-glass"></i> Check Availability
           </button>
 
           <!-- Date Dropdown Modal -->
@@ -470,13 +480,13 @@
           <div class="horizontal-scroll px-5" id="destinationsRow"></div>
         </div>
 
-        <!-- Featured Excursions -->
+        <!-- Featured Excursions (سلايدر) -->
         <div class="px-5 mb-8">
           <div class="flex items-center justify-between mb-4">
             <div><p class="section-subtitle" data-i18n="thingsToDoEyebrow">— THINGS TO DO</p><h3 class="section-title" data-i18n="featuredExcursions">Featured Excursions</h3></div>
             <button onclick="nav.go('excursions')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
           </div>
-          <div id="featuredExcursions" class="horizontal-scroll"></div>
+          <div id="featuredExcursions" class="hero-slider"></div>
         </div>
 
         <!-- Transfer promo banner -->
