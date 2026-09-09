@@ -28,7 +28,6 @@
   </script>
 
   <script>
-    // إعدادات العرض - يمكن تغييرها هنا
     window.DS_CONFIG = {
       SHOW_HOTELS: false,
       SHOW_EXCURSIONS: true,
@@ -124,7 +123,7 @@
     </div>
   </div>
 
-  <!-- Modals ... (كما في النسخة السابقة) -->
+  <!-- Modals -->
   <div id="guestsModal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="flex justify-between items-center mb-6">
@@ -205,6 +204,10 @@
         <div>
           <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="yourReview">YOUR REVIEW</label>
           <textarea id="reviewComment" rows="3" required maxlength="1000" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"></textarea>
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5">ATTACH IMAGE (OPTIONAL)</label>
+          <input type="file" id="reviewImage" accept="image/*" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)" />
         </div>
         <button type="submit" class="btn-violet w-full py-3.5 rounded-2xl font-bold" data-i18n="submitReview">Submit Review</button>
       </form>
