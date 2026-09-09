@@ -13,8 +13,7 @@ function enterApp() {
   ui.setDefaultDates();
   search.init();
 
-  // استعادة بيانات المستخدم من localStorage (موجودة في data.js)
-  if (authToken && currentUser) {
+  if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   } else {
     updateDrawerUser('Guest', '', localStorage.getItem('ds_avatar'));
@@ -95,7 +94,6 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
-    // استخدم البيانات المحلية
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   }
 }
@@ -148,7 +146,7 @@ function getGeniusBenefitsHtml(level) {
   `;
 }
 
-// ==================== GUESTS MODAL ====================
+// ==================== GUESTS MODAL (legacy) ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -275,21 +273,17 @@ const search = {
     }
     this.activeTab = tab;
 
-    // إظهار/إخفاء حاوية التبويبات
     const tabsContainer = document.getElementById('searchTabsContainer');
     tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
 
-    // إظهار/إخفاء النماذج
     document.getElementById('hotelSearchForm').style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
     document.getElementById('excursionSearchForm').style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
 
-    // تحديث أزرار التبويب
     const hotelBtn = document.getElementById('searchTabHotels');
     const excursionBtn = document.getElementById('searchTabExcursions');
     if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
     if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
 
-    // تحديث محتوى الهيرو وبدء تدوير الخلفيات
     this.updateHeroContent(tab);
     this.updateDateDisplays();
   },
@@ -614,30 +608,55 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS RENDERER (سلايدر كامل العرض للرئيسية) ====================
+// ==================== EXCURSIONS RENDERER (NEW CREATIVE CARD) ====================
 const excursionsUi = {
   renderFeatured() {
     if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
     if (el) {
-      el.className = 'hero-slider';
+      el.className = 'results-scroll-snap';
       el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
-      el.querySelectorAll('.hero-slide-card').forEach(card => {
+      el.querySelectorAll('.creative-card').forEach(card => {
         card.style.scrollSnapAlign = 'center';
       });
     }
   },
   renderSliderCard(x) {
     const img = getImageUrl(x.image);
+    const rating = Number(x.rating || 0).toFixed(1);
+    const stars = utils.renderStars(x.rating || 0);
+    const price = utils.formatPrice(x.price);
+    const duration = x.duration || 'Full day';
+    const meetingPoint = x.meetingPoint || 'Sharm El Sheikh';
+    const category = x.category || 'Activity';
+    const reviewCount = x.reviews || 0;
+
     return `
-      <div class="hero-slide-card" onclick="showExcursionPage('${x.id}')">
-        <img src="${img}" alt="${x.title}" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <span class="badge-category">${x.category}</span>
-        <span class="badge-rating"><i class="fa-solid fa-star"></i> ${Number(x.rating).toFixed(1)}</span>
-        <div class="hero-slide-overlay">
-          <h3>${x.title}</h3>
-          <p>${x.duration} · ${x.meetingPoint || 'Sharm El Sheikh'}</p>
-          <p class="font-bold text-gold-400 mt-1">${utils.formatPrice(x.price)} <span class="text-xs font-normal text-white/80">/person</span></p>
+      <div class="creative-card" onclick="showExcursionPage('${x.id}')">
+        <div class="card-image-container">
+          <img src="${img}" alt="${esc(x.title)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+          <div class="image-overlay-top"></div>
+          <div class="image-overlay"></div>
+          <div class="duration-badge"><i class="far fa-clock"></i> ${esc(duration)}</div>
+          <button class="share-btn-top" data-share="https://www.discover-sharm.com/p/tour.html?trip-id=${x.id}" onclick="event.stopPropagation();"><i class="fas fa-share-alt"></i></button>
+          <div class="card-content">
+            <h3 class="card-title">${esc(x.title)}</h3>
+            <div class="rating-review-badge">
+              <div class="stars-small">${stars}</div>
+              <span class="rating-number">${rating}</span>
+              <span class="review-count">${reviewCount} reviews</span>
+            </div>
+            <div class="card-action-row">
+              <div class="price-block">
+                <span class="price-from">From</span>
+                <div class="price-value" data-price-egp="${x.price}">${price}</div>
+                <span class="price-per-person">/ person</span>
+              </div>
+              <button class="book-btn action-btn" onclick="event.stopPropagation(); showExcursionPage('${x.id}')">
+                <i class="fas fa-bolt"></i> Book Now
+              </button>
+            </div>
+          </div>
         </div>
       </div>`;
   },
@@ -935,7 +954,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // إخفاء النماذج فوراً ثم إظهار الصحيح عبر search.init
+  // إخفاء النماذج فوراً ثم إظهار الصحيح
   document.getElementById('hotelSearchForm').style.display = 'none';
   document.getElementById('excursionSearchForm').style.display = 'none';
   search.init();
