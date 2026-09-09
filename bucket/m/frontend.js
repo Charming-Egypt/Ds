@@ -262,22 +262,36 @@ const search = {
   isExcursionDate: false,
 
   switchTab(tab) {
-    if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
-    if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
-    if (tab !== 'hotels' && tab !== 'excursions') tab = 'excursions';
-    this.activeTab = tab;
-    const hotelForm = document.getElementById('hotelSearchForm');
-    const excursionForm = document.getElementById('excursionSearchForm');
-    if (hotelForm) hotelForm.classList.toggle('active', tab === 'hotels' && SHOW_HOTELS);
-    if (excursionForm) excursionForm.classList.toggle('active', tab === 'excursions' && SHOW_EXCURSIONS);
-    const hotelBtn = document.getElementById('searchTabHotels');
-    const excursionBtn = document.getElementById('searchTabExcursions');
-    if (hotelBtn) hotelBtn.style.display = SHOW_HOTELS ? 'flex' : 'none';
-    if (excursionBtn) excursionBtn.style.display = SHOW_EXCURSIONS ? 'flex' : 'none';
-    hotelBtn?.classList.toggle('active', tab === 'hotels');
-    excursionBtn?.classList.toggle('active', tab === 'excursions');
-    if (tab === 'excursions') this.updateDateDisplays();
-  },
+  if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
+  if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
+  if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
+    // لو الاثنين معطلين، نخفي الكل
+    document.getElementById('hotelSearchForm').style.display = 'none';
+    document.getElementById('excursionSearchForm').style.display = 'none';
+    document.getElementById('searchTabHotels').style.display = 'none';
+    document.getElementById('searchTabExcursions').style.display = 'none';
+    return;
+  }
+  this.activeTab = tab;
+  const hotelForm = document.getElementById('hotelSearchForm');
+  const excursionForm = document.getElementById('excursionSearchForm');
+  const hotelBtn = document.getElementById('searchTabHotels');
+  const excursionBtn = document.getElementById('searchTabExcursions');
+
+  // إظهار/إخفاء النماذج مباشرة
+  hotelForm.style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
+  excursionForm.style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
+
+  // إظهار/إخفاء أزرار التبويب
+  hotelBtn.style.display = SHOW_HOTELS ? 'flex' : 'none';
+  excursionBtn.style.display = SHOW_EXCURSIONS ? 'flex' : 'none';
+
+  hotelBtn.classList.toggle('active', tab === 'hotels');
+  excursionBtn.classList.toggle('active', tab === 'excursions');
+
+  // تحديث تواريخ العرض إذا لزم
+  if (tab === 'excursions') this.updateDateDisplays();
+},
 
   openDateDropdown(isExcursion = false) {
     this.isExcursionDate = isExcursion;
