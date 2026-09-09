@@ -149,7 +149,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity .35s ease;
+  transition: opacity .8s ease;
 }
 
 .hero-overlay {
@@ -286,7 +286,8 @@ select:focus {
 
 /* Hide bottom nav on detail pages */
 body:has(#hotelDetailPage.active) .bottom-nav,
-body:has(#excursionDetailPage.active) .bottom-nav {
+body:has(#excursionDetailPage.active) .bottom-nav,
+body:has(#transferDetailPage.active) .bottom-nav {
   display: none;
 }
 
@@ -1397,6 +1398,81 @@ html[data-theme="light"] .theme-switch .knob {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ---------- Hero Slider (Featured Excursions) ---------- */
+.hero-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 16px;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hero-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.hero-slide-card {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 15px 40px -10px rgba(0,0,0,0.3);
+}
+.hero-slide-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+.hero-slide-card .hero-slide-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  text-align: left;
+}
+.hero-slide-card .hero-slide-overlay h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.hero-slide-card .hero-slide-overlay p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+.hero-slide-card .badge-category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #f97316;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.hero-slide-card .badge-rating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(5px);
+  color: #fbbf24;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
   .section-title {
@@ -1405,6 +1481,9 @@ html[data-theme="light"] .theme-switch .knob {
   .bottom-nav {
     bottom: .7rem;
     padding: .5rem .7rem;
+  }
+  .hero-slide-card img {
+    height: 240px;
   }
 }
 
@@ -1464,5 +1543,8 @@ html[data-theme="light"] .theme-switch .knob {
   }
   .modal-content {
     max-width: 700px;
+  }
+  .hero-slide-card img {
+    height: 400px;
   }
 }
