@@ -570,7 +570,7 @@ function showRoomPreview(hotelId, roomIndex) {
 }
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
-// ==================== UI RENDERERS (إعادة تصميم) ====================
+// ==================== UI RENDERERS (تصميم محسّن) ====================
 const ui = {
   renderHotelCard(h) {
     if (!SHOW_HOTELS) return '';
@@ -645,31 +645,50 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS RENDERER (تصميم محسّن) ====================
+// ==================== EXCURSIONS RENDERER (سلايدر أفقي و تصميم مبتكر) ====================
 const excursionsUi = {
   renderFeatured() {
     if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
-    if (el) el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderCard(x)).join('');
+    if (el) {
+      el.className = 'excursions-slider horizontal-scroll';
+      el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
+      this.initSlider(el);
+    }
   },
-  renderMiniCard(x) {
+  renderSliderCard(x) {
     const img = getImageUrl(x.image);
     return `
-      <div onclick="showExcursionPage('${x.id}')" class="excursion-card-mini cursor-pointer rounded-2xl overflow-hidden shadow-lg bg-card" style="min-width: 220px; flex-shrink:0;">
-        <div class="relative h-32">
+      <div class="excursion-slide-card bg-card rounded-3xl overflow-hidden shadow-xl cursor-pointer flex-shrink-0 snap-center" style="width: 280px;" onclick="showExcursionPage('${x.id}')">
+        <div class="relative h-44 overflow-hidden">
           <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span class="absolute bottom-2 left-2 text-white text-xs font-bold bg-violet-600/80 px-2 py-0.5 rounded-full">${x.category}</span>
-          <span class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${x.category}</span>
+          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
+          <h3 class="absolute bottom-3 left-3 right-3 text-white font-display font-bold text-lg leading-tight line-clamp-1">${x.title}</h3>
         </div>
         <div class="p-4">
-          <h4 class="font-display font-bold text-sm line-clamp-2 mb-1">${x.title}</h4>
+          <div class="flex items-center justify-between mb-2 text-xs text-gray-500">
+            <span><i class="fa-regular fa-clock text-violet-500"></i> ${x.duration}</span>
+            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || 'Sharm'}</span>
+          </div>
           <div class="flex items-center justify-between">
-            <p class="font-display font-bold text-violet-500 text-base">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal"> /person</span></p>
-            <span class="text-[10px] text-gray-500"><i class="fa-regular fa-clock"></i> ${x.duration}</span>
+            <div>
+              <p class="text-[10px] text-gray-500">From</p>
+              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
+            </div>
+            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">Book Now</button>
           </div>
         </div>
       </div>`;
+  },
+  initSlider(el) {
+    // إضافة scroll-snap و smooth scrolling تلقائياً عبر CSS classes
+    el.style.scrollSnapType = 'x mandatory';
+    el.style.scrollBehavior = 'smooth';
+    el.querySelectorAll('.excursion-slide-card').forEach(card => {
+      card.style.scrollSnapAlign = 'center';
+    });
   },
   render() {
     if (!SHOW_EXCURSIONS) return;
@@ -711,7 +730,7 @@ const excursionsUi = {
   }
 };
 
-// ==================== TRANSFERS RENDERER (تصميم محسّن) ====================
+// ==================== TRANSFERS RENDERER (صفحة تفاصيل مثل الرحلة) ====================
 const transfersUi = {
   render() {
     if (!SHOW_TRANSFERS) return;
@@ -724,7 +743,7 @@ const transfersUi = {
   renderCard(v) {
     const img = getImageUrl(v.image);
     return `
-      <div class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+      <div onclick="showTransferPage('${v.id}')" class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
         <div class="relative h-40 overflow-hidden">
           <img src="${img}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -744,7 +763,7 @@ const transfersUi = {
               <p class="text-[10px] text-gray-500">One-way trip</p>
               <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}</p>
             </div>
-            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">Book Now</button>
+            <button class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">View Details</button>
           </div>
         </div>
       </div>`;
@@ -918,7 +937,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // إخفاء النماذج فوراً ثم إظهار الصحيح
+  // ✅ إخفاء النماذج فوراً ثم إظهار الصحيح
   document.getElementById('hotelSearchForm').style.display = 'none';
   document.getElementById('excursionSearchForm').style.display = 'none';
   search.init(); // ستستدعي switchTab الصحيح
