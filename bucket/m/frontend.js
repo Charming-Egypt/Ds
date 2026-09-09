@@ -5,6 +5,8 @@ function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('drawerFavoritesLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
@@ -49,6 +51,10 @@ const nav = {
     if (page === 'favorites' && SHOW_HOTELS) favorites.render();
     if (page === 'notifications') notifications.render();
     if (page === 'profile') updateProfileStats();
+
+    document.querySelectorAll('#sideDrawer .drawer-link[onclick]').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('onclick').includes(`nav.go('${page}')`));
+    });
 
     applyDesktopLayout();
   },
@@ -259,27 +265,35 @@ const search = {
     document.getElementById('excursionSearchForm').classList.toggle('active', tab === 'excursions');
     document.getElementById('searchTabHotels').classList.toggle('active', tab === 'hotels');
     document.getElementById('searchTabExcursions').classList.toggle('active', tab === 'excursions');
+    if (tab === 'excursions') this.updateDateDisplays();
   },
 
   openDateDropdown(isExcursion = false) {
+    this.closeAllDropdowns();
+    document.getElementById('searchDateDropdown').classList.add('ds-open');
     this.isExcursionDate = isExcursion;
-    this.viewMonth = this.selectedCheckIn ? this.selectedCheckIn.getMonth() : new Date().getMonth();
-    this.viewYear = this.selectedCheckIn ? this.selectedCheckIn.getFullYear() : new Date().getFullYear();
     this.renderCalendar();
-    document.getElementById('searchDateDropdown').style.display = 'flex';
   },
 
   closeDateDropdown() {
-    document.getElementById('searchDateDropdown').style.display = 'none';
+    document.getElementById('searchDateDropdown').classList.remove('ds-open');
+    this.updateDateDisplays();
   },
 
   openGuestDropdown() {
-    document.getElementById('searchGuestDropdown').style.display = 'flex';
+    this.closeAllDropdowns();
+    document.getElementById('searchGuestDropdown').classList.add('ds-open');
+    this.updateGuestDisplay();
   },
 
   closeGuestDropdown() {
-    document.getElementById('searchGuestDropdown').style.display = 'none';
+    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
     this.updateGuestDisplay();
+  },
+
+  closeAllDropdowns() {
+    document.getElementById('searchDateDropdown').classList.remove('ds-open');
+    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
   },
 
   changeMonth(delta) {
@@ -292,43 +306,34 @@ const search = {
   renderCalendar() {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
-    
     const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
     const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
     const today = new Date(); today.setHours(0,0,0,0);
-    
-    let html = '';
-    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
-    
-    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
-    
+    let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="ds-cal-hdr">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day ds-empty"></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(this.viewYear, this.viewMonth, d);
       const past = date < today;
       let cls = ['ds-cal-day'];
-      if (past) cls.push('muted');
-      if (date.getTime() === today.getTime()) cls.push('today');
-      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('selected');
-      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('selected');
-      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
+      if (date.getTime() === today.getTime()) cls.push('ds-today');
+      if (past) cls.push('ds-unavailable');
+      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('ds-selected');
+      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('ds-selected');
+      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('ds-inrange');
       html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
     }
-    
     document.getElementById('searchCalGrid').innerHTML = html;
   },
 
   selectDate(day) {
     const d = new Date(this.viewYear, this.viewMonth, day);
     d.setHours(0,0,0,0);
-    
     if (this.isExcursionDate) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
       this.updateDateDisplays();
       return;
     }
-    
     if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
@@ -338,18 +343,22 @@ const search = {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
     }
-    
     this.renderCalendar();
     this.updateDateDisplays();
   },
 
   updateDateDisplays() {
     const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
-    document.getElementById('searchCheckInInput').value = fmt(this.selectedCheckIn);
-    document.getElementById('searchCheckOutInput').value = fmt(this.selectedCheckOut);
-    document.getElementById('checkinDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
-    document.getElementById('checkoutDisplay').textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
-    document.getElementById('excursionDateDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    const ci = document.getElementById('searchCheckInInput');
+    const co = document.getElementById('searchCheckOutInput');
+    if (ci) ci.value = fmt(this.selectedCheckIn);
+    if (co) co.value = fmt(this.selectedCheckOut);
+    if (this.activeTab === 'hotels') {
+      document.getElementById('checkinDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+      document.getElementById('checkoutDisplay').textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
+    } else {
+      document.getElementById('excursionDateDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    }
   },
 
   adjustGuest(type, delta) {
@@ -369,28 +378,18 @@ const search = {
     document.getElementById('guestsDisplay').textContent = text;
   },
 
-  performSearch() {
-    if (this.activeTab === 'hotels') {
-      if (!this.selectedCheckIn || !this.selectedCheckOut) {
-        toast('Please select dates first', 'error');
-        return;
-      }
-      nav.go('hotels');
-    } else {
-      this.applyExcursionSearch();
-    }
-  },
-
   applyExcursionSearch() {
     const cat = document.getElementById('excursionCategorySelect').value;
     state.currentExcursionFilter = cat;
+    this.closeAllDropdowns();
     nav.go('excursions');
   },
 
-  handle(q) { state.searchQuery = q.toLowerCase(); },
-  filterCategory(cat) { state.currentFilter = cat; },
-  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
+  handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
+  filterCategory(cat) { state.currentFilter = cat; document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); },
+  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
 
+  // تهيئة عند التحميل
   init() {
     this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
     this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
@@ -495,10 +494,20 @@ const ui = {
 };
 
 const hotels = {
+  renderFilterChips() {
+    const chipsEl = document.getElementById('hotelFilterChips');
+    if (!chipsEl) return;
+    const categories = [...new Set(CATALOG.hotels.map(h => h.category).filter(Boolean))];
+    chipsEl.innerHTML = [
+      `<button onclick="search.filterCategory('all')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === 'all' ? 'active' : ''}"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>`,
+      ...categories.map(cat => `<button onclick="search.filterCategory('${cat}')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === cat ? 'active' : ''}"><i class="fa-solid fa-hotel"></i> ${esc(cat)}</button>`)
+    ].join('');
+  },
   render() {
     if (!SHOW_HOTELS) return;
     const list = document.getElementById('hotelsList');
     if (!list) return;
+    this.renderFilterChips();
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
@@ -665,18 +674,10 @@ const articlesUi = {
 
 // ==================== DESKTOP LAYOUT HELPER ====================
 function applyDesktopLayout() {
-  const isDesktop = window.innerWidth >= 1024;
-  document.querySelectorAll('.bottom-nav, .sticky-home-header').forEach(el => {
-    el.style.display = isDesktop ? 'none' : '';
-  });
-  document.querySelectorAll('.section-title').forEach(el => {
-    el.className = 'section-title ' + (isDesktop ? 'text-4xl font-bold' : 'text-2xl font-bold');
-  });
-  if (isDesktop) {
-    document.querySelector('.search-card')?.classList.add('max-w-4xl', 'mx-auto', 'p-8');
-  } else {
-    document.querySelector('.search-card')?.classList.remove('max-w-4xl', 'mx-auto', 'p-8');
-  }
+  // Bottom nav / sticky header visibility, section sizing, and the docked
+  // sidebar are now all handled declaratively via CSS media queries
+  // (see the "DESKTOP / LAPTOP LAYOUT" block in style.css), so this no
+  // longer needs to fight with Tailwind's utility classes at runtime.
 }
 
 // ==================== INIT ====================
@@ -690,8 +691,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('hotels');
-  search.init();
+  search.switchTab('hotels'); // افتراضي الفنادق
   setTimeout(hideSplash, 3000);
 });
 
