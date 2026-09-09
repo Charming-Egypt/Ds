@@ -14,11 +14,6 @@ const SHOW_RESTAURANTS = DS_CONFIG.SHOW_RESTAURANTS;
 const SHOW_DESTINATIONS = DS_CONFIG.SHOW_DESTINATIONS;
 
 // ==================== FRONTEND UI & NAVIGATION ====================
-const SHOW_HOTELS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_HOTELS : false;
-const SHOW_EXCURSIONS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_EXCURSIONS : true;
-const SHOW_TRANSFERS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_TRANSFERS : true;
-const SHOW_RESTAURANTS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_RESTAURANTS : true;
-const SHOW_DESTINATIONS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_DESTINATIONS : true;
 
 function enterApp() {
   hideSplash();
