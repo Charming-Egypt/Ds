@@ -746,7 +746,7 @@ const transfersUi = {
   renderCard(v) {
     const img = getImageUrl(v.image);
     return `
-      <div onclick="showTransferPage('${v.id}')" class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+      <div onclick="window.showTransferPage && window.showTransferPage('${v.id}')"class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
         <div class="relative h-40 overflow-hidden">
           <img src="${img}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
