@@ -642,16 +642,41 @@ const reviews = {
     const name = document.getElementById('reviewName').value.trim();
     const comment = document.getElementById('reviewComment').value.trim();
     const rating = this.selectedStars || 5;
+    const imageFile = document.getElementById('reviewImage')?.files[0];
+    let imageData = null;
+
+    if (imageFile) {
+      imageData = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(imageFile);
+      });
+    }
+
     if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
+
     try {
       await apiFetch('/api/reviews', {
         method: 'POST',
-        body: JSON.stringify({ type: this.currentTarget.type, id: this.currentTarget.id, bookingId, name, comment, rating }),
+        body: JSON.stringify({
+          type: this.currentTarget.type,
+          id: this.currentTarget.id,
+          bookingId,
+          name,
+          comment,
+          rating,
+          photoURL: currentUser?.photoURL || null,
+          image: imageData
+        }),
       });
       document.getElementById('reviewModal').classList.add('hidden');
       toast('Review submitted!', 'success');
-      loadReviews(this.currentTarget.type, this.currentTarget.id, this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList', null);
-    } catch (e) { toast(e.message, 'error'); }
+      loadReviews(this.currentTarget.type, this.currentTarget.id,
+        this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList',
+        null);
+    } catch (e) {
+      toast(e.message, 'error');
+    }
   },
   openModal(type, id, bookingId = '') {
     this.currentTarget = { type, id, bookingId };
@@ -659,6 +684,7 @@ const reviews = {
     document.getElementById('reviewBookingId').value = bookingId;
     document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
     document.getElementById('reviewComment').value = '';
+    document.getElementById('reviewImage').value = '';
     this.paintStars(0);
     document.getElementById('reviewModal').classList.remove('hidden');
   },
@@ -675,6 +701,47 @@ const reviews = {
     });
   }
 };
+
+// ==================== LOAD REVIEWS ====================
+async function loadReviews(type, id, containerId, summaryId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  try {
+    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
+    const reviewsList = data.reviews || [];
+
+    if (reviewsList.length === 0) {
+      container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">No reviews yet</p>';
+      return;
+    }
+
+    container.innerHTML = reviewsList.map(rv => `
+      <div class="review-item flex gap-3 border-b border-gray-200 pb-4 mb-4">
+        <img src="${rv.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'}"
+             class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+             onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'">
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-sm">${esc(rv.name || 'Guest')}</div>
+          <div class="text-gold-500 text-xs my-1">${utils.renderStars(rv.rating)}</div>
+          <p class="text-sm leading-relaxed">${esc(rv.comment || '')}</p>
+          ${rv.image ? `<img src="${rv.image}" class="mt-3 rounded-lg max-w-full h-auto" alt="Review image" />` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    if (summaryId) {
+      const summaryEl = document.getElementById(summaryId);
+      if (summaryEl) {
+        const avg = utils.avgRating(reviewsList);
+        summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load reviews:', e);
+    container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">Could not load reviews</p>';
+  }
+}
 
 // ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
 const favorites = {
@@ -777,7 +844,7 @@ const notifications = {
   markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
 };
 
-// ==================== TRANSFER SEARCH (stub if not defined elsewhere) ====================
+// ==================== TRANSFER SEARCH ====================
 const transferSearch = {
   setDirection(dir) {
     state.transferDirection = dir;
@@ -817,7 +884,7 @@ const transferSearch = {
   },
 };
 
-// ==================== FLIGHT SEARCH (stub) ====================
+// ==================== FLIGHT SEARCH ====================
 const flightSearch = {
   closePaxModal() { document.getElementById('flightPaxModal').classList.add('hidden'); },
   adjust(type, delta) {
@@ -857,7 +924,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateCountryCodeSelect();
   populateNationalitySelect();
   if (auth.isLoggedIn() && !currentUser) {
-    // محاولة استعادة بيانات المستخدم من localStorage
     try {
       const stored = localStorage.getItem('ds_current_user');
       if (stored) currentUser = JSON.parse(stored);
