@@ -1731,7 +1731,6 @@ html[data-theme="light"] .theme-switch .knob {
 .modal-overlay,
 .ds-modal-overlay,
 #datepickerModal,
-#searchDateDropdown,
 #searchGuestDropdown,
 #searchCategoryDropdown {
   z-index: 99999 !important;
