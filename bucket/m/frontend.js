@@ -124,25 +124,27 @@ function updateProfileStats() {
   const badge = document.getElementById('profileTierBadge');
   if (badge) {
     if (level > 0) {
+      const badges = {1:'🥉', 2:'🥈', 3:'🥇'};
       badge.classList.remove('hidden');
-      badge.textContent = `Genius Level ${level}`;
+      const textEl = document.getElementById('profileTierText');
+      if (textEl) textEl.textContent = `Sharmawy Level ${level}`;
     } else {
       badge.classList.add('hidden');
     }
   }
 
-  const benefitsCard = document.getElementById('geniusBenefitsCard');
+  const benefitsCard = document.getElementById('sharmawyBenefitsCard');
   if (benefitsCard) {
     if (level > 0) {
       benefitsCard.classList.remove('hidden');
-      benefitsCard.innerHTML = getGeniusBenefitsHtml(level);
+      benefitsCard.innerHTML = getSharmawyBenefitsHtml(level);
     } else {
       benefitsCard.classList.add('hidden');
     }
   }
 }
 
-function getGeniusBenefitsHtml(level) {
+function getSharmawyBenefitsHtml(level) {
   const benefits = {
     1: ['10% discount on selected excursions', 'Free late check-out (subject to availability)'],
     2: ['15% discount on selected excursions', 'Free room upgrade (subject to availability)'],
@@ -152,7 +154,7 @@ function getGeniusBenefitsHtml(level) {
   return `
     <div class="flex items-center gap-2 mb-3">
       <i class="fa-solid fa-crown text-gold-400"></i>
-      <span class="font-bold text-sm">Genius Level ${level} Benefits</span>
+      <span class="font-bold text-sm">Sharmawy Level ${level} Benefits</span>
     </div>
     <ul class="space-y-2 text-xs" style="color:var(--text-secondary)">
       ${list.map(item => `<li><i class="fa-solid fa-check text-green-500"></i> ${item}</li>`).join('')}
@@ -252,13 +254,16 @@ const datepicker = {
     const daysInMonth = new Date(y, m + 1, 0).getDate();
     const field = document.getElementById(this.target);
     const cur = field ? field.dataset.value : '';
+    const today = new Date(); today.setHours(0,0,0,0);
     let html = '';
     for (let i = 0; i < startDay; i++) html += '<div></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dateObj = new Date(y, m, d);
       const isBeforeMin = iso < this.minIso;
+      const isToday = dateObj.getTime() === today.getTime();
       const isUnavailable = this.unavailable.includes(iso);
-      const isDisabled = isBeforeMin || isUnavailable;
+      const isDisabled = isBeforeMin || isUnavailable || isToday; // ✅ اليوم مقفول
       const isSelected = cur === iso;
       html += `<button type="button" ${isDisabled ? 'disabled' : ''} onclick="datepicker.select('${iso}')" class="w-9 h-9 rounded-xl text-xs font-semibold ${isSelected ? 'bg-gradient-to-br from-violet-500 to-violet-700 text-white' : isDisabled ? 'text-gray-400 opacity-40 line-through' : ''}" style="${isSelected ? '' : 'color:var(--text-primary)'}">${d}</button>`;
     }
