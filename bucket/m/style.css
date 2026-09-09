@@ -13,6 +13,7 @@
   --border-field: #eee9f8;
   --header-light-bg: #ffffff;
   --chrome-bg: #ffffff;
+  --chrome-bg-glass: rgba(255, 255, 255, .88);
   --chrome-text: #171029;
   --chrome-text-muted: rgba(23, 16, 41, .5);
   --chrome-text-faint: rgba(23, 16, 41, .32);
@@ -31,6 +32,7 @@ html[data-theme="dark"] {
   --border-field: #382a54;
   --header-light-bg: #15101f;
   --chrome-bg: #171029;
+  --chrome-bg-glass: rgba(23, 16, 41, .82);
   --chrome-text: #ffffff;
   --chrome-text-muted: rgba(255, 255, 255, .62);
   --chrome-text-faint: rgba(255, 255, 255, .3);
@@ -254,7 +256,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #fb923c;
+  border-color: #a78bfa;
 }
 
 ::placeholder {
@@ -279,8 +281,11 @@ select:focus {
   z-index: 50;
   border-radius: 26px;
   padding: .55rem .7rem;
-  background: var(--chrome-bg);
+  background: var(--chrome-bg-glass);
+  border: 1px solid var(--chrome-border);
   box-shadow: var(--chrome-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   transition: background .3s ease, box-shadow .3s ease;
 }
 
@@ -308,7 +313,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active {
-  color: #f97316;
+  color: #8b5cf6;
 }
 
 .nav-item.active::after {
@@ -320,8 +325,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  box-shadow: 0 0 8px rgba(249, 115, 22, .9);
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  box-shadow: 0 0 8px rgba(139, 92, 246, .9);
 }
 
 .nav-item[data-page="profile"].active::after {
@@ -334,8 +339,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   margin-top: -30px;
   border-radius: 50%;
   cursor: pointer;
-  background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
-  box-shadow: 0 10px 26px -4px rgba(249, 115, 22, .65), 0 0 0 5px #171029;
+  background: linear-gradient(150deg, #c4b5fd, #8b5cf6 55%, #6d28d9);
+  box-shadow: 0 10px 26px -4px rgba(139, 92, 246, .55), 0 0 0 5px var(--chrome-bg);
   transition: transform .25s cubic-bezier(.16, 1, .3, 1);
 }
 
@@ -356,7 +361,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fdba74, #c2410c);
+  background: linear-gradient(135deg, #c4b5fd, #6d28d9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -374,7 +379,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active .nav-avatar-circle {
-  box-shadow: 0 0 0 2px #f97316;
+  box-shadow: 0 0 0 2px #8b5cf6;
 }
 
 /* ---------- Sticky Header ---------- */
@@ -388,8 +393,11 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   z-index: 55;
   border-radius: 22px;
   padding: .6rem .9rem;
-  background: var(--chrome-bg);
+  background: var(--chrome-bg-glass);
+  border: 1px solid var(--chrome-border);
   box-shadow: var(--chrome-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -427,8 +435,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .btn-violet {
-  background: linear-gradient(135deg, #fb923c 0%, #f97316 55%, #c2410c 100%);
-  box-shadow: 0 10px 30px -8px rgba(249, 115, 22, .45);
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 55%, #6d28d9 100%);
+  box-shadow: 0 10px 30px -8px rgba(139, 92, 246, .4);
   border: none;
   cursor: pointer;
   color: #fff;
@@ -437,7 +445,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-violet:hover {
   transform: translateY(-1px);
-  box-shadow: 0 15px 35px -8px rgba(249, 115, 22, .6);
+  box-shadow: 0 15px 35px -8px rgba(139, 92, 246, .55);
 }
 
 .btn-violet:disabled {
@@ -448,7 +456,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-outline-violet {
   background: var(--bg-card);
-  border: 1.5px solid #c2410c;
+  border: 1.5px solid #6d28d9;
   color: #a78bfa;
 }
 
@@ -541,7 +549,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 /* ---------- Promo Banner ---------- */
 .promo-banner {
-  background: linear-gradient(135deg, #9a3412 0%, #f97316 50%, #c2410c 100%);
+  background: linear-gradient(135deg, #9a3412 0%, #8b5cf6 50%, #6d28d9 100%);
   position: relative;
   overflow: hidden;
 }
@@ -581,7 +589,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fdba74, #c2410c);
+  background: linear-gradient(135deg, #c4b5fd, #6d28d9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -655,7 +663,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .room-option-card.room-selected {
-  border-color: #f97316;
+  border-color: #8b5cf6;
 }
 
 .room-option-card .room-select-check {
@@ -688,7 +696,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .filter-chip.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
   border-color: transparent;
   color: #fff;
   box-shadow: 0 6px 18px -6px rgba(124, 58, 237, .5);
@@ -738,7 +746,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .section-subtitle {
-  color: #f97316;
+  color: #8b5cf6;
   font-size: .62rem;
   font-weight: 700;
   letter-spacing: .25em;
@@ -921,12 +929,33 @@ html[dir="ltr"] #sideDrawer.open {
   color: var(--chrome-text-muted);
   transition: all .2s;
   cursor: pointer;
+  border-left: 3px solid transparent;
 }
 
-.drawer-link:hover,
-.drawer-link.active {
-  background: rgba(139, 92, 246, .15);
+html[dir="rtl"] .drawer-link {
+  border-left: none;
+  border-right: 3px solid transparent;
+}
+
+.drawer-link:hover {
+  background: rgba(139, 92, 246, .12);
   color: #fff;
+}
+
+.drawer-link.active {
+  background: linear-gradient(90deg, rgba(139, 92, 246, .22), rgba(139, 92, 246, .06));
+  color: #fff;
+  border-left-color: #a78bfa;
+  font-weight: 600;
+}
+
+html[dir="rtl"] .drawer-link.active {
+  background: linear-gradient(-90deg, rgba(139, 92, 246, .22), rgba(139, 92, 246, .06));
+  border-right-color: #a78bfa;
+}
+
+.drawer-link.active i {
+  color: #a78bfa;
 }
 
 /* ---------- Theme Switch ---------- */
@@ -970,7 +999,7 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .lang-toggle button.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
   color: #fff;
 }
 
@@ -1013,7 +1042,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1043,9 +1072,9 @@ html[data-theme="light"] .theme-switch .knob {
 
 /* ---------- Cuisine / Fine Dining ---------- */
 .lux-cuisine-badge {
-  background: rgba(249, 115, 22, .18);
-  border: 1px solid rgba(253, 186, 116, .5);
-  color: #fdba74;
+  background: rgba(139, 92, 246, .16);
+  border: 1px solid rgba(196, 181, 253, .5);
+  color: #c4b5fd;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .05em;
@@ -1073,7 +1102,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f97316;
+  background: #8b5cf6;
   flex-shrink: 0;
 }
 
@@ -1083,7 +1112,7 @@ html[data-theme="light"] .theme-switch .knob {
   font-weight: 700;
   font-size: 16px;
   letter-spacing: .02em;
-  color: #ea580c;
+  color: #7c3aed;
   text-align: center;
   margin-bottom: 16px;
 }
@@ -1111,7 +1140,7 @@ html[data-theme="light"] .theme-switch .knob {
 .menu-item-price {
   font-weight: 700;
   font-size: 14px;
-  color: #ea580c;
+  color: #7c3aed;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1140,73 +1169,139 @@ html[data-theme="light"] .theme-switch .knob {
   100% { background-position: 0 50%; }
 }
 
-/* ============================================================
-   SEARCH SYSTEM (New Clean Design)
-   ============================================================ */
-.search-tab-new {
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
+/* ============ HERO SEARCH WIDGET ============ */
+.ds-search-wrapper {
+  padding: 24px !important;
+}
+.ds-bkg-top-bar {
+  display: flex;
+  align-items: stretch;
+  background: rgba(23, 16, 41, .72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 20px 50px -20px rgba(12, 9, 24, .6);
+}
+.ds-bkg-field {
+  flex: 1;
+  padding: 14px 16px;
   cursor: pointer;
-  transition: all .3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  min-width: 0;
+  transition: background .2s ease;
 }
-
-.search-tab-new.active {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-  box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
+.ds-bkg-field:last-child { border-right: none; }
+.ds-bkg-field:hover { background: rgba(139, 92, 246, .12); }
+.ds-bkg-field-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,.45);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
-
-.ds-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+.ds-bkg-field-value {
+  font-size: 13px;
+  color: #f1eef9;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+.ds-bkg-search-btn {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed 60%, #5b21b6);
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter .2s ease, transform .2s ease;
+}
+.ds-bkg-search-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
 
-.ds-modal-content {
+.ds-bkg-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
   background: var(--bg-card);
-  border-radius: 20px;
-  padding: 20px;
-  width: 100%;
-  max-width: 400px;
   border: 1px solid var(--border-card);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  border-radius: 18px;
+  padding: 20px;
+  z-index: 100;
+  display: none;
+  box-shadow: 0 24px 60px -18px rgba(12, 9, 24, .5);
 }
-
-.ds-modal-nav-btn {
+.ds-bkg-dropdown.ds-open {
+  display: block;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1000 !important;
+  margin-top: 0 !important;
+}
+.ds-bkg-date-dropdown.ds-open {
+  width: 660px !important;
+  max-width: 90vw !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+}
+.ds-bkg-guest-dropdown.ds-open {
+  width: 400px !important;
+  max-width: 90vw !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+}
+.ds-desk-cal-inline {
   background: var(--bg-field);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border-field);
+}
+.ds-desk-cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.ds-desk-cal-nav button {
+  background: var(--bg-card);
   border: 1px solid var(--border-field);
   color: var(--text-secondary);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+.ds-desk-cal-nav h4 { color: var(--text-primary); font-size: 15px; font-weight: 600; }
+.ds-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.ds-cal-hdr { text-align: center; padding: 8px 2px; font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+.ds-cal-day {
+  padding: 10px 2px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
   font-size: 13px;
-  transition: all .2s;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: all 0.15s;
 }
-
-.ds-modal-nav-btn:hover {
-  background: rgba(249, 115, 22, 0.15);
-  color: #f97316;
-}
-
-.ds-modal-label {
+.ds-cal-day:hover:not(.ds-unavailable):not(.ds-empty) { background: rgba(139, 92, 246, .15); color: #8b5cf6; }
+.ds-cal-day.ds-selected { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; font-weight: 700; }
+.ds-cal-day.ds-today { border: 2px solid #8b5cf6; font-weight: 700; background: rgba(139, 92, 246, .08); }
+.ds-cal-day.ds-unavailable { color: var(--text-secondary); cursor: not-allowed; text-decoration: line-through; opacity: 0.4; }
+.ds-cal-day.ds-inrange { background: rgba(139, 92, 246, .1); border-radius: 0; }
+.ds-bkg-row { display: flex; gap: 14px; margin-bottom: 14px; }
+.ds-bkg-col { flex: 1; }
+.ds-desk-label-sm {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -1215,8 +1310,7 @@ html[data-theme="light"] .theme-switch .knob {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
-.ds-modal-input {
+.ds-desk-input {
   width: 100%;
   padding: 12px 16px;
   background: var(--bg-field);
@@ -1225,20 +1319,7 @@ html[data-theme="light"] .theme-switch .knob {
   color: var(--text-primary);
   font-size: 14px;
 }
-
-.ds-modal-apply {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 16px;
-}
-
+.ds-desk-input:focus { outline: none; border-color: #8b5cf6; }
 .ds-guest-row {
   display: flex;
   justify-content: space-between;
@@ -1246,120 +1327,24 @@ html[data-theme="light"] .theme-switch .knob {
   padding: 12px 0;
   border-bottom: 1px solid var(--border-field);
 }
-
-.ds-guest-row:last-child {
-  border-bottom: none;
+.ds-guest-info-label { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+.ds-guest-info-sub { font-size: 11px; color: var(--text-secondary); }
+.ds-guest-counter { display: flex; align-items: center; gap: 14px; }
+.ds-guest-counter button {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(139, 92, 246, .4);
+  background: transparent; color: #8b5cf6; font-size: 18px; cursor: pointer;
+  transition: background .2s ease;
 }
-
-.ds-guest-info-label {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
+.ds-guest-counter button:hover { background: rgba(139, 92, 246, .15); }
+.ds-guest-counter span { font-size: 15px; font-weight: 600; color: var(--text-primary); min-width: 24px; text-align: center; }
+.ds-desk-btn {
+  text-align: center; padding: 14px 28px;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed 60%, #5b21b6);
+  border: none; border-radius: 12px; color: white; font-weight: 700; font-size: 15px; cursor: pointer;
+  transition: filter .2s ease;
 }
-
-.ds-guest-info-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.ds-guest-counter {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.ds-guest-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(249, 115, 22, 0.4);
-  background: transparent;
-  color: #f97316;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .2s;
-}
-
-.ds-guest-btn:hover {
-  background: rgba(249, 115, 22, 0.15);
-}
-
-.ds-guest-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  min-width: 24px;
-  text-align: center;
-}
-
-.ds-cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  text-align: center;
-  margin-top: 10px;
-}
-
-.ds-cal-hdr {
-  font-size: 12px;
-  color: var(--text-secondary);
-  padding-bottom: 8px;
-}
-
-.ds-cal-day {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  user-select: none;
-  color: var(--text-primary);
-}
-
-.ds-cal-day.muted {
-  color: var(--text-secondary);
-  opacity: 0.4;
-  cursor: default;
-}
-
-.ds-cal-day.today {
-  border: 2px solid #f97316;
-  border-radius: 12px;
-}
-
-.ds-cal-day.selected {
-  background: linear-gradient(135deg, #fb923c, #c2410c);
-  color: #fff;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.ds-cal-day.in-range {
-  background: rgba(249, 115, 22, 0.1);
-  color: #f97316;
-  border-radius: 4px;
-}
-
-/* Forms visibility */
-.search-form {
-  display: none;
-}
-
-.search-form.active {
-  display: block;
-  animation: fadeInUp .4s ease;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.ds-desk-btn:hover { filter: brightness(1.12); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
@@ -1378,42 +1363,139 @@ html[data-theme="light"] .theme-switch .knob {
   }
   .ds-bkg-field {
     border-right: none;
-    border-bottom: 1px solid var(--border-field);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
   .ds-bkg-field:last-child {
     border-bottom: none;
   }
-  .ds-bkg-search-btn {
-    justify-content: center;
+}
+
+/* ============================================================
+   TABLET LAYOUT (2-column grids)
+   ============================================================ */
+@media (min-width: 640px) and (max-width: 1023px) {
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .destination-card {
+    width: 168px;
+    height: 200px;
   }
 }
 
 /* ============================================================
-   DESKTOP LAYOUT & ENHANCEMENTS
+   DESKTOP / LAPTOP LAYOUT
+   A persistent sidebar replaces the bottom nav + drawer overlay;
+   the app shell becomes a wide, multi-column web layout instead
+   of a phone-width column.
    ============================================================ */
 @media (min-width: 1024px) {
-  .main-area {
-    max-width: 1280px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 32px;
+  html, body {
+    overflow-x: hidden;
   }
-  .bottom-nav {
+
+  /* Bottom tab bar & the floating "scrolled" header are mobile-only patterns */
+  .bottom-nav,
+  .sticky-home-header {
     display: none !important;
   }
-  .section-title {
-    font-size: 28px;
-    letter-spacing: -0.5px;
+
+  /* No hamburger / close button needed once the sidebar is docked */
+  .sidebar-toggle-btn,
+  .drawer-close-btn {
+    display: none !important;
   }
-  .section-subtitle {
-    font-size: 13px;
-    letter-spacing: 2px;
+
+  #sideDrawerOverlay {
+    display: none !important;
   }
-  .search-card {
-    max-width: 900px;
+
+  /* Dock the sidebar permanently once the user is inside the app (not on splash/auth) */
+  body:has(#mainApp:not(.hidden)) #sideDrawer {
+    transform: none !important;
+    width: 264px;
+    max-width: 264px;
+    box-shadow: none;
+  }
+
+  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #sideDrawer {
+    border-right: 1px solid var(--chrome-border);
+  }
+
+  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #sideDrawer {
+    border-left: 1px solid var(--chrome-border);
+  }
+
+  body:has(#mainApp:not(.hidden)) #sideDrawer .p-5 {
+    padding: 1.75rem 1.35rem;
+  }
+
+  /* Give the drawer a touch more presence as a permanent nav rail */
+  body:has(#mainApp:not(.hidden)) .drawer-link {
+    padding: .9rem 1.1rem;
+    font-size: .92rem;
+  }
+
+  /* Push the app content over to make room for the docked sidebar */
+  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #mainApp {
+    margin-left: 264px;
+  }
+
+  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #mainApp {
+    margin-right: 264px;
+  }
+
+  /* Center & cap the page content so it doesn't stretch edge-to-edge on wide monitors */
+  .page > .min-h-screen,
+  #homePage > .hero-section {
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-section {
+    min-height: 46vh;
+    border-radius: 0 0 32px 32px;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 32px;
+    padding-left: 24px;
+    padding-right: 24px;
   }
+
+  .hero-content h1 {
+    font-size: 3.25rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    letter-spacing: -.01em;
+  }
+
+  .section-subtitle {
+    font-size: .7rem;
+    letter-spacing: .3em;
+  }
+
+  .search-card {
+    max-width: 960px;
+    margin: -3rem auto 0;
+    padding: 28px;
+  }
+
+  /* Listing grids: 3 up on laptop, room to breathe */
   #featuredHotels,
   #hotelsList,
   #excursionsList,
@@ -1425,24 +1507,44 @@ html[data-theme="light"] .theme-switch .knob {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 24px !important;
   }
-  .hotel-card .flex {
-    flex-direction: column;
+
+  .hotel-card:hover,
+  .restaurant-card:hover {
+    transform: translateY(-5px);
   }
-  .hotel-card .w-32.h-32,
-  .hotel-card .md\:w-36.md\:h-36 {
-    width: 100% !important;
-    height: 220px !important;
-  }
-  .hotel-card .flex-1 {
-    padding: 20px;
-  }
+
   .destination-card {
-    height: 200px;
+    width: 190px;
+    height: 220px;
   }
+
   .modal-overlay {
     padding: 60px 20px;
   }
+
   .modal-content {
     max-width: 700px;
+  }
+}
+
+@media (min-width: 1440px) {
+  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #mainApp {
+    margin-left: 288px;
+  }
+  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #mainApp {
+    margin-right: 288px;
+  }
+  body:has(#mainApp:not(.hidden)) #sideDrawer {
+    width: 288px;
+    max-width: 288px;
+  }
+  #featuredHotels,
+  #hotelsList,
+  #excursionsList,
+  #transfersList,
+  #restaurantsFullList,
+  #favoritesList,
+  #bookingsList {
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 }
