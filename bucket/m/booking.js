@@ -889,5 +889,5 @@ window.closeRestaurantPage = closeRestaurantPage;
 window.closeArticlePage = closeArticlePage;
 window.closeHotelPage = closeHotelPage;
 window.closeExcursionPage = closeExcursionPage;
-window.showTransferPage = showTransferPage;
+window.showTransferPage = showTransferPage; // في حال كانت معرفة هنا
 window.closeTransferPage = closeTransferPage;
