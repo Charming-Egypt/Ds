@@ -777,10 +777,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateCountryCodeSelect();
   populateNationalitySelect();
   applyDesktopLayout();
-  applyCategoryVisibility();
+  applyCategoryVisibility(); // إخفاء الأقسام غير المرغوبة
   window.addEventListener('resize', applyDesktopLayout);
-  if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+
+  // ✅ إخفاء/إظهار تبويبات البحث فورًا حسب الأعلام
   search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
+
+  if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+
+  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions'); // تكرار للتأكيد بعد إظهار الواجهة
   search.init();
   setTimeout(hideSplash, 3000);
 });
