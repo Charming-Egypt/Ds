@@ -1003,6 +1003,19 @@ document.addEventListener('submit', (e) => {
 });
 
 
-// Expose globally
+// ==================== EXPOSE GLOBALLY ====================
 window.showTransferPage = showTransferPage;
 window.closeTransferPage = closeTransferPage;
+window.showExcursionPage = showExcursionPage;
+window.closeExcursionPage = closeExcursionPage;
+window.showHotelPage = showHotelPage;
+window.closeHotelPage = closeHotelPage;
+window.showRestaurantPage = showRestaurantPage;
+window.closeRestaurantPage = closeRestaurantPage;
+window.showDestinationPage = showDestinationPage;
+window.closeDestinationPage = closeDestinationPage;
+window.showArticlePage = showArticlePage;
+window.closeArticlePage = closeArticlePage;
+window.startTransferBooking = startTransferBooking;
+window.startExcursionBooking = startExcursionBooking;
+window.startBooking = startBooking;
