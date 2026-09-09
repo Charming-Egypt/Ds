@@ -94,7 +94,6 @@ async function loadUserProfile() {
   try {
     const data = await apiFetch('/api/profile', {}, true);
     if (data.profile) {
-      // حماية من currentUser null
       if (currentUser) {
         currentUser = { ...currentUser, ...data.profile, uid: currentUser.uid };
       } else {
@@ -107,7 +106,6 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
-    // استخدم البيانات المحلية
     if (currentUser) {
       updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
     }
@@ -200,7 +198,7 @@ function applyGuests() {
   toast('Guests updated', 'info');
 }
 
-// ==================== DATEPICKER (legacy) ====================
+// ==================== DATEPICKER (موحد) ====================
 function setDateFieldValue(fieldId, iso) {
   const field = document.getElementById(fieldId);
   if (!field) return;
@@ -222,6 +220,7 @@ function onDateFieldChange(fieldId, iso) {
   if (fieldId === 'ekDate') state.bookingDraft.date = iso;
   if (fieldId === 'tkDate') state.bookingDraft.date = iso;
 }
+
 const datepicker = {
   target: null,
   viewDate: new Date(),
@@ -265,17 +264,40 @@ const datepicker = {
     }
     document.getElementById('dpGrid').innerHTML = html;
   },
-  select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
+  select(iso) {
+    // البحث
+    if (this.target === 'searchCheckIn') {
+      search.selectedCheckIn = iso;
+      search.selectedCheckOut = null;
+      search.updateDateDisplays();
+      this.close();
+      return;
+    }
+    if (this.target === 'searchCheckOut') {
+      search.selectedCheckOut = iso;
+      search.updateDateDisplays();
+      this.close();
+      return;
+    }
+    if (this.target === 'excursionDate') {
+      search.selectedCheckIn = iso;
+      search.selectedCheckOut = null;
+      search.updateDateDisplays();
+      this.close();
+      return;
+    }
+    // الحجز
+    setDateFieldValue(this.target, iso);
+    if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso);
+    this.close();
+  }
 };
 
 // ==================== SEARCH ====================
 const search = {
   activeTab: 'hotels',
-  viewMonth: new Date().getMonth(),
-  viewYear: new Date().getFullYear(),
   selectedCheckIn: null,
   selectedCheckOut: null,
-  isExcursionDate: false,
   selectedCategory: 'all',
 
   switchTab(tab) {
@@ -324,16 +346,6 @@ const search = {
     startHeroBackgroundRotation(tab);
   },
 
-  openDateDropdown(isExcursion = false) {
-    this.isExcursionDate = isExcursion;
-    this.viewMonth = this.selectedCheckIn ? this.selectedCheckIn.getMonth() : new Date().getMonth();
-    this.viewYear = this.selectedCheckIn ? this.selectedCheckIn.getFullYear() : new Date().getFullYear();
-    this.renderCalendar();
-    document.getElementById('searchDateDropdown').style.display = 'flex';
-  },
-  closeDateDropdown() {
-    document.getElementById('searchDateDropdown').style.display = 'none';
-  },
   openGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
@@ -364,56 +376,6 @@ const search = {
       btn.classList.toggle('active', btn.dataset.category === category);
     });
   },
-  changeMonth(delta) {
-    this.viewMonth += delta;
-    if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
-    if (this.viewMonth > 11) { this.viewMonth = 0; this.viewYear++; }
-    this.renderCalendar();
-  },
-  renderCalendar() {
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
-    const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
-    const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
-    const today = new Date(); today.setHours(0,0,0,0);
-    let html = '';
-    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
-    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
-    for (let d = 1; d <= daysInMonth; d++) {
-      const date = new Date(this.viewYear, this.viewMonth, d);
-      const past = date < today;
-      let cls = ['ds-cal-day'];
-      if (past) cls.push('muted');
-      if (date.getTime() === today.getTime()) cls.push('today');
-      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('selected');
-      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('selected');
-      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
-      html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
-    }
-    document.getElementById('searchCalGrid').innerHTML = html;
-  },
-  selectDate(day) {
-    const d = new Date(this.viewYear, this.viewMonth, day);
-    d.setHours(0,0,0,0);
-    if (this.isExcursionDate) {
-      this.selectedCheckIn = d;
-      this.selectedCheckOut = null;
-      this.updateDateDisplays();
-      return;
-    }
-    if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
-      this.selectedCheckIn = d;
-      this.selectedCheckOut = null;
-    } else if (d > this.selectedCheckIn) {
-      this.selectedCheckOut = d;
-    } else {
-      this.selectedCheckIn = d;
-      this.selectedCheckOut = null;
-    }
-    this.renderCalendar();
-    this.updateDateDisplays();
-  },
   updateDateDisplays() {
     const toDate = (d) => {
       if (!d) return null;
@@ -428,16 +390,12 @@ const search = {
       const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       return `${d.getDate()} ${months[d.getMonth()]}`;
     };
-    const checkInInput = document.getElementById('searchCheckInInput');
-    const checkOutInput = document.getElementById('searchCheckOutInput');
-    if (checkInInput) checkInInput.value = fmt(ci);
-    if (checkOutInput) checkOutInput.value = fmt(co);
     const checkinDisplay = document.getElementById('checkinDisplay');
     const checkoutDisplay = document.getElementById('checkoutDisplay');
     const excursionDateDisplay = document.getElementById('excursionDateDisplay');
-    if (checkinDisplay) checkinDisplay.textContent = fmt(ci);
-    if (checkoutDisplay) checkoutDisplay.textContent = fmt(co);
-    if (excursionDateDisplay) excursionDateDisplay.textContent = fmt(ci);
+    if (checkinDisplay) checkinDisplay.textContent = ci ? fmt(ci) : 'Select date';
+    if (checkoutDisplay) checkoutDisplay.textContent = co ? fmt(co) : 'Select date';
+    if (excursionDateDisplay) excursionDateDisplay.textContent = ci ? fmt(ci) : 'Select date';
   },
   adjustGuest(type, delta) {
     const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
@@ -480,8 +438,8 @@ const search = {
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
 
-    this.selectedCheckIn = tomorrow;
-    this.selectedCheckOut = dayAfter;
+    this.selectedCheckIn = tomorrow.toISOString().slice(0,10);
+    this.selectedCheckOut = dayAfter.toISOString().slice(0,10);
     this.selectedCategory = 'all';
     this.updateDateDisplays();
     this.updateGuestDisplay();
@@ -733,7 +691,7 @@ const excursionsUi = {
   }
 };
 
-// ==================== TRANSFERS RENDERER (صفحة تفاصيل) ====================
+// ==================== TRANSFERS RENDERER ====================
 const transfersUi = {
   render() {
     if (!SHOW_TRANSFERS) return;
@@ -746,7 +704,7 @@ const transfersUi = {
   renderCard(v) {
     const img = getImageUrl(v.image);
     return `
-      <div onclick="window.showTransferPage && window.showTransferPage('${v.id}')"class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+      <div onclick="showTransferPage('${v.id}')" class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
         <div class="relative h-40 overflow-hidden">
           <img src="${img}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -987,7 +945,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // إخفاء النماذج فوراً ثم إظهار الصحيح
   document.getElementById('hotelSearchForm').style.display = 'none';
   document.getElementById('excursionSearchForm').style.display = 'none';
   search.init();
@@ -1001,7 +958,6 @@ document.addEventListener('submit', (e) => {
   if (e.target.closest('#authPage form')) { e.preventDefault(); handleAuthSubmit(e); }
   if (e.target.closest('#reviewModal form')) { e.preventDefault(); reviews.submit(e); }
 });
-
 
 // ==================== EXPOSE GLOBALLY ====================
 window.showTransferPage = showTransferPage;
