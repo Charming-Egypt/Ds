@@ -252,7 +252,7 @@ const datepicker = {
   select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
 };
 
-// ==================== SEARCH (NEW) ====================
+// ==================== SEARCH ====================
 const search = {
   activeTab: 'hotels',
   viewMonth: new Date().getMonth(),
@@ -260,38 +260,61 @@ const search = {
   selectedCheckIn: null,
   selectedCheckOut: null,
   isExcursionDate: false,
+  selectedCategory: 'all',
 
   switchTab(tab) {
-  if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
-  if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
-  if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
-    // لو الاثنين معطلين، نخفي الكل
-    document.getElementById('hotelSearchForm').style.display = 'none';
-    document.getElementById('excursionSearchForm').style.display = 'none';
-    document.getElementById('searchTabHotels').style.display = 'none';
-    document.getElementById('searchTabExcursions').style.display = 'none';
-    return;
-  }
-  this.activeTab = tab;
-  const hotelForm = document.getElementById('hotelSearchForm');
-  const excursionForm = document.getElementById('excursionSearchForm');
-  const hotelBtn = document.getElementById('searchTabHotels');
-  const excursionBtn = document.getElementById('searchTabExcursions');
+    if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
+    if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
+    if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
+      document.getElementById('searchTabsContainer').style.display = 'none';
+      document.getElementById('hotelSearchForm').style.display = 'none';
+      document.getElementById('excursionSearchForm').style.display = 'none';
+      return;
+    }
+    this.activeTab = tab;
 
-  // إظهار/إخفاء النماذج مباشرة
-  hotelForm.style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
-  excursionForm.style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
+    // إظهار/إخفاء حاوية التبويبات
+    const tabsContainer = document.getElementById('searchTabsContainer');
+    tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
 
-  // إظهار/إخفاء أزرار التبويب
-  hotelBtn.style.display = SHOW_HOTELS ? 'flex' : 'none';
-  excursionBtn.style.display = SHOW_EXCURSIONS ? 'flex' : 'none';
+    // إظهار/إخفاء النماذج
+    document.getElementById('hotelSearchForm').style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
+    document.getElementById('excursionSearchForm').style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
 
-  hotelBtn.classList.toggle('active', tab === 'hotels');
-  excursionBtn.classList.toggle('active', tab === 'excursions');
+    // تحديث أزرار التبويب
+    const hotelBtn = document.getElementById('searchTabHotels');
+    const excursionBtn = document.getElementById('searchTabExcursions');
+    if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
+    if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
 
-  // تحديث تواريخ العرض إذا لزم
-  if (tab === 'excursions') this.updateDateDisplays();
-},
+    // تحديث محتوى الهيرو
+    this.updateHeroContent(tab);
+    // تحديث عرض التواريخ
+    this.updateDateDisplays();
+  },
+
+  updateHeroContent(tab) {
+    const heroData = {
+      hotels: {
+        eyebrow: '— PREMIUM STAYS',
+        title: 'Find Your<br /><span class="italic text-gold-400">Perfect Stay</span>',
+        subtitle: 'Hotels. Excursions. Airport transfers.',
+        bgImage: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90'
+      },
+      excursions: {
+        eyebrow: '— THINGS TO DO',
+        title: 'Discover<br /><span class="italic text-gold-400">Excursions</span>',
+        subtitle: 'Diving. Safari. Boat trips.',
+        bgImage: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=90'
+      }
+    };
+    const data = heroData[tab] || heroData.hotels;
+    document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
+    document.getElementById('heroTitleText').innerHTML = data.title;
+    document.getElementById('heroSubtitleText').textContent = data.subtitle;
+    const bgImg = document.getElementById('heroBgImage');
+    if (bgImg) bgImg.src = data.bgImage;
+  },
 
   openDateDropdown(isExcursion = false) {
     this.isExcursionDate = isExcursion;
@@ -314,6 +337,32 @@ const search = {
     this.updateGuestDisplay();
   },
 
+  openCategoryDropdown() {
+    document.getElementById('searchCategoryDropdown').style.display = 'flex';
+  },
+
+  closeCategoryDropdown() {
+    document.getElementById('searchCategoryDropdown').style.display = 'none';
+  },
+
+  setCategory(category) {
+    this.selectedCategory = category;
+    const displayEl = document.getElementById('excursionCategoryDisplay');
+    if (displayEl) {
+      const labels = {
+        'all': 'All Categories',
+        'Diving': 'Diving & Snorkeling',
+        'Desert Safari': 'Desert Safari',
+        'Boat Trip': 'Boat Trip',
+        'City Tour': 'City Tour'
+      };
+      displayEl.textContent = labels[category] || category;
+    }
+    document.querySelectorAll('.ds-category-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.category === category);
+    });
+  },
+
   changeMonth(delta) {
     this.viewMonth += delta;
     if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
@@ -324,13 +373,17 @@ const search = {
   renderCalendar() {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
+    
     const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
     const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
     const today = new Date(); today.setHours(0,0,0,0);
+    
     let html = '';
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
+    
     for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
+    
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(this.viewYear, this.viewMonth, d);
       const past = date < today;
@@ -342,18 +395,21 @@ const search = {
       if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
       html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
     }
+    
     document.getElementById('searchCalGrid').innerHTML = html;
   },
 
   selectDate(day) {
     const d = new Date(this.viewYear, this.viewMonth, day);
     d.setHours(0,0,0,0);
+    
     if (this.isExcursionDate) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
       this.updateDateDisplays();
       return;
     }
+    
     if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
@@ -363,14 +419,17 @@ const search = {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
     }
+    
     this.renderCalendar();
     this.updateDateDisplays();
   },
 
   updateDateDisplays() {
     const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
-    document.getElementById('searchCheckInInput').value = fmt(this.selectedCheckIn);
-    document.getElementById('searchCheckOutInput').value = fmt(this.selectedCheckOut);
+    const checkInInput = document.getElementById('searchCheckInInput');
+    const checkOutInput = document.getElementById('searchCheckOutInput');
+    if (checkInInput) checkInInput.value = fmt(this.selectedCheckIn);
+    if (checkOutInput) checkOutInput.value = fmt(this.selectedCheckOut);
     const checkinDisplay = document.getElementById('checkinDisplay');
     const checkoutDisplay = document.getElementById('checkoutDisplay');
     const excursionDateDisplay = document.getElementById('excursionDateDisplay');
@@ -410,8 +469,7 @@ const search = {
   },
 
   applyExcursionSearch() {
-    const cat = document.getElementById('excursionCategorySelect').value;
-    state.currentExcursionFilter = cat;
+    state.currentExcursionFilter = this.selectedCategory;
     nav.go('excursions');
   },
 
@@ -422,8 +480,11 @@ const search = {
   init() {
     this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
     this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
+    this.selectedCategory = 'all';
     this.updateDateDisplays();
     this.updateGuestDisplay();
+    this.setCategory('all');
+    this.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
   }
 };
 
@@ -715,7 +776,6 @@ function applyDesktopLayout() {
 
 // ==================== CATEGORY VISIBILITY ====================
 function applyCategoryVisibility() {
-  // إخفاء أقسام الهوم حسب الأعلام
   const homeSections = {
     hotels: document.getElementById('featuredHotels'),
     excursions: document.getElementById('featuredExcursions'),
@@ -735,7 +795,6 @@ function applyCategoryVisibility() {
   if (!SHOW_DESTINATIONS && homeSections.destinations) {
     homeSections.destinations.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
   }
-  // إخفاء بانر الترانسفير إذا كانت الترانسفير معطلة
   if (!SHOW_TRANSFERS) {
     document.querySelectorAll('.banner-creative').forEach(el => {
       if (el.getAttribute('onclick')?.includes('transfers')) {
@@ -744,7 +803,6 @@ function applyCategoryVisibility() {
     });
   }
 
-  // إخفاء روابط القائمة الجانبية
   document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   document.querySelectorAll('.drawer-link').forEach(link => {
     const onclick = link.getAttribute('onclick') || '';
@@ -753,14 +811,12 @@ function applyCategoryVisibility() {
     if (onclick.includes("nav.go('restaurants')") && !SHOW_RESTAURANTS) link.style.display = 'none';
   });
 
-  // إخفاء عناصر التنقل السفلي
   document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
     const page = item.getAttribute('data-page');
     if (page === 'excursions' && !SHOW_EXCURSIONS) item.style.display = 'none';
     if (page === 'transfers' && !SHOW_TRANSFERS) item.style.display = 'none';
   });
 
-  // إخفاء الصفحات الكاملة من الـ mainApp
   if (!SHOW_HOTELS) document.getElementById('hotelsPage')?.remove();
   if (!SHOW_EXCURSIONS) document.getElementById('excursionsPage')?.remove();
   if (!SHOW_TRANSFERS) document.getElementById('transfersPage')?.remove();
@@ -777,15 +833,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateCountryCodeSelect();
   populateNationalitySelect();
   applyDesktopLayout();
-  applyCategoryVisibility(); // إخفاء الأقسام غير المرغوبة
+  applyCategoryVisibility();
   window.addEventListener('resize', applyDesktopLayout);
-
-  // ✅ إخفاء/إظهار تبويبات البحث فورًا حسب الأعلام
-  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
-
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-
-  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions'); // تكرار للتأكيد بعد إظهار الواجهة
+  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
   search.init();
   setTimeout(hideSplash, 3000);
 });
