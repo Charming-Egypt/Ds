@@ -614,11 +614,12 @@ const profileAvatar = {
 function updateDrawerUser(name, email, photoURL) {
   const safeName = name || 'Guest';
   const safeEmail = email || '';
+  const safePhoto = photoURL || null;
   const n = document.getElementById('drawerName'); if (n) n.textContent = safeName;
   const e = document.getElementById('drawerEmail'); if (e) e.textContent = safeEmail;
   const pn = document.getElementById('profileName'); if (pn) pn.textContent = safeName;
   const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
-  profileAvatar.render(safeName, photoURL);
+  profileAvatar.render(safeName, safePhoto);
 
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
