@@ -1,5 +1,5 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-const SHOW_HOTELS = true;
+const SHOW_HOTELS = false;
 
 function enterApp() {
   hideSplash();
