@@ -1,8 +1,16 @@
 // ==================== CONFIG ====================
-const API_BASE = ''; // يترك فارغاً للعمل على نفس النطاق (discover-sharm.com)
+const API_BASE = '';
 let authToken = localStorage.getItem('ds_auth_token') || null;
-let currentUser = JSON.parse(localStorage.getItem('ds_current_user') || 'null');
-let authMode = 'login'; // 'login' أو 'signup'
+let currentUser = null;
+try {
+  const storedUser = localStorage.getItem('ds_current_user');
+  if (storedUser && storedUser !== 'null') {
+    currentUser = JSON.parse(storedUser);
+  }
+} catch (e) {
+  currentUser = null;
+}
+let authMode = 'login';
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
 
@@ -19,7 +27,7 @@ const state = {
   currentExcursion: null,
   currentTransfer: null,
   currentBookingTab: 'upcoming',
-  activeSearchTab: 'hotels', // افتراضي الفنادق
+  activeSearchTab: 'hotels',
   guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
   pageHistory: ['home'],
   bookingDraft: {},
@@ -154,7 +162,7 @@ const utils = {
   renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#453f5c"></i>'; return s; },
   avgRating(list) { return list.length ? list.reduce((s, r) => s + Number(r.rating || 0), 0) / list.length : null; },
   confetti() {
-    const colors = ['#fbbf24', '#fcd34d', '#8b5cf6', '#6d28d9', '#fb7185', '#ffffff'];
+    const colors = ['#fbbf24', '#fcd34d', '#f97316', '#c2410c', '#fb7185', '#ffffff'];
     for (let i = 0; i < 60; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
@@ -424,13 +432,7 @@ const auth = {
     try {
       const data = await apiFetch('/api/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          phone: extra.phone || '',
-          countryCode: extra.countryCode || '',
-        }),
+        body: JSON.stringify({ name, email, password, phone: extra.phone || '', countryCode: extra.countryCode || '' }),
       }, true);
       authToken = data.idToken;
       currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
@@ -510,10 +512,7 @@ async function handleGoogleSignIn() {
     const clientId = window._googleClientId;
 
     if (!googleSignInInitialized) {
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleCredentialResponse,
-      });
+      google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredentialResponse });
       googleSignInInitialized = true;
     }
 
@@ -536,11 +535,11 @@ async function handleGoogleCredentialResponse(response) {
   }
 
   try {
-    const data = await apiFetch(
-      '/api/auth/google',
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: response.credential }) },
-      true
-    );
+    const data = await apiFetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: response.credential }),
+    }, true);
 
     authToken = data.idToken;
     currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
@@ -593,10 +592,7 @@ const profileAvatar = {
       try {
         const res = await apiFetch('/api/profile', {
           method: 'POST',
-          body: JSON.stringify({
-            uid: currentUser?.uid,
-            profile: { photoURL: dataUrl },
-          }),
+          body: JSON.stringify({ uid: currentUser?.uid, profile: { photoURL: dataUrl } }),
         });
         if (currentUser) {
           currentUser.photoURL = dataUrl;
@@ -616,15 +612,17 @@ const profileAvatar = {
 };
 
 function updateDrawerUser(name, email, photoURL) {
-  const n = document.getElementById('drawerName'); if (n) n.textContent = name || 'Guest';
-  const e = document.getElementById('drawerEmail'); if (e) e.textContent = email || '';
-  const pn = document.getElementById('profileName'); if (pn) pn.textContent = name || 'Guest';
-  const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = email || '';
-  profileAvatar.render(name, photoURL);
+  const safeName = name || 'Guest';
+  const safeEmail = email || '';
+  const n = document.getElementById('drawerName'); if (n) n.textContent = safeName;
+  const e = document.getElementById('drawerEmail'); if (e) e.textContent = safeEmail;
+  const pn = document.getElementById('profileName'); if (pn) pn.textContent = safeName;
+  const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
+  profileAvatar.render(safeName, photoURL);
 
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
-    const level = currentUser?.geniusLevel || 0;
+    const level = (currentUser && currentUser.geniusLevel) || 0;
     if (level > 0) {
       badge.classList.remove('hidden');
       badge.textContent = `Genius Lv${level}`;
@@ -635,42 +633,6 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
-async function loadReviews(type, id, listElId, summaryElId) {
-  const listEl = document.getElementById(listElId);
-  if (!listEl) return;
-  try {
-    const data = await apiFetch(`/api/reviews?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {}, true);
-    const items = data.reviews || [];
-    if (items.length === 0) {
-      listEl.innerHTML = `<p class="text-xs text-center py-4" style="color:var(--text-secondary)">No reviews yet. Be the first!</p>`;
-    } else {
-      listEl.innerHTML = items
-        .slice()
-        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-        .map(r => `
-          <div class="p-3 rounded-xl border" style="border-color:var(--border-color)">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-bold text-sm">${esc(r.name)}</span>
-              <span class="text-gold-400 text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-            </div>
-            <p class="text-xs" style="color:var(--text-secondary)">${esc(r.comment)}</p>
-          </div>
-        `).join('');
-    }
-    if (summaryElId) {
-      const summaryEl = document.getElementById(summaryElId);
-      if (summaryEl && items.length > 0) {
-        const avg = items.reduce((s, r) => s + Number(r.rating || 0), 0) / items.length;
-        summaryEl.textContent = avg.toFixed(1);
-      }
-      const countEl = document.getElementById(summaryElId + 'Count');
-      if (countEl) countEl.textContent = items.length;
-    }
-  } catch (e) {
-    listEl.innerHTML = '';
-  }
-}
-
 const reviews = {
   currentTarget: null,
   selectedStars: 0,
@@ -695,7 +657,7 @@ const reviews = {
     this.currentTarget = { type, id, bookingId };
     this.selectedStars = 0;
     document.getElementById('reviewBookingId').value = bookingId;
-    document.getElementById('reviewName').value = currentUser?.displayName || '';
+    document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
     document.getElementById('reviewComment').value = '';
     this.paintStars(0);
     document.getElementById('reviewModal').classList.remove('hidden');
@@ -823,12 +785,12 @@ const transferSearch = {
     const departure = document.getElementById('tsDirDeparture');
     if (arrival && departure) {
       if (dir === 'Airport to Hotel') {
-        arrival.style.background = 'linear-gradient(135deg,#a78bfa,#6d28d9)';
+        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
         arrival.style.color = '#fff';
         departure.style.background = 'transparent';
         departure.style.color = 'var(--text-secondary)';
       } else {
-        departure.style.background = 'linear-gradient(135deg,#a78bfa,#6d28d9)';
+        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
         departure.style.color = '#fff';
         arrival.style.background = 'transparent';
         arrival.style.color = 'var(--text-secondary)';
@@ -894,9 +856,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCurrency();
   populateCountryCodeSelect();
   populateNationalitySelect();
-  applyDesktopLayout();
-  window.addEventListener('resize', applyDesktopLayout);
+  if (auth.isLoggedIn() && !currentUser) {
+    // محاولة استعادة بيانات المستخدم من localStorage
+    try {
+      const stored = localStorage.getItem('ds_current_user');
+      if (stored) currentUser = JSON.parse(stored);
+    } catch {}
+  }
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('hotels'); // افتراضي الفنادق
+  search.switchTab(window.DS_CONFIG?.SHOW_HOTELS ? 'hotels' : 'excursions');
+  search.init();
   setTimeout(hideSplash, 3000);
 });
