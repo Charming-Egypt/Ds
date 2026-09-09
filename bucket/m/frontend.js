@@ -12,6 +12,7 @@ function enterApp() {
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
+  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
 
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
