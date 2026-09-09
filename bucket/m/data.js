@@ -621,12 +621,15 @@ function updateDrawerUser(name, email, photoURL) {
   const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
   profileAvatar.render(safeName, safePhoto);
 
+  // بادج Sharmawy في السايد بار
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
     const level = (currentUser && currentUser.geniusLevel) || 0;
     if (level > 0) {
+      const badges = {1:'🥉', 2:'🥈', 3:'🥇'};
       badge.classList.remove('hidden');
-      badge.textContent = `Genius Lv${level}`;
+      badge.textContent = badges[level] || '';
+      badge.title = `Sharmawy Level ${level}`;
     } else {
       badge.classList.add('hidden');
     }
