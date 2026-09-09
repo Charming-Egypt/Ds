@@ -1003,3 +1003,6 @@ document.addEventListener('submit', (e) => {
 });
 
 
+// Expose globally
+window.showTransferPage = showTransferPage;
+window.closeTransferPage = closeTransferPage;
