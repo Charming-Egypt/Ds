@@ -253,14 +253,13 @@
           <img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-8 w-8 rounded-lg" alt="logo" />
           <span class="font-display font-bold text-white text-sm">Discover Sharm</span>
         </div>
-        <button onclick="sidebar.close()" class="drawer-close-btn w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="sidebar.close()" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/70"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="drawerUserBox" class="flex items-center gap-3 mb-6 p-3 rounded-2xl cursor-pointer" style="background:var(--chrome-field-bg)" onclick="nav.go('profile'); sidebar.close()">
         <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center font-display font-bold text-ink-900 overflow-hidden" id="drawerAvatar">A</div>
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2">
             <p class="text-white text-sm font-semibold truncate" id="drawerName">Guest</p>
-            <!-- شارة مستوى جينيس -->
             <span id="drawerTierBadge" class="hidden ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold-400/20 text-gold-400 border border-gold-400/40">Genius Lv1</span>
           </div>
           <p class="text-white/40 text-[11px] truncate" id="drawerEmail"></p>
@@ -269,13 +268,12 @@
       </div>
       <div class="space-y-1 flex-1 overflow-y-auto">
         <div class="drawer-link" onclick="nav.go('home'); sidebar.close()"><i class="fa-solid fa-house w-5 text-center"></i><span data-i18n="navHome">Home</span></div>
-        <!-- الفنادق مخفية -->
-        <div class="drawer-link" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
+        <div class="drawer-link hidden" id="drawerHotelsLink" onclick="nav.go('hotels'); sidebar.close()"><i class="fa-solid fa-hotel w-5 text-center"></i><span data-i18n="navHotels">Hotels</span></div>
         <div class="drawer-link" onclick="nav.go('excursions'); sidebar.close()"><i class="fa-solid fa-umbrella-beach w-5 text-center"></i><span data-i18n="navExcursions">Excursions</span></div>
         <div class="drawer-link" onclick="nav.go('transfers'); sidebar.close()"><i class="fa-solid fa-shuttle-van w-5 text-center"></i><span data-i18n="navTransfers">Airport Transfers</span></div>
         <div class="drawer-link" onclick="nav.go('restaurants'); sidebar.close()"><i class="fa-solid fa-utensils w-5 text-center"></i><span data-i18n="navRestaurants">Restaurants & Cafes</span></div>
         <div class="drawer-link" onclick="nav.go('bookings'); sidebar.close()"><i class="fa-regular fa-calendar-check w-5 text-center"></i><span data-i18n="navBookings">My Bookings</span></div>
-        <div class="drawer-link" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
+        <div class="drawer-link hidden" id="drawerFavoritesLink" onclick="nav.go('favorites'); sidebar.close()"><i class="fa-regular fa-heart w-5 text-center"></i><span data-i18n="navFavorites">Favorites</span></div>
         <div class="drawer-link" onclick="nav.go('settings'); sidebar.close()"><i class="fa-solid fa-gear w-5 text-center"></i><span data-i18n="settingsTitle">Settings</span></div>
       </div>
       <div class="pt-4 border-t border-white/10 space-y-4">
@@ -298,7 +296,7 @@
   <div class="sticky-home-header" id="stickyHomeHeader">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <button onclick="sidebar.open()" class="icon-btn sidebar-toggle-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
+        <button onclick="sidebar.open()" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
         <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="sticky-header-logo" alt="Discover Sharm" />
       </div>
       <button onclick="nav.go('notifications')" class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2 right-2 w-2 h-2 bg-gold-400 rounded-full"></span></button>
@@ -318,13 +316,13 @@
           <div class="px-5 pt-6 pb-4">
             <div class="header-floating">
               <div class="flex items-center gap-3">
-                <button onclick="sidebar.open()" class="icon-btn sidebar-toggle-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
+                <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-bars"></i></button>
                 <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="site-logo" alt="Discover Sharm" />
               </div>
               <button onclick="nav.go('notifications')" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center relative text-white"><i class="fa-regular fa-bell"></i><span class="notif-badge hidden absolute top-2.5 right-2.5 w-2 h-2 bg-gold-400 rounded-full"></span></button>
             </div>
           </div>
-          <div class="px-6 pt-6 pb-4">
+          <div class="px-6 pt-6 pb-4 text-center">
             <p class="text-gold-400 text-xs font-semibold tracking-widest mb-2 hero-text-swap" id="heroEyebrowText">— PREMIUM STAYS</p>
             <h1 class="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight hero-text-swap" id="heroTitleText">Find Your<br /><span class="italic text-gold-400">Perfect Stay</span></h1>
             <p class="text-white/75 text-base hero-text-swap" id="heroSubtitleText">Hotels. Excursions. Airport transfers.</p>
@@ -333,128 +331,133 @@
       </div>
 
       <div class="relative z-20 px-5 -mt-[8rem]">
-        <!-- ============ SEARCH SYSTEM (New Design) ============ -->
-        <!-- ============ SEARCH SYSTEM (New Design) ============ -->
-<div class="search-card premium-search" style="padding:4px; border-radius:20px;">
-  <!-- Main Fields Container -->
-  <div style="border:1px solid var(--border-card); border-radius:18px; overflow:hidden;">
-    <!-- Tabs -->
-    <div style="display:flex; gap:4px; padding:8px; border-bottom:1px solid var(--border-card);">
-      <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-new active" style="flex:1;">
-        <i class="fa-solid fa-hotel"></i>
-        <span data-i18n="navHotels">Hotels</span>
-      </button>
-      <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-new" style="flex:1;">
-        <i class="fa-solid fa-umbrella-beach"></i>
-        <span data-i18n="navExcursions">Excursions</span>
-      </button>
-    </div>
+        <!-- ============ SEARCH SYSTEM ============ -->
+        <div class="search-card premium-search" style="padding:4px; border-radius:20px;">
+          <!-- Main Fields Container -->
+          <div style="border:1px solid var(--border-card); border-radius:18px; overflow:hidden;">
+            <!-- Tabs -->
+            <div id="searchTabsContainer" style="display:flex; gap:4px; padding:8px; border-bottom:1px solid var(--border-card);">
+              <button id="searchTabHotels" onclick="search.switchTab('hotels')" class="search-tab-new active" style="flex:1;">
+                <i class="fa-solid fa-hotel"></i>
+                <span data-i18n="navHotels">Hotels</span>
+              </button>
+              <button id="searchTabExcursions" onclick="search.switchTab('excursions')" class="search-tab-new" style="flex:1;">
+                <i class="fa-solid fa-umbrella-beach"></i>
+                <span data-i18n="navExcursions">Excursions</span>
+              </button>
+            </div>
 
-    <!-- Hotels Form -->
-    <div id="hotelSearchForm" class="search-form active">
-      <!-- Date Row -->
-      <div style="display:flex; border-bottom:1px solid var(--border-card);">
-        <div style="flex:1; padding:16px 20px; cursor:pointer;" onclick="search.openDateDropdown(false)">
-          <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-IN</div>
-          <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkinDisplay">Select date</div>
-        </div>
-        <div style="flex:1; padding:16px 20px; cursor:pointer; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(false)">
-          <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-OUT</div>
-          <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkoutDisplay">Select date</div>
-        </div>
-      </div>
+            <!-- Hotels Form -->
+            <div id="hotelSearchForm" class="search-form active">
+              <div style="display:flex; border-bottom:1px solid var(--border-card);">
+                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openDateDropdown(false)">
+                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-IN</div>
+                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkinDisplay">Select date</div>
+                </div>
+                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(false)">
+                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CHECK-OUT</div>
+                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="checkoutDisplay">Select date</div>
+                </div>
+              </div>
+              <div class="ds-search-field" style="padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openGuestDropdown()">
+                <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">GUESTS</div>
+                <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="guestsDisplay">2 Adults, 1 Room</div>
+              </div>
+            </div>
 
-      <!-- Guests Row -->
-      <div style="padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openGuestDropdown()">
-        <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">GUESTS</div>
-        <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="guestsDisplay">2 Adults, 1 Room</div>
-      </div>
-    </div>
+            <!-- Excursions Form -->
+            <div id="excursionSearchForm" class="search-form">
+              <div style="display:flex; border-bottom:1px solid var(--border-card);">
+                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center;" onclick="search.openCategoryDropdown()">
+                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CATEGORY</div>
+                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionCategoryDisplay">All Categories</div>
+                </div>
+                <div class="ds-search-field" style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(true)">
+                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">EXCURSION DATE</div>
+                  <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionDateDisplay">Select date</div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- Excursions Form -->
-    <div id="excursionSearchForm" class="search-form">
-      <div style="display:flex; border-bottom:1px solid var(--border-card);">
-        <div style="flex:1; padding:16px 20px;">
-          <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">CATEGORY</div>
-          <select id="excursionCategorySelect" style="font-size:16px; font-weight:500; color:var(--text-primary); background:transparent; border:none; outline:none; width:100%;">
-            <option value="all">All Categories</option>
-            <option value="Diving">Diving & Snorkeling</option>
-            <option value="Desert Safari">Desert Safari</option>
-            <option value="Boat Trip">Boat Trip</option>
-            <option value="City Tour">City Tour</option>
-          </select>
-        </div>
-        <div style="flex:1; padding:16px 20px; cursor:pointer; border-left:1px solid var(--border-card);" onclick="search.openDateDropdown(true)">
-          <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">EXCURSION DATE</div>
-          <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionDateDisplay">Select date</div>
-        </div>
-      </div>
-    </div>
-  </div>
+          <!-- Search Button -->
+          <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#171029; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            Check Availability
+          </button>
 
-  <!-- Search Button -->
-  <button onclick="search.performSearch()" style="width:100%; background:linear-gradient(135deg, #fbbf24, #f59e0b); border:none; border-radius:16px; padding:16px; margin-top:8px; color:#171029; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    Check Availability
-  </button>
+          <!-- Date Dropdown Modal -->
+          <div id="searchDateDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
+            <div class="ds-modal-content">
+              <div class="ds-desk-cal-nav">
+                <button onclick="search.changeMonth(-1)" class="ds-modal-nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <h4 id="searchCalMonth" style="color:var(--text-primary); font-weight:600;">June 2026</h4>
+                <button onclick="search.changeMonth(1)" class="ds-modal-nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+              <div class="ds-cal-grid" id="searchCalGrid"></div>
+              <div style="display:flex; gap:12px; margin-top:14px;">
+                <div style="flex:1;">
+                  <label class="ds-modal-label">Check-in</label>
+                  <input type="text" id="searchCheckInInput" readonly class="ds-modal-input" placeholder="Select">
+                </div>
+                <div style="flex:1;">
+                  <label class="ds-modal-label">Check-out</label>
+                  <input type="text" id="searchCheckOutInput" readonly class="ds-modal-input" placeholder="Select">
+                </div>
+              </div>
+              <button class="ds-modal-apply" onclick="search.closeDateDropdown()">Apply Dates</button>
+            </div>
+          </div>
 
-  <!-- Date Dropdown Modal -->
-  <div id="searchDateDropdown" class="ds-modal-overlay" style="display:none;">
-    <div class="ds-modal-content">
-      <div class="ds-desk-cal-nav">
-        <button onclick="search.changeMonth(-1)" class="ds-modal-nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
-        <h4 id="searchCalMonth" style="color:var(--text-primary); font-weight:600;">June 2026</h4>
-        <button onclick="search.changeMonth(1)" class="ds-modal-nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-      <div class="ds-cal-grid" id="searchCalGrid"></div>
-      <div style="display:flex; gap:12px; margin-top:14px;">
-        <div style="flex:1;">
-          <label class="ds-modal-label">Check-in</label>
-          <input type="text" id="searchCheckInInput" readonly class="ds-modal-input" placeholder="Select">
-        </div>
-        <div style="flex:1;">
-          <label class="ds-modal-label">Check-out</label>
-          <input type="text" id="searchCheckOutInput" readonly class="ds-modal-input" placeholder="Select">
-        </div>
-      </div>
-      <button class="ds-modal-apply" onclick="search.closeDateDropdown()">Apply Dates</button>
-    </div>
-  </div>
+          <!-- Guest Dropdown Modal -->
+          <div id="searchGuestDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
+            <div class="ds-modal-content">
+              <div class="ds-guest-row">
+                <div class="ds-guest-info-label">Adults</div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('adults', -1)" class="ds-guest-btn">−</button>
+                  <span id="searchAdultCount" class="ds-guest-value">2</span>
+                  <button onclick="search.adjustGuest('adults', 1)" class="ds-guest-btn">+</button>
+                </div>
+              </div>
+              <div class="ds-guest-row">
+                <div>
+                  <div class="ds-guest-info-label">Children</div>
+                  <div class="ds-guest-info-sub">Ages 0-11</div>
+                </div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('children', -1)" class="ds-guest-btn">−</button>
+                  <span id="searchChildCount" class="ds-guest-value">0</span>
+                  <button onclick="search.adjustGuest('children', 1)" class="ds-guest-btn">+</button>
+                </div>
+              </div>
+              <div class="ds-guest-row">
+                <div class="ds-guest-info-label">Rooms</div>
+                <div class="ds-guest-counter">
+                  <button onclick="search.adjustGuest('rooms', -1)" class="ds-guest-btn">−</button>
+                  <span id="searchRoomCount" class="ds-guest-value">1</span>
+                  <button onclick="search.adjustGuest('rooms', 1)" class="ds-guest-btn">+</button>
+                </div>
+              </div>
+              <button class="ds-modal-apply" onclick="search.closeGuestDropdown()">Apply</button>
+            </div>
+          </div>
 
-  <!-- Guest Dropdown Modal -->
-  <div id="searchGuestDropdown" class="ds-modal-overlay" style="display:none;">
-    <div class="ds-modal-content">
-      <div class="ds-guest-row">
-        <div class="ds-guest-info-label">Adults</div>
-        <div class="ds-guest-counter">
-          <button onclick="search.adjustGuest('adults', -1)" class="ds-guest-btn">−</button>
-          <span id="searchAdultCount" class="ds-guest-value">2</span>
-          <button onclick="search.adjustGuest('adults', 1)" class="ds-guest-btn">+</button>
+          <!-- Category Dropdown Modal -->
+          <div id="searchCategoryDropdown" class="ds-modal-overlay" style="display:none; z-index:10000;">
+            <div class="ds-modal-content">
+              <div class="ds-modal-label" style="text-align:center; margin-bottom:12px;">SELECT CATEGORY</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="ds-category-btn" data-category="all" onclick="search.setCategory('all')">All Categories</button>
+                <button class="ds-category-btn" data-category="Diving" onclick="search.setCategory('Diving')">Diving & Snorkeling</button>
+                <button class="ds-category-btn" data-category="Desert Safari" onclick="search.setCategory('Desert Safari')">Desert Safari</button>
+                <button class="ds-category-btn" data-category="Boat Trip" onclick="search.setCategory('Boat Trip')">Boat Trip</button>
+                <button class="ds-category-btn" data-category="City Tour" onclick="search.setCategory('City Tour')">City Tour</button>
+              </div>
+              <button class="ds-modal-apply" onclick="search.closeCategoryDropdown()">Apply</button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="ds-guest-row">
-        <div>
-          <div class="ds-guest-info-label">Children</div>
-          <div class="ds-guest-info-sub">Ages 0-11</div>
-        </div>
-        <div class="ds-guest-counter">
-          <button onclick="search.adjustGuest('children', -1)" class="ds-guest-btn">−</button>
-          <span id="searchChildCount" class="ds-guest-value">0</span>
-          <button onclick="search.adjustGuest('children', 1)" class="ds-guest-btn">+</button>
-        </div>
-      </div>
-      <div class="ds-guest-row">
-        <div class="ds-guest-info-label">Rooms</div>
-        <div class="ds-guest-counter">
-          <button onclick="search.adjustGuest('rooms', -1)" class="ds-guest-btn">−</button>
-          <span id="searchRoomCount" class="ds-guest-value">1</span>
-          <button onclick="search.adjustGuest('rooms', 1)" class="ds-guest-btn">+</button>
-        </div>
-      </div>
-      <button class="ds-modal-apply" onclick="search.closeGuestDropdown()">Apply</button>
-    </div>
-  </div>
-</div>
       </div>
 
       <!-- بقية أقسام الهوم -->
@@ -465,15 +468,6 @@
             <div><p class="section-subtitle" data-i18n="exploreEyebrow">— EXPLORE</p><h3 class="section-title" data-i18n="popularDestinations">Popular Destinations</h3></div>
           </div>
           <div class="horizontal-scroll px-5" id="destinationsRow"></div>
-        </div>
-
-        <!-- Featured Hotels -->
-        <div class="px-5 mb-8">
-          <div class="flex items-center justify-between mb-4">
-            <div><p class="section-subtitle" data-i18n="stayEyebrow">— STAY</p><h3 class="section-title" data-i18n="featuredHotelsTitle">Featured Hotels</h3></div>
-            <button onclick="nav.go('hotels')" class="text-violet-500 text-sm font-medium flex items-center gap-1" data-i18n="viewAll">View All <i class="fa-solid fa-arrow-left text-xs"></i></button>
-          </div>
-          <div id="featuredHotels" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
         <!-- Featured Excursions -->
@@ -540,42 +534,6 @@
     </div> <!-- end homePage -->
 
     <!-- EXCURSIONS PAGE -->
-    <div id="hotelsPage" class="page">
-      <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
-          <div class="flex items-center justify-between mb-5">
-            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
-            <div class="text-center"><p class="section-subtitle" data-i18n="stayEyebrow">— STAY</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="hotelsTitle">Hotels</h1></div>
-            <div class="w-11"></div>
-          </div>
-          <div class="horizontal-scroll !px-0" id="hotelFilterChips">
-            <button onclick="search.filterCategory('all')" class="filter-chip active flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>
-          </div>
-        </div>
-        <div class="px-5 pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28" id="hotelsList"></div>
-      </div>
-    </div>
-
-    <!-- FAVORITES PAGE -->
-    <div id="favoritesPage" class="page">
-      <div class="min-h-screen">
-        <div class="px-5 pt-6 pb-4 header-light">
-          <div class="flex items-center justify-between mb-5">
-            <button onclick="nav.goBack()" class="w-11 h-11 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-arrow-right"></i></button>
-            <div class="text-center"><p class="section-subtitle" data-i18n="savedEyebrow">— SAVED</p><h1 class="text-lg font-bold font-display" style="color:var(--text-primary)" data-i18n="favoritesTitle">Favorites</h1></div>
-            <div class="w-11"></div>
-          </div>
-        </div>
-        <div class="px-5 pt-4">
-          <div id="emptyFavorites" class="hidden text-center py-16">
-            <i class="fa-regular fa-heart text-4xl mb-3" style="color:var(--text-secondary)"></i>
-            <p style="color:var(--text-secondary)" data-i18n="noFavorites">No favorites yet. Tap the heart on any hotel to save it here.</p>
-          </div>
-          <div id="favoritesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28"></div>
-        </div>
-      </div>
-    </div>
-
     <div id="excursionsPage" class="page">
       <div class="min-h-screen">
         <div class="px-5 pt-6 pb-4 header-light">
@@ -659,9 +617,7 @@
           </div>
           <h2 class="font-display text-2xl font-bold mt-4" style="color:var(--text-primary)" id="profileName">Guest</h2>
           <p class="text-sm" style="color:var(--text-secondary)" id="profileEmail"></p>
-          <!-- شارة مستوى جينيس -->
           <span id="profileTierBadge" class="hidden mt-3 px-4 py-1.5 bg-gold-400/15 border border-gold-400/40 rounded-full text-gold-600 text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> Genius Level 1</span>
-          <!-- بطاقة مميزات جينيس -->
           <div id="geniusBenefitsCard" class="hidden mt-4 card rounded-2xl p-4 w-80 max-w-full"></div>
         </div>
         <div class="px-5 mt-8">
@@ -739,7 +695,7 @@
         <button onclick="nav.go('excursions')" data-page="excursions" title="Excursions" aria-label="Excursions" class="nav-item flex items-center justify-center"><i class="fa-solid fa-umbrella-beach text-[22px]"></i></button>
         <button onclick="nav.go('bookings')" data-page="bookings" title="My Bookings" aria-label="My Bookings" class="nav-item flex items-center justify-center"><i class="fa-regular fa-calendar-check text-[22px]"></i></button>
         <button onclick="nav.go('home')" data-page="home" class="nav-item-home flex flex-col items-center justify-center flex-shrink-0">
-          <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class=" rounded-full object-cover" /></span>
+          <span class="nav-home-logo"><img src="data/logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" alt="" class="w-7 h-7 rounded-full object-cover" /></span>
         </button>
         <button onclick="nav.go('transfers')" data-page="transfers" title="Transfers" aria-label="Transfers" class="nav-item flex items-center justify-center"><i class="fa-solid fa-shuttle-van text-[22px]"></i></button>
         <button onclick="nav.go('profile')" data-page="profile" title="Profile" aria-label="Profile" class="nav-item flex items-center justify-center">
