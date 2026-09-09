@@ -1,12 +1,14 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
 const SHOW_HOTELS = false;
+const SHOW_EXCURSIONS = true;
+const SHOW_TRANSFERS = true;
+const SHOW_RESTAURANTS = true;
+const SHOW_DESTINATIONS = true;
 
 function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
-  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
-  document.getElementById('drawerFavoritesLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
@@ -30,12 +32,16 @@ function enterApp() {
   }
 
   applyDesktopLayout();
+  applyCategoryVisibility();
 }
 
 const nav = {
   go(page) {
     if (page === 'hotels' && !SHOW_HOTELS) return;
-    if (page === 'favorites' && !SHOW_HOTELS) return;
+    if (page === 'excursions' && !SHOW_EXCURSIONS) return;
+    if (page === 'transfers' && !SHOW_TRANSFERS) return;
+    if (page === 'restaurants' && !SHOW_RESTAURANTS) return;
+    if (page === 'destinations' && !SHOW_DESTINATIONS) return;
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(page + 'Page');
@@ -44,17 +50,13 @@ const nav = {
     window.scrollTo(0, 0);
 
     if (page === 'hotels' && SHOW_HOTELS) hotels.render();
-    if (page === 'excursions') excursionsUi.render();
-    if (page === 'transfers') transfersUi.render();
-    if (page === 'restaurants') restaurantsUi.renderFull();
+    if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
+    if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
+    if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
     if (page === 'favorites' && SHOW_HOTELS) favorites.render();
     if (page === 'notifications') notifications.render();
     if (page === 'profile') updateProfileStats();
-
-    document.querySelectorAll('#sideDrawer .drawer-link[onclick]').forEach(link => {
-      link.classList.toggle('active', link.getAttribute('onclick').includes(`nav.go('${page}')`));
-    });
 
     applyDesktopLayout();
   },
@@ -259,41 +261,42 @@ const search = {
   isExcursionDate: false,
 
   switchTab(tab) {
+    if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
+    if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
     if (tab !== 'hotels' && tab !== 'excursions') tab = 'excursions';
     this.activeTab = tab;
-    document.getElementById('hotelSearchForm').classList.toggle('active', tab === 'hotels');
-    document.getElementById('excursionSearchForm').classList.toggle('active', tab === 'excursions');
-    document.getElementById('searchTabHotels').classList.toggle('active', tab === 'hotels');
-    document.getElementById('searchTabExcursions').classList.toggle('active', tab === 'excursions');
+    const hotelForm = document.getElementById('hotelSearchForm');
+    const excursionForm = document.getElementById('excursionSearchForm');
+    if (hotelForm) hotelForm.classList.toggle('active', tab === 'hotels' && SHOW_HOTELS);
+    if (excursionForm) excursionForm.classList.toggle('active', tab === 'excursions' && SHOW_EXCURSIONS);
+    const hotelBtn = document.getElementById('searchTabHotels');
+    const excursionBtn = document.getElementById('searchTabExcursions');
+    if (hotelBtn) hotelBtn.style.display = SHOW_HOTELS ? 'flex' : 'none';
+    if (excursionBtn) excursionBtn.style.display = SHOW_EXCURSIONS ? 'flex' : 'none';
+    hotelBtn?.classList.toggle('active', tab === 'hotels');
+    excursionBtn?.classList.toggle('active', tab === 'excursions');
     if (tab === 'excursions') this.updateDateDisplays();
   },
 
   openDateDropdown(isExcursion = false) {
-    this.closeAllDropdowns();
-    document.getElementById('searchDateDropdown').classList.add('ds-open');
     this.isExcursionDate = isExcursion;
+    this.viewMonth = this.selectedCheckIn ? this.selectedCheckIn.getMonth() : new Date().getMonth();
+    this.viewYear = this.selectedCheckIn ? this.selectedCheckIn.getFullYear() : new Date().getFullYear();
     this.renderCalendar();
+    document.getElementById('searchDateDropdown').style.display = 'flex';
   },
 
   closeDateDropdown() {
-    document.getElementById('searchDateDropdown').classList.remove('ds-open');
-    this.updateDateDisplays();
+    document.getElementById('searchDateDropdown').style.display = 'none';
   },
 
   openGuestDropdown() {
-    this.closeAllDropdowns();
-    document.getElementById('searchGuestDropdown').classList.add('ds-open');
-    this.updateGuestDisplay();
+    document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
 
   closeGuestDropdown() {
-    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
+    document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
-  },
-
-  closeAllDropdowns() {
-    document.getElementById('searchDateDropdown').classList.remove('ds-open');
-    document.getElementById('searchGuestDropdown').classList.remove('ds-open');
   },
 
   changeMonth(delta) {
@@ -309,17 +312,19 @@ const search = {
     const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
     const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
     const today = new Date(); today.setHours(0,0,0,0);
-    let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => `<div class="ds-cal-hdr">${d}</div>`).join('');
-    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day ds-empty"></div>';
+    let html = '';
+    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
+    for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(this.viewYear, this.viewMonth, d);
       const past = date < today;
       let cls = ['ds-cal-day'];
-      if (date.getTime() === today.getTime()) cls.push('ds-today');
-      if (past) cls.push('ds-unavailable');
-      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('ds-selected');
-      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('ds-selected');
-      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('ds-inrange');
+      if (past) cls.push('muted');
+      if (date.getTime() === today.getTime()) cls.push('today');
+      if (this.selectedCheckIn && date.getTime() === this.selectedCheckIn.getTime()) cls.push('selected');
+      if (this.selectedCheckOut && date.getTime() === this.selectedCheckOut.getTime()) cls.push('selected');
+      if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
       html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
     }
     document.getElementById('searchCalGrid').innerHTML = html;
@@ -349,16 +354,14 @@ const search = {
 
   updateDateDisplays() {
     const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
-    const ci = document.getElementById('searchCheckInInput');
-    const co = document.getElementById('searchCheckOutInput');
-    if (ci) ci.value = fmt(this.selectedCheckIn);
-    if (co) co.value = fmt(this.selectedCheckOut);
-    if (this.activeTab === 'hotels') {
-      document.getElementById('checkinDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
-      document.getElementById('checkoutDisplay').textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
-    } else {
-      document.getElementById('excursionDateDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
-    }
+    document.getElementById('searchCheckInInput').value = fmt(this.selectedCheckIn);
+    document.getElementById('searchCheckOutInput').value = fmt(this.selectedCheckOut);
+    const checkinDisplay = document.getElementById('checkinDisplay');
+    const checkoutDisplay = document.getElementById('checkoutDisplay');
+    const excursionDateDisplay = document.getElementById('excursionDateDisplay');
+    if (checkinDisplay) checkinDisplay.textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    if (checkoutDisplay) checkoutDisplay.textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
+    if (excursionDateDisplay) excursionDateDisplay.textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
   },
 
   adjustGuest(type, delta) {
@@ -375,21 +378,32 @@ const search = {
 
   updateGuestDisplay() {
     const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
-    document.getElementById('guestsDisplay').textContent = text;
+    const el = document.getElementById('guestsDisplay');
+    if (el) el.textContent = text;
+  },
+
+  performSearch() {
+    if (this.activeTab === 'hotels') {
+      if (!this.selectedCheckIn || !this.selectedCheckOut) {
+        toast('Please select dates first', 'error');
+        return;
+      }
+      nav.go('hotels');
+    } else {
+      this.applyExcursionSearch();
+    }
   },
 
   applyExcursionSearch() {
     const cat = document.getElementById('excursionCategorySelect').value;
     state.currentExcursionFilter = cat;
-    this.closeAllDropdowns();
     nav.go('excursions');
   },
 
-  handle(q) { state.searchQuery = q.toLowerCase(); if (document.getElementById('hotelsPage').classList.contains('active')) hotels.render(); },
-  filterCategory(cat) { state.currentFilter = cat; document.querySelectorAll('#hotelsPage .filter-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); hotels.render(); },
-  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; document.querySelectorAll('.excursion-chip').forEach(btn => btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`))); excursionsUi.render(); },
+  handle(q) { state.searchQuery = q.toLowerCase(); },
+  filterCategory(cat) { state.currentFilter = cat; },
+  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
 
-  // تهيئة عند التحميل
   init() {
     this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
     this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
@@ -494,20 +508,10 @@ const ui = {
 };
 
 const hotels = {
-  renderFilterChips() {
-    const chipsEl = document.getElementById('hotelFilterChips');
-    if (!chipsEl) return;
-    const categories = [...new Set(CATALOG.hotels.map(h => h.category).filter(Boolean))];
-    chipsEl.innerHTML = [
-      `<button onclick="search.filterCategory('all')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === 'all' ? 'active' : ''}"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>`,
-      ...categories.map(cat => `<button onclick="search.filterCategory('${cat}')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === cat ? 'active' : ''}"><i class="fa-solid fa-hotel"></i> ${esc(cat)}</button>`)
-    ].join('');
-  },
   render() {
     if (!SHOW_HOTELS) return;
     const list = document.getElementById('hotelsList');
     if (!list) return;
-    this.renderFilterChips();
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
@@ -522,6 +526,7 @@ const hotels = {
 
 const excursionsUi = {
   renderFeatured() {
+    if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
     if (el) el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
   },
@@ -538,6 +543,7 @@ const excursionsUi = {
     </div>`;
   },
   render() {
+    if (!SHOW_EXCURSIONS) return;
     const list = document.getElementById('excursionsList');
     if (!list) return;
     let filtered = CATALOG.excursions;
@@ -568,6 +574,7 @@ const excursionsUi = {
 
 const transfersUi = {
   render() {
+    if (!SHOW_TRANSFERS) return;
     const list = document.getElementById('transfersList');
     if (list) {
       list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
@@ -595,10 +602,12 @@ const transfersUi = {
 
 const restaurantsUi = {
   renderRow() {
+    if (!SHOW_RESTAURANTS) return;
     const row = document.getElementById('restaurantsRow');
     if (row) row.innerHTML = CATALOG.restaurants.map(r => this.renderCard(r)).join('');
   },
   renderFull() {
+    if (!SHOW_RESTAURANTS) return;
     const list = document.getElementById('restaurantsFullList');
     if (list) {
       list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
@@ -623,6 +632,7 @@ const restaurantsUi = {
 
 const destinationsUi = {
   render() {
+    if (!SHOW_DESTINATIONS) return;
     const row = document.getElementById('destinationsRow');
     if (!row) return;
     row.innerHTML = CATALOG.destinations.map(d => {
@@ -674,10 +684,73 @@ const articlesUi = {
 
 // ==================== DESKTOP LAYOUT HELPER ====================
 function applyDesktopLayout() {
-  // Bottom nav / sticky header visibility, section sizing, and the docked
-  // sidebar are now all handled declaratively via CSS media queries
-  // (see the "DESKTOP / LAPTOP LAYOUT" block in style.css), so this no
-  // longer needs to fight with Tailwind's utility classes at runtime.
+  const isDesktop = window.innerWidth >= 1024;
+  document.querySelectorAll('.bottom-nav, .sticky-home-header').forEach(el => {
+    el.style.display = isDesktop ? 'none' : '';
+  });
+  document.querySelectorAll('.section-title').forEach(el => {
+    el.className = 'section-title ' + (isDesktop ? 'text-4xl font-bold' : 'text-2xl font-bold');
+  });
+  if (isDesktop) {
+    document.querySelector('.search-card')?.classList.add('max-w-4xl', 'mx-auto', 'p-8');
+  } else {
+    document.querySelector('.search-card')?.classList.remove('max-w-4xl', 'mx-auto', 'p-8');
+  }
+}
+
+// ==================== CATEGORY VISIBILITY ====================
+function applyCategoryVisibility() {
+  // إخفاء أقسام الهوم حسب الأعلام
+  const homeSections = {
+    hotels: document.getElementById('featuredHotels'),
+    excursions: document.getElementById('featuredExcursions'),
+    restaurants: document.getElementById('restaurantsRow'),
+    destinations: document.getElementById('destinationsRow'),
+  };
+
+  if (!SHOW_HOTELS && homeSections.hotels) {
+    homeSections.hotels.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  }
+  if (!SHOW_EXCURSIONS && homeSections.excursions) {
+    homeSections.excursions.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  }
+  if (!SHOW_RESTAURANTS && homeSections.restaurants) {
+    homeSections.restaurants.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  }
+  if (!SHOW_DESTINATIONS && homeSections.destinations) {
+    homeSections.destinations.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+  }
+  // إخفاء بانر الترانسفير إذا كانت الترانسفير معطلة
+  if (!SHOW_TRANSFERS) {
+    document.querySelectorAll('.banner-creative').forEach(el => {
+      if (el.getAttribute('onclick')?.includes('transfers')) {
+        el.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
+      }
+    });
+  }
+
+  // إخفاء روابط القائمة الجانبية
+  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.querySelectorAll('.drawer-link').forEach(link => {
+    const onclick = link.getAttribute('onclick') || '';
+    if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
+    if (onclick.includes("nav.go('transfers')") && !SHOW_TRANSFERS) link.style.display = 'none';
+    if (onclick.includes("nav.go('restaurants')") && !SHOW_RESTAURANTS) link.style.display = 'none';
+  });
+
+  // إخفاء عناصر التنقل السفلي
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+    const page = item.getAttribute('data-page');
+    if (page === 'excursions' && !SHOW_EXCURSIONS) item.style.display = 'none';
+    if (page === 'transfers' && !SHOW_TRANSFERS) item.style.display = 'none';
+  });
+
+  // إخفاء الصفحات الكاملة من الـ mainApp
+  if (!SHOW_HOTELS) document.getElementById('hotelsPage')?.remove();
+  if (!SHOW_EXCURSIONS) document.getElementById('excursionsPage')?.remove();
+  if (!SHOW_TRANSFERS) document.getElementById('transfersPage')?.remove();
+  if (!SHOW_RESTAURANTS) document.getElementById('restaurantsPage')?.remove();
+  if (!SHOW_DESTINATIONS) document.getElementById('destinationsPage')?.remove();
 }
 
 // ==================== INIT ====================
@@ -689,9 +762,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateCountryCodeSelect();
   populateNationalitySelect();
   applyDesktopLayout();
+  applyCategoryVisibility();
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab('hotels'); // افتراضي الفنادق
+  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
+  search.init();
   setTimeout(hideSplash, 3000);
 });
 
