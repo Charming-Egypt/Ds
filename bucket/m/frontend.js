@@ -1,9 +1,9 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-const SHOW_HOTELS = false;
-const SHOW_EXCURSIONS = true;
-const SHOW_TRANSFERS = true;
-const SHOW_RESTAURANTS = true;
-const SHOW_DESTINATIONS = true;
+const SHOW_HOTELS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_HOTELS : false;
+const SHOW_EXCURSIONS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_EXCURSIONS : true;
+const SHOW_TRANSFERS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_TRANSFERS : true;
+const SHOW_RESTAURANTS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_RESTAURANTS : true;
+const SHOW_DESTINATIONS = window.DS_CONFIG ? window.DS_CONFIG.SHOW_DESTINATIONS : true;
 
 function enterApp() {
   hideSplash();
@@ -12,7 +12,6 @@ function enterApp() {
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
-  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
 
   if (currentUser) {
     updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
@@ -95,6 +94,8 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
+    // حتى لو فشل، استخدم البيانات المحلية
+    updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   }
 }
 
@@ -570,7 +571,7 @@ function showRoomPreview(hotelId, roomIndex) {
 }
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
-// ==================== UI RENDERERS (تصميم محسّن) ====================
+// ==================== UI RENDERERS ====================
 const ui = {
   renderHotelCard(h) {
     if (!SHOW_HOTELS) return '';
@@ -645,50 +646,33 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS RENDERER (سلايدر أفقي و تصميم مبتكر) ====================
+// ==================== EXCURSIONS RENDERER (سلايدر كامل العرض) ====================
 const excursionsUi = {
   renderFeatured() {
     if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
     if (el) {
-      el.className = 'excursions-slider horizontal-scroll';
+      el.className = 'hero-slider';
       el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
-      this.initSlider(el);
+      // إضافة خصائص التمرير
+      el.querySelectorAll('.hero-slide-card').forEach(card => {
+        card.style.scrollSnapAlign = 'center';
+      });
     }
   },
   renderSliderCard(x) {
     const img = getImageUrl(x.image);
     return `
-      <div class="excursion-slide-card bg-card rounded-3xl overflow-hidden shadow-xl cursor-pointer flex-shrink-0 snap-center" style="width: 280px;" onclick="showExcursionPage('${x.id}')">
-        <div class="relative h-44 overflow-hidden">
-          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${x.category}</span>
-          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
-          <h3 class="absolute bottom-3 left-3 right-3 text-white font-display font-bold text-lg leading-tight line-clamp-1">${x.title}</h3>
-        </div>
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-2 text-xs text-gray-500">
-            <span><i class="fa-regular fa-clock text-violet-500"></i> ${x.duration}</span>
-            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || 'Sharm'}</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-[10px] text-gray-500">From</p>
-              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
-            </div>
-            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">Book Now</button>
-          </div>
+      <div class="hero-slide-card" onclick="showExcursionPage('${x.id}')">
+        <img src="${img}" alt="${x.title}" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <span class="badge-category">${x.category}</span>
+        <span class="badge-rating"><i class="fa-solid fa-star"></i> ${Number(x.rating).toFixed(1)}</span>
+        <div class="hero-slide-overlay">
+          <h3>${x.title}</h3>
+          <p>${x.duration} · ${x.meetingPoint || 'Sharm El Sheikh'}</p>
+          <p class="font-bold text-gold-400 mt-1">${utils.formatPrice(x.price)} <span class="text-xs font-normal text-white/80">/person</span></p>
         </div>
       </div>`;
-  },
-  initSlider(el) {
-    // إضافة scroll-snap و smooth scrolling تلقائياً عبر CSS classes
-    el.style.scrollSnapType = 'x mandatory';
-    el.style.scrollBehavior = 'smooth';
-    el.querySelectorAll('.excursion-slide-card').forEach(card => {
-      card.style.scrollSnapAlign = 'center';
-    });
   },
   render() {
     if (!SHOW_EXCURSIONS) return;
@@ -770,7 +754,64 @@ const transfersUi = {
   }
 };
 
-// ==================== RESTAURANTS RENDERER (تصميم محسّن) ====================
+// ==================== SHOW TRANSFER PAGE (تفاصيل مثل صفحة الرحلة) ====================
+function showTransferPage(id) {
+  const v = CATALOG.transfers.find(t => t.id === id);
+  if (!v) return toast('Transfer not found', 'error');
+
+  const page = document.createElement('div');
+  page.id = 'transferDetailPage';
+  page.className = 'page';
+  page.innerHTML = `
+    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
+      <div class="relative h-80">
+        <img src="${getImageUrl(v.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <button onclick="closeTransferPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
+        <div class="absolute bottom-5 left-5 right-5 text-white">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="bg-gold-400 text-ink-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-shuttle-van mr-1"></i> ${v.vehicleType}</span>
+            <span class="rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${v.rating || 4.5}</span></span>
+          </div>
+          <h1 class="font-display text-3xl font-bold leading-tight mb-2">${v.vehicleType} Transfer</h1>
+          <p class="text-sm text-white/80"><i class="fa-solid fa-users"></i> Up to ${v.capacity} passengers</p>
+        </div>
+      </div>
+      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-6" style="background:var(--bg-card)">
+        <div>
+          <p class="text-violet-500 text-sm font-semibold mb-2">— ABOUT THIS TRANSFER</p>
+          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${v.fullDescription || v.description}</p>
+        </div>
+        <div>
+          <p class="text-violet-500 text-sm font-semibold mb-3">— FEATURES</p>
+          <div class="grid grid-cols-2 gap-3">
+            ${(v.features || []).map(f => `<div class="field-box rounded-xl p-3 flex items-center gap-2 text-sm"><i class="fa-solid fa-check text-green-500"></i> ${f}</div>`).join('')}
+          </div>
+        </div>
+        <div class="card rounded-2xl p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-500">One-way trip</p>
+              <p class="font-display font-bold text-violet-500 text-2xl">${utils.formatPrice(v.price)}</p>
+            </div>
+            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-8 py-3 rounded-xl font-bold text-ink-900">Book Now</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mainApp').appendChild(page);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  page.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function closeTransferPage() {
+  const p = document.getElementById('transferDetailPage');
+  if (p) p.remove();
+  nav.go('transfers');
+}
+
+// ==================== RESTAURANTS RENDERER ====================
 const restaurantsUi = {
   renderRow() {
     if (!SHOW_RESTAURANTS) return;
@@ -843,7 +884,7 @@ const reviewsHomeUi = {
   }
 };
 
-// ==================== ARTICLES RENDERER (تصميم محسّن) ====================
+// ==================== ARTICLES RENDERER ====================
 const articlesUi = {
   render() {
     const row = document.getElementById('articlesRow');
@@ -937,10 +978,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // ✅ إخفاء النماذج فوراً ثم إظهار الصحيح
+  // إخفاء النماذج فوراً ثم إظهار الصحيح
   document.getElementById('hotelSearchForm').style.display = 'none';
   document.getElementById('excursionSearchForm').style.display = 'none';
-  search.init(); // ستستدعي switchTab الصحيح
+  search.init();
 
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
