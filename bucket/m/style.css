@@ -254,7 +254,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #a78bfa;
+  border-color: #fb923c;
 }
 
 ::placeholder {
@@ -279,11 +279,8 @@ select:focus {
   z-index: 50;
   border-radius: 26px;
   padding: .55rem .7rem;
-  background: var(--chrome-bg-glass);
-  border: 1px solid var(--chrome-border);
+  background: var(--chrome-bg);
   box-shadow: var(--chrome-shadow);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   transition: background .3s ease, box-shadow .3s ease;
 }
 
@@ -311,7 +308,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active {
-  color: #8b5cf6;
+  color: #f97316;
 }
 
 .nav-item.active::after {
@@ -323,8 +320,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
-  box-shadow: 0 0 8px rgba(139, 92, 246, .9);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
+  box-shadow: 0 0 8px rgba(249, 115, 22, .9);
 }
 
 .nav-item[data-page="profile"].active::after {
@@ -337,8 +334,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   margin-top: -30px;
   border-radius: 50%;
   cursor: pointer;
-  background: linear-gradient(150deg, #c4b5fd, #8b5cf6 55%, #6d28d9);
-  box-shadow: 0 10px 26px -4px rgba(139, 92, 246, .55), 0 0 0 5px var(--chrome-bg);
+  background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
+  box-shadow: 0 10px 26px -4px rgba(249, 115, 22, .65), 0 0 0 5px #171029;
   transition: transform .25s cubic-bezier(.16, 1, .3, 1);
 }
 
@@ -359,7 +356,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(150deg, #c4b5fd, #8b5cf6 55%, #6d28d9);
+  background: linear-gradient(135deg, #fdba74, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -377,7 +374,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active .nav-avatar-circle {
-  box-shadow: 0 0 0 2px #8b5cf6;
+  box-shadow: 0 0 0 2px #f97316;
 }
 
 /* ---------- Sticky Header ---------- */
@@ -391,11 +388,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   z-index: 55;
   border-radius: 22px;
   padding: .6rem .9rem;
-  background: var(--chrome-bg-glass);
-  border: 1px solid var(--chrome-border);
+  background: var(--chrome-bg);
   box-shadow: var(--chrome-shadow);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -433,8 +427,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .btn-violet {
-  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 55%, #6d28d9 100%);
-  box-shadow: 0 10px 30px -8px rgba(139, 92, 246, .4);
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 55%, #c2410c 100%);
+  box-shadow: 0 10px 30px -8px rgba(249, 115, 22, .45);
   border: none;
   cursor: pointer;
   color: #fff;
@@ -443,7 +437,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-violet:hover {
   transform: translateY(-1px);
-  box-shadow: 0 15px 35px -8px rgba(139, 92, 246, .55);
+  box-shadow: 0 15px 35px -8px rgba(249, 115, 22, .6);
 }
 
 .btn-violet:disabled {
@@ -454,7 +448,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-outline-violet {
   background: var(--bg-card);
-  border: 1.5px solid #6d28d9;
+  border: 1.5px solid #c2410c;
   color: #a78bfa;
 }
 
@@ -547,7 +541,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 /* ---------- Promo Banner ---------- */
 .promo-banner {
-  background: linear-gradient(135deg, #9a3412 0%, #8b5cf6 50%, #6d28d9 100%);
+  background: linear-gradient(135deg, #9a3412 0%, #f97316 50%, #c2410c 100%);
   position: relative;
   overflow: hidden;
 }
@@ -587,7 +581,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #c4b5fd, #6d28d9);
+  background: linear-gradient(135deg, #fdba74, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -661,7 +655,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .room-option-card.room-selected {
-  border-color: #8b5cf6;
+  border-color: #f97316;
 }
 
 .room-option-card .room-select-check {
@@ -694,7 +688,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .filter-chip.active {
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   border-color: transparent;
   color: #fff;
   box-shadow: 0 6px 18px -6px rgba(124, 58, 237, .5);
@@ -744,7 +738,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .section-subtitle {
-  color: #8b5cf6;
+  color: #f97316;
   font-size: .62rem;
   font-weight: 700;
   letter-spacing: .25em;
@@ -927,33 +921,12 @@ html[dir="ltr"] #sideDrawer.open {
   color: var(--chrome-text-muted);
   transition: all .2s;
   cursor: pointer;
-  border-left: 3px solid transparent;
 }
 
-html[dir="rtl"] .drawer-link {
-  border-left: none;
-  border-right: 3px solid transparent;
-}
-
-.drawer-link:hover {
-  background: rgba(139, 92, 246, .12);
-  color: #fff;
-}
-
+.drawer-link:hover,
 .drawer-link.active {
-  background: linear-gradient(90deg, rgba(139, 92, 246, .22), rgba(139, 92, 246, .06));
+  background: rgba(139, 92, 246, .15);
   color: #fff;
-  border-left-color: #a78bfa;
-  font-weight: 600;
-}
-
-html[dir="rtl"] .drawer-link.active {
-  background: linear-gradient(-90deg, rgba(139, 92, 246, .22), rgba(139, 92, 246, .06));
-  border-right-color: #a78bfa;
-}
-
-.drawer-link.active i {
-  color: #a78bfa;
 }
 
 /* ---------- Theme Switch ---------- */
@@ -997,7 +970,7 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .lang-toggle button.active {
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
 }
 
@@ -1040,7 +1013,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1070,9 +1043,9 @@ html[data-theme="light"] .theme-switch .knob {
 
 /* ---------- Cuisine / Fine Dining ---------- */
 .lux-cuisine-badge {
-  background: rgba(139, 92, 246, .16);
-  border: 1px solid rgba(196, 181, 253, .5);
-  color: #c4b5fd;
+  background: rgba(249, 115, 22, .18);
+  border: 1px solid rgba(253, 186, 116, .5);
+  color: #fdba74;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .05em;
@@ -1100,7 +1073,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #8b5cf6;
+  background: #f97316;
   flex-shrink: 0;
 }
 
@@ -1110,7 +1083,7 @@ html[data-theme="light"] .theme-switch .knob {
   font-weight: 700;
   font-size: 16px;
   letter-spacing: .02em;
-  color: #7c3aed;
+  color: #ea580c;
   text-align: center;
   margin-bottom: 16px;
 }
@@ -1138,7 +1111,7 @@ html[data-theme="light"] .theme-switch .knob {
 .menu-item-price {
   font-weight: 700;
   font-size: 14px;
-  color: #7c3aed;
+  color: #ea580c;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1167,21 +1140,9 @@ html[data-theme="light"] .theme-switch .knob {
   100% { background-position: 0 50%; }
 }
 
-/* ============ HERO SEARCH WIDGET ============ */
 /* ============================================================
-   SEARCH SYSTEM (New Clean Design) — Standalone Styles
+   SEARCH SYSTEM (New Clean Design)
    ============================================================ */
-
-/* البطاقة الرئيسية للبحث */
-.search-card.premium-search {
-  padding: 4px !important;
-  border-radius: 20px !important;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  box-shadow: 0 25px 60px -18px rgba(20, 10, 45, .35);
-}
-
-/* أزرار التبويب */
 .search-tab-new {
   padding: 12px 16px;
   border-radius: 12px;
@@ -1209,27 +1170,11 @@ html[data-theme="light"] .theme-switch .knob {
   box-shadow: 0 8px 20px -6px rgba(249, 115, 22, .5);
 }
 
-/* نماذج البحث - التحكم في الإظهار والإخفاء */
-.search-form {
-  display: none;
-}
-
-.search-form.active {
-  display: block;
-  animation: fadeInUp .4s ease;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* المودالات (نوافذ منبثقة) */
 .ds-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
-  z-index: 1000;
+  z-index: 10000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1244,14 +1189,6 @@ html[data-theme="light"] .theme-switch .knob {
   max-width: 400px;
   border: 1px solid var(--border-card);
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-
-/* أزرار التنقل في التقويم */
-.ds-desk-cal-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
 }
 
 .ds-modal-nav-btn {
@@ -1274,7 +1211,6 @@ html[data-theme="light"] .theme-switch .knob {
   color: #f97316;
 }
 
-/* تسميات الإدخال داخل المودال */
 .ds-modal-label {
   font-size: 11px;
   font-weight: 600;
@@ -1295,12 +1231,6 @@ html[data-theme="light"] .theme-switch .knob {
   font-size: 14px;
 }
 
-.ds-modal-input:focus {
-  outline: none;
-  border-color: #f97316;
-}
-
-/* زر التطبيق */
 .ds-modal-apply {
   width: 100%;
   padding: 14px;
@@ -1314,7 +1244,6 @@ html[data-theme="light"] .theme-switch .knob {
   margin-top: 16px;
 }
 
-/* صفوف الضيوف */
 .ds-guest-row {
   display: flex;
   justify-content: space-between;
@@ -1372,7 +1301,6 @@ html[data-theme="light"] .theme-switch .knob {
   text-align: center;
 }
 
-/* شبكة التقويم */
 .ds-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -1430,18 +1358,44 @@ html[data-theme="light"] .theme-switch .knob {
   border-radius: 4px;
 }
 
-/* استجابة الجوال */
-@media (max-width: 480px) {
-  .search-card.premium-search {
-    padding: 4px !important;
-  }
-  
-  .ds-modal-content {
-    max-width: 90vw;
-    padding: 16px;
-  }
+/* أزرار الفئات */
+.ds-category-btn {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-field);
+  border: 1px solid var(--border-field);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
 }
-  
+
+.ds-category-btn:hover {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+}
+
+.ds-category-btn.active {
+  background: linear-gradient(135deg, #fb923c, #c2410c);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Forms visibility */
+.search-form {
+  display: none;
+}
+
+.search-form.active {
+  display: block;
+  animation: fadeInUp .4s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
@@ -1452,147 +1406,34 @@ html[data-theme="light"] .theme-switch .knob {
     bottom: .7rem;
     padding: .5rem .7rem;
   }
-  .ds-search-wrapper {
-    padding: 16px !important;
-  }
-  .ds-bkg-top-bar {
-    flex-direction: column;
-  }
-  .ds-bkg-field {
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .ds-bkg-field:last-child {
-    border-bottom: none;
-  }
 }
 
 /* ============================================================
-   TABLET LAYOUT (2-column grids)
-   ============================================================ */
-@media (min-width: 640px) and (max-width: 1023px) {
-  #featuredHotels,
-  #hotelsList,
-  #excursionsList,
-  #transfersList,
-  #restaurantsFullList,
-  #favoritesList,
-  #bookingsList {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
-  }
-
-  .destination-card {
-    width: 168px;
-    height: 200px;
-  }
-}
-
-/* ============================================================
-   DESKTOP / LAPTOP LAYOUT
-   A persistent sidebar replaces the bottom nav + drawer overlay;
-   the app shell becomes a wide, multi-column web layout instead
-   of a phone-width column.
+   DESKTOP LAYOUT & ENHANCEMENTS
    ============================================================ */
 @media (min-width: 1024px) {
-  html, body {
-    overflow-x: hidden;
-  }
-
-  /* Bottom tab bar & the floating "scrolled" header are mobile-only patterns */
-  .bottom-nav,
-  .sticky-home-header {
-    display: none !important;
-  }
-
-  /* No hamburger / close button needed once the sidebar is docked */
-  .sidebar-toggle-btn,
-  .drawer-close-btn {
-    display: none !important;
-  }
-
-  #sideDrawerOverlay {
-    display: none !important;
-  }
-
-  /* Dock the sidebar permanently once the user is inside the app (not on splash/auth) */
-  body:has(#mainApp:not(.hidden)) #sideDrawer {
-    transform: none !important;
-    width: 264px;
-    max-width: 264px;
-    box-shadow: none;
-  }
-
-  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #sideDrawer {
-    border-right: 1px solid var(--chrome-border);
-  }
-
-  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #sideDrawer {
-    border-left: 1px solid var(--chrome-border);
-  }
-
-  body:has(#mainApp:not(.hidden)) #sideDrawer .p-5 {
-    padding: 1.75rem 1.35rem;
-  }
-
-  /* Give the drawer a touch more presence as a permanent nav rail */
-  body:has(#mainApp:not(.hidden)) .drawer-link {
-    padding: .9rem 1.1rem;
-    font-size: .92rem;
-  }
-
-  /* Push the app content over to make room for the docked sidebar */
-  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #mainApp {
-    margin-left: 264px;
-  }
-
-  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #mainApp {
-    margin-right: 264px;
-  }
-
-  /* Center & cap the page content so it doesn't stretch edge-to-edge on wide monitors */
-  .page > .min-h-screen,
-  #homePage > .hero-section {
-    max-width: 1440px;
+  .main-area {
+    max-width: 1280px;
     margin-left: auto;
     margin-right: auto;
+    padding: 0 32px;
   }
-
-  .hero-section {
-    min-height: 46vh;
-    border-radius: 0 0 32px 32px;
-    overflow: hidden;
+  .bottom-nav {
+    display: none !important;
   }
-
-  .hero-content {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-
-  .hero-content h1 {
-    font-size: 3.25rem;
-  }
-
   .section-title {
-    font-size: 1.75rem;
-    letter-spacing: -.01em;
+    font-size: 28px;
+    letter-spacing: -0.5px;
   }
-
   .section-subtitle {
-    font-size: .7rem;
-    letter-spacing: .3em;
+    font-size: 13px;
+    letter-spacing: 2px;
   }
-
   .search-card {
-    max-width: 960px;
-    margin: -3rem auto 0;
-    padding: 28px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px;
   }
-
-  /* Listing grids: 3 up on laptop, room to breathe */
   #featuredHotels,
   #hotelsList,
   #excursionsList,
@@ -1604,44 +1445,24 @@ html[data-theme="light"] .theme-switch .knob {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 24px !important;
   }
-
-  .hotel-card:hover,
-  .restaurant-card:hover {
-    transform: translateY(-5px);
+  .hotel-card .flex {
+    flex-direction: column;
   }
-
+  .hotel-card .w-32.h-32,
+  .hotel-card .md\:w-36.md\:h-36 {
+    width: 100% !important;
+    height: 220px !important;
+  }
+  .hotel-card .flex-1 {
+    padding: 20px;
+  }
   .destination-card {
-    width: 190px;
-    height: 220px;
+    height: 200px;
   }
-
   .modal-overlay {
     padding: 60px 20px;
   }
-
   .modal-content {
     max-width: 700px;
-  }
-}
-
-@media (min-width: 1440px) {
-  html[dir="ltr"] body:has(#mainApp:not(.hidden)) #mainApp {
-    margin-left: 288px;
-  }
-  html[dir="rtl"] body:has(#mainApp:not(.hidden)) #mainApp {
-    margin-right: 288px;
-  }
-  body:has(#mainApp:not(.hidden)) #sideDrawer {
-    width: 288px;
-    max-width: 288px;
-  }
-  #featuredHotels,
-  #hotelsList,
-  #excursionsList,
-  #transfersList,
-  #restaurantsFullList,
-  #favoritesList,
-  #bookingsList {
-    grid-template-columns: repeat(4, 1fr) !important;
   }
 }
