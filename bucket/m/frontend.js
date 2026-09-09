@@ -1002,6 +1002,4 @@ document.addEventListener('submit', (e) => {
   if (e.target.closest('#reviewModal form')) { e.preventDefault(); reviews.submit(e); }
 });
 
-// Expose functions globally
-window.showTransferPage = showTransferPage;
-window.closeTransferPage = closeTransferPage;
+
