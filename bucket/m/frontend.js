@@ -287,9 +287,8 @@ const search = {
     if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
     if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
 
-    // تحديث محتوى الهيرو
+    // تحديث محتوى الهيرو وبدء تدوير الخلفيات
     this.updateHeroContent(tab);
-    // تحديث عرض التواريخ
     this.updateDateDisplays();
   },
 
@@ -298,22 +297,20 @@ const search = {
       hotels: {
         eyebrow: '— PREMIUM STAYS',
         title: 'Find Your<br /><span class="italic text-gold-400">Perfect Stay</span>',
-        subtitle: 'Hotels. Excursions. Airport transfers.',
-        bgImage: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=90'
+        subtitle: 'Hotels. Excursions. Airport transfers.'
       },
       excursions: {
         eyebrow: '— THINGS TO DO',
         title: 'Discover<br /><span class="italic text-gold-400">Excursions</span>',
-        subtitle: 'Diving. Safari. Boat trips.',
-        bgImage: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=90'
+        subtitle: 'Diving. Safari. Boat trips.'
       }
     };
     const data = heroData[tab] || heroData.hotels;
     document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
     document.getElementById('heroTitleText').innerHTML = data.title;
     document.getElementById('heroSubtitleText').textContent = data.subtitle;
-    const bgImg = document.getElementById('heroBgImage');
-    if (bgImg) bgImg.src = data.bgImage;
+    // بدء تدوير الخلفيات الخاصة بالتبويب
+    startHeroBackgroundRotation(tab);
   },
 
   openDateDropdown(isExcursion = false) {
@@ -488,6 +485,53 @@ const search = {
   }
 };
 
+// ==================== HERO BACKGROUND ROTATION ====================
+const HERO_BACKGROUNDS = {
+  hotels: [
+    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=90'
+  ],
+  excursions: [
+    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=90',
+    'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1600&q=90'
+  ]
+};
+
+let heroBgIndex = 0;
+let heroBgInterval = null;
+
+function startHeroBackgroundRotation(tab) {
+  stopHeroBackgroundRotation();
+  const backgrounds = HERO_BACKGROUNDS[tab] || HERO_BACKGROUNDS.hotels;
+  heroBgIndex = 0;
+  setHeroImage(backgrounds[0]);
+  heroBgInterval = setInterval(() => {
+    heroBgIndex = (heroBgIndex + 1) % backgrounds.length;
+    setHeroImage(backgrounds[heroBgIndex]);
+  }, 5000);
+}
+
+function stopHeroBackgroundRotation() {
+  if (heroBgInterval) {
+    clearInterval(heroBgInterval);
+    heroBgInterval = null;
+  }
+}
+
+function setHeroImage(src) {
+  const bgImg = document.getElementById('heroBgImage');
+  if (!bgImg) return;
+  bgImg.style.opacity = '0';
+  setTimeout(() => {
+    bgImg.src = src;
+    bgImg.style.opacity = '1';
+  }, 500);
+}
+
 // ==================== CURRENCY CHANGE ====================
 function changeCurrency(c) {
   if (!currencyAvailable) c = 'EGP';
@@ -526,7 +570,7 @@ function showRoomPreview(hotelId, roomIndex) {
 }
 function closeRoomPreview() { if (!SHOW_HOTELS) return; document.getElementById('roomPreviewModal').classList.add('hidden'); }
 
-// ==================== UI RENDERERS ====================
+// ==================== UI RENDERERS (إعادة تصميم) ====================
 const ui = {
   renderHotelCard(h) {
     if (!SHOW_HOTELS) return '';
@@ -583,6 +627,7 @@ const ui = {
   }
 };
 
+// ==================== HOTELS RENDERER ====================
 const hotels = {
   render() {
     if (!SHOW_HOTELS) return;
@@ -600,23 +645,31 @@ const hotels = {
   }
 };
 
+// ==================== EXCURSIONS RENDERER (تصميم محسّن) ====================
 const excursionsUi = {
   renderFeatured() {
     if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
-    if (el) el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
+    if (el) el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderCard(x)).join('');
   },
   renderMiniCard(x) {
     const img = getImageUrl(x.image);
-    return `<div onclick="showExcursionPage('${x.id}')" class="flex-shrink-0 w-44 cursor-pointer">
-      <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
-        <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-        <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></div>
-        <div class="absolute bottom-2 right-2 left-2"><span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${x.category}</span></div>
-      </div>
-      <h4 class="font-display font-bold text-sm line-clamp-2 mb-1">${x.title}</h4>
-      <p class="font-display font-bold text-violet-500 text-sm">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal"> /person</span></p>
-    </div>`;
+    return `
+      <div onclick="showExcursionPage('${x.id}')" class="excursion-card-mini cursor-pointer rounded-2xl overflow-hidden shadow-lg bg-card" style="min-width: 220px; flex-shrink:0;">
+        <div class="relative h-32">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <span class="absolute bottom-2 left-2 text-white text-xs font-bold bg-violet-600/80 px-2 py-0.5 rounded-full">${x.category}</span>
+          <span class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
+        </div>
+        <div class="p-4">
+          <h4 class="font-display font-bold text-sm line-clamp-2 mb-1">${x.title}</h4>
+          <div class="flex items-center justify-between">
+            <p class="font-display font-bold text-violet-500 text-base">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal"> /person</span></p>
+            <span class="text-[10px] text-gray-500"><i class="fa-regular fa-clock"></i> ${x.duration}</span>
+          </div>
+        </div>
+      </div>`;
   },
   render() {
     if (!SHOW_EXCURSIONS) return;
@@ -630,24 +683,35 @@ const excursionsUi = {
   },
   renderCard(x) {
     const img = getImageUrl(x.image);
-    return `<div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
-      <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
-        <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
-      </div>
-      <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
-        <div>
-          <span class="text-[9px] font-bold text-violet-500">${x.category}</span>
-          <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1">${x.title}</h3>
-          <p class="text-[10px]"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${x.duration}</p>
+    return `
+      <div onclick="showExcursionPage('${x.id}')" class="excursion-card bg-card rounded-[20px] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
+        <div class="relative h-52 overflow-hidden">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${x.category}</span>
+          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
+          <div class="absolute bottom-3 left-3 right-3 text-white">
+            <h3 class="font-display font-bold text-lg leading-tight line-clamp-1">${x.title}</h3>
+          </div>
         </div>
-        <div class="flex items-center justify-between">
-          <p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-[9px] font-normal"> /person</span></p>
+        <div class="p-4 flex flex-col justify-between flex-1">
+          <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
+            <span><i class="fa-regular fa-clock text-violet-500"></i> ${x.duration}</span>
+            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || 'Sharm'}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[10px] text-gray-500">From</p>
+              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
+            </div>
+            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">Book Now</button>
+          </div>
         </div>
-      </div>
-    </div>`;
+      </div>`;
   }
 };
 
+// ==================== TRANSFERS RENDERER (تصميم محسّن) ====================
 const transfersUi = {
   render() {
     if (!SHOW_TRANSFERS) return;
@@ -658,24 +722,36 @@ const transfersUi = {
     }
   },
   renderCard(v) {
-    return `<div class="hotel-card rounded-2xl overflow-hidden">
-      <img src="${getImageUrl(v.image)}" class="w-full h-36 object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-      <div class="p-4">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-display font-bold text-base">${v.vehicleType}</h3>
-          <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group"></i> Up to ${v.capacity}</span>
+    const img = getImageUrl(v.image);
+    return `
+      <div class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+        <div class="relative h-40 overflow-hidden">
+          <img src="${img}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <span class="absolute top-3 left-3 bg-gold-400 text-ink-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-star mr-1"></i> ${v.rating || 4.5}</span>
         </div>
-        <p class="text-xs mb-3">${v.description}</p>
-        <div class="flex flex-wrap gap-1.5 mb-3">${(v.features || []).map(f => `<span class="text-[9px] px-2 py-1 rounded-lg" style="background:var(--bg-field)">${f}</span>`).join('')}</div>
-        <div class="flex items-center justify-between">
-          <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}<span class="text-xs font-normal"> /trip</span></p>
-          <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-6 py-2.5 rounded-2xl font-bold text-ink-900 text-sm">Book</button>
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display font-bold text-lg">${v.vehicleType}</h3>
+            <span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group mr-1"></i> Up to ${v.capacity}</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-4 line-clamp-2">${v.description}</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            ${(v.features || []).slice(0,3).map(f => `<span class="text-xs px-3 py-1 rounded-lg bg-field border border-field" style="background:var(--bg-field);border-color:var(--border-field);color:var(--text-secondary)">${f}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between border-t pt-3" style="border-color:var(--border-card)">
+            <div>
+              <p class="text-[10px] text-gray-500">One-way trip</p>
+              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}</p>
+            </div>
+            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">Book Now</button>
+          </div>
         </div>
-      </div>
-    </div>`;
+      </div>`;
   }
 };
 
+// ==================== RESTAURANTS RENDERER (تصميم محسّن) ====================
 const restaurantsUi = {
   renderRow() {
     if (!SHOW_RESTAURANTS) return;
@@ -691,21 +767,25 @@ const restaurantsUi = {
     }
   },
   renderCard(r) {
-    return `<div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full">
-      <div class="relative h-28">
-        <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
-        <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
-        <div class="absolute top-2 left-2 bg-ink-950/70 text-white text-[9px] font-bold px-2 py-1 rounded-full capitalize">${r.category}</div>
-      </div>
-      <div class="p-3">
-        <p class="font-display font-bold text-sm mb-0.5 truncate">${r.name}</p>
-        <p class="text-[11px] mb-1.5">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
-        <p class="text-[10px]"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
-      </div>
-    </div>`;
+    const img = getImageUrl(r.image);
+    return `
+      <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+        <div class="relative h-36 overflow-hidden">
+          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+          <span class="absolute top-3 left-3 bg-ink-950/70 text-white text-xs font-bold px-3 py-1 rounded-full capitalize">${r.category}</span>
+          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${r.rating}</span></span>
+        </div>
+        <div class="p-4">
+          <h3 class="font-display font-bold text-lg mb-1 truncate">${r.name}</h3>
+          <p class="text-sm text-gray-500 mb-2">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
+          <p class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
+        </div>
+      </div>`;
   }
 };
 
+// ==================== DESTINATIONS RENDERER ====================
 const destinationsUi = {
   render() {
     if (!SHOW_DESTINATIONS) return;
@@ -713,19 +793,21 @@ const destinationsUi = {
     if (!row) return;
     row.innerHTML = CATALOG.destinations.map(d => {
       const imgSrc = getImageUrl(d.image);
-      return `<div onclick="showDestinationPage('${d.id}')" class="destination-card">
-        <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
-        <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
-        <div class="absolute bottom-3 right-3 left-3 text-white">
-          <p class="font-display font-bold text-base leading-tight">${d.name}</p>
-          <p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p>
-        </div>
-      </div>`;
+      return `
+        <div onclick="showDestinationPage('${d.id}')" class="destination-card cursor-pointer rounded-[18px] overflow-hidden shadow-lg">
+          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
+          <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+          <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
+          <div class="absolute bottom-3 right-3 left-3 text-white">
+            <p class="font-display font-bold text-base leading-tight">${d.name}</p>
+            <p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p>
+          </div>
+        </div>`;
     }).join('');
   }
 };
 
+// ==================== REVIEWS RENDERER ====================
 const reviewsHomeUi = {
   render() {
     const row = document.getElementById('reviewsRow');
@@ -742,17 +824,18 @@ const reviewsHomeUi = {
   }
 };
 
+// ==================== ARTICLES RENDERER (تصميم محسّن) ====================
 const articlesUi = {
   render() {
     const row = document.getElementById('articlesRow');
     if (!row) return;
     row.innerHTML = CATALOG.articles.map(a => `
-      <div onclick="showArticlePage('${a.id}')" class="article-card">
-        <img src="${a.image}" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div class="flex-1 min-w-0 py-1">
-          <p class="font-display font-bold text-sm mb-1 leading-snug">${a.title}</p>
-          <p class="text-[11px] mb-1.5">${a.excerpt}</p>
-          <p class="text-[10px]"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min</p>
+      <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer flex gap-4 p-4 rounded-2xl bg-card shadow-sm hover:shadow-lg transition-all duration-300">
+        <img src="${a.image}" class="w-28 h-28 object-cover rounded-xl flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <div class="flex-1 min-w-0">
+          <p class="font-display font-bold text-base mb-1 leading-snug line-clamp-2">${a.title}</p>
+          <p class="text-xs text-gray-500 mb-2 line-clamp-2">${a.excerpt}</p>
+          <p class="text-[10px] text-gray-400"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>
         </div>
       </div>`).join('');
   }
@@ -834,10 +917,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateNationalitySelect();
   applyDesktopLayout();
   applyCategoryVisibility();
+
+  // إخفاء النماذج فوراً ثم إظهار الصحيح
+  document.getElementById('hotelSearchForm').style.display = 'none';
+  document.getElementById('excursionSearchForm').style.display = 'none';
+  search.init(); // ستستدعي switchTab الصحيح
+
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
-  search.init();
   setTimeout(hideSplash, 3000);
 });
 
