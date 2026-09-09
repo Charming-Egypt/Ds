@@ -94,7 +94,12 @@ async function loadUserProfile() {
   try {
     const data = await apiFetch('/api/profile', {}, true);
     if (data.profile) {
-      currentUser = { ...currentUser, ...data.profile, uid: currentUser.uid };
+      // حماية من currentUser null
+      if (currentUser) {
+        currentUser = { ...currentUser, ...data.profile, uid: currentUser.uid };
+      } else {
+        currentUser = { ...data.profile, uid: data.profile.uid };
+      }
       state.userTier = data.profile.loyaltyTier || 0;
       state.userStats = data.profile.stats || { completedBookings: 0, totalSpent: 0 };
       localStorage.setItem('ds_current_user', JSON.stringify(currentUser));
@@ -102,7 +107,10 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
-    updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+    // استخدم البيانات المحلية
+    if (currentUser) {
+      updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
+    }
   }
 }
 
@@ -114,7 +122,7 @@ function updateProfileStats() {
   const sr = document.getElementById('statReviews');
   if (sr) sr.textContent = state.bookings.filter(b => b.reviewed).length;
 
-  const level = currentUser?.geniusLevel || 0;
+  const level = (currentUser && currentUser.geniusLevel) || 0;
   const badge = document.getElementById('profileTierBadge');
   if (badge) {
     if (level > 0) {
@@ -993,3 +1001,7 @@ document.addEventListener('submit', (e) => {
   if (e.target.closest('#authPage form')) { e.preventDefault(); handleAuthSubmit(e); }
   if (e.target.closest('#reviewModal form')) { e.preventDefault(); reviews.submit(e); }
 });
+
+// Expose functions globally
+window.showTransferPage = showTransferPage;
+window.closeTransferPage = closeTransferPage;
