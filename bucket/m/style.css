@@ -13,7 +13,6 @@
   --border-field: #eee9f8;
   --header-light-bg: #ffffff;
   --chrome-bg: #ffffff;
-  --chrome-bg-glass: rgba(255, 255, 255, .88);
   --chrome-text: #171029;
   --chrome-text-muted: rgba(23, 16, 41, .5);
   --chrome-text-faint: rgba(23, 16, 41, .32);
@@ -32,7 +31,6 @@ html[data-theme="dark"] {
   --border-field: #382a54;
   --header-light-bg: #15101f;
   --chrome-bg: #171029;
-  --chrome-bg-glass: rgba(23, 16, 41, .82);
   --chrome-text: #ffffff;
   --chrome-text-muted: rgba(255, 255, 255, .62);
   --chrome-text-faint: rgba(255, 255, 255, .3);
