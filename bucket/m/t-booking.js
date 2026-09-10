@@ -686,9 +686,9 @@ function setTransferDirection(dir) {
   state.bookingDraft.direction = dir;
   const a = document.getElementById('dirBtnArrival'), d = document.getElementById('dirBtnDeparture');
   if (!a || !d) return;
-  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  a.style.background = dir === 'Airport to Hotel' ? 'linear-gradient(135deg,#e0925a,#7a3f1c)' : 'transparent';
   a.style.color = dir === 'Airport to Hotel' ? '#fff' : 'var(--text-secondary)';
-  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#fb923c,#c2410c)' : 'transparent';
+  d.style.background = dir === 'Hotel to Airport' ? 'linear-gradient(135deg,#e0925a,#7a3f1c)' : 'transparent';
   d.style.color = dir === 'Hotel to Airport' ? '#fff' : 'var(--text-secondary)';
 }
 
