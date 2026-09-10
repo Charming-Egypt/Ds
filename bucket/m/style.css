@@ -354,8 +354,8 @@ body:has(#transferDetailPage.active) .bottom-nav {
 }
 
 .nav-avatar-circle {
-  width: 100%;
-  height: 100%;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: linear-gradient(135deg, #fdba74, #c2410c);
   display: flex;
