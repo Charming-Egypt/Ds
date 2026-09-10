@@ -1,16 +1,8 @@
 // ==================== CONFIG ====================
-const API_BASE = '';
+const API_BASE = ''; // يترك فارغاً للعمل على نفس النطاق (discover-sharm.com)
 let authToken = localStorage.getItem('ds_auth_token') || null;
-let currentUser = null;
-try {
-  const storedUser = localStorage.getItem('ds_current_user');
-  if (storedUser && storedUser !== 'null') {
-    currentUser = JSON.parse(storedUser);
-  }
-} catch (e) {
-  currentUser = null;
-}
-let authMode = 'login';
+let currentUser = JSON.parse(localStorage.getItem('ds_current_user') || 'null');
+let authMode = 'login'; // 'login' أو 'signup'
 
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27400%27 height=%27300%27%3E%3Crect fill=%27%232b2140%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27150%27 text-anchor=%27middle%27 dy=%27.3em%27 fill=%27%239d94b8%27 font-size=%2720%27 font-family=%27sans-serif%27%3ENo Image%3C/text%3E%3C/svg%3E";
 
@@ -27,7 +19,7 @@ const state = {
   currentExcursion: null,
   currentTransfer: null,
   currentBookingTab: 'upcoming',
-  activeSearchTab: 'hotels',
+  activeSearchTab: 'hotels', // افتراضي الفنادق
   guests: { adults: 2, children: 0, infants: 0, rooms: 1 },
   pageHistory: ['home'],
   bookingDraft: {},
@@ -159,10 +151,10 @@ const utils = {
   formatDate(iso) { if (!iso) return '—'; return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); },
   formatPrice: formatPrice,
   generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
-  renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#453f5c"></i>'; return s; },
+  renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#5c5140"></i>'; return s; },
   avgRating(list) { return list.length ? list.reduce((s, r) => s + Number(r.rating || 0), 0) / list.length : null; },
   confetti() {
-    const colors = ['#fbbf24', '#fcd34d', '#f97316', '#c2410c', '#fb7185', '#ffffff'];
+    const colors = ['#d3ac5c', '#e6c983', '#c46a34', '#7a3f1c', '#fb7185', '#ffffff'];
     for (let i = 0; i < 60; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
@@ -432,7 +424,13 @@ const auth = {
     try {
       const data = await apiFetch('/api/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({ name, email, password, phone: extra.phone || '', countryCode: extra.countryCode || '' }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone: extra.phone || '',
+          countryCode: extra.countryCode || '',
+        }),
       }, true);
       authToken = data.idToken;
       currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
@@ -512,7 +510,10 @@ async function handleGoogleSignIn() {
     const clientId = window._googleClientId;
 
     if (!googleSignInInitialized) {
-      google.accounts.id.initialize({ client_id: clientId, callback: handleGoogleCredentialResponse });
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+      });
       googleSignInInitialized = true;
     }
 
@@ -535,11 +536,11 @@ async function handleGoogleCredentialResponse(response) {
   }
 
   try {
-    const data = await apiFetch('/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: response.credential }),
-    }, true);
+    const data = await apiFetch(
+      '/api/auth/google',
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: response.credential }) },
+      true
+    );
 
     authToken = data.idToken;
     currentUser = { ...data.user, uid: data.user.uid, geniusLevel: data.user.geniusLevel || 0 };
@@ -592,7 +593,10 @@ const profileAvatar = {
       try {
         const res = await apiFetch('/api/profile', {
           method: 'POST',
-          body: JSON.stringify({ uid: currentUser?.uid, profile: { photoURL: dataUrl } }),
+          body: JSON.stringify({
+            uid: currentUser?.uid,
+            profile: { photoURL: dataUrl },
+          }),
         });
         if (currentUser) {
           currentUser.photoURL = dataUrl;
@@ -612,24 +616,18 @@ const profileAvatar = {
 };
 
 function updateDrawerUser(name, email, photoURL) {
-  const safeName = name || 'Guest';
-  const safeEmail = email || '';
-  const safePhoto = photoURL || null;
-  const n = document.getElementById('drawerName'); if (n) n.textContent = safeName;
-  const e = document.getElementById('drawerEmail'); if (e) e.textContent = safeEmail;
-  const pn = document.getElementById('profileName'); if (pn) pn.textContent = safeName;
-  const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = safeEmail;
-  profileAvatar.render(safeName, safePhoto);
+  const n = document.getElementById('drawerName'); if (n) n.textContent = name || 'Guest';
+  const e = document.getElementById('drawerEmail'); if (e) e.textContent = email || '';
+  const pn = document.getElementById('profileName'); if (pn) pn.textContent = name || 'Guest';
+  const pe = document.getElementById('profileEmail'); if (pe) pe.textContent = email || '';
+  profileAvatar.render(name, photoURL);
 
-  // بادج Sharmawy في السايد بار
   const badge = document.getElementById('drawerTierBadge');
   if (badge) {
-    const level = (currentUser && currentUser.geniusLevel) || 0;
+    const level = currentUser?.geniusLevel || 0;
     if (level > 0) {
-      const badges = {1:'🥉', 2:'🥈', 3:'🥇'};
       badge.classList.remove('hidden');
-      badge.textContent = badges[level] || '';
-      badge.title = `Sharmawy Level ${level}`;
+      badge.textContent = `Genius Lv${level}`;
     } else {
       badge.classList.add('hidden');
     }
@@ -637,6 +635,42 @@ function updateDrawerUser(name, email, photoURL) {
 }
 
 // ==================== REVIEWS ====================
+async function loadReviews(type, id, listElId, summaryElId) {
+  const listEl = document.getElementById(listElId);
+  if (!listEl) return;
+  try {
+    const data = await apiFetch(`/api/reviews?type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {}, true);
+    const items = data.reviews || [];
+    if (items.length === 0) {
+      listEl.innerHTML = `<p class="text-xs text-center py-4" style="color:var(--text-secondary)">No reviews yet. Be the first!</p>`;
+    } else {
+      listEl.innerHTML = items
+        .slice()
+        .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+        .map(r => `
+          <div class="p-3 rounded-xl border" style="border-color:var(--border-color)">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-sm">${esc(r.name)}</span>
+              <span class="text-gold-400 text-xs">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+            </div>
+            <p class="text-xs" style="color:var(--text-secondary)">${esc(r.comment)}</p>
+          </div>
+        `).join('');
+    }
+    if (summaryElId) {
+      const summaryEl = document.getElementById(summaryElId);
+      if (summaryEl && items.length > 0) {
+        const avg = items.reduce((s, r) => s + Number(r.rating || 0), 0) / items.length;
+        summaryEl.textContent = avg.toFixed(1);
+      }
+      const countEl = document.getElementById(summaryElId + 'Count');
+      if (countEl) countEl.textContent = items.length;
+    }
+  } catch (e) {
+    listEl.innerHTML = '';
+  }
+}
+
 const reviews = {
   currentTarget: null,
   selectedStars: 0,
@@ -646,49 +680,23 @@ const reviews = {
     const name = document.getElementById('reviewName').value.trim();
     const comment = document.getElementById('reviewComment').value.trim();
     const rating = this.selectedStars || 5;
-    const imageFile = document.getElementById('reviewImage')?.files[0];
-    let imageData = null;
-
-    if (imageFile) {
-      imageData = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(imageFile);
-      });
-    }
-
     if (!bookingId || !comment) return toast('Booking ID and comment required', 'error');
-
     try {
       await apiFetch('/api/reviews', {
         method: 'POST',
-        body: JSON.stringify({
-          type: this.currentTarget.type,
-          id: this.currentTarget.id,
-          bookingId,
-          name,
-          comment,
-          rating,
-          photoURL: currentUser?.photoURL || null,
-          image: imageData
-        }),
+        body: JSON.stringify({ type: this.currentTarget.type, id: this.currentTarget.id, bookingId, name, comment, rating }),
       });
       document.getElementById('reviewModal').classList.add('hidden');
       toast('Review submitted!', 'success');
-      loadReviews(this.currentTarget.type, this.currentTarget.id,
-        this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList',
-        null);
-    } catch (e) {
-      toast(e.message, 'error');
-    }
+      loadReviews(this.currentTarget.type, this.currentTarget.id, this.currentTarget.type === 'hotel' ? 'hotelReviewsList' : 'excursionReviewsList', null);
+    } catch (e) { toast(e.message, 'error'); }
   },
   openModal(type, id, bookingId = '') {
     this.currentTarget = { type, id, bookingId };
     this.selectedStars = 0;
     document.getElementById('reviewBookingId').value = bookingId;
-    document.getElementById('reviewName').value = (currentUser && currentUser.displayName) || '';
+    document.getElementById('reviewName').value = currentUser?.displayName || '';
     document.getElementById('reviewComment').value = '';
-    document.getElementById('reviewImage').value = '';
     this.paintStars(0);
     document.getElementById('reviewModal').classList.remove('hidden');
   },
@@ -705,47 +713,6 @@ const reviews = {
     });
   }
 };
-
-// ==================== LOAD REVIEWS ====================
-async function loadReviews(type, id, containerId, summaryId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  try {
-    const data = await apiFetch(`/api/reviews?type=${type}&id=${id}`, {}, true);
-    const reviewsList = data.reviews || [];
-
-    if (reviewsList.length === 0) {
-      container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">No reviews yet</p>';
-      return;
-    }
-
-    container.innerHTML = reviewsList.map(rv => `
-      <div class="review-item flex gap-3 border-b border-gray-200 pb-4 mb-4">
-        <img src="${rv.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'}"
-             class="w-10 h-10 rounded-full object-cover flex-shrink-0"
-             onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(rv.name || 'G') + '&background=f97316&color=fff'">
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm">${esc(rv.name || 'Guest')}</div>
-          <div class="text-gold-500 text-xs my-1">${utils.renderStars(rv.rating)}</div>
-          <p class="text-sm leading-relaxed">${esc(rv.comment || '')}</p>
-          ${rv.image ? `<img src="${rv.image}" class="mt-3 rounded-lg max-w-full h-auto" alt="Review image" />` : ''}
-        </div>
-      </div>
-    `).join('');
-
-    if (summaryId) {
-      const summaryEl = document.getElementById(summaryId);
-      if (summaryEl) {
-        const avg = utils.avgRating(reviewsList);
-        summaryEl.textContent = avg ? avg.toFixed(1) : '0.0';
-      }
-    }
-  } catch (e) {
-    console.warn('Failed to load reviews:', e);
-    container.innerHTML = '<p class="text-center text-gray-500 text-sm py-6">Could not load reviews</p>';
-  }
-}
 
 // ==================== FAVORITES / BOOKINGS / NOTIFICATIONS ====================
 const favorites = {
@@ -848,7 +815,7 @@ const notifications = {
   markRead(id) { const n = this.list.find(x => x.id === id); if (n && !n.read) { n.read = true; this.render(); } }
 };
 
-// ==================== TRANSFER SEARCH ====================
+// ==================== TRANSFER SEARCH (stub if not defined elsewhere) ====================
 const transferSearch = {
   setDirection(dir) {
     state.transferDirection = dir;
@@ -856,12 +823,12 @@ const transferSearch = {
     const departure = document.getElementById('tsDirDeparture');
     if (arrival && departure) {
       if (dir === 'Airport to Hotel') {
-        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        arrival.style.background = 'linear-gradient(135deg,#e0925a,#7a3f1c)';
         arrival.style.color = '#fff';
         departure.style.background = 'transparent';
         departure.style.color = 'var(--text-secondary)';
       } else {
-        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
+        departure.style.background = 'linear-gradient(135deg,#e0925a,#7a3f1c)';
         departure.style.color = '#fff';
         arrival.style.background = 'transparent';
         arrival.style.color = 'var(--text-secondary)';
@@ -888,7 +855,7 @@ const transferSearch = {
   },
 };
 
-// ==================== FLIGHT SEARCH ====================
+// ==================== FLIGHT SEARCH (stub) ====================
 const flightSearch = {
   closePaxModal() { document.getElementById('flightPaxModal').classList.add('hidden'); },
   adjust(type, delta) {
@@ -927,14 +894,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCurrency();
   populateCountryCodeSelect();
   populateNationalitySelect();
-  if (auth.isLoggedIn() && !currentUser) {
-    try {
-      const stored = localStorage.getItem('ds_current_user');
-      if (stored) currentUser = JSON.parse(stored);
-    } catch {}
-  }
+  applyDesktopLayout();
+  window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
-  search.switchTab(window.DS_CONFIG?.SHOW_HOTELS ? 'hotels' : 'excursions');
-  search.init();
+  search.switchTab('hotels'); // افتراضي الفنادق
   setTimeout(hideSplash, 3000);
 });
