@@ -271,17 +271,20 @@ select:focus {
 
 /* ---------- Bottom Navigation ---------- */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;               /* إلغاء الارتفاع من الأسفل */
-  left: 0;
-  width: 100%;
-  z-index: 50;
-  border-radius: 1rem 1rem 0 0; /* حواف دائرية من الأعلى فقط (يسار ويمنة) */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  z-index: 9999;
+  border-radius: 1rem 1rem 0 0 !important;
   padding: .55rem .7rem;
   background: var(--chrome-bg);
   box-shadow: var(--chrome-shadow);
   transition: background .3s ease, box-shadow .3s ease;
 }
+
 
 
 /* Hide bottom nav on detail pages */
