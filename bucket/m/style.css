@@ -139,7 +139,7 @@ body {
 /* ---------- Hero ---------- */
 .hero-section {
   position: relative;
-  min-height: 58vh;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -1735,3 +1735,15 @@ html[data-theme="light"] .theme-switch .knob {
 #searchCategoryDropdown {
   z-index: 99999 !important;
 }
+
+.s-area{ margin-top:-10rem;}
+
+
+@media (max-width: 480px) {
+  .s-area{ margin-top:-18rem;
+         margin-bottom:6rem;
+         }
+
+  }
+
+
