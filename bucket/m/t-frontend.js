@@ -1,22 +1,12 @@
 // ==================== FRONTEND UI & NAVIGATION ====================
-window.DS_CONFIG = window.DS_CONFIG || {
-  SHOW_HOTELS: false,
-  SHOW_EXCURSIONS: true,
-  SHOW_TRANSFERS: true,
-  SHOW_RESTAURANTS: true,
-  SHOW_DESTINATIONS: true
-};
-
-const SHOW_HOTELS = window.DS_CONFIG.SHOW_HOTELS;
-const SHOW_EXCURSIONS = window.DS_CONFIG.SHOW_EXCURSIONS;
-const SHOW_TRANSFERS = window.DS_CONFIG.SHOW_TRANSFERS;
-const SHOW_RESTAURANTS = window.DS_CONFIG.SHOW_RESTAURANTS;
-const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
+const SHOW_HOTELS = true;
 
 function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
+  document.getElementById('drawerFavoritesLink')?.classList.toggle('hidden', !SHOW_HOTELS);
   loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
@@ -40,16 +30,12 @@ function enterApp() {
   }
 
   applyDesktopLayout();
-  applyCategoryVisibility();
 }
 
 const nav = {
   go(page) {
     if (page === 'hotels' && !SHOW_HOTELS) return;
-    if (page === 'excursions' && !SHOW_EXCURSIONS) return;
-    if (page === 'transfers' && !SHOW_TRANSFERS) return;
-    if (page === 'restaurants' && !SHOW_RESTAURANTS) return;
-    if (page === 'destinations' && !SHOW_DESTINATIONS) return;
+    if (page === 'favorites' && !SHOW_HOTELS) return;
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(page + 'Page');
@@ -58,13 +44,17 @@ const nav = {
     window.scrollTo(0, 0);
 
     if (page === 'hotels' && SHOW_HOTELS) hotels.render();
-    if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
-    if (page === 'transfers' && SHOW_TRANSFERS) transfersUi.render();
-    if (page === 'restaurants' && SHOW_RESTAURANTS) restaurantsUi.renderFull();
+    if (page === 'excursions') excursionsUi.render();
+    if (page === 'transfers') transfersUi.render();
+    if (page === 'restaurants') restaurantsUi.renderFull();
     if (page === 'bookings') bookings.render();
     if (page === 'favorites' && SHOW_HOTELS) favorites.render();
     if (page === 'notifications') notifications.render();
     if (page === 'profile') updateProfileStats();
+
+    document.querySelectorAll('#sideDrawer .drawer-link[onclick]').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('onclick').includes(`nav.go('${page}')`));
+    });
 
     applyDesktopLayout();
   },
@@ -102,7 +92,6 @@ async function loadUserProfile() {
     }
   } catch (e) {
     console.warn('Failed to load user profile', e);
-    updateDrawerUser(currentUser.displayName || currentUser.email, currentUser.email, currentUser.photoURL);
   }
 }
 
@@ -114,7 +103,7 @@ function updateProfileStats() {
   const sr = document.getElementById('statReviews');
   if (sr) sr.textContent = state.bookings.filter(b => b.reviewed).length;
 
-  const level = (currentUser && currentUser.geniusLevel) || 0;
+  const level = currentUser?.geniusLevel || 0;
   const badge = document.getElementById('profileTierBadge');
   if (badge) {
     if (level > 0) {
@@ -154,7 +143,7 @@ function getGeniusBenefitsHtml(level) {
   `;
 }
 
-// ==================== GUESTS MODAL ====================
+// ==================== GUESTS MODAL (legacy) ====================
 function openGuestsModal() {
   document.getElementById('guestsModal').classList.remove('hidden');
   document.getElementById('adultsCount').textContent = state.guests.adults;
@@ -260,7 +249,7 @@ const datepicker = {
   select(iso) { setDateFieldValue(this.target, iso); this.close(); if (typeof onDateFieldChange === 'function') onDateFieldChange(this.target, iso); }
 };
 
-// ==================== SEARCH ====================
+// ==================== SEARCH (NEW) ====================
 const search = {
   activeTab: 'hotels',
   viewMonth: new Date().getMonth(),
@@ -268,52 +257,14 @@ const search = {
   selectedCheckIn: null,
   selectedCheckOut: null,
   isExcursionDate: false,
-  selectedCategory: 'all',
 
   switchTab(tab) {
-    if (tab === 'hotels' && !SHOW_HOTELS) tab = 'excursions';
-    if (tab === 'excursions' && !SHOW_EXCURSIONS) tab = 'hotels';
-    if (!SHOW_HOTELS && !SHOW_EXCURSIONS) {
-      document.getElementById('searchTabsContainer').style.display = 'none';
-      document.getElementById('hotelSearchForm').style.display = 'none';
-      document.getElementById('excursionSearchForm').style.display = 'none';
-      return;
-    }
+    if (tab !== 'hotels' && tab !== 'excursions') tab = 'excursions';
     this.activeTab = tab;
-
-    const tabsContainer = document.getElementById('searchTabsContainer');
-    tabsContainer.style.display = (SHOW_HOTELS && SHOW_EXCURSIONS) ? 'flex' : 'none';
-
-    document.getElementById('hotelSearchForm').style.display = (tab === 'hotels' && SHOW_HOTELS) ? 'block' : 'none';
-    document.getElementById('excursionSearchForm').style.display = (tab === 'excursions' && SHOW_EXCURSIONS) ? 'block' : 'none';
-
-    const hotelBtn = document.getElementById('searchTabHotels');
-    const excursionBtn = document.getElementById('searchTabExcursions');
-    if (hotelBtn) hotelBtn.classList.toggle('active', tab === 'hotels');
-    if (excursionBtn) excursionBtn.classList.toggle('active', tab === 'excursions');
-
-    this.updateHeroContent(tab);
-    this.updateDateDisplays();
-  },
-
-  updateHeroContent(tab) {
-    const heroData = {
-      hotels: {
-        eyebrow: '— PREMIUM STAYS',
-        title: 'Find Your<br /><span class="italic text-gold-400">Perfect Stay</span>',
-        subtitle: 'Hotels. Excursions. Airport transfers.'
-      },
-      excursions: {
-        eyebrow: '— THINGS TO DO',
-        title: 'Discover<br /><span class="italic text-gold-400">Excursions</span>',
-        subtitle: 'Diving. Safari. Boat trips.'
-      }
-    };
-    const data = heroData[tab] || heroData.hotels;
-    document.getElementById('heroEyebrowText').innerHTML = data.eyebrow;
-    document.getElementById('heroTitleText').innerHTML = data.title;
-    document.getElementById('heroSubtitleText').textContent = data.subtitle;
-    startHeroBackgroundRotation(tab);
+    document.getElementById('hotelSearchForm').classList.toggle('active', tab === 'hotels');
+    document.getElementById('excursionSearchForm').classList.toggle('active', tab === 'excursions');
+    document.getElementById('searchTabHotels').classList.toggle('active', tab === 'hotels');
+    document.getElementById('searchTabExcursions').classList.toggle('active', tab === 'excursions');
   },
 
   openDateDropdown(isExcursion = false) {
@@ -323,55 +274,41 @@ const search = {
     this.renderCalendar();
     document.getElementById('searchDateDropdown').style.display = 'flex';
   },
+
   closeDateDropdown() {
     document.getElementById('searchDateDropdown').style.display = 'none';
   },
+
   openGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'flex';
   },
+
   closeGuestDropdown() {
     document.getElementById('searchGuestDropdown').style.display = 'none';
     this.updateGuestDisplay();
   },
-  openCategoryDropdown() {
-    document.getElementById('searchCategoryDropdown').style.display = 'flex';
-  },
-  closeCategoryDropdown() {
-    document.getElementById('searchCategoryDropdown').style.display = 'none';
-  },
-  setCategory(category) {
-    this.selectedCategory = category;
-    const displayEl = document.getElementById('excursionCategoryDisplay');
-    if (displayEl) {
-      const labels = {
-        'all': 'All Categories',
-        'Diving': 'Diving & Snorkeling',
-        'Desert Safari': 'Desert Safari',
-        'Boat Trip': 'Boat Trip',
-        'City Tour': 'City Tour'
-      };
-      displayEl.textContent = labels[category] || category;
-    }
-    document.querySelectorAll('.ds-category-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.category === category);
-    });
-  },
+
   changeMonth(delta) {
     this.viewMonth += delta;
     if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
     if (this.viewMonth > 11) { this.viewMonth = 0; this.viewYear++; }
     this.renderCalendar();
   },
+
   renderCalendar() {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     document.getElementById('searchCalMonth').textContent = months[this.viewMonth] + ' ' + this.viewYear;
+    
     const firstDay = new Date(this.viewYear, this.viewMonth, 1).getDay();
     const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
     const today = new Date(); today.setHours(0,0,0,0);
+    
     let html = '';
     const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     weekdays.forEach(d => html += `<div class="ds-cal-hdr">${d}</div>`);
+    
     for (let i = 0; i < firstDay; i++) html += '<div class="ds-cal-day muted"></div>';
+    
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(this.viewYear, this.viewMonth, d);
       const past = date < today;
@@ -383,17 +320,21 @@ const search = {
       if (this.selectedCheckIn && this.selectedCheckOut && date > this.selectedCheckIn && date < this.selectedCheckOut) cls.push('in-range');
       html += `<div class="${cls.join(' ')}" ${!past ? `onclick="search.selectDate(${d})"` : ''}>${d}</div>`;
     }
+    
     document.getElementById('searchCalGrid').innerHTML = html;
   },
+
   selectDate(day) {
     const d = new Date(this.viewYear, this.viewMonth, day);
     d.setHours(0,0,0,0);
+    
     if (this.isExcursionDate) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
       this.updateDateDisplays();
       return;
     }
+    
     if (!this.selectedCheckIn || (this.selectedCheckIn && this.selectedCheckOut)) {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
@@ -403,34 +344,20 @@ const search = {
       this.selectedCheckIn = d;
       this.selectedCheckOut = null;
     }
+    
     this.renderCalendar();
     this.updateDateDisplays();
   },
+
   updateDateDisplays() {
-    const toDate = (d) => {
-      if (!d) return null;
-      if (d instanceof Date) return d;
-      if (typeof d === 'string' && d.includes('-')) return new Date(d + 'T00:00:00');
-      return new Date(d);
-    };
-    const ci = toDate(this.selectedCheckIn);
-    const co = toDate(this.selectedCheckOut);
-    const fmt = (d) => {
-      if (!d) return '';
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return `${d.getDate()} ${months[d.getMonth()]}`;
-    };
-    const checkInInput = document.getElementById('searchCheckInInput');
-    const checkOutInput = document.getElementById('searchCheckOutInput');
-    if (checkInInput) checkInInput.value = fmt(ci);
-    if (checkOutInput) checkOutInput.value = fmt(co);
-    const checkinDisplay = document.getElementById('checkinDisplay');
-    const checkoutDisplay = document.getElementById('checkoutDisplay');
-    const excursionDateDisplay = document.getElementById('excursionDateDisplay');
-    if (checkinDisplay) checkinDisplay.textContent = fmt(ci);
-    if (checkoutDisplay) checkoutDisplay.textContent = fmt(co);
-    if (excursionDateDisplay) excursionDateDisplay.textContent = fmt(ci);
+    const fmt = (d) => d ? `${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}` : '';
+    document.getElementById('searchCheckInInput').value = fmt(this.selectedCheckIn);
+    document.getElementById('searchCheckOutInput').value = fmt(this.selectedCheckOut);
+    document.getElementById('checkinDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
+    document.getElementById('checkoutDisplay').textContent = this.selectedCheckOut ? fmt(this.selectedCheckOut) : 'Select date';
+    document.getElementById('excursionDateDisplay').textContent = this.selectedCheckIn ? fmt(this.selectedCheckIn) : 'Select date';
   },
+
   adjustGuest(type, delta) {
     const limits = { adults: { min:1, max:10 }, children: { min:0, max:6 }, rooms: { min:1, max:5 } };
     const newVal = (state.guests[type] || 0) + delta;
@@ -442,11 +369,12 @@ const search = {
     document.getElementById('searchRoomCount').textContent = state.guests.rooms;
     this.updateGuestDisplay();
   },
+
   updateGuestDisplay() {
     const text = `${state.guests.adults} Adults, ${state.guests.children} Children, ${state.guests.rooms} Room(s)`;
-    const el = document.getElementById('guestsDisplay');
-    if (el) el.textContent = text;
+    document.getElementById('guestsDisplay').textContent = text;
   },
+
   performSearch() {
     if (this.activeTab === 'hotels') {
       if (!this.selectedCheckIn || !this.selectedCheckOut) {
@@ -458,68 +386,30 @@ const search = {
       this.applyExcursionSearch();
     }
   },
+
   applyExcursionSearch() {
-    state.currentExcursionFilter = this.selectedCategory;
+    const cat = document.getElementById('excursionCategorySelect').value;
+    state.currentExcursionFilter = cat;
     nav.go('excursions');
   },
-  handle(q) { state.searchQuery = q.toLowerCase(); },
-  filterCategory(cat) { state.currentFilter = cat; },
-  filterExcursionCategory(cat) { state.currentExcursionFilter = cat; },
-  init() {
-    const tomorrow = new Date();
-    tomorrow.setHours(0,0,0,0);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dayAfter = new Date(tomorrow);
-    dayAfter.setDate(dayAfter.getDate() + 1);
 
-    this.selectedCheckIn = tomorrow;
-    this.selectedCheckOut = dayAfter;
-    this.selectedCategory = 'all';
+  handle(q) { state.searchQuery = q.toLowerCase(); },
+  filterCategory(cat) { state.currentFilter = cat; hotels.render(); },
+  filterExcursionCategory(cat) {
+    state.currentExcursionFilter = cat;
+    document.querySelectorAll('.excursion-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cat}'`));
+    });
+    excursionsUi.render();
+  },
+
+  init() {
+    this.selectedCheckIn = utils.addDays(utils.todayIso(), 1);
+    this.selectedCheckOut = utils.addDays(utils.todayIso(), 2);
     this.updateDateDisplays();
     this.updateGuestDisplay();
-    this.setCategory('all');
-    this.switchTab(SHOW_HOTELS ? 'hotels' : 'excursions');
   }
 };
-
-// ==================== HERO BACKGROUND ROTATION ====================
-const HERO_BACKGROUNDS = {
-  hotels: [
-    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=90'
-  ],
-  excursions: [
-    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1600&q=90'
-  ]
-};
-
-let heroBgIndex = 0;
-let heroBgInterval = null;
-
-function startHeroBackgroundRotation(tab) {
-  stopHeroBackgroundRotation();
-  const backgrounds = HERO_BACKGROUNDS[tab] || HERO_BACKGROUNDS.hotels;
-  heroBgIndex = 0;
-  setHeroImage(backgrounds[0]);
-  heroBgInterval = setInterval(() => {
-    heroBgIndex = (heroBgIndex + 1) % backgrounds.length;
-    setHeroImage(backgrounds[heroBgIndex]);
-  }, 5000);
-}
-function stopHeroBackgroundRotation() {
-  if (heroBgInterval) { clearInterval(heroBgInterval); heroBgInterval = null; }
-}
-function setHeroImage(src) {
-  const bgImg = document.getElementById('heroBgImage');
-  if (!bgImg) return;
-  bgImg.style.opacity = '0';
-  setTimeout(() => { bgImg.src = src; bgImg.style.opacity = '1'; }, 500);
-}
 
 // ==================== CURRENCY CHANGE ====================
 function changeCurrency(c) {
@@ -616,12 +506,21 @@ const ui = {
   }
 };
 
-// ==================== HOTELS RENDERER ====================
 const hotels = {
+  renderFilterChips() {
+    const chipsEl = document.getElementById('hotelFilterChips');
+    if (!chipsEl) return;
+    const categories = [...new Set(CATALOG.hotels.map(h => h.category).filter(Boolean))];
+    chipsEl.innerHTML = [
+      `<button onclick="search.filterCategory('all')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === 'all' ? 'active' : ''}"><i class="fa-solid fa-layer-group"></i> <span data-i18n="all">All</span></button>`,
+      ...categories.map(cat => `<button onclick="search.filterCategory('${cat}')" class="filter-chip flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-semibold flex items-center gap-2 ${state.currentFilter === cat ? 'active' : ''}"><i class="fa-solid fa-hotel"></i> ${cat}</button>`)
+    ].join('');
+  },
   render() {
     if (!SHOW_HOTELS) return;
     const list = document.getElementById('hotelsList');
     if (!list) return;
+    this.renderFilterChips();
     let filtered = CATALOG.hotels;
     if (state.currentFilter !== 'all') filtered = filtered.filter(h => h.category === state.currentFilter);
     if (state.searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(state.searchQuery));
@@ -634,59 +533,24 @@ const hotels = {
   }
 };
 
-// ==================== EXCURSIONS RENDERER (NEW CREATIVE CARD) ====================
 const excursionsUi = {
   renderFeatured() {
-    if (!SHOW_EXCURSIONS) return;
     const el = document.getElementById('featuredExcursions');
-    if (el) {
-      el.className = 'results-scroll-snap';
-      el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderSliderCard(x)).join('');
-      el.querySelectorAll('.creative-card').forEach(card => {
-        card.style.scrollSnapAlign = 'center';
-      });
-    }
+    if (el) el.innerHTML = CATALOG.excursions.slice(0, 4).map(x => this.renderMiniCard(x)).join('');
   },
-  renderSliderCard(x) {
+  renderMiniCard(x) {
     const img = getImageUrl(x.image);
-    const rating = Number(x.rating || 0).toFixed(1);
-    const stars = utils.renderStars(x.rating || 0);
-    const price = utils.formatPrice(x.price);
-    const duration = x.duration || 'Full day';
-    const category = x.category || 'Activity';
-    const reviewCount = x.reviews || 0;
-
-    return `
-      <div class="creative-card" onclick="showExcursionPage('${x.id}')">
-        <div class="card-image-container">
-          <img src="${img}" alt="${esc(x.title)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-          <div class="image-overlay-top"></div>
-          <div class="image-overlay"></div>
-          <div class="duration-badge"><i class="far fa-clock"></i> ${esc(duration)}</div>
-          <button class="share-btn-top" data-share="https://www.discover-sharm.com/p/tour.html?trip-id=${x.id}" onclick="event.stopPropagation();"><i class="fas fa-share-alt"></i></button>
-          <div class="card-content">
-            <h3 class="card-title">${esc(x.title)}</h3>
-            <div class="rating-review-badge">
-              <div class="stars-small">${stars}</div>
-              <span class="rating-number">${rating}</span>
-              <span class="review-count">${reviewCount} reviews</span>
-            </div>
-            <div class="card-action-row">
-              <div class="price-block">
-                <span class="price-from">From</span>
-                <div class="price-value" data-price-egp="${x.price}">${price}</div>
-                <span class="price-per-person">/ person</span>
-              </div>
-              <button class="book-btn action-btn" onclick="event.stopPropagation(); showExcursionPage('${x.id}')">
-                <i class="fas fa-bolt"></i> Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>`;
+    return `<div onclick="showExcursionPage('${x.id}')" class="flex-shrink-0 w-44 cursor-pointer">
+      <div class="relative w-44 h-32 rounded-2xl overflow-hidden mb-2 shadow-lg">
+        <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+        <div class="absolute top-2 right-2 rating-pill px-1.5 py-0.5 rounded-md flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[8px]"></i><span class="text-[9px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></div>
+        <div class="absolute bottom-2 right-2 left-2"><span class="text-[8px] font-bold text-white bg-violet-600/90 px-2 py-0.5 rounded-full">${x.category}</span></div>
+      </div>
+      <h4 class="font-display font-bold text-sm line-clamp-2 mb-1">${x.title}</h4>
+      <p class="font-display font-bold text-violet-500 text-sm">${utils.formatPrice(x.price)}<span class="text-[10px] font-normal"> /person</span></p>
+    </div>`;
   },
   render() {
-    if (!SHOW_EXCURSIONS) return;
     const list = document.getElementById('excursionsList');
     if (!list) return;
     let filtered = CATALOG.excursions;
@@ -697,38 +561,26 @@ const excursionsUi = {
   },
   renderCard(x) {
     const img = getImageUrl(x.image);
-    return `
-      <div onclick="showExcursionPage('${x.id}')" class="excursion-card bg-card rounded-[20px] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col">
-        <div class="relative h-52 overflow-hidden">
-          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-violet-600/90 text-white text-xs font-bold px-3 py-1 rounded-full">${x.category}</span>
-          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${Number(x.rating).toFixed(1)}</span></span>
-          <div class="absolute bottom-3 left-3 right-3 text-white">
-            <h3 class="font-display font-bold text-lg leading-tight line-clamp-1">${x.title}</h3>
-          </div>
+    return `<div onclick="showExcursionPage('${x.id}')" class="hotel-card rounded-[20px] overflow-hidden cursor-pointer flex flex-col lg:flex-col">
+      <div class="relative w-full h-48 md:h-56 lg:h-64 flex-shrink-0 overflow-hidden">
+        <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+      </div>
+      <div class="flex-1 p-4 lg:p-6 flex flex-col justify-between">
+        <div>
+          <span class="text-[9px] font-bold text-violet-500">${x.category}</span>
+          <h3 class="font-display font-bold text-sm md:text-base line-clamp-2 mb-1">${x.title}</h3>
+          <p class="text-[10px]"><i class="fa-regular fa-clock text-violet-500 text-[8px]"></i>${x.duration}</p>
         </div>
-        <div class="p-4 flex flex-col justify-between flex-1">
-          <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
-            <span><i class="fa-regular fa-clock text-violet-500"></i> ${x.duration}</span>
-            <span><i class="fa-solid fa-location-dot text-violet-500"></i> ${x.meetingPoint || 'Sharm'}</span>
-          </div>
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-[10px] text-gray-500">From</p>
-              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(x.price)}<span class="text-xs font-normal"> /person</span></p>
-            </div>
-            <button class="btn-gold px-5 py-2.5 rounded-xl text-sm font-bold text-ink-900">Book Now</button>
-          </div>
+        <div class="flex items-center justify-between">
+          <p class="text-base md:text-lg font-bold text-violet-500 font-display">${utils.formatPrice(x.price)}<span class="text-[9px] font-normal"> /person</span></p>
         </div>
-      </div>`;
+      </div>
+    </div>`;
   }
 };
 
-// ==================== TRANSFERS RENDERER (صفحة تفاصيل) ====================
 const transfersUi = {
   render() {
-    if (!SHOW_TRANSFERS) return;
     const list = document.getElementById('transfersList');
     if (list) {
       list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
@@ -736,101 +588,30 @@ const transfersUi = {
     }
   },
   renderCard(v) {
-    const img = getImageUrl(v.image);
-    return `
-      <div onclick="showTransferPage('${v.id}')" class="transfer-card bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
-        <div class="relative h-40 overflow-hidden">
-          <img src="${img}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-gold-400 text-ink-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-star mr-1"></i> ${v.rating || 4.5}</span>
+    return `<div class="hotel-card rounded-2xl overflow-hidden">
+      <img src="${getImageUrl(v.image)}" class="w-full h-36 object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+      <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display font-bold text-base">${v.vehicleType}</h3>
+          <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group"></i> Up to ${v.capacity}</span>
         </div>
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-display font-bold text-lg">${v.vehicleType}</h3>
-            <span class="text-xs font-bold px-3 py-1 rounded-full bg-violet-50 text-violet-600"><i class="fa-solid fa-user-group mr-1"></i> Up to ${v.capacity}</span>
-          </div>
-          <p class="text-sm text-gray-500 mb-4 line-clamp-2">${v.description}</p>
-          <div class="flex flex-wrap gap-2 mb-4">
-            ${(v.features || []).slice(0,3).map(f => `<span class="text-xs px-3 py-1 rounded-lg" style="background:var(--bg-field);border:1px solid var(--border-field);color:var(--text-secondary)">${f}</span>`).join('')}
-          </div>
-          <div class="flex items-center justify-between border-t pt-3" style="border-color:var(--border-card)">
-            <div>
-              <p class="text-[10px] text-gray-500">One-way trip</p>
-              <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}</p>
-            </div>
-            <button class="btn-gold px-6 py-2.5 rounded-xl font-bold text-ink-900 text-sm">View Details</button>
-          </div>
-        </div>
-      </div>`;
-  }
-};
-
-// ==================== SHOW TRANSFER PAGE ====================
-function showTransferPage(id) {
-  const v = CATALOG.transfers.find(t => t.id === id);
-  if (!v) return toast('Transfer not found', 'error');
-
-  const page = document.createElement('div');
-  page.id = 'transferDetailPage';
-  page.className = 'page';
-  page.innerHTML = `
-    <div class="min-h-screen pb-28" style="background:var(--bg-card)">
-      <div class="relative h-80">
-        <img src="${getImageUrl(v.image)}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-        <button onclick="closeTransferPage()" class="absolute top-4 right-4 w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-lg text-ink-900 z-10"><i class="fa-solid fa-arrow-right"></i></button>
-        <div class="absolute bottom-5 left-5 right-5 text-white">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="bg-gold-400 text-ink-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-shuttle-van mr-1"></i> ${v.vehicleType}</span>
-            <span class="rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${v.rating || 4.5}</span></span>
-          </div>
-          <h1 class="font-display text-3xl font-bold leading-tight mb-2">${v.vehicleType} Transfer</h1>
-          <p class="text-sm text-white/80"><i class="fa-solid fa-users"></i> Up to ${v.capacity} passengers</p>
-        </div>
-      </div>
-      <div class="relative -mt-6 rounded-t-[28px] p-6 space-y-6" style="background:var(--bg-card)">
-        <div>
-          <p class="text-violet-500 text-sm font-semibold mb-2">— ABOUT THIS TRANSFER</p>
-          <p class="text-sm leading-relaxed" style="color:var(--text-secondary)">${v.fullDescription || v.description}</p>
-        </div>
-        <div>
-          <p class="text-violet-500 text-sm font-semibold mb-3">— FEATURES</p>
-          <div class="grid grid-cols-2 gap-3">
-            ${(v.features || []).map(f => `<div class="field-box rounded-xl p-3 flex items-center gap-2 text-sm"><i class="fa-solid fa-check text-green-500"></i> ${f}</div>`).join('')}
-          </div>
-        </div>
-        <div class="card rounded-2xl p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs text-gray-500">One-way trip</p>
-              <p class="font-display font-bold text-violet-500 text-2xl">${utils.formatPrice(v.price)}</p>
-            </div>
-            <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-8 py-3 rounded-xl font-bold text-ink-900">Book Now</button>
-          </div>
+        <p class="text-xs mb-3">${v.description}</p>
+        <div class="flex flex-wrap gap-1.5 mb-3">${(v.features || []).map(f => `<span class="text-[9px] px-2 py-1 rounded-lg" style="background:var(--bg-field)">${f}</span>`).join('')}</div>
+        <div class="flex items-center justify-between">
+          <p class="font-display font-bold text-violet-500 text-xl">${utils.formatPrice(v.price)}<span class="text-xs font-normal"> /trip</span></p>
+          <button onclick="startTransferBooking('${v.id}')" class="btn-gold px-6 py-2.5 rounded-2xl font-bold text-ink-900 text-sm">Book</button>
         </div>
       </div>
     </div>`;
-  document.getElementById('mainApp').appendChild(page);
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  page.classList.add('active');
-  window.scrollTo(0,0);
-}
+  }
+};
 
-function closeTransferPage() {
-  const p = document.getElementById('transferDetailPage');
-  if (p) p.remove();
-  nav.go('transfers');
-}
-
-// ==================== RESTAURANTS RENDERER ====================
 const restaurantsUi = {
   renderRow() {
-    if (!SHOW_RESTAURANTS) return;
     const row = document.getElementById('restaurantsRow');
     if (row) row.innerHTML = CATALOG.restaurants.map(r => this.renderCard(r)).join('');
   },
   renderFull() {
-    if (!SHOW_RESTAURANTS) return;
     const list = document.getElementById('restaurantsFullList');
     if (list) {
       list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-28';
@@ -838,47 +619,40 @@ const restaurantsUi = {
     }
   },
   renderCard(r) {
-    const img = getImageUrl(r.image);
-    return `
-      <div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
-        <div class="relative h-36 overflow-hidden">
-          <img src="${img}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <span class="absolute top-3 left-3 bg-ink-950/70 text-white text-xs font-bold px-3 py-1 rounded-full capitalize">${r.category}</span>
-          <span class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full flex items-center gap-1"><i class="fa-solid fa-star text-gold-400 text-[10px]"></i><span class="text-[10px] font-bold text-gold-400">${r.rating}</span></span>
-        </div>
-        <div class="p-4">
-          <h3 class="font-display font-bold text-lg mb-1 truncate">${r.name}</h3>
-          <p class="text-sm text-gray-500 mb-2">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
-          <p class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
-        </div>
-      </div>`;
+    return `<div onclick="showRestaurantPage('${r.id}')" class="restaurant-card w-full">
+      <div class="relative h-28">
+        <img src="${getImageUrl(r.image)}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover">
+        <div class="absolute top-2 right-2 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${r.rating}</span></div>
+        <div class="absolute top-2 left-2 bg-ink-950/70 text-white text-[9px] font-bold px-2 py-1 rounded-full capitalize">${r.category}</div>
+      </div>
+      <div class="p-3">
+        <p class="font-display font-bold text-sm mb-0.5 truncate">${r.name}</p>
+        <p class="text-[11px] mb-1.5">${r.cuisine} · ${'$'.repeat(r.priceLevel || 2)}</p>
+        <p class="text-[10px]"><i class="fa-solid fa-location-dot text-violet-500"></i>${r.location}</p>
+      </div>
+    </div>`;
   }
 };
 
-// ==================== DESTINATIONS RENDERER ====================
 const destinationsUi = {
   render() {
-    if (!SHOW_DESTINATIONS) return;
     const row = document.getElementById('destinationsRow');
     if (!row) return;
     row.innerHTML = CATALOG.destinations.map(d => {
       const imgSrc = getImageUrl(d.image);
-      return `
-        <div onclick="showDestinationPage('${d.id}')" class="destination-card cursor-pointer rounded-[18px] overflow-hidden shadow-lg">
-          <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
-          <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
-          <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
-          <div class="absolute bottom-3 right-3 left-3 text-white">
-            <p class="font-display font-bold text-base leading-tight">${d.name}</p>
-            <p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p>
-          </div>
-        </div>`;
+      return `<div onclick="showDestinationPage('${d.id}')" class="destination-card">
+        <img src="${imgSrc}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'" class="w-full h-full object-cover absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent"></div>
+        <div class="absolute top-3 right-3 rating-pill px-2 py-1 rounded-full"><span class="text-[9px] font-bold text-gold-400">★ ${d.rating}</span></div>
+        <div class="absolute bottom-3 right-3 left-3 text-white">
+          <p class="font-display font-bold text-base leading-tight">${d.name}</p>
+          <p class="text-[10px] text-white/70 leading-snug">${d.tagline || ''}</p>
+        </div>
+      </div>`;
     }).join('');
   }
 };
 
-// ==================== REVIEWS RENDERER ====================
 const reviewsHomeUi = {
   render() {
     const row = document.getElementById('reviewsRow');
@@ -895,18 +669,17 @@ const reviewsHomeUi = {
   }
 };
 
-// ==================== ARTICLES RENDERER ====================
 const articlesUi = {
   render() {
     const row = document.getElementById('articlesRow');
     if (!row) return;
     row.innerHTML = CATALOG.articles.map(a => `
-      <div onclick="showArticlePage('${a.id}')" class="article-card cursor-pointer flex gap-4 p-4 rounded-2xl bg-card shadow-sm hover:shadow-lg transition-all duration-300">
-        <img src="${a.image}" class="w-28 h-28 object-cover rounded-xl flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
-        <div class="flex-1 min-w-0">
-          <p class="font-display font-bold text-base mb-1 leading-snug line-clamp-2">${a.title}</p>
-          <p class="text-xs text-gray-500 mb-2 line-clamp-2">${a.excerpt}</p>
-          <p class="text-[10px] text-gray-400"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min read</p>
+      <div onclick="showArticlePage('${a.id}')" class="article-card">
+        <img src="${a.image}" class="w-24 h-24 object-cover rounded-2xl flex-shrink-0" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMG}'">
+        <div class="flex-1 min-w-0 py-1">
+          <p class="font-display font-bold text-sm mb-1 leading-snug">${a.title}</p>
+          <p class="text-[11px] mb-1.5">${a.excerpt}</p>
+          <p class="text-[10px]"><i class="fa-regular fa-clock"></i> ${a.readTimeMinutes} min</p>
         </div>
       </div>`).join('');
   }
@@ -914,58 +687,10 @@ const articlesUi = {
 
 // ==================== DESKTOP LAYOUT HELPER ====================
 function applyDesktopLayout() {
-  const isDesktop = window.innerWidth >= 1024;
-  document.querySelectorAll('.bottom-nav, .sticky-home-header').forEach(el => {
-    el.style.display = isDesktop ? 'none' : '';
-  });
-  document.querySelectorAll('.section-title').forEach(el => {
-    el.className = 'section-title ' + (isDesktop ? 'text-4xl font-bold' : 'text-2xl font-bold');
-  });
-  if (isDesktop) {
-    document.querySelector('.search-card')?.classList.add('max-w-4xl', 'mx-auto', 'p-8');
-  } else {
-    document.querySelector('.search-card')?.classList.remove('max-w-4xl', 'mx-auto', 'p-8');
-  }
-}
-
-// ==================== CATEGORY VISIBILITY ====================
-function applyCategoryVisibility() {
-  const homeSections = {
-    hotels: document.getElementById('featuredHotels'),
-    excursions: document.getElementById('featuredExcursions'),
-    restaurants: document.getElementById('restaurantsRow'),
-    destinations: document.getElementById('destinationsRow'),
-  };
-
-  if (!SHOW_HOTELS && homeSections.hotels) homeSections.hotels.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  if (!SHOW_EXCURSIONS && homeSections.excursions) homeSections.excursions.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  if (!SHOW_RESTAURANTS && homeSections.restaurants) homeSections.restaurants.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  if (!SHOW_DESTINATIONS && homeSections.destinations) homeSections.destinations.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-  if (!SHOW_TRANSFERS) {
-    document.querySelectorAll('.banner-creative').forEach(el => {
-      if (el.getAttribute('onclick')?.includes('transfers')) el.closest('.mb-8')?.style.setProperty('display', 'none', 'important');
-    });
-  }
-
-  document.getElementById('drawerHotelsLink')?.classList.toggle('hidden', !SHOW_HOTELS);
-  document.querySelectorAll('.drawer-link').forEach(link => {
-    const onclick = link.getAttribute('onclick') || '';
-    if (onclick.includes("nav.go('excursions')") && !SHOW_EXCURSIONS) link.style.display = 'none';
-    if (onclick.includes("nav.go('transfers')") && !SHOW_TRANSFERS) link.style.display = 'none';
-    if (onclick.includes("nav.go('restaurants')") && !SHOW_RESTAURANTS) link.style.display = 'none';
-  });
-
-  document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-    const page = item.getAttribute('data-page');
-    if (page === 'excursions' && !SHOW_EXCURSIONS) item.style.display = 'none';
-    if (page === 'transfers' && !SHOW_TRANSFERS) item.style.display = 'none';
-  });
-
-  if (!SHOW_HOTELS) document.getElementById('hotelsPage')?.remove();
-  if (!SHOW_EXCURSIONS) document.getElementById('excursionsPage')?.remove();
-  if (!SHOW_TRANSFERS) document.getElementById('transfersPage')?.remove();
-  if (!SHOW_RESTAURANTS) document.getElementById('restaurantsPage')?.remove();
-  if (!SHOW_DESTINATIONS) document.getElementById('destinationsPage')?.remove();
+  // Bottom nav / sticky header visibility, section sizing, and the docked
+  // sidebar are all handled declaratively via CSS media queries (see the
+  // "DESKTOP / LAPTOP LAYOUT" block in style.css), so there is nothing
+  // left to do here at runtime.
 }
 
 // ==================== INIT ====================
@@ -977,15 +702,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateCountryCodeSelect();
   populateNationalitySelect();
   applyDesktopLayout();
-  applyCategoryVisibility();
-
-  // إخفاء النماذج فوراً ثم إظهار الصحيح
-  document.getElementById('hotelSearchForm').style.display = 'none';
-  document.getElementById('excursionSearchForm').style.display = 'none';
-  search.init();
-
   window.addEventListener('resize', applyDesktopLayout);
   if (auth.isLoggedIn()) { enterApp(); } else { nav.showAuth(); }
+  search.switchTab('hotels');
+  search.init();
   setTimeout(hideSplash, 3000);
 });
 
