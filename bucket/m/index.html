@@ -219,33 +219,7 @@
   </div>
 
   <!-- Flight passengers modal -->
-  <div id="flightPaxModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="font-display text-xl font-bold" style="color:var(--text-primary)" data-i18n="passengersClass">Passengers & Class</h3>
-        <button onclick="flightSearch.closePaxModal()" class="w-10 h-10 field-box rounded-xl flex items-center justify-center" style="color:var(--text-primary)"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="adults">Adults</p><p class="text-xs" style="color:var(--text-secondary)">Age 12+</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('adults',-1)">-</button><span id="fpAdults" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">1</span><button class="counter-btn" onclick="flightSearch.adjust('adults',1)">+</button></div>
-        </div>
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="children">Children</p><p class="text-xs" style="color:var(--text-secondary)">Age 2-11</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('children',-1)">-</button><span id="fpChildren" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('children',1)">+</button></div>
-        </div>
-        <div class="flex items-center justify-between">
-          <div><p class="font-semibold text-sm" style="color:var(--text-primary)" data-i18n="infants">Infants</p><p class="text-xs" style="color:var(--text-secondary)">Under 2</p></div>
-          <div class="flex items-center gap-3"><button class="counter-btn" onclick="flightSearch.adjust('infants',-1)">-</button><span id="fpInfants" class="text-xl font-bold w-8 text-center" style="color:var(--text-primary)">0</span><button class="counter-btn" onclick="flightSearch.adjust('infants',1)">+</button></div>
-        </div>
-        <div>
-          <label class="block text-[10px] tracking-widest text-violet-500 font-semibold mb-1.5" data-i18n="cabinClass">CABIN CLASS</label>
-          <select id="fpCabin" class="input-field w-full px-3 py-2.5 text-sm" style="color:var(--text-primary)"><option>Economy</option><option>Business</option><option>First</option></select>
-        </div>
-      </div>
-      <button onclick="flightSearch.applyPax()" class="btn-gold w-full py-4 rounded-2xl font-bold text-ink-900 mt-6" data-i18n="apply">Apply</button>
-    </div>
-  </div>
+  
 
   <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="profileAvatar.handleFile(event)" />
 
@@ -366,7 +340,7 @@
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionCategoryDisplay">All Categories</div>
                 </div>
                 <div style="flex:1; padding:16px 20px; cursor:pointer; text-align:center; border-left:1px solid var(--border-card);" onclick="datepicker.open('excursionDate')">
-                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">EXCURSION DATE</div>
+                  <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:var(--text-secondary); margin-bottom:8px;">TRIP DATE</div>
                   <div style="font-size:16px; font-weight:500; color:var(--text-primary);" id="excursionDateDisplay">Select date</div>
                 </div>
               </div>
