@@ -275,9 +275,9 @@ select:focus {
   bottom: 1.1rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 92%;
+  width: 100%;
   z-index: 50;
-  border-radius: 26px;
+  border-radius: 0px;
   padding: .55rem .7rem;
   background: var(--chrome-bg);
   box-shadow: var(--chrome-shadow);
