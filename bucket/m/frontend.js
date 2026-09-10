@@ -453,30 +453,68 @@ const search = {
   }
 };
 
-// ==================== HERO BACKGROUND ROTATION ====================
+// ==================== HERO BACKGROUND ROTATION (Mobile & Desktop) ====================
 const HERO_BACKGROUNDS = {
-  hotels: [
-    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=90'
-  ],
-  excursions: [
+  hotels: {
+    desktop: [
+      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1920&q=90', // فندق فاخر واسع
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=90', // مسبح بانورامي
+      'https://images.unsplash.com/photo-1548625149-fc4a29cf7092?auto=format&fit=crop&w=1920&q=90', // غرفة فاخرة
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=90'  // إطلالة بحرية
+    ],
+    mobile: [
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=800&q=90', // صورة عمودية 1
+      'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=800&q=90', // صورة عمودية 2
+      'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=90', // صورة عمودية 3
+      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=90'  // صورة عمودية 4
+    ]
+  },
+  excursions: {
+    desktop: [
     '/m/images/home/trips/1.jpg',
     '/m/images/home/trips/2.jpg',
     '/m/images/home/trips/3.jpg',
     '/m/images/home/trips/4.jpg',
     '/m/images/home/trips/5.jpg',
     '/m/images/home/trips/6.jpg'
-  ]
+    ],
+    mobile: [
+    '/m/images/home/trips/1.jpg',
+    '/m/images/home/trips/2.jpg',
+    '/m/images/home/trips/3.jpg',
+    '/m/images/home/trips/4.jpg',
+    '/m/images/home/trips/5.jpg',
+    '/m/images/home/trips/6.jpg'
+    ]
+  }
 };
 
 let heroBgIndex = 0;
 let heroBgInterval = null;
+let heroCurrentTab = 'hotels';
+let heroIsMobile = false;
+
+// كشف إذا كانت الشاشة جوال (أقل من 768px)
+function detectMobile() {
+  return window.innerWidth < 768;
+}
+
+// الحصول على قائمة الخلفيات المناسبة حسب نوع الجهاز والتبويب
+function getHeroBackgrounds(tab) {
+  const data = HERO_BACKGROUNDS[tab] || HERO_BACKGROUNDS.hotels;
+  const isMobile = detectMobile();
+  if (isMobile && data.mobile && data.mobile.length > 0) {
+    return data.mobile;
+  }
+  return data.desktop;
+}
 
 function startHeroBackgroundRotation(tab) {
+  heroCurrentTab = tab;
+  heroIsMobile = detectMobile();
   stopHeroBackgroundRotation();
-  const backgrounds = HERO_BACKGROUNDS[tab] || HERO_BACKGROUNDS.hotels;
+  
+  const backgrounds = getHeroBackgrounds(tab);
   heroBgIndex = 0;
   setHeroImage(backgrounds[0]);
   heroBgInterval = setInterval(() => {
@@ -484,15 +522,44 @@ function startHeroBackgroundRotation(tab) {
     setHeroImage(backgrounds[heroBgIndex]);
   }, 5000);
 }
+
 function stopHeroBackgroundRotation() {
   if (heroBgInterval) { clearInterval(heroBgInterval); heroBgInterval = null; }
 }
+
 function setHeroImage(src) {
   const bgImg = document.getElementById('heroBgImage');
   if (!bgImg) return;
   bgImg.style.opacity = '0';
-  setTimeout(() => { bgImg.src = src; bgImg.style.opacity = '1'; }, 500);
+  setTimeout(() => {
+    bgImg.src = src;
+    bgImg.style.opacity = '1';
+  }, 500);
 }
+
+// إعادة تشغيل التدوير عند تغيير حجم الشاشة (إذا تغير نوع الجهاز)
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const newIsMobile = detectMobile();
+    if (newIsMobile !== heroIsMobile) {
+      heroIsMobile = newIsMobile;
+      startHeroBackgroundRotation(heroCurrentTab);
+    }
+  }, 400);
+});
+
+// إعادة تشغيل عند تغيير الاتجاه (Portrait/Landscape)
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    const newIsMobile = detectMobile();
+    if (newIsMobile !== heroIsMobile) {
+      heroIsMobile = newIsMobile;
+      startHeroBackgroundRotation(heroCurrentTab);
+    }
+  }, 300);
+});
 
 // ==================== CURRENCY CHANGE ====================
 function changeCurrency(c) {
