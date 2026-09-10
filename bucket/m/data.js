@@ -151,10 +151,10 @@ const utils = {
   formatDate(iso) { if (!iso) return '—'; return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); },
   formatPrice: formatPrice,
   generateId() { return 'DS-' + Math.random().toString(36).substr(2, 6).toUpperCase(); },
-  renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#5c5140"></i>'; return s; },
+  renderStars(rating) { let s=''; const r=Math.round(rating||0); for(let i=1;i<=5;i++) s += i<=r ? '<i class="fa-solid fa-star text-gold-400 text-[10px]"></i>' : '<i class="fa-solid fa-star text-[10px]" style="color:#453f5c"></i>'; return s; },
   avgRating(list) { return list.length ? list.reduce((s, r) => s + Number(r.rating || 0), 0) / list.length : null; },
   confetti() {
-    const colors = ['#d3ac5c', '#e6c983', '#c46a34', '#7a3f1c', '#fb7185', '#ffffff'];
+    const colors = ['#fbbf24', '#fcd34d', '#f97316', '#c2410c', '#fb7185', '#ffffff'];
     for (let i = 0; i < 60; i++) {
       const c = document.createElement('div');
       c.className = 'confetti';
@@ -823,12 +823,12 @@ const transferSearch = {
     const departure = document.getElementById('tsDirDeparture');
     if (arrival && departure) {
       if (dir === 'Airport to Hotel') {
-        arrival.style.background = 'linear-gradient(135deg,#e0925a,#7a3f1c)';
+        arrival.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
         arrival.style.color = '#fff';
         departure.style.background = 'transparent';
         departure.style.color = 'var(--text-secondary)';
       } else {
-        departure.style.background = 'linear-gradient(135deg,#e0925a,#7a3f1c)';
+        departure.style.background = 'linear-gradient(135deg,#fb923c,#c2410c)';
         departure.style.color = '#fff';
         arrival.style.background = 'transparent';
         arrival.style.color = 'var(--text-secondary)';
