@@ -466,7 +466,12 @@ const HERO_BACKGROUNDS = {
     '/m/images/home/trips/2.jpg',
     '/m/images/home/trips/3.jpg',
     '/m/images/home/trips/4.jpg',
-    '/m/images/home/trips/5.jpg'
+    '/m/images/home/trips/5.jpg',
+    '/m/images/home/trips/6.jpg',
+    '/m/images/home/trips/7.jpg',
+    '/m/images/home/trips/8.jpg',
+    '/m/images/home/trips/10.jpg',
+    '/m/images/home/trips/11.jpg'
   ]
 };
 
