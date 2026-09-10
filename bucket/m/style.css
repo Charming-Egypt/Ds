@@ -274,7 +274,7 @@ select:focus {
   position: fixed;
   bottom: 1.1rem;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-10%);
   width: 100%;
   z-index: 50;
   border-radius: 0px;
