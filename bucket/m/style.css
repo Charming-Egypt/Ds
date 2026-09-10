@@ -1735,3 +1735,5 @@ html[data-theme="light"] .theme-switch .knob {
 #searchCategoryDropdown {
   z-index: 99999 !important;
 }
+
+.s-area{ margin-top:-10rem;}
