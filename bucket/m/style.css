@@ -276,6 +276,7 @@ select:focus {
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
+  height:50px;
   margin: 0 !important;
   z-index: 9999;
   border-radius: 1rem 1rem 0 0 !important;
