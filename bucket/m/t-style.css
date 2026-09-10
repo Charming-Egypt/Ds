@@ -4,39 +4,39 @@
 
 /* ---------- CSS Variables (Light/Dark themes) ---------- */
 :root {
-  --bg-body: #faf7f1;
+  --bg-body: #f8f7fc;
   --bg-card: #ffffff;
-  --border-card: #ece3d3;
-  --text-primary: #1c140d;
-  --text-secondary: #8c7f6a;
-  --bg-field: #faf7f1;
-  --border-field: #e6dcc8;
+  --border-card: #efeaf7;
+  --text-primary: #171029;
+  --text-secondary: #8a8399;
+  --bg-field: #f8f7fc;
+  --border-field: #eee9f8;
   --header-light-bg: #ffffff;
   --chrome-bg: #ffffff;
   --chrome-bg-glass: rgba(255, 255, 255, .88);
-  --chrome-text: #1c140d;
-  --chrome-text-muted: rgba(28, 20, 13, .5);
-  --chrome-text-faint: rgba(28, 20, 13, .32);
-  --chrome-shadow: 0 12px 34px rgba(28, 20, 13, .14);
-  --chrome-border: rgba(28, 20, 13, .08);
-  --chrome-field-bg: rgba(28, 20, 13, .05);
+  --chrome-text: #171029;
+  --chrome-text-muted: rgba(23, 16, 41, .5);
+  --chrome-text-faint: rgba(23, 16, 41, .32);
+  --chrome-shadow: 0 12px 34px rgba(23, 16, 41, .14);
+  --chrome-border: rgba(23, 16, 41, .08);
+  --chrome-field-bg: rgba(23, 16, 41, .05);
 }
 
 html[data-theme="dark"] {
-  --bg-body: #17110a;
-  --bg-card: #1c140d;
-  --border-card: #3a2a1a;
-  --text-primary: #f3ede1;
-  --text-secondary: #b4a690;
-  --bg-field: #2c2015;
-  --border-field: #4a3722;
-  --header-light-bg: #211810;
-  --chrome-bg: #1c140d;
-  --chrome-bg-glass: rgba(28, 20, 13, .82);
+  --bg-body: #0c0918;
+  --bg-card: #171029;
+  --border-card: #2b2140;
+  --text-primary: #f1eef9;
+  --text-secondary: #9d94b8;
+  --bg-field: #1f1830;
+  --border-field: #382a54;
+  --header-light-bg: #15101f;
+  --chrome-bg: #171029;
+  --chrome-bg-glass: rgba(23, 16, 41, .82);
   --chrome-text: #ffffff;
   --chrome-text-muted: rgba(255, 255, 255, .62);
   --chrome-text-faint: rgba(255, 255, 255, .3);
-  --chrome-shadow: 0 12px 40px rgba(20, 13, 5, .4);
+  --chrome-shadow: 0 12px 40px rgba(20, 10, 45, .4);
   --chrome-border: rgba(255, 255, 255, .08);
   --chrome-field-bg: rgba(255, 255, 255, .04);
 }
@@ -66,7 +66,7 @@ body {
 /* ---------- Dark Scene (hero / splash) ---------- */
 .dark-scene {
   position: relative;
-  background: linear-gradient(160deg, #1c140d 0%, #1b140c 55%, #17110a 100%);
+  background: linear-gradient(160deg, #171029 0%, #100c1c 55%, #0c0918 100%);
   overflow: hidden;
 }
 
@@ -126,7 +126,7 @@ body {
 .orb-1 {
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(156, 82, 38, .8) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(124, 58, 237, .8) 0%, transparent 70%);
   top: -120px;
   right: -120px;
 }
@@ -134,7 +134,7 @@ body {
 .orb-2 {
   width: 380px;
   height: 380px;
-  background: radial-gradient(circle, rgba(211, 172, 92, .5) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(251, 191, 36, .5) 0%, transparent 70%);
   bottom: -100px;
   left: -100px;
 }
@@ -171,16 +171,15 @@ body {
   height: 100%;
   object-fit: cover;
   transition: opacity .35s ease;
-  filter: saturate(.92) sepia(.14) hue-rotate(-6deg) brightness(.96);
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
-    rgba(23, 17, 10, .2) 0%,
-    rgba(23, 17, 10, .55) 45%,
-    rgba(23, 17, 10, .92) 85%,
+    rgba(12, 9, 24, .2) 0%,
+    rgba(12, 9, 24, .55) 45%,
+    rgba(12, 9, 24, .92) 85%,
     var(--bg-body) 100%
   );
 }
@@ -226,25 +225,25 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: 20px;
-  box-shadow: 0 10px 30px -12px rgba(38, 24, 10, .10);
+  box-shadow: 0 10px 30px -12px rgba(45, 23, 90, .10);
   transition: all .3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 16px 40px -14px rgba(38, 24, 10, .18);
+  box-shadow: 0 16px 40px -14px rgba(45, 23, 90, .18);
 }
 
 .card-strong {
   background: var(--bg-card);
   border-radius: 24px;
-  box-shadow: 0 20px 55px -18px rgba(38, 24, 10, .25);
+  box-shadow: 0 20px 55px -18px rgba(45, 23, 90, .25);
 }
 
 /* ---------- Search Card ---------- */
 .search-card {
   background: var(--bg-card);
   border-radius: 26px;
-  box-shadow: 0 25px 60px -18px rgba(20, 13, 5, .35);
+  box-shadow: 0 25px 60px -18px rgba(20, 10, 45, .35);
   border: 1px solid var(--border-card);
 }
 
@@ -276,7 +275,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #e0925a;
+  border-color: #fb923c;
 }
 
 ::placeholder {
@@ -333,7 +332,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active {
-  color: #c46a34;
+  color: #f97316;
 }
 
 .nav-item.active::after {
@@ -345,8 +344,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
-  box-shadow: 0 0 8px rgba(196, 106, 52, .9);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
+  box-shadow: 0 0 8px rgba(249, 115, 22, .9);
 }
 
 .nav-item[data-page="profile"].active::after {
@@ -359,8 +358,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   margin-top: -30px;
   border-radius: 50%;
   cursor: pointer;
-  background: linear-gradient(150deg, #eab27e, #c46a34 55%, #7a3f1c);
-  box-shadow: 0 10px 26px -4px rgba(196, 106, 52, .55), 0 0 0 5px var(--chrome-bg);
+  background: linear-gradient(150deg, #fdba74, #f97316 55%, #c2410c);
+  box-shadow: 0 10px 26px -4px rgba(249, 115, 22, .55), 0 0 0 5px var(--chrome-bg);
   transition: transform .25s cubic-bezier(.16, 1, .3, 1);
 }
 
@@ -381,13 +380,13 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #eab27e, #7a3f1c);
+  background: linear-gradient(135deg, #fdba74, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  color: #1c140d;
+  color: #171029;
   overflow: hidden;
 }
 
@@ -399,7 +398,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .nav-item.active .nav-avatar-circle {
-  box-shadow: 0 0 0 2px #c46a34;
+  box-shadow: 0 0 0 2px #f97316;
 }
 
 /* ---------- Sticky Header ---------- */
@@ -436,8 +435,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 /* ---------- Buttons ---------- */
 .btn-gold {
-  background: linear-gradient(135deg, #e6c983 0%, #d3ac5c 45%, #b98d38 100%);
-  box-shadow: 0 8px 22px -8px rgba(185, 141, 56, .38), inset 0 1px 0 rgba(255, 255, 255, .25);
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 45%, #f59e0b 100%);
+  box-shadow: 0 8px 22px -8px rgba(245, 158, 11, .38), inset 0 1px 0 rgba(255, 255, 255, .25);
   border: none;
   cursor: pointer;
   transition: all .35s cubic-bezier(.22, 1, .36, 1);
@@ -445,7 +444,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-gold:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(185, 141, 56, .45);
+  box-shadow: 0 12px 28px -8px rgba(245, 158, 11, .45);
   filter: brightness(1.03);
 }
 
@@ -456,8 +455,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .btn-violet {
-  background: linear-gradient(135deg, #e0925a 0%, #c46a34 55%, #7a3f1c 100%);
-  box-shadow: 0 8px 22px -8px rgba(196, 106, 52, .35);
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 55%, #c2410c 100%);
+  box-shadow: 0 8px 22px -8px rgba(249, 115, 22, .35);
   border: none;
   cursor: pointer;
   color: #fff;
@@ -466,7 +465,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-violet:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(196, 106, 52, .42);
+  box-shadow: 0 12px 28px -8px rgba(249, 115, 22, .42);
   filter: brightness(1.03);
 }
 
@@ -478,20 +477,20 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 .btn-outline-violet {
   background: var(--bg-card);
-  border: 1.5px solid #c46a34;
-  color: #c46a34;
+  border: 1.5px solid #f97316;
+  color: #f97316;
 }
 
 .btn-white {
   background: #fff;
-  color: #1c140d;
-  border: 1.5px solid #e9dfcc;
+  color: #171029;
+  border: 1.5px solid #e8e3f4;
   cursor: pointer;
   transition: all .2s;
 }
 
 .btn-white:hover {
-  background: #faf7f1;
+  background: #f8f7fc;
 }
 
 /* ---------- Hotel Cards ---------- */
@@ -501,17 +500,17 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   border-radius: 20px;
   overflow: hidden;
   transition: all .35s cubic-bezier(.16, 1, .3, 1);
-  box-shadow: 0 8px 24px -14px rgba(38, 24, 10, .15);
+  box-shadow: 0 8px 24px -14px rgba(45, 23, 90, .15);
 }
 
 .hotel-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 40px -16px rgba(38, 24, 10, .25);
+  box-shadow: 0 18px 40px -16px rgba(45, 23, 90, .25);
 }
 
 /* ---------- Shimmer Text ---------- */
 .shimmer-text {
-  background: linear-gradient(90deg, #d3ac5c 0%, #e6c983 50%, #d3ac5c 100%);
+  background: linear-gradient(90deg, #fbbf24 0%, #fcd34d 50%, #fbbf24 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -571,7 +570,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 
 /* ---------- Promo Banner ---------- */
 .promo-banner {
-  background: linear-gradient(135deg, #5c3416 0%, #c46a34 50%, #7a3f1c 100%);
+  background: linear-gradient(135deg, #9a3412 0%, #f97316 50%, #c2410c 100%);
   position: relative;
   overflow: hidden;
 }
@@ -592,7 +591,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   right: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(211, 172, 92, .3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(251, 191, 36, .3) 0%, transparent 70%);
   border-radius: 50%;
 }
 
@@ -611,12 +610,12 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #eab27e, #7a3f1c);
+  background: linear-gradient(135deg, #fdba74, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  color: #1c140d;
+  color: #171029;
   font-size: 14px;
   flex-shrink: 0;
 }
@@ -653,13 +652,13 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .pay-method-option:hover {
-  border-color: #f2c9a0;
+  border-color: #fdba9c;
 }
 
 .pay-method-option.selected {
-  border-color: #c46a34;
-  background: linear-gradient(135deg, rgba(224, 146, 90, .09), rgba(122, 63, 28, .04));
-  box-shadow: 0 8px 20px -12px rgba(196, 106, 52, .35);
+  border-color: #f97316;
+  background: linear-gradient(135deg, rgba(251, 146, 60, .09), rgba(194, 65, 12, .04));
+  box-shadow: 0 8px 20px -12px rgba(249, 115, 22, .35);
 }
 
 .pay-method-radio {
@@ -683,8 +682,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .pay-method-option.selected .pay-method-check {
-  border-color: #c46a34;
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  border-color: #f97316;
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
 }
 
@@ -730,7 +729,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   width: 26px;
   height: 26px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #eab27e, #c46a34);
+  background: linear-gradient(135deg, #fdba74, #f97316);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -744,7 +743,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   gap: 6px;
   padding: 6px 12px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
   font-weight: 800;
   font-size: 12px;
@@ -815,7 +814,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .room-option-card.room-selected {
-  border-color: #c46a34;
+  border-color: #f97316;
 }
 
 .room-option-card .room-select-check {
@@ -848,32 +847,32 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .filter-chip.active {
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 16px -6px rgba(196, 106, 52, .35);
+  box-shadow: 0 6px 16px -6px rgba(249, 115, 22, .35);
 }
 
 /* ---------- Stars ---------- */
 .star-filled {
-  color: #b98d38;
+  color: #f59e0b;
 }
 
 .star-empty {
-  color: #5c5140;
+  color: #453f5c;
 }
 
 /* ---------- Badges ---------- */
 .badge-bestseller {
-  background: linear-gradient(135deg, #1c140d, #3a2a1a);
-  color: #d3ac5c;
+  background: linear-gradient(135deg, #171029, #2b2140);
+  color: #fbbf24;
   font-weight: 600 !important;
   letter-spacing: .09em;
-  border: 1px solid rgba(211, 172, 92, .35);
+  border: 1px solid rgba(251, 191, 36, .35);
 }
 
 .rating-pill {
-  background: rgba(23, 17, 10, .65);
+  background: rgba(12, 9, 24, .65);
   backdrop-filter: blur(6px);
 }
 
@@ -901,7 +900,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .section-subtitle {
-  color: #c46a34;
+  color: #f97316;
   font-size: .62rem;
   font-weight: 700;
   letter-spacing: .25em;
@@ -950,7 +949,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(23, 15, 8, .55);
+  background: rgba(15, 10, 25, .55);
   backdrop-filter: blur(6px);
 }
 
@@ -960,7 +959,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
   padding: 1.5rem;
   width: 90%;
   max-width: 400px;
-  box-shadow: 0 30px 70px -20px rgba(20, 13, 5, .4);
+  box-shadow: 0 30px 70px -20px rgba(20, 10, 45, .4);
   max-height: 85vh;
   overflow-y: auto;
 }
@@ -982,8 +981,8 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 }
 
 .counter-btn:hover {
-  background: #f7ead9;
-  border-color: #f2c9a0;
+  background: #fff1e6;
+  border-color: #fdba9c;
 }
 
 .counter-btn:active {
@@ -1006,7 +1005,7 @@ body:has(#excursionDetailPage.active) .bottom-nav {
 .gallery-dot.active {
   width: 18px;
   border-radius: 4px;
-  background: #d3ac5c;
+  background: #fbbf24;
 }
 
 /* ---------- Side Drawer ---------- */
@@ -1093,24 +1092,24 @@ html[dir="rtl"] .drawer-link {
 }
 
 .drawer-link:hover {
-  background: rgba(196, 106, 52, .12);
+  background: rgba(249, 115, 22, .12);
   color: #fff;
 }
 
 .drawer-link.active {
-  background: linear-gradient(90deg, rgba(196, 106, 52, .22), rgba(196, 106, 52, .06));
+  background: linear-gradient(90deg, rgba(249, 115, 22, .22), rgba(249, 115, 22, .06));
   color: #fff;
-  border-left-color: #e0925a;
+  border-left-color: #fb923c;
   font-weight: 600;
 }
 
 html[dir="rtl"] .drawer-link.active {
-  background: linear-gradient(-90deg, rgba(196, 106, 52, .22), rgba(196, 106, 52, .06));
-  border-right-color: #e0925a;
+  background: linear-gradient(-90deg, rgba(249, 115, 22, .22), rgba(249, 115, 22, .06));
+  border-right-color: #fb923c;
 }
 
 .drawer-link.active i {
-  color: #eab27e;
+  color: #fdba74;
 }
 
 /* ---------- Theme Switch ---------- */
@@ -1118,7 +1117,7 @@ html[dir="rtl"] .drawer-link.active {
   width: 52px;
   height: 28px;
   border-radius: 99px;
-  background: #3a2a1a;
+  background: #2b2140;
   position: relative;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, .1);
@@ -1131,7 +1130,7 @@ html[dir="rtl"] .drawer-link.active {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e6c983, #b98d38);
+  background: linear-gradient(135deg, #fcd34d, #f59e0b);
   transition: all .3s;
   display: flex;
   align-items: center;
@@ -1154,7 +1153,7 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .lang-toggle button.active {
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
 }
 
@@ -1177,12 +1176,12 @@ html[data-theme="light"] .theme-switch .knob {
 .star-input i {
   font-size: 1.6rem;
   cursor: pointer;
-  color: #5c5140;
+  color: #453f5c;
   transition: color .15s, transform .15s;
 }
 
 .star-input i.active {
-  color: #b98d38;
+  color: #f59e0b;
 }
 
 .star-input i:hover {
@@ -1197,7 +1196,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1214,11 +1213,11 @@ html[data-theme="light"] .theme-switch .knob {
   overflow: hidden;
   width: 92%;
   max-width: 420px;
-  box-shadow: 0 30px 70px -20px rgba(20, 13, 5, .4);
+  box-shadow: 0 30px 70px -20px rgba(20, 10, 45, .4);
 }
 
 .kashier-header {
-  background: linear-gradient(135deg, #1c140d, #3a2a1a);
+  background: linear-gradient(135deg, #171029, #2b2140);
   padding: 1.25rem;
   display: flex;
   align-items: center;
@@ -1227,9 +1226,9 @@ html[data-theme="light"] .theme-switch .knob {
 
 /* ---------- Cuisine / Fine Dining ---------- */
 .lux-cuisine-badge {
-  background: rgba(196, 106, 52, .18);
-  border: 1px solid rgba(234, 178, 126, .5);
-  color: #eab27e;
+  background: rgba(249, 115, 22, .18);
+  border: 1px solid rgba(253, 186, 116, .5);
+  color: #fdba74;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .05em;
@@ -1257,7 +1256,7 @@ html[data-theme="light"] .theme-switch .knob {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #c46a34;
+  background: #f97316;
   flex-shrink: 0;
 }
 
@@ -1267,7 +1266,7 @@ html[data-theme="light"] .theme-switch .knob {
   font-weight: 700;
   font-size: 16px;
   letter-spacing: .02em;
-  color: #9c5226;
+  color: #ea580c;
   text-align: center;
   margin-bottom: 16px;
 }
@@ -1295,7 +1294,7 @@ html[data-theme="light"] .theme-switch .knob {
 .menu-item-price {
   font-weight: 700;
   font-size: 14px;
-  color: #9c5226;
+  color: #ea580c;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1312,7 +1311,7 @@ html[data-theme="light"] .theme-switch .knob {
 .skeleton-shimmer {
   background: linear-gradient(90deg,
     var(--bg-field) 25%,
-    rgba(170, 158, 140, .18) 37%,
+    rgba(150, 150, 170, .18) 37%,
     var(--bg-field) 63%
   );
   background-size: 400% 100%;
@@ -1344,9 +1343,9 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .search-tab-new.active {
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
-  box-shadow: 0 6px 16px -6px rgba(196, 106, 52, .38);
+  box-shadow: 0 6px 16px -6px rgba(249, 115, 22, .38);
 }
 
 .ds-modal-overlay {
@@ -1386,8 +1385,8 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .ds-modal-nav-btn:hover {
-  background: rgba(196, 106, 52, 0.15);
-  color: #c46a34;
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
 }
 
 .ds-modal-label {
@@ -1413,7 +1412,7 @@ html[data-theme="light"] .theme-switch .knob {
 .ds-modal-apply {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   border: none;
   border-radius: 12px;
   color: white;
@@ -1457,9 +1456,9 @@ html[data-theme="light"] .theme-switch .knob {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid rgba(196, 106, 52, 0.4);
+  border: 1px solid rgba(249, 115, 22, 0.4);
   background: transparent;
-  color: #c46a34;
+  color: #f97316;
   font-size: 18px;
   display: flex;
   align-items: center;
@@ -1469,7 +1468,7 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .ds-guest-btn:hover {
-  background: rgba(196, 106, 52, 0.15);
+  background: rgba(249, 115, 22, 0.15);
 }
 
 .ds-guest-value {
@@ -1513,20 +1512,20 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .ds-cal-day.today {
-  border: 2px solid #c46a34;
+  border: 2px solid #f97316;
   border-radius: 12px;
 }
 
 .ds-cal-day.selected {
-  background: linear-gradient(135deg, #e0925a, #7a3f1c);
+  background: linear-gradient(135deg, #fb923c, #c2410c);
   color: #fff;
   border-radius: 12px;
   font-weight: bold;
 }
 
 .ds-cal-day.in-range {
-  background: rgba(196, 106, 52, 0.1);
-  color: #c46a34;
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
   border-radius: 4px;
 }
 
