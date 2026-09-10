@@ -272,17 +272,17 @@ select:focus {
 /* ---------- Bottom Navigation ---------- */
 .bottom-nav {
   position: fixed;
-  bottom: 1.1rem;
-  left: 50%;
-  transform: translateX(-10%);
+  bottom: 0;               /* إلغاء الارتفاع من الأسفل */
+  left: 0;
   width: 100%;
   z-index: 50;
-  border-radius: 0px;
+  border-radius: 1rem 1rem 0 0; /* حواف دائرية من الأعلى فقط (يسار ويمنة) */
   padding: .55rem .7rem;
   background: var(--chrome-bg);
   box-shadow: var(--chrome-shadow);
   transition: background .3s ease, box-shadow .3s ease;
 }
+
 
 /* Hide bottom nav on detail pages */
 body:has(#hotelDetailPage.active) .bottom-nav,
