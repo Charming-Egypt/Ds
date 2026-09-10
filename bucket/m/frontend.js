@@ -462,11 +462,11 @@ const HERO_BACKGROUNDS = {
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=90'
   ],
   excursions: [
-    '/images/home/trips/1.jpg',
-    '/images/home/trips/2.jpg',
-    '/images/home/trips/3.jpg',
-    '/images/home/trips/4.jpg',
-    '/images/home/trips/5.jpg'
+    '/m/images/home/trips/1.jpg',
+    '/m/images/home/trips/2.jpg',
+    '/m/images/home/trips/3.jpg',
+    '/m/images/home/trips/4.jpg',
+    '/m/images/home/trips/5.jpg'
   ]
 };
 
