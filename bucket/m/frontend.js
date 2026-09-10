@@ -462,10 +462,11 @@ const HERO_BACKGROUNDS = {
     'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=90'
   ],
   excursions: [
-    'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=90',
-    'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?auto=format&fit=crop&w=1600&q=90'
+    '/images/home/trips/1.jpg',
+    '/images/home/trips/2.jpg',
+    '/images/home/trips/3.jpg',
+    '/images/home/trips/4.jpg',
+    '/images/home/trips/5.jpg'
   ]
 };
 
