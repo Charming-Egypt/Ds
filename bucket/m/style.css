@@ -139,7 +139,7 @@ body {
 /* ---------- Hero ---------- */
 .hero-section {
   position: relative;
-  min-height: 58vh;
+  height: 100vh;
   overflow: hidden;
 }
 
