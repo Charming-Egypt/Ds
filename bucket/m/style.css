@@ -1737,3 +1737,11 @@ html[data-theme="light"] .theme-switch .knob {
 }
 
 .s-area{ margin-top:-10rem;}
+
+
+@media (max-width: 480px) {
+  .s-area{ margin-top:-15rem;}
+
+  }
+
+
