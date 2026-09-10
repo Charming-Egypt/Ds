@@ -1740,8 +1740,8 @@ html[data-theme="light"] .theme-switch .knob {
 
 
 @media (max-width: 480px) {
-  .s-area{ margin-top:-20rem;
-         margin-bottom:5rem;
+  .s-area{ margin-top:-18rem;
+         margin-bottom:6rem;
          }
 
   }
