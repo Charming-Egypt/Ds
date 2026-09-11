@@ -19,7 +19,7 @@ const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 // transitions while giving every screen its own address (back/forward
 // buttons, refresh, and direct links all land on the right screen).
 const ROUTES = {
-  home: '/',
+  home: '/m/',
   excursions: '/excursions',
   transfers: '/transfers',
   restaurants: '/restaurants',
