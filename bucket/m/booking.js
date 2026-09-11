@@ -76,7 +76,7 @@ function renderBookingConfirmation(b) {
 function finishBooking(target) { const p = document.getElementById('bookingConfirmPage'); if (p) p.remove(); nav.go(target || 'home'); }
 
 // ==================== HOTEL DETAILS & BOOKING ====================
-function showHotelPage(hotelId) {
+function showHotelPage(hotelId, opts = {}) {
   const h = CATALOG.hotels.find(x => x.id === hotelId);
   if (!h) return toast('Hotel not found', 'error');
   state.currentHotel = h;
@@ -150,6 +150,7 @@ function showHotelPage(hotelId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0, 0);
+  routeToDetail('hotels', h.id, h.name, opts);
   loadReviews('hotel', h.id, 'hotelReviewsList', 'hotelReviewsSummary');
 }
 
@@ -312,7 +313,7 @@ async function payAndConfirmHotelBooking(roomTotal, taxes, total, nights) {
 }
 
 // ==================== EXCURSION DETAILS & BOOKING ====================
-function showExcursionPage(excursionId) {
+function showExcursionPage(excursionId, opts = {}) {
   const x = CATALOG.excursions.find(i => i.id === excursionId);
   if (!x) return toast('Excursion not found', 'error');
   state.currentExcursion = x;
@@ -386,6 +387,7 @@ function showExcursionPage(excursionId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0,0);
+  routeToDetail('excursions', x.id, x.title, opts);
   loadReviews('excursion', x.id, 'excursionReviewsList', null);
 }
 
@@ -707,7 +709,7 @@ async function payAndConfirmTransferBooking(subtotal, taxes, total) {
 }
 
 // ==================== RESTAURANT DETAILS ====================
-function showRestaurantPage(id) {
+function showRestaurantPage(id, opts = {}) {
   const r = CATALOG.restaurants.find(x => x.id === id);
   if (!r) return;
   const old = document.getElementById('restaurantDetailPage'); if (old) old.remove();
@@ -762,6 +764,7 @@ function showRestaurantPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0, 0);
+  routeToDetail('restaurants', r.id, r.name, opts);
   I18N.set(I18N.get());
 }
 
@@ -769,7 +772,7 @@ function onRestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.cli
 function closeRestaurantPage() { const p = document.getElementById('restaurantDetailPage'); if (p) p.remove(); nav.go('restaurants'); }
 
 // ==================== DESTINATION DETAILS ====================
-function showDestinationPage(id) {
+function showDestinationPage(id, opts = {}) {
   const d = CATALOG.destinations.find(x => x.id === id);
   if (!d) return;
   const old = document.getElementById('destinationDetailPage'); if (old) old.remove();
@@ -802,6 +805,7 @@ function showDestinationPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0, 0);
+  routeToDetail('destinations', d.id, d.name, opts);
   I18N.set(I18N.get());
 }
 
@@ -809,7 +813,7 @@ function onDestGalleryScroll(el) { const idx = Math.round(el.scrollLeft / el.cli
 function closeDestinationPage() { const p = document.getElementById('destinationDetailPage'); if (p) p.remove(); nav.go('home'); }
 
 // ==================== ARTICLE DETAILS ====================
-function showArticlePage(id) {
+function showArticlePage(id, opts = {}) {
   const a = CATALOG.articles.find(x => x.id === id);
   if (!a) return;
   const page = document.createElement('div');
@@ -831,6 +835,7 @@ function showArticlePage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0,0);
+  routeToDetail('articles', a.id, a.title, opts);
 }
 function closeArticlePage() { const p = document.getElementById('articleDetailPage'); if (p) p.remove(); nav.go('home'); }
 
