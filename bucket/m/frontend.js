@@ -40,24 +40,86 @@ const PAGE_TITLES = {
   notifications: 'Notifications — Discover Sharm'
 };
 
-function pathForPage(page) { return ROUTES[page] || '/'; }
+// Detail ("single item") routes: /excursions/dolphin-house, /restaurants/fares-seafood ...
+// `open` is called with (id, opts) to render the detail screen for that item.
+// `catalogKey` is the CATALOG array to look the item up in, so a direct link
+// waits for that data to finish loading before it tries to render.
+const DETAIL_ROUTES = {
+  excursions: { open: (id, opts) => showExcursionPage(id, opts), catalogKey: 'excursions', enabled: () => SHOW_EXCURSIONS },
+  restaurants: { open: (id, opts) => showRestaurantPage(id, opts), catalogKey: 'restaurants', enabled: () => SHOW_RESTAURANTS },
+  transfers: { open: (id, opts) => showTransferPage(id, opts), catalogKey: 'transfers', enabled: () => SHOW_TRANSFERS },
+  destinations: { open: (id, opts) => showDestinationPage(id, opts), catalogKey: 'destinations', enabled: () => SHOW_DESTINATIONS },
+  articles: { open: (id, opts) => showArticlePage(id, opts), catalogKey: 'articles' },
+  hotels: { open: (id, opts) => showHotelPage(id, opts), catalogKey: 'hotels', enabled: () => SHOW_HOTELS }
+};
 
-function pageForPath(path) {
+function pathForPage(page) { return ROUTES[page] || '/'; }
+function pathForDetail(section, id) { return `/${section}/${encodeURIComponent(id)}`; }
+
+// Parses a URL path into either a top-level page or a detail route.
+// Returns null when nothing matches (caller falls back to home).
+function parseRoute(path) {
   const clean = (path || '/').replace(/\/+$/, '') || '/';
   for (const page in ROUTES) {
-    if (ROUTES[page] === clean) return page;
+    if (ROUTES[page] === clean) return { type: 'page', page };
+  }
+  const parts = clean.split('/').filter(Boolean);
+  if (parts.length === 2 && DETAIL_ROUTES[parts[0]]) {
+    return { type: 'detail', section: parts[0], id: decodeURIComponent(parts[1]) };
   }
   return null;
 }
 
-// Captured once at script load so a direct visit to e.g. /excursions
-// is honored as soon as the user is past the splash/auth screens.
-let __pendingRoute = pageForPath(location.pathname);
+function pageForPath(path) {
+  const r = parseRoute(path);
+  return r && r.type === 'page' ? r.page : null;
+}
+
+// Records the URL + tab title for a detail screen. Call this from inside
+// showXPage() once you know the item (and its id/title) exist.
+function routeToDetail(section, id, title, opts = {}) {
+  document.title = title ? `${title} — Discover Sharm` : PAGE_TITLES.home;
+  if (opts.skipHistory) return;
+  const url = pathForDetail(section, id);
+  if (opts.replace) history.replaceState({ detail: { section, id } }, '', url);
+  else history.pushState({ detail: { section, id } }, '', url);
+}
+
+// Captured once at script load so a direct visit to e.g. /excursions/dolphin-house
+// is honored as soon as the user is past the splash/auth screens and the
+// catalog has finished loading.
+let __pendingRoute = parseRoute(location.pathname);
+
+// Resolves once loadCatalogFromWorker() (kicked off in enterApp) has finished,
+// so a direct link to a detail page can look the item up reliably.
+let __catalogLoadPromise = null;
+function ensureCatalogLoaded() {
+  return __catalogLoadPromise || Promise.resolve();
+}
+
+async function openDetailFromRoute(section, id, opts = {}) {
+  const def = DETAIL_ROUTES[section];
+  if (!def || (def.enabled && !def.enabled())) return;
+  await ensureCatalogLoaded();
+  def.open(id, opts);
+}
 
 window.addEventListener('popstate', (e) => {
   const mainApp = document.getElementById('mainApp');
   if (!mainApp || mainApp.classList.contains('hidden')) return; // still on splash/auth
-  const page = (e.state && e.state.page) || pageForPath(location.pathname) || 'home';
+
+  if (e.state && e.state.detail) {
+    openDetailFromRoute(e.state.detail.section, e.state.detail.id, { skipHistory: true });
+    return;
+  }
+
+  const route = parseRoute(location.pathname);
+  if (route && route.type === 'detail') {
+    openDetailFromRoute(route.section, route.id, { skipHistory: true });
+    return;
+  }
+
+  const page = (e.state && e.state.page) || (route && route.page) || 'home';
   nav.go(page, { skipHistory: true });
 });
 
@@ -65,7 +127,7 @@ function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
-  loadCatalogFromWorker();
+  __catalogLoadPromise = loadCatalogFromWorker();
   ui.setDefaultDates();
   search.init();
 
@@ -90,12 +152,17 @@ function enterApp() {
   applyDesktopLayout();
   applyCategoryVisibility();
 
-  // Honor a direct link (e.g. someone opened /excursions) now that the
-  // app shell is visible; otherwise make sure the URL matches "home".
-  if (__pendingRoute && __pendingRoute !== 'home' && ROUTES[__pendingRoute]) {
-    const target = __pendingRoute;
+  // Honor a direct link (e.g. someone opened /excursions or
+  // /excursions/dolphin-house) now that the app shell is visible;
+  // otherwise make sure the URL matches "home".
+  if (__pendingRoute && __pendingRoute.type === 'page' && __pendingRoute.page !== 'home' && ROUTES[__pendingRoute.page]) {
+    const target = __pendingRoute.page;
     __pendingRoute = null;
     nav.go(target, { replace: true });
+  } else if (__pendingRoute && __pendingRoute.type === 'detail') {
+    const { section, id } = __pendingRoute;
+    __pendingRoute = null;
+    openDetailFromRoute(section, id, { replace: true });
   } else {
     __pendingRoute = null;
     history.replaceState({ page: 'home' }, '', pathForPage('home'));
@@ -872,7 +939,7 @@ const transfersUi = {
 };
 
 // ==================== SHOW TRANSFER PAGE ====================
-function showTransferPage(id) {
+function showTransferPage(id, opts = {}) {
   const v = CATALOG.transfers.find(t => t.id === id);
   if (!v) return toast('Transfer not found', 'error');
 
@@ -920,6 +987,7 @@ function showTransferPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   page.classList.add('active');
   window.scrollTo(0,0);
+  routeToDetail('transfers', v.id, `${v.vehicleType} Transfer`, opts);
 }
 
 function closeTransferPage() {
