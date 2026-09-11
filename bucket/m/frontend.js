@@ -334,14 +334,14 @@ const search = {
   updateHeroContent(tab) {
     const heroData = {
       hotels: {
-        eyebrow: '— PREMIUM STAYS',
-        title: 'Find Your<br /><span class="italic text-gold-400">Perfect Stay</span>',
-        subtitle: 'Hotels. Excursions. Airport transfers.'
+        eyebrow: '',
+        title: '',
+        subtitle: ''
       },
       excursions: {
-        eyebrow: '— THINGS TO DO',
-        title: 'Discover<br /><span class="italic text-gold-400">Excursions</span>',
-        subtitle: 'Diving. Safari. Boat trips.'
+        eyebrow: '',
+        title: '',
+        subtitle: ''
       }
     };
     const data = heroData[tab] || heroData.hotels;
