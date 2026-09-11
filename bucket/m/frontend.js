@@ -20,13 +20,13 @@ const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 // buttons, refresh, and direct links all land on the right screen).
 const ROUTES = {
   home: '/m/',
-  excursions: '/excursions',
-  transfers: '/transfers',
-  restaurants: '/restaurants',
-  bookings: '/bookings',
-  profile: '/profile',
-  settings: '/settings',
-  notifications: '/notifications'
+  excursions: '/m/excursions',
+  transfers: '/m/transfers',
+  restaurants: '/m/restaurants',
+  bookings: '/m/bookings',
+  profile: '/m/profile',
+  settings: '/m/settings',
+  notifications: '/m/notifications'
 };
 
 const PAGE_TITLES = {
