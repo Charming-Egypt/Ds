@@ -477,7 +477,7 @@ const HERO_BACKGROUNDS = {
     ],
     mobile: [
     'https://images.unsplash.com/photo-1682687982141-0143020ed57a?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    'https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_863/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/qbs19tubqe67cesbzir5/ATVQuadBikeSafariinSharmElSheikh.webp',
+    '/m/images/trips/s.jpg',
     'https://res.klook.com/image/upload/fl_lossy.progressive,q_65/activities/qfewhof69v7wd1y8gas4.webp'
     ]
   }
