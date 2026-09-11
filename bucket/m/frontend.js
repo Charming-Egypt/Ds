@@ -53,13 +53,13 @@ const DETAIL_ROUTES = {
   hotels: { open: (id, opts) => showHotelPage(id, opts), catalogKey: 'hotels', enabled: () => SHOW_HOTELS }
 };
 
-function pathForPage(page) { return ROUTES[page] || '/'; }
+function pathForPage(page) { return ROUTES[page] || '/m/'; }
 function pathForDetail(section, id) { return `/${section}/${encodeURIComponent(id)}`; }
 
 // Parses a URL path into either a top-level page or a detail route.
 // Returns null when nothing matches (caller falls back to home).
 function parseRoute(path) {
-  const clean = (path || '/').replace(/\/+$/, '') || '/';
+  const clean = (path || '/m/').replace(/\/+$/, '') || '/m/';
   for (const page in ROUTES) {
     if (ROUTES[page] === clean) return { type: 'page', page };
   }
