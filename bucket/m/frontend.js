@@ -13,6 +13,54 @@ const SHOW_TRANSFERS = window.DS_CONFIG.SHOW_TRANSFERS;
 const SHOW_RESTAURANTS = window.DS_CONFIG.SHOW_RESTAURANTS;
 const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 
+// ==================== URL ROUTER ====================
+// Maps in-app "pages" to real, bookmarkable, shareable URLs.
+// This does NOT reload the page on navigation — it keeps the SPA's instant
+// transitions while giving every screen its own address (back/forward
+// buttons, refresh, and direct links all land on the right screen).
+const ROUTES = {
+  home: '/',
+  excursions: '/excursions',
+  transfers: '/transfers',
+  restaurants: '/restaurants',
+  bookings: '/bookings',
+  profile: '/profile',
+  settings: '/settings',
+  notifications: '/notifications'
+};
+
+const PAGE_TITLES = {
+  home: 'Discover Sharm — Luxury Travel',
+  excursions: 'Excursions in Sharm El-Sheikh — Discover Sharm',
+  transfers: 'Airport Transfers — Discover Sharm',
+  restaurants: 'Restaurants — Discover Sharm',
+  bookings: 'My Bookings — Discover Sharm',
+  profile: 'My Profile — Discover Sharm',
+  settings: 'Settings — Discover Sharm',
+  notifications: 'Notifications — Discover Sharm'
+};
+
+function pathForPage(page) { return ROUTES[page] || '/'; }
+
+function pageForPath(path) {
+  const clean = (path || '/').replace(/\/+$/, '') || '/';
+  for (const page in ROUTES) {
+    if (ROUTES[page] === clean) return page;
+  }
+  return null;
+}
+
+// Captured once at script load so a direct visit to e.g. /excursions
+// is honored as soon as the user is past the splash/auth screens.
+let __pendingRoute = pageForPath(location.pathname);
+
+window.addEventListener('popstate', (e) => {
+  const mainApp = document.getElementById('mainApp');
+  if (!mainApp || mainApp.classList.contains('hidden')) return; // still on splash/auth
+  const page = (e.state && e.state.page) || pageForPath(location.pathname) || 'home';
+  nav.go(page, { skipHistory: true });
+});
+
 function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
@@ -41,21 +89,45 @@ function enterApp() {
 
   applyDesktopLayout();
   applyCategoryVisibility();
+
+  // Honor a direct link (e.g. someone opened /excursions) now that the
+  // app shell is visible; otherwise make sure the URL matches "home".
+  if (__pendingRoute && __pendingRoute !== 'home' && ROUTES[__pendingRoute]) {
+    const target = __pendingRoute;
+    __pendingRoute = null;
+    nav.go(target, { replace: true });
+  } else {
+    __pendingRoute = null;
+    history.replaceState({ page: 'home' }, '', pathForPage('home'));
+  }
 }
 
 const nav = {
-  go(page) {
+  go(page, opts = {}) {
     if (page === 'hotels' && !SHOW_HOTELS) return;
     if (page === 'excursions' && !SHOW_EXCURSIONS) return;
     if (page === 'transfers' && !SHOW_TRANSFERS) return;
     if (page === 'restaurants' && !SHOW_RESTAURANTS) return;
     if (page === 'destinations' && !SHOW_DESTINATIONS) return;
 
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(page + 'Page');
-    if (target) target.classList.add('active');
+    if (!target) return;
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    target.classList.add('active');
     state.pageHistory.push(page);
     window.scrollTo(0, 0);
+
+    if (!opts.skipHistory && ROUTES[page]) {
+      const url = pathForPage(page);
+      const currentPath = location.pathname.replace(/\/+$/, '') || '/';
+      if (opts.replace) {
+        history.replaceState({ page }, '', url);
+      } else if (currentPath !== url) {
+        history.pushState({ page }, '', url);
+      }
+    }
+    document.title = PAGE_TITLES[page] || PAGE_TITLES.home;
 
     if (page === 'hotels' && SHOW_HOTELS) hotels.render();
     if (page === 'excursions' && SHOW_EXCURSIONS) excursionsUi.render();
