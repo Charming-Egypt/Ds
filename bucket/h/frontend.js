@@ -135,6 +135,21 @@ window.addEventListener('popstate', (e) => {
   nav.go(page, { skipHistory: true });
 });
 
+// Toggles the transparent-over-hero -> solid "scrolled" state for both the
+// mobile floating pill (.sticky-home-header) and the desktop bar
+// (#desktopNav). This used to be dead code — the CSS for both states
+// existed, but nothing ever called it, so neither header ever appeared.
+function updateStickyHeaderState() {
+  const homePage = document.getElementById('homePage');
+  const isHome = !!(homePage && homePage.classList.contains('active'));
+  const scrolled = !isHome || window.scrollY > 40;
+  const stickyMobile = document.getElementById('stickyHomeHeader');
+  const navDesktop = document.getElementById('desktopNav');
+  if (stickyMobile) stickyMobile.classList.toggle('visible', isHome && scrolled);
+  if (navDesktop) navDesktop.classList.toggle('scrolled', scrolled);
+}
+window.addEventListener('scroll', updateStickyHeaderState, { passive: true });
+
 function enterApp() {
   hideSplash();
   document.getElementById('authPage').classList.add('hidden');
@@ -163,6 +178,7 @@ function enterApp() {
 
   applyDesktopLayout();
   applyCategoryVisibility();
+  updateStickyHeaderState();
 
   // Honor a direct link (e.g. someone opened /excursions or
   // /excursions/dolphin-house) now that the app shell is visible;
@@ -196,6 +212,7 @@ const nav = {
     target.classList.add('active');
     state.pageHistory.push(page);
     window.scrollTo(0, 0);
+    updateStickyHeaderState();
 
     if (!opts.skipHistory && ROUTES[page]) {
       const url = pathForPage(page);
