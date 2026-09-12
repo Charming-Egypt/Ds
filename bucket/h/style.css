@@ -59,6 +59,37 @@ body {
   transition: background .3s ease, color .3s ease;
 }
 
+/* ---------- Scrollbars ---------- */
+/* Applies everywhere by default (page, modals, drawers, lists). The
+   horizontal swipe galleries (.horizontal-scroll, .results-scroll-snap,
+   .gallery-track) already hide their scrollbar on purpose and keep doing
+   so — their class-scoped rule is more specific than this one. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-field) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-field);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  background-clip: padding-box;
+}
+
 .font-display {
   font-family: 'Playfair Display', serif;
 }
