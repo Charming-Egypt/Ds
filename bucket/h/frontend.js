@@ -19,14 +19,14 @@ const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 // transitions while giving every screen its own address (back/forward
 // buttons, refresh, and direct links all land on the right screen).
 const ROUTES = {
-  home: '/',
-  excursions: '/excursions',
-  transfers: '/transfers',
-  restaurants: '/restaurants',
-  bookings: '/bookings',
-  profile: '/profile',
-  settings: '/settings',
-  notifications: '/notifications'
+  home: '/h/',
+  excursions: '/h/excursions',
+  transfers: '/h/transfers',
+  restaurants: '/h/restaurants',
+  bookings: '/h/bookings',
+  profile: '/h/profile',
+  settings: '/h/settings',
+  notifications: '/h/notifications'
 };
 
 const PAGE_TITLES = {
