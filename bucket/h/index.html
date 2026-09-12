@@ -326,6 +326,7 @@
        that isn't the hero-bearing home page. -->
   <nav id="desktopNav" class="hidden lg:flex fixed top-0 inset-x-0 z-50 items-center justify-between h-20 px-10">
     <div class="flex items-center gap-10">
+      <button onclick="sidebar.open()" class="icon-btn w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0"><i class="fa-solid fa-bars"></i></button>
       <button onclick="nav.go('home')" data-page="home" class="flex items-center gap-2 flex-shrink-0">
         <img src="data/long-logo.png" onerror="this.onerror=null;this.src=FALLBACK_LOGO;" class="h-9 w-auto desktop-nav-logo" alt="Discover Sharm" />
       </button>
