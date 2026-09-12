@@ -18,15 +18,21 @@ const SHOW_DESTINATIONS = window.DS_CONFIG.SHOW_DESTINATIONS;
 // This does NOT reload the page on navigation — it keeps the SPA's instant
 // transitions while giving every screen its own address (back/forward
 // buttons, refresh, and direct links all land on the right screen).
+
+// The site is served from /h/* on this deployment (not the domain root), so
+// every route needs that prefix. Change this one line if the deployment
+// path ever changes — set to '' if the site moves back to the root.
+const BASE_PATH = '/h';
+
 const ROUTES = {
-  home: '/h/',
-  excursions: '/h/excursions',
-  transfers: '/h/transfers',
-  restaurants: '/h/restaurants',
-  bookings: '/h/bookings',
-  profile: '/h/profile',
-  settings: '/h/settings',
-  notifications: '/h/notifications'
+  home: '/',
+  excursions: '/excursions',
+  transfers: '/transfers',
+  restaurants: '/restaurants',
+  bookings: '/bookings',
+  profile: '/profile',
+  settings: '/settings',
+  notifications: '/notifications'
 };
 
 const PAGE_TITLES = {
@@ -40,7 +46,7 @@ const PAGE_TITLES = {
   notifications: 'Notifications — Discover Sharm'
 };
 
-// Detail ("single item") routes: /excursions/dolphin-house, /restaurants/fares-seafood ...
+// Detail ("single item") routes: /h/excursions/dolphin-house, /h/restaurants/fares-seafood ...
 // `open` is called with (id, opts) to render the detail screen for that item.
 // `catalogKey` is the CATALOG array to look the item up in, so a direct link
 // waits for that data to finish loading before it tries to render.
@@ -53,13 +59,19 @@ const DETAIL_ROUTES = {
   hotels: { open: (id, opts) => showHotelPage(id, opts), catalogKey: 'hotels', enabled: () => SHOW_HOTELS }
 };
 
-function pathForPage(page) { return ROUTES[page] || '/'; }
-function pathForDetail(section, id) { return `/${section}/${encodeURIComponent(id)}`; }
+function pathForPage(page) { return BASE_PATH + (ROUTES[page] || '/'); }
+function pathForDetail(section, id) { return `${BASE_PATH}/${section}/${encodeURIComponent(id)}`; }
 
 // Parses a URL path into either a top-level page or a detail route.
-// Returns null when nothing matches (caller falls back to home).
+// Returns null when nothing matches (caller falls back to home) — this
+// includes any path outside BASE_PATH, since the app only lives there.
 function parseRoute(path) {
-  const clean = (path || '/').replace(/\/+$/, '') || '/';
+  let clean = (path || '/').replace(/\/+$/, '') || '/';
+  if (BASE_PATH) {
+    if (clean === BASE_PATH) clean = '/';
+    else if (clean.startsWith(BASE_PATH + '/')) clean = clean.slice(BASE_PATH.length);
+    else return null; // not under /h — not one of our routes
+  }
   for (const page in ROUTES) {
     if (ROUTES[page] === clean) return { type: 'page', page };
   }
