@@ -19,6 +19,7 @@
   --chrome-shadow: 0 12px 34px rgba(23, 16, 41, .14);
   --chrome-border: rgba(23, 16, 41, .08);
   --chrome-field-bg: rgba(23, 16, 41, .05);
+  --hero-fade-mid: rgba(248, 247, 252, .56);
 }
 
 html[data-theme="dark"] {
@@ -37,6 +38,7 @@ html[data-theme="dark"] {
   --chrome-shadow: 0 12px 40px rgba(20, 10, 45, .4);
   --chrome-border: rgba(255, 255, 255, .08);
   --chrome-field-bg: rgba(255, 255, 255, .04);
+  --hero-fade-mid: rgba(12, 9, 24, .56);
 }
 
 /* ---------- Global Reset & Base ---------- */
@@ -155,8 +157,7 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #f8f7fc00 0%, #f8f7fc00 45%, #f8f7fc8f 85%, var(--bg-body) 100%)
-  );
+  background: linear-gradient(180deg, transparent 0%, transparent 45%, var(--hero-fade-mid) 85%, var(--bg-body) 100%);
 }
 
 .hero-content {
@@ -1672,9 +1673,54 @@ html[data-theme="light"] .theme-switch .knob {
    DESKTOP LAYOUT & ENHANCEMENTS
    ============================================================ */
 @media (min-width: 1024px) {
-  #mainApp {
+  /* Desktop nav starts transparent, sitting on the hero image exactly like
+     the mobile header-floating does — so hide the mobile one to avoid two
+     overlapping headers. */
+  .header-floating {
+    display: none;
+  }
+
+  #desktopNav {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background .3s ease, border-color .3s ease;
+  }
+
+  #desktopNav .icon-btn,
+  #desktopNav .desktop-nav-logo {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
+  }
+
+  #desktopNav.scrolled {
+    background: var(--bg-card);
+    border-bottom-color: var(--border-card);
+    box-shadow: var(--chrome-shadow);
+  }
+
+  #desktopNav.scrolled .icon-btn,
+  #desktopNav.scrolled .desktop-nav-logo {
+    filter: none;
+  }
+
+  #desktopNav.scrolled .icon-btn {
+    background: var(--bg-field);
+  }
+
+  #desktopNav [class*="text-white"] {
+    color: #fff !important;
+  }
+
+  #desktopNav.scrolled [class*="text-white"] {
+    color: var(--text-primary) !important;
+  }
+
+  /* Only pages other than the hero-bearing home page need space reserved
+     under the fixed nav — home's hero runs flush to the top, with the nav
+     overlaid transparently on top of it. */
+  #mainApp .page:not(#homePage) {
     padding-top: 80px;
   }
+
   .main-area {
     max-width: 1280px;
     margin-left: auto;
